@@ -1,0 +1,4657 @@
+{
+  "createdAt": "2026-09-29T15:51:16.761Z",
+  "safe": [
+    {
+      "item": 45246,
+      "date": "2026-09-01",
+      "cents": 5660,
+      "numdoc": "N101A2",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO SEVERIO DA S 01/09",
+      "title": 757297,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45247,
+      "date": "2026-09-01",
+      "cents": 1490,
+      "numdoc": "N101B8",
+      "desc": "PIX QR CODE DINAMIC REM: SERGIOMAR BRANDAO MOT 01/09",
+      "title": 757299,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45249,
+      "date": "2026-09-01",
+      "cents": 15226,
+      "numdoc": "N101E4",
+      "desc": "PIX QR CODE DINAMIC REM: Alexandre Valdoski    01/09",
+      "title": 757317,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45251,
+      "date": "2026-09-01",
+      "cents": 2990,
+      "numdoc": "N10210",
+      "desc": "PIX QR CODE DINAMIC REM: RENATO SANTI          01/09",
+      "title": 757325,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45253,
+      "date": "2026-09-01",
+      "cents": 1470,
+      "numdoc": "N1023C",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE VIRGINIO DA SILV 01/09",
+      "title": 757330,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45254,
+      "date": "2026-09-01",
+      "cents": 1130,
+      "numdoc": "N10252",
+      "desc": "PIX QR CODE DINAMIC REM: UBIRATAN ANGELO DE ME 01/09",
+      "title": 757332,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45256,
+      "date": "2026-09-01",
+      "cents": 8483,
+      "numdoc": "N1027E",
+      "desc": "PIX QR CODE DINAMIC REM: WALTER SILVA JUNIOR   01/09",
+      "title": 757347,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45257,
+      "date": "2026-09-01",
+      "cents": 13870,
+      "numdoc": "N10294",
+      "desc": "PIX QR CODE DINAMIC REM: Nailton David dos Anj 01/09",
+      "title": 757349,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45259,
+      "date": "2026-09-01",
+      "cents": 6950,
+      "numdoc": "N102C0",
+      "desc": "PIX QR CODE DINAMIC REM: MARCO AURELIO SANTOS  01/09",
+      "title": 758875,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45260,
+      "date": "2026-09-01",
+      "cents": 2680,
+      "numdoc": "N102D6",
+      "desc": "PIX QR CODE DINAMIC REM: JAIDETE BARBOSA DE MO 01/09",
+      "title": 757383,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45261,
+      "date": "2026-09-01",
+      "cents": 2690,
+      "numdoc": "N102EC",
+      "desc": "PIX QR CODE DINAMIC REM: Humberto Gomes Pereir 01/09",
+      "title": 757381,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45262,
+      "date": "2026-09-01",
+      "cents": 590,
+      "numdoc": "N10302",
+      "desc": "PIX QR CODE DINAMIC REM: FABIANO CARVALHO DOS  01/09",
+      "title": 757387,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45263,
+      "date": "2026-09-01",
+      "cents": 1267,
+      "numdoc": "N10318",
+      "desc": "PIX QR CODE DINAMIC REM: 52.888.438 ROMARIO GE 01/09",
+      "title": 757390,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45264,
+      "date": "2026-09-01",
+      "cents": 7970,
+      "numdoc": "N1032E",
+      "desc": "PIX QR CODE DINAMIC REM: RENAN LIMA SILVA      01/09",
+      "title": 757393,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45265,
+      "date": "2026-09-01",
+      "cents": 2090,
+      "numdoc": "N10344",
+      "desc": "PIX QR CODE DINAMIC REM: Studio De Beleza Barr 01/09",
+      "title": 758880,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45266,
+      "date": "2026-09-01",
+      "cents": 6000,
+      "numdoc": "N1035A",
+      "desc": "PIX QR CODE DINAMIC REM: IONE DA SILVA DELGADO 01/09",
+      "title": 757416,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45267,
+      "date": "2026-09-01",
+      "cents": 578,
+      "numdoc": "N10370",
+      "desc": "PIX QR CODE DINAMIC REM: Genildo Freire da Sil 01/09",
+      "title": 757417,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45268,
+      "date": "2026-09-01",
+      "cents": 5235,
+      "numdoc": "N10386",
+      "desc": "PIX QR CODE DINAMIC REM: Priscila Flores do Ca 01/09",
+      "title": 757421,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45269,
+      "date": "2026-09-01",
+      "cents": 32621,
+      "numdoc": "N1039C",
+      "desc": "PIX QR CODE DINAMIC REM: JEFFERSON ANDERSON OL 01/09",
+      "title": 757423,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45276,
+      "date": "2026-09-02",
+      "cents": 3790,
+      "numdoc": "N10436",
+      "desc": "PIX QR CODE DINAMIC REM: Joao Victor Gouvea    02/09",
+      "title": 757433,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45277,
+      "date": "2026-09-02",
+      "cents": 12550,
+      "numdoc": "N1044C",
+      "desc": "PIX QR CODE DINAMIC REM: JONATHAS COSTA RODRIG 02/09",
+      "title": 757431,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45278,
+      "date": "2026-09-02",
+      "cents": 1900,
+      "numdoc": "N10462",
+      "desc": "PIX QR CODE DINAMIC REM: JONATHAS COSTA RODRIG 02/09",
+      "title": 757435,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45279,
+      "date": "2026-09-02",
+      "cents": 8521,
+      "numdoc": "N10478",
+      "desc": "PIX QR CODE DINAMIC REM: MARCOS PAULO DO NASCI 02/09",
+      "title": 757438,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45280,
+      "date": "2026-09-02",
+      "cents": 1170,
+      "numdoc": "N1048E",
+      "desc": "PIX QR CODE DINAMIC REM: Ulisses Ferreira da S 02/09",
+      "title": 757439,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45281,
+      "date": "2026-09-02",
+      "cents": 2597,
+      "numdoc": "N104A4",
+      "desc": "PIX QR CODE DINAMIC REM: EPIFANIO DAS VIRGENS  02/09",
+      "title": 757440,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45282,
+      "date": "2026-09-02",
+      "cents": 2602,
+      "numdoc": "N104BA",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio dos Santos Sil 02/09",
+      "title": 757450,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45285,
+      "date": "2026-09-02",
+      "cents": 990,
+      "numdoc": "N104FC",
+      "desc": "PIX QR CODE DINAMIC REM: JULIO CESAR ALMEIDA D 02/09",
+      "title": 757460,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45286,
+      "date": "2026-09-02",
+      "cents": 3290,
+      "numdoc": "N10512",
+      "desc": "PIX QR CODE DINAMIC REM: LUCAS KILDARE RAMOS D 02/09",
+      "title": 757467,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45287,
+      "date": "2026-09-02",
+      "cents": 5760,
+      "numdoc": "N10528",
+      "desc": "PIX QR CODE DINAMIC REM: HARISON DA SILVA SANT 02/09",
+      "title": 757493,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45288,
+      "date": "2026-09-02",
+      "cents": 3299,
+      "numdoc": "N1053E",
+      "desc": "PIX QR CODE DINAMIC REM: RAIMUNDO SANTOS ALVES 02/09",
+      "title": 757474,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45289,
+      "date": "2026-09-02",
+      "cents": 6789,
+      "numdoc": "N10554",
+      "desc": "PIX QR CODE DINAMIC REM: ROLAND GUY GANNE      02/09",
+      "title": 757481,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45290,
+      "date": "2026-09-02",
+      "cents": 10344,
+      "numdoc": "N1056A",
+      "desc": "PIX QR CODE DINAMIC REM: Marcos Paulo De Matos 02/09",
+      "title": 757487,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45291,
+      "date": "2026-09-02",
+      "cents": 240,
+      "numdoc": "N10580",
+      "desc": "PIX QR CODE DINAMIC REM: Alexander Canazaro da 02/09",
+      "title": 757496,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45292,
+      "date": "2026-09-02",
+      "cents": 5680,
+      "numdoc": "N10596",
+      "desc": "PIX QR CODE DINAMIC REM: 59.740.851 FELIPE PIN 02/09",
+      "title": 757506,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45293,
+      "date": "2026-09-02",
+      "cents": 4220,
+      "numdoc": "N105AC",
+      "desc": "PIX QR CODE DINAMIC REM: ROSE MARY DAS NEVES S 02/09",
+      "title": 757508,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45294,
+      "date": "2026-09-02",
+      "cents": 2500,
+      "numdoc": "N105C2",
+      "desc": "PIX QR CODE DINAMIC REM: PAULO CEZAR DE MELLO  02/09",
+      "title": 757545,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45295,
+      "date": "2026-09-02",
+      "cents": 3297,
+      "numdoc": "N105D8",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 02/09",
+      "title": 757510,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45296,
+      "date": "2026-09-02",
+      "cents": 1149,
+      "numdoc": "N105EE",
+      "desc": "PIX QR CODE DINAMIC REM: Sidnei Braz           02/09",
+      "title": 757516,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45297,
+      "date": "2026-09-02",
+      "cents": 1606,
+      "numdoc": "N10604",
+      "desc": "PIX QR CODE DINAMIC REM: GABRIELA CAMPISTA FER 02/09",
+      "title": 757518,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45298,
+      "date": "2026-09-02",
+      "cents": 6880,
+      "numdoc": "N1061A",
+      "desc": "PIX QR CODE DINAMIC REM: Vin�cius Ferreira da  02/09",
+      "title": 757520,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45299,
+      "date": "2026-09-02",
+      "cents": 14580,
+      "numdoc": "N10630",
+      "desc": "PIX QR CODE DINAMIC REM: RAFAEL SANTOS DE JESU 02/09",
+      "title": 758887,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45300,
+      "date": "2026-09-02",
+      "cents": 12310,
+      "numdoc": "N10646",
+      "desc": "PIX QR CODE DINAMIC REM: Antonio Edson Perp�tu 02/09",
+      "title": 757534,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45302,
+      "date": "2026-09-02",
+      "cents": 680,
+      "numdoc": "N10672",
+      "desc": "PIX QR CODE DINAMIC REM: S�rgio F�lix da Silva 02/09",
+      "title": 757540,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45304,
+      "date": "2026-09-02",
+      "cents": 7118,
+      "numdoc": "N1069E",
+      "desc": "PIX QR CODE DINAMIC REM: JOYCE DE AMORIM MACED 02/09",
+      "title": 757527,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45305,
+      "date": "2026-09-02",
+      "cents": 4885,
+      "numdoc": "N106B4",
+      "desc": "PIX QR CODE DINAMIC REM: Wesley Raposo Avelar  02/09",
+      "title": 757530,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45306,
+      "date": "2026-09-02",
+      "cents": 4187,
+      "numdoc": "N106CA",
+      "desc": "PIX QR CODE DINAMIC REM: Bernardo Pereira de M 02/09",
+      "title": 757549,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45307,
+      "date": "2026-09-02",
+      "cents": 1990,
+      "numdoc": "N106E0",
+      "desc": "PIX QR CODE DINAMIC REM: BRUNO DE SOUZA FERRAZ 02/09",
+      "title": 757554,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45308,
+      "date": "2026-09-02",
+      "cents": 1798,
+      "numdoc": "N106F6",
+      "desc": "PIX QR CODE DINAMIC REM: PHILIPPE RIBEIRO DE S 02/09",
+      "title": 757557,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45309,
+      "date": "2026-09-02",
+      "cents": 19940,
+      "numdoc": "N1070C",
+      "desc": "PIX QR CODE DINAMIC REM: Isaac Alves Corr�a    02/09",
+      "title": 757572,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45310,
+      "date": "2026-09-02",
+      "cents": 979,
+      "numdoc": "N10722",
+      "desc": "PIX QR CODE DINAMIC REM: F�bio Santos de Barro 02/09",
+      "title": 757578,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45312,
+      "date": "2026-09-02",
+      "cents": 6344,
+      "numdoc": "N1074E",
+      "desc": "PIX QR CODE DINAMIC REM: WS CONSTRUCAO E REFOR 02/09",
+      "title": 757581,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45313,
+      "date": "2026-09-02",
+      "cents": 5353,
+      "numdoc": "N10764",
+      "desc": "PIX QR CODE DINAMIC REM: ADRIANO SILVA DOS SAN 02/09",
+      "title": 757582,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45314,
+      "date": "2026-09-02",
+      "cents": 1579,
+      "numdoc": "N1077A",
+      "desc": "PIX QR CODE DINAMIC REM: DENIMAX DA SILVA GALD 02/09",
+      "title": 757584,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45315,
+      "date": "2026-09-02",
+      "cents": 5870,
+      "numdoc": "N10790",
+      "desc": "PIX QR CODE DINAMIC REM: ANGELA OLIVEIRA DE SO 02/09",
+      "title": 757594,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45316,
+      "date": "2026-09-02",
+      "cents": 3188,
+      "numdoc": "N107A6",
+      "desc": "PIX QR CODE DINAMIC REM: Bernardo Pereira de M 02/09",
+      "title": 757592,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45317,
+      "date": "2026-09-02",
+      "cents": 9966,
+      "numdoc": "N107BC",
+      "desc": "PIX QR CODE DINAMIC REM: EDINEI APARECIDA RODR 02/09",
+      "title": 757593,
+      "titleDate": "2026-09-02",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45325,
+      "date": "2026-09-03",
+      "cents": 3250,
+      "numdoc": "N1086A",
+      "desc": "PIX QR CODE DINAMIC REM: Pablo Concei��o Sobri 03/09",
+      "title": 757614,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45326,
+      "date": "2026-09-03",
+      "cents": 3090,
+      "numdoc": "N10880",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 03/09",
+      "title": 757616,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45327,
+      "date": "2026-09-03",
+      "cents": 57374,
+      "numdoc": "N10896",
+      "desc": "PIX QR CODE DINAMIC REM: ALEXANDRE PAULO BAZAN 03/09",
+      "title": 757620,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45328,
+      "date": "2026-09-03",
+      "cents": 500,
+      "numdoc": "N108AC",
+      "desc": "PIX QR CODE DINAMIC REM: Erculano Felipe da Co 03/09",
+      "title": 757621,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45329,
+      "date": "2026-09-03",
+      "cents": 8989,
+      "numdoc": "N108C2",
+      "desc": "PIX QR CODE DINAMIC REM: Pablo Concei��o Sobri 03/09",
+      "title": 757622,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45330,
+      "date": "2026-09-03",
+      "cents": 998,
+      "numdoc": "N108D8",
+      "desc": "PIX QR CODE DINAMIC REM: Marroni Hil�rio de So 03/09",
+      "title": 757623,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45331,
+      "date": "2026-09-03",
+      "cents": 5475,
+      "numdoc": "N108EE",
+      "desc": "PIX QR CODE DINAMIC REM: ROLAND GUY GANNE      03/09",
+      "title": 757624,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45332,
+      "date": "2026-09-03",
+      "cents": 19446,
+      "numdoc": "N10904",
+      "desc": "PIX QR CODE DINAMIC REM: G. A. 2016 CONSULTORI 03/09",
+      "title": 757625,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45336,
+      "date": "2026-09-03",
+      "cents": 28945,
+      "numdoc": "N1095C",
+      "desc": "PIX QR CODE DINAMIC REM: MILTON JOSE NUNES     03/09",
+      "title": 757648,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45337,
+      "date": "2026-09-03",
+      "cents": 1390,
+      "numdoc": "N10972",
+      "desc": "PIX QR CODE DINAMIC REM: JOAO BOSCO DA SILVA   03/09",
+      "title": 757654,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45338,
+      "date": "2026-09-03",
+      "cents": 16060,
+      "numdoc": "N10988",
+      "desc": "PIX QR CODE DINAMIC REM: CENTRO DE LUTAS R SAN 03/09",
+      "title": 758894,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45339,
+      "date": "2026-09-03",
+      "cents": 17970,
+      "numdoc": "N1099E",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO OLIVEIRA SILVA  03/09",
+      "title": 757657,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45341,
+      "date": "2026-09-03",
+      "cents": 4690,
+      "numdoc": "N109CA",
+      "desc": "PIX QR CODE DINAMIC REM: LUCAS KILDARE RAMOS D 03/09",
+      "title": 757679,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45342,
+      "date": "2026-09-03",
+      "cents": 1224,
+      "numdoc": "N109E0",
+      "desc": "PIX QR CODE DINAMIC REM: Raphael Sanko Assad   03/09",
+      "title": 757676,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45343,
+      "date": "2026-09-03",
+      "cents": 1960,
+      "numdoc": "N109F6",
+      "desc": "PIX QR CODE DINAMIC REM: Anderson Felipe Alves 03/09",
+      "title": 757675,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45344,
+      "date": "2026-09-03",
+      "cents": 2109,
+      "numdoc": "N10A0C",
+      "desc": "PIX QR CODE DINAMIC REM: BRUNO DE SOUZA FERRAZ 03/09",
+      "title": 757673,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45345,
+      "date": "2026-09-03",
+      "cents": 2980,
+      "numdoc": "N10A22",
+      "desc": "PIX QR CODE DINAMIC REM: ERICK DA SILVA FRANKL 03/09",
+      "title": 757678,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45346,
+      "date": "2026-09-03",
+      "cents": 4729,
+      "numdoc": "N10A38",
+      "desc": "PIX QR CODE DINAMIC REM: Cleiber Braz da Costa 03/09",
+      "title": 757677,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45347,
+      "date": "2026-09-03",
+      "cents": 1190,
+      "numdoc": "N10A4E",
+      "desc": "PIX QR CODE DINAMIC REM: Wanderson Alves Nogue 03/09",
+      "title": 757681,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45350,
+      "date": "2026-09-03",
+      "cents": 2280,
+      "numdoc": "N10A90",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE CARLOS BARRETO V 03/09",
+      "title": 757693,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45351,
+      "date": "2026-09-03",
+      "cents": 4490,
+      "numdoc": "N10AA6",
+      "desc": "PIX QR CODE DINAMIC REM: Wanderson Alves Nogue 03/09",
+      "title": 757690,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45352,
+      "date": "2026-09-03",
+      "cents": 5310,
+      "numdoc": "N10ABC",
+      "desc": "PIX QR CODE DINAMIC REM: JOELSON BRONZEADO DE  03/09",
+      "title": 757692,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45353,
+      "date": "2026-09-03",
+      "cents": 6900,
+      "numdoc": "N10AD2",
+      "desc": "PIX QR CODE DINAMIC REM: Marcelo dos Santos Re 03/09",
+      "title": 757705,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45354,
+      "date": "2026-09-03",
+      "cents": 2890,
+      "numdoc": "N10AE8",
+      "desc": "PIX QR CODE DINAMIC REM: GERDIANE LOURENCO SOA 03/09",
+      "title": 757710,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45355,
+      "date": "2026-09-03",
+      "cents": 17880,
+      "numdoc": "N10AFE",
+      "desc": "PIX QR CODE DINAMIC REM: JULIANA ROSA SANSAO   03/09",
+      "title": 757711,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45357,
+      "date": "2026-09-03",
+      "cents": 1794,
+      "numdoc": "N10B2A",
+      "desc": "PIX QR CODE DINAMIC REM: ELAINE DE OLIVEIRA TE 03/09",
+      "title": 757721,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45358,
+      "date": "2026-09-03",
+      "cents": 1980,
+      "numdoc": "N10B40",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIVAN PEREIRA DA SI 03/09",
+      "title": 757727,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45360,
+      "date": "2026-09-03",
+      "cents": 1900,
+      "numdoc": "N10B6C",
+      "desc": "PIX QR CODE DINAMIC REM: EDSON CLAUDIO BRITO D 03/09",
+      "title": 757742,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45362,
+      "date": "2026-09-03",
+      "cents": 9907,
+      "numdoc": "N10B98",
+      "desc": "PIX QR CODE DINAMIC REM: C�zar Henrique de Sal 03/09",
+      "title": 757754,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45363,
+      "date": "2026-09-03",
+      "cents": 2200,
+      "numdoc": "N10BAE",
+      "desc": "PIX QR CODE DINAMIC REM: C�zar Henrique de Sal 03/09",
+      "title": 757757,
+      "titleDate": "2026-09-03",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45376,
+      "date": "2026-09-04",
+      "cents": 8380,
+      "numdoc": "N10CC4",
+      "desc": "PIX QR CODE DINAMIC REM: DROGAS VARGENS LTDA   04/09",
+      "title": 757761,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45379,
+      "date": "2026-09-04",
+      "cents": 17946,
+      "numdoc": "N10D06",
+      "desc": "PIX QR CODE DINAMIC REM: ELIZAEL MAGALHAES SIL 04/09",
+      "title": 757770,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45381,
+      "date": "2026-09-04",
+      "cents": 6090,
+      "numdoc": "N10D32",
+      "desc": "PIX QR CODE DINAMIC REM: THALES VICENTE FERREI 04/09",
+      "title": 757786,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45382,
+      "date": "2026-09-04",
+      "cents": 2889,
+      "numdoc": "N10D48",
+      "desc": "PIX QR CODE DINAMIC REM: ALEX RAMOS MEDEIROS   04/09",
+      "title": 757787,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45383,
+      "date": "2026-09-04",
+      "cents": 2989,
+      "numdoc": "N10D5E",
+      "desc": "PIX QR CODE DINAMIC REM: THALES VICENTE FERREI 04/09",
+      "title": 757849,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45384,
+      "date": "2026-09-04",
+      "cents": 9440,
+      "numdoc": "N10D74",
+      "desc": "PIX QR CODE DINAMIC REM: MARCOS DE SOUZA ALMEI 04/09",
+      "title": 757788,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45385,
+      "date": "2026-09-04",
+      "cents": 2393,
+      "numdoc": "N10D8A",
+      "desc": "PIX QR CODE DINAMIC REM: ALEX RAMOS MEDEIROS   04/09",
+      "title": 757790,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45386,
+      "date": "2026-09-04",
+      "cents": 271724,
+      "numdoc": "N10DA0",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS GUSTAVO CARVAL 04/09",
+      "title": 757792,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45387,
+      "date": "2026-09-04",
+      "cents": 2490,
+      "numdoc": "N10DB6",
+      "desc": "PIX QR CODE DINAMIC REM: CREMILSON COSTA MARCE 04/09",
+      "title": 757800,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45388,
+      "date": "2026-09-04",
+      "cents": 1800,
+      "numdoc": "N10DCC",
+      "desc": "PIX QR CODE DINAMIC REM: LUCAS DE FREITAS MAIA 04/09",
+      "title": 757801,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45389,
+      "date": "2026-09-04",
+      "cents": 3299,
+      "numdoc": "N10DE2",
+      "desc": "PIX QR CODE DINAMIC REM: ANDREA SOUZA DOS SANT 04/09",
+      "title": 757806,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45390,
+      "date": "2026-09-04",
+      "cents": 870,
+      "numdoc": "N10DF8",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 04/09",
+      "title": 757810,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45391,
+      "date": "2026-09-04",
+      "cents": 3190,
+      "numdoc": "N10E0E",
+      "desc": "PIX QR CODE DINAMIC REM: 49.900.274 DOUGLAS DE 04/09",
+      "title": 757811,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45393,
+      "date": "2026-09-04",
+      "cents": 699,
+      "numdoc": "N10E3A",
+      "desc": "PIX QR CODE DINAMIC REM: Jenifer De Lima Menez 04/09",
+      "title": 757813,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45394,
+      "date": "2026-09-04",
+      "cents": 2071,
+      "numdoc": "N10E50",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 04/09",
+      "title": 757819,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45395,
+      "date": "2026-09-04",
+      "cents": 8191,
+      "numdoc": "N10E66",
+      "desc": "PIX QR CODE DINAMIC REM: DEYVISON DAVI ALVES D 04/09",
+      "title": 757824,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45398,
+      "date": "2026-09-04",
+      "cents": 1190,
+      "numdoc": "N10EA8",
+      "desc": "PIX QR CODE DINAMIC REM: VANESSA GUIA DE MACED 04/09",
+      "title": 757832,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45399,
+      "date": "2026-09-04",
+      "cents": 15800,
+      "numdoc": "N10EBE",
+      "desc": "PIX QR CODE DINAMIC REM: Guilherme Marques Fil 04/09",
+      "title": 757841,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45400,
+      "date": "2026-09-04",
+      "cents": 7780,
+      "numdoc": "N10ED4",
+      "desc": "PIX QR CODE DINAMIC REM: Alexandre Santana Med 04/09",
+      "title": 757843,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45401,
+      "date": "2026-09-04",
+      "cents": 2000,
+      "numdoc": "N10EEA",
+      "desc": "PIX QR CODE DINAMIC REM: Cassia Maria Melo Pim 04/09",
+      "title": 757850,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45402,
+      "date": "2026-09-04",
+      "cents": 9897,
+      "numdoc": "N10F00",
+      "desc": "PIX QR CODE DINAMIC REM: Higor Do Vale Patroci 04/09",
+      "title": 757852,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45403,
+      "date": "2026-09-04",
+      "cents": 2967,
+      "numdoc": "N10F16",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 04/09",
+      "title": 757862,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45404,
+      "date": "2026-09-04",
+      "cents": 2729,
+      "numdoc": "N10F2C",
+      "desc": "PIX QR CODE DINAMIC REM: Wagner dos Santos Per 04/09",
+      "title": 757860,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45407,
+      "date": "2026-09-04",
+      "cents": 1189,
+      "numdoc": "N10F6E",
+      "desc": "PIX QR CODE DINAMIC REM: Ricardo Marcelino de  04/09",
+      "title": 757871,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45409,
+      "date": "2026-09-04",
+      "cents": 2990,
+      "numdoc": "N10F9A",
+      "desc": "PIX QR CODE DINAMIC REM: ALEX RAMOS MEDEIROS   04/09",
+      "title": 757875,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45410,
+      "date": "2026-09-04",
+      "cents": 2380,
+      "numdoc": "N10FB0",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio dos Santos Sil 04/09",
+      "title": 757877,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45413,
+      "date": "2026-09-04",
+      "cents": 2390,
+      "numdoc": "N10FF2",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO DA CRUZ TORR 04/09",
+      "title": 757891,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45414,
+      "date": "2026-09-04",
+      "cents": 1480,
+      "numdoc": "N11008",
+      "desc": "PIX QR CODE DINAMIC REM: Renan Lima Silva      04/09",
+      "title": 757893,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45415,
+      "date": "2026-09-04",
+      "cents": 10485,
+      "numdoc": "N1101E",
+      "desc": "PIX QR CODE DINAMIC REM: ADRIANO SILVA DOS SAN 04/09",
+      "title": 757899,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45416,
+      "date": "2026-09-04",
+      "cents": 2910,
+      "numdoc": "N11034",
+      "desc": "PIX QR CODE DINAMIC REM: EDNALDO FAUSTINO DA S 04/09",
+      "title": 757903,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45423,
+      "date": "2026-09-08",
+      "cents": 16622,
+      "numdoc": "N110CE",
+      "desc": "PIX QR CODE DINAMIC REM: IABSON DE JESUS SANTO 08/09",
+      "title": 758070,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45425,
+      "date": "2026-09-08",
+      "cents": 1789,
+      "numdoc": "N110FA",
+      "desc": "PIX QR CODE DINAMIC REM: ANDREIA MENDONCA FARI 08/09",
+      "title": 758071,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45426,
+      "date": "2026-09-08",
+      "cents": 1340,
+      "numdoc": "N11110",
+      "desc": "PIX QR CODE DINAMIC REM: Erculano Felipe da Co 08/09",
+      "title": 758073,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45427,
+      "date": "2026-09-08",
+      "cents": 690,
+      "numdoc": "N11126",
+      "desc": "PIX QR CODE DINAMIC REM: DARLAN GONCALVES CLAU 05/09",
+      "title": 758214,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45428,
+      "date": "2026-09-08",
+      "cents": 9269,
+      "numdoc": "N1113C",
+      "desc": "PIX QR CODE DINAMIC REM: SHOP LIVRE LTDA       08/09",
+      "title": 758346,
+      "titleDate": "2026-09-09",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45430,
+      "date": "2026-09-08",
+      "cents": 3070,
+      "numdoc": "N11168",
+      "desc": "PIX QR CODE DINAMIC REM: AIMARTEPRO COMUNICACA 05/09",
+      "title": 760810,
+      "titleDate": "2026-09-29",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45432,
+      "date": "2026-09-08",
+      "cents": 61503,
+      "numdoc": "N11194",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS ROBERTO OLIVEI 08/09",
+      "title": 758085,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45434,
+      "date": "2026-09-08",
+      "cents": 8070,
+      "numdoc": "N111C0",
+      "desc": "PIX QR CODE DINAMIC REM: Vin�cius Ferreira da  08/09",
+      "title": 758087,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45435,
+      "date": "2026-09-08",
+      "cents": 8188,
+      "numdoc": "N111D6",
+      "desc": "PIX QR CODE DINAMIC REM: JAMILTON DIAS FEITOSA 08/09",
+      "title": 758088,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45436,
+      "date": "2026-09-08",
+      "cents": 25028,
+      "numdoc": "N111EC",
+      "desc": "PIX QR CODE DINAMIC REM: EDEZIEL ZECA MACHADO  08/09",
+      "title": 758092,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45437,
+      "date": "2026-09-08",
+      "cents": 2755,
+      "numdoc": "N11202",
+      "desc": "PIX QR CODE DINAMIC REM: C�zar Henrique de Sal 05/09",
+      "title": 759575,
+      "titleDate": "2026-09-19",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45439,
+      "date": "2026-09-08",
+      "cents": 24319,
+      "numdoc": "N1122E",
+      "desc": "PIX QR CODE DINAMIC REM: Adrian Bernado Lima d 08/09",
+      "title": 758099,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45443,
+      "date": "2026-09-08",
+      "cents": 31487,
+      "numdoc": "N11286",
+      "desc": "PIX QR CODE DINAMIC REM: MARCO AURELIO SANTOS  08/09",
+      "title": 758949,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45445,
+      "date": "2026-09-08",
+      "cents": 3489,
+      "numdoc": "N112B2",
+      "desc": "PIX QR CODE DINAMIC REM: Antonio de Lima Leand 08/09",
+      "title": 758101,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45452,
+      "date": "2026-09-08",
+      "cents": 2040,
+      "numdoc": "N1134C",
+      "desc": "PIX QR CODE DINAMIC REM: RENATO FRANCISCO DA S 08/09",
+      "title": 758952,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45454,
+      "date": "2026-09-08",
+      "cents": 5439,
+      "numdoc": "N11378",
+      "desc": "PIX QR CODE DINAMIC REM: PAULO GRANATO DA SILV 05/09",
+      "title": 758956,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45458,
+      "date": "2026-09-08",
+      "cents": 2840,
+      "numdoc": "N113D0",
+      "desc": "PIX QR CODE DINAMIC REM: Iago Machado Correa S 05/09",
+      "title": 759127,
+      "titleDate": "2026-09-16",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45459,
+      "date": "2026-09-08",
+      "cents": 3000,
+      "numdoc": "N113E6",
+      "desc": "PIX QR CODE DINAMIC REM: Joao Victor Gouvea    08/09",
+      "title": 758130,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45460,
+      "date": "2026-09-08",
+      "cents": 390,
+      "numdoc": "N113FC",
+      "desc": "PIX QR CODE DINAMIC REM: GEOVANE DE SOUZA RODR 05/09",
+      "title": 758127,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45461,
+      "date": "2026-09-08",
+      "cents": 991,
+      "numdoc": "N11412",
+      "desc": "PIX QR CODE DINAMIC REM: AIMARTEPRO COMUNICACA 05/09",
+      "title": 758156,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45464,
+      "date": "2026-09-08",
+      "cents": 3270,
+      "numdoc": "N11454",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 08/09",
+      "title": 758139,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45468,
+      "date": "2026-09-08",
+      "cents": 5170,
+      "numdoc": "N114AC",
+      "desc": "PIX QR CODE DINAMIC REM: Caroline Martinez Cor 08/09",
+      "title": 758158,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45471,
+      "date": "2026-09-08",
+      "cents": 23095,
+      "numdoc": "N114EE",
+      "desc": "PIX QR CODE DINAMIC REM: COMERCIO E MANUTENCAO 05/09",
+      "title": 758950,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45474,
+      "date": "2026-09-08",
+      "cents": 600,
+      "numdoc": "N11530",
+      "desc": "PIX QR CODE DINAMIC REM: Ricardo Braga Secundi 08/09",
+      "title": 758154,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45479,
+      "date": "2026-09-08",
+      "cents": 15339,
+      "numdoc": "N1159E",
+      "desc": "PIX QR CODE DINAMIC REM: IZABEL DE CASTRO FEO  08/09",
+      "title": 758163,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45486,
+      "date": "2026-09-08",
+      "cents": 180,
+      "numdoc": "N11638",
+      "desc": "PIX QR CODE DINAMIC REM: Jonathan Rodrigues Co 08/09",
+      "title": 758967,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45487,
+      "date": "2026-09-08",
+      "cents": 1500,
+      "numdoc": "N1164E",
+      "desc": "PIX QR CODE DINAMIC REM: EWERTON CARVALHO RAMO 08/09",
+      "title": 759002,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45488,
+      "date": "2026-09-08",
+      "cents": 1590,
+      "numdoc": "N11664",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIANO DA SILVA COST 08/09",
+      "title": 758193,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45490,
+      "date": "2026-09-08",
+      "cents": 2380,
+      "numdoc": "N11690",
+      "desc": "PIX QR CODE DINAMIC REM: GUSTAVO SILVA DOS SAN 08/09",
+      "title": 758200,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45493,
+      "date": "2026-09-08",
+      "cents": 890,
+      "numdoc": "N116D2",
+      "desc": "PIX QR CODE DINAMIC REM: Anderson Antonio Vice 08/09",
+      "title": 758219,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45496,
+      "date": "2026-09-08",
+      "cents": 2770,
+      "numdoc": "N11714",
+      "desc": "PIX QR CODE DINAMIC REM: ALEX DE LIMA RODRIGUE 08/09",
+      "title": 758976,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45501,
+      "date": "2026-09-09",
+      "cents": 16329,
+      "numdoc": "N11782",
+      "desc": "PIX QR CODE DINAMIC REM: RICARDO ROSALES FONSE 09/09",
+      "title": 758231,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45502,
+      "date": "2026-09-09",
+      "cents": 6816,
+      "numdoc": "N11798",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE MARCONDES MARTIN 09/09",
+      "title": 758234,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45503,
+      "date": "2026-09-09",
+      "cents": 290,
+      "numdoc": "N117AE",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Pereira da Sil 09/09",
+      "title": 758248,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45504,
+      "date": "2026-09-09",
+      "cents": 7979,
+      "numdoc": "N117C4",
+      "desc": "PIX QR CODE DINAMIC REM: RENATO DA SILVA SEABR 09/09",
+      "title": 758251,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45506,
+      "date": "2026-09-09",
+      "cents": 2170,
+      "numdoc": "N117F0",
+      "desc": "PIX QR CODE DINAMIC REM: ROBERTO COUTINHO DE M 09/09",
+      "title": 758260,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45507,
+      "date": "2026-09-09",
+      "cents": 16074,
+      "numdoc": "N11806",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 09/09",
+      "title": 758264,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45509,
+      "date": "2026-09-09",
+      "cents": 4941,
+      "numdoc": "N11832",
+      "desc": "PIX QR CODE DINAMIC REM: Wallace Menezes de So 09/09",
+      "title": 758984,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45511,
+      "date": "2026-09-09",
+      "cents": 1090,
+      "numdoc": "N1185E",
+      "desc": "PIX QR CODE DINAMIC REM: Carlos Eduardo Duarte 09/09",
+      "title": 758306,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45512,
+      "date": "2026-09-09",
+      "cents": 6030,
+      "numdoc": "N11874",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Pereira da Sil 09/09",
+      "title": 758308,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45513,
+      "date": "2026-09-09",
+      "cents": 4590,
+      "numdoc": "N1188A",
+      "desc": "PIX QR CODE DINAMIC REM: Radiele Maria da Silv 09/09",
+      "title": 758315,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45514,
+      "date": "2026-09-09",
+      "cents": 788,
+      "numdoc": "N118A0",
+      "desc": "PIX QR CODE DINAMIC REM: WILLIAM LENO DA SILVA 09/09",
+      "title": 758311,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45515,
+      "date": "2026-09-09",
+      "cents": 42208,
+      "numdoc": "N118B6",
+      "desc": "PIX QR CODE DINAMIC REM: Thayan Valentim Balbi 09/09",
+      "title": 758310,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45516,
+      "date": "2026-09-09",
+      "cents": 650,
+      "numdoc": "N118CC",
+      "desc": "PIX QR CODE DINAMIC REM: Tayan Jose Coelho San 09/09",
+      "title": 758318,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45517,
+      "date": "2026-09-09",
+      "cents": 1100,
+      "numdoc": "N118E2",
+      "desc": "PIX QR CODE DINAMIC REM: ADALBERTO CARLOS DE S 09/09",
+      "title": 758349,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45518,
+      "date": "2026-09-09",
+      "cents": 9946,
+      "numdoc": "N118F8",
+      "desc": "PIX QR CODE DINAMIC REM: Thiago dos Santos     09/09",
+      "title": 758322,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45519,
+      "date": "2026-09-09",
+      "cents": 1480,
+      "numdoc": "N1190E",
+      "desc": "PIX QR CODE DINAMIC REM: Jussara Lopes         09/09",
+      "title": 758323,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45520,
+      "date": "2026-09-09",
+      "cents": 220,
+      "numdoc": "N11924",
+      "desc": "PIX QR CODE DINAMIC REM: LEON DE JESUS DELMOU  09/09",
+      "title": 758324,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45521,
+      "date": "2026-09-09",
+      "cents": 2390,
+      "numdoc": "N1193A",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO DA CRUZ TORR 09/09",
+      "title": 758332,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45522,
+      "date": "2026-09-09",
+      "cents": 2980,
+      "numdoc": "N11950",
+      "desc": "PIX QR CODE DINAMIC REM: DANIEL FERNANDES DE O 09/09",
+      "title": 758337,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45523,
+      "date": "2026-09-09",
+      "cents": 6490,
+      "numdoc": "N11966",
+      "desc": "PIX QR CODE DINAMIC REM: RODRIGO MURUCI FABIAN 09/09",
+      "title": 758339,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45524,
+      "date": "2026-09-09",
+      "cents": 1139,
+      "numdoc": "N1197C",
+      "desc": "PIX QR CODE DINAMIC REM: IVANDRO MATTOS DA ROC 09/09",
+      "title": 758343,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45525,
+      "date": "2026-09-09",
+      "cents": 5000,
+      "numdoc": "N11992",
+      "desc": "PIX QR CODE DINAMIC REM: ANA CAROLINA SOBRAL S 09/09",
+      "title": 758350,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45526,
+      "date": "2026-09-09",
+      "cents": 1190,
+      "numdoc": "N119A8",
+      "desc": "PIX QR CODE DINAMIC REM: MICHEL OZITO DE OLIVE 09/09",
+      "title": 758352,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45527,
+      "date": "2026-09-09",
+      "cents": 1700,
+      "numdoc": "N119BE",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS KLEBER FRANCO  09/09",
+      "title": 758354,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45528,
+      "date": "2026-09-09",
+      "cents": 8579,
+      "numdoc": "N119D4",
+      "desc": "PIX QR CODE DINAMIC REM: KLEBER GOMES DOS SANT 09/09",
+      "title": 758358,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45529,
+      "date": "2026-09-09",
+      "cents": 2979,
+      "numdoc": "N119EA",
+      "desc": "PIX QR CODE DINAMIC REM: JOAO GABRIEL DE SOUZA 09/09",
+      "title": 758360,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45530,
+      "date": "2026-09-09",
+      "cents": 4780,
+      "numdoc": "N11A00",
+      "desc": "PIX QR CODE DINAMIC REM: IVANDRO MATTOS DA ROC 09/09",
+      "title": 758362,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45531,
+      "date": "2026-09-09",
+      "cents": 1600,
+      "numdoc": "N11A16",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIELEM DE JESUS DO 09/09",
+      "title": 758999,
+      "titleDate": "2026-09-15",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45533,
+      "date": "2026-09-09",
+      "cents": 4789,
+      "numdoc": "N11A42",
+      "desc": "PIX QR CODE DINAMIC REM: JEAN DO NASCIMENTO BA 09/09",
+      "title": 758364,
+      "titleDate": "2026-09-09",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45541,
+      "date": "2026-09-10",
+      "cents": 989,
+      "numdoc": "N11AF0",
+      "desc": "PIX QR CODE DINAMIC REM: ALAN SILVA DOS SANTOS 10/09",
+      "title": 758379,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45542,
+      "date": "2026-09-10",
+      "cents": 13196,
+      "numdoc": "N11B06",
+      "desc": "PIX QR CODE DINAMIC REM: SERGIO MAIA COSTA     10/09",
+      "title": 758382,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45543,
+      "date": "2026-09-10",
+      "cents": 1470,
+      "numdoc": "N11B1C",
+      "desc": "PIX QR CODE DINAMIC REM: EDIMILSON JORGE       10/09",
+      "title": 758392,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45544,
+      "date": "2026-09-10",
+      "cents": 780,
+      "numdoc": "N11B32",
+      "desc": "PIX QR CODE DINAMIC REM: LUCAS KILDARE RAMOS D 10/09",
+      "title": 758397,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45545,
+      "date": "2026-09-10",
+      "cents": 17005,
+      "numdoc": "N11B48",
+      "desc": "PIX QR CODE DINAMIC REM: FABIO NASCIMENTO COST 10/09",
+      "title": 758398,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45546,
+      "date": "2026-09-10",
+      "cents": 2280,
+      "numdoc": "N11B5E",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 10/09",
+      "title": 758400,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45547,
+      "date": "2026-09-10",
+      "cents": 7128,
+      "numdoc": "N11B74",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 10/09",
+      "title": 758401,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45548,
+      "date": "2026-09-10",
+      "cents": 4370,
+      "numdoc": "N11B8A",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Roberto de Jes 10/09",
+      "title": 758408,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45549,
+      "date": "2026-09-10",
+      "cents": 24681,
+      "numdoc": "N11BA0",
+      "desc": "PIX QR CODE DINAMIC REM: Fabio Pereira Costa   10/09",
+      "title": 758413,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45550,
+      "date": "2026-09-10",
+      "cents": 6926,
+      "numdoc": "N11BB6",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 10/09",
+      "title": 758417,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45551,
+      "date": "2026-09-10",
+      "cents": 190,
+      "numdoc": "N11BCC",
+      "desc": "PIX QR CODE DINAMIC REM: DEISE KELLY DE OLIVEI 10/09",
+      "title": 758427,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45552,
+      "date": "2026-09-10",
+      "cents": 1080,
+      "numdoc": "N11BE2",
+      "desc": "PIX QR CODE DINAMIC REM: MATHEUS L L COTTA PER 10/09",
+      "title": 758439,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45554,
+      "date": "2026-09-10",
+      "cents": 29700,
+      "numdoc": "N11C0E",
+      "desc": "PIX QR CODE DINAMIC REM: FELIPE MOREIRA DA SIL 10/09",
+      "title": 758449,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45555,
+      "date": "2026-09-10",
+      "cents": 1960,
+      "numdoc": "N11C24",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio dos Santos Sil 10/09",
+      "title": 758463,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45557,
+      "date": "2026-09-10",
+      "cents": 4190,
+      "numdoc": "N11C50",
+      "desc": "PIX QR CODE DINAMIC REM: ANTONIO CARLOS PEREIR 10/09",
+      "title": 758459,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45559,
+      "date": "2026-09-10",
+      "cents": 5980,
+      "numdoc": "N11C7C",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 10/09",
+      "title": 758468,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45560,
+      "date": "2026-09-10",
+      "cents": 2817,
+      "numdoc": "N11C92",
+      "desc": "PIX QR CODE DINAMIC REM: Wellington de Queiroz 10/09",
+      "title": 758469,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45561,
+      "date": "2026-09-10",
+      "cents": 5077,
+      "numdoc": "N11CA8",
+      "desc": "PIX QR CODE DINAMIC REM: THALES VICENTE FERREI 10/09",
+      "title": 758470,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45562,
+      "date": "2026-09-10",
+      "cents": 999,
+      "numdoc": "N11CBE",
+      "desc": "PIX QR CODE DINAMIC REM: Giovanna Sampaio Mach 10/09",
+      "title": 758477,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45563,
+      "date": "2026-09-10",
+      "cents": 890,
+      "numdoc": "N11CD4",
+      "desc": "PIX QR CODE DINAMIC REM: Solano Pereira Portel 10/09",
+      "title": 758471,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45564,
+      "date": "2026-09-10",
+      "cents": 21038,
+      "numdoc": "N11CEA",
+      "desc": "PIX QR CODE DINAMIC REM: GILSON DE SOUZA FREIT 10/09",
+      "title": 758481,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45566,
+      "date": "2026-09-10",
+      "cents": 2847,
+      "numdoc": "N11D16",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 10/09",
+      "title": 758489,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45567,
+      "date": "2026-09-10",
+      "cents": 490,
+      "numdoc": "N11D2C",
+      "desc": "PIX QR CODE DINAMIC REM: Paulo Henrique dos Sa 10/09",
+      "title": 758493,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45568,
+      "date": "2026-09-10",
+      "cents": 2490,
+      "numdoc": "N11D42",
+      "desc": "PIX QR CODE DINAMIC REM: BEATRIZ ELISA S SANTO 10/09",
+      "title": 758497,
+      "titleDate": "2026-09-10",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45576,
+      "date": "2026-09-11",
+      "cents": 5110,
+      "numdoc": "N11DF2",
+      "desc": "PIX QR CODE DINAMIC REM: C�zar Henrique de Sal 11/09",
+      "title": 758515,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45577,
+      "date": "2026-09-11",
+      "cents": 6730,
+      "numdoc": "N11E08",
+      "desc": "PIX QR CODE DINAMIC REM: ROSE MARY DAS NEVES S 11/09",
+      "title": 758529,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45578,
+      "date": "2026-09-11",
+      "cents": 45096,
+      "numdoc": "N11E1E",
+      "desc": "PIX QR CODE DINAMIC REM: ALEXANDRE DE SOUZA BR 11/09",
+      "title": 758533,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45579,
+      "date": "2026-09-11",
+      "cents": 7197,
+      "numdoc": "N11E34",
+      "desc": "PIX QR CODE DINAMIC REM: Pedro Wudson Pereira  11/09",
+      "title": 758540,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45580,
+      "date": "2026-09-11",
+      "cents": 2198,
+      "numdoc": "N11E4A",
+      "desc": "PIX QR CODE DINAMIC REM: ADRIANO DO NASCIMENTO 11/09",
+      "title": 758542,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45581,
+      "date": "2026-09-11",
+      "cents": 4990,
+      "numdoc": "N11E60",
+      "desc": "PIX QR CODE DINAMIC REM: JEFFERSON DA CRUZ DA  11/09",
+      "title": 758541,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45582,
+      "date": "2026-09-11",
+      "cents": 2690,
+      "numdoc": "N11E76",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 11/09",
+      "title": 758544,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45583,
+      "date": "2026-09-11",
+      "cents": 9524,
+      "numdoc": "N11E8C",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 11/09",
+      "title": 758558,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45584,
+      "date": "2026-09-11",
+      "cents": 12570,
+      "numdoc": "N11EA2",
+      "desc": "PIX QR CODE DINAMIC REM: Iuna Melissa Garcia   11/09",
+      "title": 758546,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45585,
+      "date": "2026-09-11",
+      "cents": 2093,
+      "numdoc": "N11EB8",
+      "desc": "PIX QR CODE DINAMIC REM: Leandro Aguiar de Lim 11/09",
+      "title": 758549,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45586,
+      "date": "2026-09-11",
+      "cents": 4970,
+      "numdoc": "N11ECE",
+      "desc": "PIX QR CODE DINAMIC REM: MARCOS ANTONIO DAS CH 11/09",
+      "title": 758551,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45587,
+      "date": "2026-09-11",
+      "cents": 3980,
+      "numdoc": "N11EE4",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIO ALMEIDA DE PAU 11/09",
+      "title": 758550,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45588,
+      "date": "2026-09-11",
+      "cents": 2390,
+      "numdoc": "N11EFA",
+      "desc": "PIX QR CODE DINAMIC REM: JOSIVAL DA SILVA DOS  11/09",
+      "title": 758553,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45589,
+      "date": "2026-09-11",
+      "cents": 1490,
+      "numdoc": "N11F10",
+      "desc": "PIX QR CODE DINAMIC REM: Jorge Santos de Souza 11/09",
+      "title": 758559,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45590,
+      "date": "2026-09-11",
+      "cents": 798,
+      "numdoc": "N11F26",
+      "desc": "PIX QR CODE DINAMIC REM: Luis Fellipe Lopes da 11/09",
+      "title": 758565,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45591,
+      "date": "2026-09-11",
+      "cents": 599,
+      "numdoc": "N11F3C",
+      "desc": "PIX QR CODE DINAMIC REM: LILLIAN ROCHA ARAUJO  11/09",
+      "title": 758566,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45593,
+      "date": "2026-09-11",
+      "cents": 3690,
+      "numdoc": "N11F68",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE MARCONDES MARTIN 11/09",
+      "title": 758581,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45596,
+      "date": "2026-09-11",
+      "cents": 1589,
+      "numdoc": "N11FAA",
+      "desc": "PIX QR CODE DINAMIC REM: WEDSON CLEISOM DIAS L 11/09",
+      "title": 758595,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45597,
+      "date": "2026-09-11",
+      "cents": 7570,
+      "numdoc": "N11FC0",
+      "desc": "PIX QR CODE DINAMIC REM: Daniel de Souza Santo 11/09",
+      "title": 758600,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45598,
+      "date": "2026-09-11",
+      "cents": 4770,
+      "numdoc": "N11FD6",
+      "desc": "PIX QR CODE DINAMIC REM: Raphael Sanko Assad   11/09",
+      "title": 758602,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45599,
+      "date": "2026-09-11",
+      "cents": 6070,
+      "numdoc": "N11FEC",
+      "desc": "PIX QR CODE DINAMIC REM: GUILHERME DE QUEIROZ  11/09",
+      "title": 758603,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45602,
+      "date": "2026-09-11",
+      "cents": 13825,
+      "numdoc": "N1202E",
+      "desc": "PIX QR CODE DINAMIC REM: Raphael Sanko Assad   11/09",
+      "title": 758621,
+      "titleDate": "2026-09-11",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45609,
+      "date": "2026-09-14",
+      "cents": 680,
+      "numdoc": "N120C8",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIANO DE BARROS GI 12/09",
+      "title": 759989,
+      "titleDate": "2026-09-22",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45610,
+      "date": "2026-09-14",
+      "cents": 6830,
+      "numdoc": "N120DE",
+      "desc": "PIX QR CODE DINAMIC REM: Renato Pires Fonseca  14/09",
+      "title": 758720,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45611,
+      "date": "2026-09-14",
+      "cents": 4766,
+      "numdoc": "N120F4",
+      "desc": "PIX QR CODE DINAMIC REM: LUIZ FERNANDO MORATEL 14/09",
+      "title": 758726,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45612,
+      "date": "2026-09-14",
+      "cents": 2490,
+      "numdoc": "N1210A",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 14/09",
+      "title": 758729,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45615,
+      "date": "2026-09-14",
+      "cents": 5578,
+      "numdoc": "N1214C",
+      "desc": "PIX QR CODE DINAMIC REM: ADALBERTO CORREA LEIT 14/09",
+      "title": 758743,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45616,
+      "date": "2026-09-14",
+      "cents": 18154,
+      "numdoc": "N12162",
+      "desc": "PIX QR CODE DINAMIC REM: Erivan Pacheco F�lix  14/09",
+      "title": 758745,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45618,
+      "date": "2026-09-14",
+      "cents": 990,
+      "numdoc": "N1218E",
+      "desc": "PIX QR CODE DINAMIC REM: Erivan Pacheco F�lix  14/09",
+      "title": 758747,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45619,
+      "date": "2026-09-14",
+      "cents": 8319,
+      "numdoc": "N121A4",
+      "desc": "PIX QR CODE DINAMIC REM: WILLIAN CAMARGO ORTEG 14/09",
+      "title": 758755,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45621,
+      "date": "2026-09-14",
+      "cents": 598,
+      "numdoc": "N121D0",
+      "desc": "PIX QR CODE DINAMIC REM: EDNALDO VICENTE BARBA 12/09",
+      "title": 759838,
+      "titleDate": "2026-09-21",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45623,
+      "date": "2026-09-14",
+      "cents": 4789,
+      "numdoc": "N121FC",
+      "desc": "PIX QR CODE DINAMIC REM: Ir� Alves Corr�a      14/09",
+      "title": 758764,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45624,
+      "date": "2026-09-14",
+      "cents": 5950,
+      "numdoc": "N12212",
+      "desc": "PIX QR CODE DINAMIC REM: PAULO ROBERTO DA FONS 14/09",
+      "title": 758765,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45626,
+      "date": "2026-09-14",
+      "cents": 4200,
+      "numdoc": "N1223E",
+      "desc": "PIX QR CODE DINAMIC REM: Antonino Goncalves de 14/09",
+      "title": 758766,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45634,
+      "date": "2026-09-14",
+      "cents": 1390,
+      "numdoc": "N122EE",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 12/09",
+      "title": 758744,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45635,
+      "date": "2026-09-14",
+      "cents": 5000,
+      "numdoc": "N12304",
+      "desc": "PIX QR CODE DINAMIC REM: Anderson Antonio Vice 12/09",
+      "title": 759805,
+      "titleDate": "2026-09-21",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45636,
+      "date": "2026-09-14",
+      "cents": 3470,
+      "numdoc": "N1231A",
+      "desc": "PIX QR CODE DINAMIC REM: Wagner Amorim da Silv 12/09",
+      "title": 758799,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45637,
+      "date": "2026-09-14",
+      "cents": 16497,
+      "numdoc": "N12330",
+      "desc": "PIX QR CODE DINAMIC REM: Francisco Alan Lima d 14/09",
+      "title": 758775,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45640,
+      "date": "2026-09-14",
+      "cents": 20300,
+      "numdoc": "N12372",
+      "desc": "PIX QR CODE DINAMIC REM: PAULO ROBERTO SANTOS  14/09",
+      "title": 758793,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45641,
+      "date": "2026-09-14",
+      "cents": 12635,
+      "numdoc": "N12388",
+      "desc": "PIX QR CODE DINAMIC REM: RICARDO ROSALES FONSE 14/09",
+      "title": 758798,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45643,
+      "date": "2026-09-14",
+      "cents": 199,
+      "numdoc": "N123B4",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 14/09",
+      "title": 758808,
+      "titleDate": "2026-09-14",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45650,
+      "date": "2026-09-15",
+      "cents": 19848,
+      "numdoc": "N1244E",
+      "desc": "PIX QR CODE DINAMIC REM: MARTA GABRIELA MATTOS 15/09",
+      "title": 758831,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45651,
+      "date": "2026-09-15",
+      "cents": 5320,
+      "numdoc": "N12464",
+      "desc": "PIX QR CODE DINAMIC REM: Isaac Alves Corr�a    15/09",
+      "title": 758839,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45653,
+      "date": "2026-09-15",
+      "cents": 3126,
+      "numdoc": "N12490",
+      "desc": "PIX QR CODE DINAMIC REM: Ingrid Fontes de Lima 15/09",
+      "title": 758842,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45654,
+      "date": "2026-09-15",
+      "cents": 7019,
+      "numdoc": "N124A6",
+      "desc": "PIX QR CODE DINAMIC REM: David Edson Rodrigues 15/09",
+      "title": 758850,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45655,
+      "date": "2026-09-15",
+      "cents": 9500,
+      "numdoc": "N124BC",
+      "desc": "PIX QR CODE DINAMIC REM: Francisco Alan Lima d 15/09",
+      "title": 758848,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45657,
+      "date": "2026-09-15",
+      "cents": 3886,
+      "numdoc": "N124E8",
+      "desc": "PIX QR CODE DINAMIC REM: Fabio de Almeida Silv 15/09",
+      "title": 758864,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45660,
+      "date": "2026-09-15",
+      "cents": 599,
+      "numdoc": "N1252A",
+      "desc": "PIX QR CODE DINAMIC REM: Ericson Luiz Costa Es 15/09",
+      "title": 759015,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45661,
+      "date": "2026-09-15",
+      "cents": 8580,
+      "numdoc": "N12540",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS ROUBLES FERNAN 15/09",
+      "title": 759025,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45662,
+      "date": "2026-09-15",
+      "cents": 4490,
+      "numdoc": "N12556",
+      "desc": "PIX QR CODE DINAMIC REM: Isaac Alves Corr�a    15/09",
+      "title": 759026,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45664,
+      "date": "2026-09-15",
+      "cents": 7305,
+      "numdoc": "N12582",
+      "desc": "PIX QR CODE DINAMIC REM: Renato de Oliveira Si 15/09",
+      "title": 759061,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45665,
+      "date": "2026-09-15",
+      "cents": 26581,
+      "numdoc": "N12598",
+      "desc": "PIX QR CODE DINAMIC REM: FELIPE MOREIRA DA SIL 15/09",
+      "title": 759068,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45666,
+      "date": "2026-09-15",
+      "cents": 7880,
+      "numdoc": "N125AE",
+      "desc": "PIX QR CODE DINAMIC REM: SUELI BARROSO BRANCAT 15/09",
+      "title": 759069,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45667,
+      "date": "2026-09-15",
+      "cents": 190,
+      "numdoc": "N125C4",
+      "desc": "PIX QR CODE DINAMIC REM: LUIS FELLIPE LOPES DA 15/09",
+      "title": 759081,
+      "titleDate": "2026-09-15",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45675,
+      "date": "2026-09-16",
+      "cents": 12230,
+      "numdoc": "N12672",
+      "desc": "PIX QR CODE DINAMIC REM: J. A MARTINS ALVES SE 16/09",
+      "title": 759098,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45676,
+      "date": "2026-09-16",
+      "cents": 1190,
+      "numdoc": "N12688",
+      "desc": "PIX QR CODE DINAMIC REM: KELI OLIVEIRA DA FRAN 16/09",
+      "title": 759222,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45680,
+      "date": "2026-09-16",
+      "cents": 3800,
+      "numdoc": "N126E0",
+      "desc": "PIX QR CODE DINAMIC REM: Nelson Braga Pereira  16/09",
+      "title": 759141,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45682,
+      "date": "2026-09-16",
+      "cents": 3068,
+      "numdoc": "N1270C",
+      "desc": "PIX QR CODE DINAMIC REM: Eduardo de Almeida Mo 16/09",
+      "title": 759159,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45683,
+      "date": "2026-09-16",
+      "cents": 5989,
+      "numdoc": "N12722",
+      "desc": "PIX QR CODE DINAMIC REM: BENICIO JOSE MARCELO  16/09",
+      "title": 759161,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45685,
+      "date": "2026-09-16",
+      "cents": 1180,
+      "numdoc": "N1274E",
+      "desc": "PIX QR CODE DINAMIC REM: Luis Henrique Felicia 16/09",
+      "title": 759170,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45688,
+      "date": "2026-09-16",
+      "cents": 4170,
+      "numdoc": "N12790",
+      "desc": "PIX QR CODE DINAMIC REM: MARCOS ANTONIO DAS CH 16/09",
+      "title": 759215,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45689,
+      "date": "2026-09-16",
+      "cents": 380,
+      "numdoc": "N127A6",
+      "desc": "PIX QR CODE DINAMIC REM: LILIANE DOS SANTOS SA 16/09",
+      "title": 759217,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45690,
+      "date": "2026-09-16",
+      "cents": 7838,
+      "numdoc": "N127BC",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 16/09",
+      "title": 759223,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45691,
+      "date": "2026-09-16",
+      "cents": 1798,
+      "numdoc": "N127D2",
+      "desc": "PIX QR CODE DINAMIC REM: SOUZA E CIRIACO SERV  16/09",
+      "title": 759227,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45693,
+      "date": "2026-09-16",
+      "cents": 7590,
+      "numdoc": "N127FE",
+      "desc": "PIX QR CODE DINAMIC REM: 51 896 625 FRANK SERG 16/09",
+      "title": 759231,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45694,
+      "date": "2026-09-16",
+      "cents": 5470,
+      "numdoc": "N12814",
+      "desc": "PIX QR CODE DINAMIC REM: Bernardo Faria Santos 16/09",
+      "title": 759251,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45696,
+      "date": "2026-09-16",
+      "cents": 590,
+      "numdoc": "N12840",
+      "desc": "PIX QR CODE DINAMIC REM: 51 896 625 FRANK SERG 16/09",
+      "title": 759238,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45697,
+      "date": "2026-09-16",
+      "cents": 4188,
+      "numdoc": "N12856",
+      "desc": "PIX QR CODE DINAMIC REM: ALEX LEONARDO PEREIRA 16/09",
+      "title": 759255,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45699,
+      "date": "2026-09-16",
+      "cents": 25128,
+      "numdoc": "N12882",
+      "desc": "PIX QR CODE DINAMIC REM: GILSON DE SOUZA FREIT 16/09",
+      "title": 759253,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45700,
+      "date": "2026-09-16",
+      "cents": 4921,
+      "numdoc": "N12898",
+      "desc": "PIX QR CODE DINAMIC REM: MAURO COPELLO DE ALME 16/09",
+      "title": 759257,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45701,
+      "date": "2026-09-16",
+      "cents": 390,
+      "numdoc": "N128AE",
+      "desc": "PIX QR CODE DINAMIC REM: DALBI DE MACEDO MUNIZ 16/09",
+      "title": 759259,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45702,
+      "date": "2026-09-16",
+      "cents": 6499,
+      "numdoc": "N128C4",
+      "desc": "PIX QR CODE DINAMIC REM: VICTOR ROMANHOL       16/09",
+      "title": 759264,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45703,
+      "date": "2026-09-16",
+      "cents": 1590,
+      "numdoc": "N128DA",
+      "desc": "PIX QR CODE DINAMIC REM: Luis Renato Fernandes 16/09",
+      "title": 759265,
+      "titleDate": "2026-09-16",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45707,
+      "date": "2026-09-17",
+      "cents": 480,
+      "numdoc": "N12932",
+      "desc": "PIX QR CODE DINAMIC REM: EDMILSON DIAS DOS SAN 17/09",
+      "title": 759270,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45708,
+      "date": "2026-09-17",
+      "cents": 7745,
+      "numdoc": "N12948",
+      "desc": "PIX QR CODE DINAMIC REM: RAPHAEL LOPES DA SILV 17/09",
+      "title": 759273,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45711,
+      "date": "2026-09-17",
+      "cents": 1860,
+      "numdoc": "N1298A",
+      "desc": "PIX QR CODE DINAMIC REM: Gabriel Lima Ferreira 17/09",
+      "title": 759287,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45712,
+      "date": "2026-09-17",
+      "cents": 780,
+      "numdoc": "N129A0",
+      "desc": "PIX QR CODE DINAMIC REM: HOZAMO LIMA NASCIMENT 17/09",
+      "title": 759292,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45713,
+      "date": "2026-09-17",
+      "cents": 27800,
+      "numdoc": "N129B6",
+      "desc": "PIX QR CODE DINAMIC REM: RUTE FOGACA           17/09",
+      "title": 759297,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45714,
+      "date": "2026-09-17",
+      "cents": 10166,
+      "numdoc": "N129CC",
+      "desc": "PIX QR CODE DINAMIC REM: DOUGLAS BENIGNO LINS  17/09",
+      "title": 759299,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45715,
+      "date": "2026-09-17",
+      "cents": 2879,
+      "numdoc": "N129E2",
+      "desc": "PIX QR CODE DINAMIC REM: ALBERTO BARROS CASEDA 17/09",
+      "title": 759308,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45716,
+      "date": "2026-09-17",
+      "cents": 7340,
+      "numdoc": "N129F8",
+      "desc": "PIX QR CODE DINAMIC REM: MC MARCENARIA MODERNA 17/09",
+      "title": 759317,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45717,
+      "date": "2026-09-17",
+      "cents": 1499,
+      "numdoc": "N12A0E",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO SEVERIO DA S 17/09",
+      "title": 759325,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45718,
+      "date": "2026-09-17",
+      "cents": 1290,
+      "numdoc": "N12A24",
+      "desc": "PIX QR CODE DINAMIC REM: LILIANE DOS SANTOS SA 17/09",
+      "title": 759334,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45719,
+      "date": "2026-09-17",
+      "cents": 14098,
+      "numdoc": "N12A3A",
+      "desc": "PIX QR CODE DINAMIC REM: ROLAND GUY GANNE      17/09",
+      "title": 759335,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45720,
+      "date": "2026-09-17",
+      "cents": 2490,
+      "numdoc": "N12A50",
+      "desc": "PIX QR CODE DINAMIC REM: DIOGO VANDERLEI NAVAR 17/09",
+      "title": 759336,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45721,
+      "date": "2026-09-17",
+      "cents": 3688,
+      "numdoc": "N12A66",
+      "desc": "PIX QR CODE DINAMIC REM: Joao Batista Damascen 17/09",
+      "title": 759345,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45722,
+      "date": "2026-09-17",
+      "cents": 33336,
+      "numdoc": "N12A7C",
+      "desc": "PIX QR CODE DINAMIC REM: MARCELLO MORAES SICIL 17/09",
+      "title": 759365,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45723,
+      "date": "2026-09-17",
+      "cents": 3890,
+      "numdoc": "N12A92",
+      "desc": "PIX QR CODE DINAMIC REM: 69.044.219 THIAGO DA  17/09",
+      "title": 759367,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45724,
+      "date": "2026-09-17",
+      "cents": 3840,
+      "numdoc": "N12AA8",
+      "desc": "PIX QR CODE DINAMIC REM: Charles Campos Da Sil 17/09",
+      "title": 759373,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45725,
+      "date": "2026-09-17",
+      "cents": 5980,
+      "numdoc": "N12ABE",
+      "desc": "PIX QR CODE DINAMIC REM: Pablo Ramos de Amorim 17/09",
+      "title": 759391,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45726,
+      "date": "2026-09-17",
+      "cents": 21550,
+      "numdoc": "N12AD4",
+      "desc": "PIX QR CODE DINAMIC REM: BRUNO GURGEL PEREIRA  17/09",
+      "title": 759392,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45727,
+      "date": "2026-09-17",
+      "cents": 8360,
+      "numdoc": "N12AEA",
+      "desc": "PIX QR CODE DINAMIC REM: JOSIMAR DE CARVALHO F 17/09",
+      "title": 759396,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45728,
+      "date": "2026-09-17",
+      "cents": 9291,
+      "numdoc": "N12B00",
+      "desc": "PIX QR CODE DINAMIC REM: Carla Jurema Mury Rib 17/09",
+      "title": 759403,
+      "titleDate": "2026-09-17",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45733,
+      "date": "2026-09-18",
+      "cents": 2070,
+      "numdoc": "N12B6E",
+      "desc": "PIX QR CODE DINAMIC REM: Jos� Eduardo Mendes d 18/09",
+      "title": 759414,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45734,
+      "date": "2026-09-18",
+      "cents": 22204,
+      "numdoc": "N12B84",
+      "desc": "PIX QR CODE DINAMIC REM: RECREIO LANCHES E PIZ 18/09",
+      "title": 759415,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45735,
+      "date": "2026-09-18",
+      "cents": 4868,
+      "numdoc": "N12B9A",
+      "desc": "PIX QR CODE DINAMIC REM: Alexandre Valdoski    18/09",
+      "title": 759416,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45736,
+      "date": "2026-09-18",
+      "cents": 897,
+      "numdoc": "N12BB0",
+      "desc": "PIX QR CODE DINAMIC REM: JAIRO PEREIRA DA SILV 18/09",
+      "title": 759418,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45737,
+      "date": "2026-09-18",
+      "cents": 390,
+      "numdoc": "N12BC6",
+      "desc": "PIX QR CODE DINAMIC REM: Pablo Concei��o Sobri 18/09",
+      "title": 759419,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45738,
+      "date": "2026-09-18",
+      "cents": 1990,
+      "numdoc": "N12BDC",
+      "desc": "PIX QR CODE DINAMIC REM: DIEGO PINTO DOS SANTO 18/09",
+      "title": 759432,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45739,
+      "date": "2026-09-18",
+      "cents": 549,
+      "numdoc": "N12BF2",
+      "desc": "PIX QR CODE DINAMIC REM: Gabriel Ferreira Reze 18/09",
+      "title": 759434,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45741,
+      "date": "2026-09-18",
+      "cents": 4680,
+      "numdoc": "N12C1E",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIO DA CONCEICAO   18/09",
+      "title": 759435,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45743,
+      "date": "2026-09-18",
+      "cents": 3590,
+      "numdoc": "N12C4A",
+      "desc": "PIX QR CODE DINAMIC REM: Vin�cius Ferreira da  18/09",
+      "title": 759444,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45744,
+      "date": "2026-09-18",
+      "cents": 4329,
+      "numdoc": "N12C60",
+      "desc": "PIX QR CODE DINAMIC REM: Gabriel Ferreira Reze 18/09",
+      "title": 759454,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45745,
+      "date": "2026-09-18",
+      "cents": 1679,
+      "numdoc": "N12C76",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIO DOS SANTOS SIL 18/09",
+      "title": 759455,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45746,
+      "date": "2026-09-18",
+      "cents": 19009,
+      "numdoc": "N12C8C",
+      "desc": "PIX QR CODE DINAMIC REM: Jos� Ricardo dos Sant 18/09",
+      "title": 759462,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45747,
+      "date": "2026-09-18",
+      "cents": 5660,
+      "numdoc": "N12CA2",
+      "desc": "PIX QR CODE DINAMIC REM: Leandro Aguiar de Lim 18/09",
+      "title": 759477,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45748,
+      "date": "2026-09-18",
+      "cents": 20667,
+      "numdoc": "N12CB8",
+      "desc": "PIX QR CODE DINAMIC REM: MILTON JOSE NUNES     18/09",
+      "title": 759490,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45750,
+      "date": "2026-09-18",
+      "cents": 13272,
+      "numdoc": "N12CE4",
+      "desc": "PIX QR CODE DINAMIC REM: Divaneis de Assis da  18/09",
+      "title": 759499,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45751,
+      "date": "2026-09-18",
+      "cents": 890,
+      "numdoc": "N12CFA",
+      "desc": "PIX QR CODE DINAMIC REM: J H SEGURANCA ELETRON 18/09",
+      "title": 759516,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45752,
+      "date": "2026-09-18",
+      "cents": 3299,
+      "numdoc": "N12D10",
+      "desc": "PIX QR CODE DINAMIC REM: ANTONIO CARLOS GARCIA 18/09",
+      "title": 759515,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45753,
+      "date": "2026-09-18",
+      "cents": 19160,
+      "numdoc": "N12D26",
+      "desc": "PIX QR CODE DINAMIC REM: ROSE MARY DAS NEVES S 18/09",
+      "title": 759509,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45754,
+      "date": "2026-09-18",
+      "cents": 8683,
+      "numdoc": "N12D3C",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS GUSTAVO CARVAL 18/09",
+      "title": 759519,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45755,
+      "date": "2026-09-18",
+      "cents": 3399,
+      "numdoc": "N12D52",
+      "desc": "PIX QR CODE DINAMIC REM: COSMO CARDOSO DA SILV 18/09",
+      "title": 759531,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45756,
+      "date": "2026-09-18",
+      "cents": 5286,
+      "numdoc": "N12D68",
+      "desc": "PIX QR CODE DINAMIC REM: FABIO FRANCHINI A D F 18/09",
+      "title": 759540,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45757,
+      "date": "2026-09-18",
+      "cents": 3729,
+      "numdoc": "N12D7E",
+      "desc": "PIX QR CODE DINAMIC REM: MARCOS VINICIUS QUIRI 18/09",
+      "title": 759541,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45758,
+      "date": "2026-09-18",
+      "cents": 1690,
+      "numdoc": "N12D94",
+      "desc": "PIX QR CODE DINAMIC REM: KELLY CRISTINA ALVES  18/09",
+      "title": 759554,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45759,
+      "date": "2026-09-18",
+      "cents": 54168,
+      "numdoc": "N12DAA",
+      "desc": "PIX QR CODE DINAMIC REM: CARLOS GUSTAVO CARVAL 18/09",
+      "title": 759556,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45760,
+      "date": "2026-09-18",
+      "cents": 1590,
+      "numdoc": "N12DC0",
+      "desc": "PIX QR CODE DINAMIC REM: Gilliard Gon�alves Si 18/09",
+      "title": 759561,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45761,
+      "date": "2026-09-18",
+      "cents": 200,
+      "numdoc": "N12DD6",
+      "desc": "PIX QR CODE DINAMIC REM: HUGO FERNANDO SOUZA D 18/09",
+      "title": 759563,
+      "titleDate": "2026-09-18",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45774,
+      "date": "2026-09-21",
+      "cents": 2970,
+      "numdoc": "N12EEA",
+      "desc": "PIX QR CODE DINAMIC REM: DOUGLAS BENIGNO  LINS 21/09",
+      "title": 759719,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45778,
+      "date": "2026-09-21",
+      "cents": 1495,
+      "numdoc": "N12F42",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE MARCONDES MARTIN 19/09",
+      "title": 759747,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45781,
+      "date": "2026-09-21",
+      "cents": 8588,
+      "numdoc": "N12F84",
+      "desc": "PIX QR CODE DINAMIC REM: KEVIN SILVA DE OLIVEI 21/09",
+      "title": 759734,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45782,
+      "date": "2026-09-21",
+      "cents": 23779,
+      "numdoc": "N12F9A",
+      "desc": "PIX QR CODE DINAMIC REM: Meri Rodrigues Ribeir 21/09",
+      "title": 759735,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45784,
+      "date": "2026-09-21",
+      "cents": 850,
+      "numdoc": "N12FC6",
+      "desc": "PIX QR CODE DINAMIC REM: WILSON HELIODORO DA S 21/09",
+      "title": 759741,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45786,
+      "date": "2026-09-21",
+      "cents": 6488,
+      "numdoc": "N12FF2",
+      "desc": "PIX QR CODE DINAMIC REM: AYRES J MAIA AUTO SOC 21/09",
+      "title": 759750,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45787,
+      "date": "2026-09-21",
+      "cents": 2580,
+      "numdoc": "N13008",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio dos Santos Sil 19/09",
+      "title": 760186,
+      "titleDate": "2026-09-24",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45789,
+      "date": "2026-09-21",
+      "cents": 1560,
+      "numdoc": "N13034",
+      "desc": "PIX QR CODE DINAMIC REM: DIEGO PERES DE ANDRAD 19/09",
+      "title": 760340,
+      "titleDate": "2026-09-25",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45794,
+      "date": "2026-09-21",
+      "cents": 9832,
+      "numdoc": "N130A2",
+      "desc": "PIX QR CODE DINAMIC REM: IVANDRO MATTOS DA ROC 21/09",
+      "title": 759774,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45797,
+      "date": "2026-09-21",
+      "cents": 14468,
+      "numdoc": "N130E4",
+      "desc": "PIX QR CODE DINAMIC REM: Pedro Jorge Silva Sou 21/09",
+      "title": 759780,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45808,
+      "date": "2026-09-21",
+      "cents": 3840,
+      "numdoc": "N131D6",
+      "desc": "PIX QR CODE DINAMIC REM: MAGNA BEZERRA DE OLIV 21/09",
+      "title": 759795,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45811,
+      "date": "2026-09-21",
+      "cents": 886,
+      "numdoc": "N13218",
+      "desc": "PIX QR CODE DINAMIC REM: GLEITON SANTOS DE JES 21/09",
+      "title": 759801,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45814,
+      "date": "2026-09-21",
+      "cents": 2490,
+      "numdoc": "N1325A",
+      "desc": "PIX QR CODE DINAMIC REM: EDNILSON DA SILVA AND 21/09",
+      "title": 759807,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45816,
+      "date": "2026-09-21",
+      "cents": 3551,
+      "numdoc": "N13286",
+      "desc": "PIX QR CODE DINAMIC REM: DAVID CARLOS DE SANT  21/09",
+      "title": 759820,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45817,
+      "date": "2026-09-21",
+      "cents": 7101,
+      "numdoc": "N1329C",
+      "desc": "PIX QR CODE DINAMIC REM: THALES VICENTE FERREI 21/09",
+      "title": 759817,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45818,
+      "date": "2026-09-21",
+      "cents": 19619,
+      "numdoc": "N132B2",
+      "desc": "PIX QR CODE DINAMIC REM: VALDINEIA DUTRA DA SI 21/09",
+      "title": 759824,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45819,
+      "date": "2026-09-21",
+      "cents": 27332,
+      "numdoc": "N132C8",
+      "desc": "PIX QR CODE DINAMIC REM: VALDINEIA DUTRA DA SI 21/09",
+      "title": 759825,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45820,
+      "date": "2026-09-21",
+      "cents": 13791,
+      "numdoc": "N132DE",
+      "desc": "PIX QR CODE DINAMIC REM: RODOLPHO JORGE SILVA  21/09",
+      "title": 759823,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45821,
+      "date": "2026-09-21",
+      "cents": 5052,
+      "numdoc": "N132F4",
+      "desc": "PIX QR CODE DINAMIC REM: FABIO NASCIMENTO COST 21/09",
+      "title": 759832,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45822,
+      "date": "2026-09-21",
+      "cents": 300,
+      "numdoc": "N1330A",
+      "desc": "PIX QR CODE DINAMIC REM: ALEXANDER CANAZARO DA 21/09",
+      "title": 759840,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45824,
+      "date": "2026-09-21",
+      "cents": 6704,
+      "numdoc": "N13336",
+      "desc": "PIX QR CODE DINAMIC REM: FERNANDA CAROLINE DA  21/09",
+      "title": 759868,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45825,
+      "date": "2026-09-21",
+      "cents": 12976,
+      "numdoc": "N1334C",
+      "desc": "PIX QR CODE DINAMIC REM: 58 438 028 Thomas Vic 21/09",
+      "title": 759861,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45826,
+      "date": "2026-09-21",
+      "cents": 480,
+      "numdoc": "N13362",
+      "desc": "PIX QR CODE DINAMIC REM: FABIO JORGE FERREIRA  21/09",
+      "title": 759858,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45827,
+      "date": "2026-09-21",
+      "cents": 2670,
+      "numdoc": "N13378",
+      "desc": "PIX QR CODE DINAMIC REM: DAVID CARLOS DE SANT  21/09",
+      "title": 759873,
+      "titleDate": "2026-09-21",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45834,
+      "date": "2026-09-22",
+      "cents": 1580,
+      "numdoc": "N13412",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO GOMES DA SIL 22/09",
+      "title": 759884,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45835,
+      "date": "2026-09-22",
+      "cents": 2916,
+      "numdoc": "N13428",
+      "desc": "PIX QR CODE DINAMIC REM: ROSEMEIRE SILVA DOS S 22/09",
+      "title": 759885,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45836,
+      "date": "2026-09-22",
+      "cents": 12796,
+      "numdoc": "N1343E",
+      "desc": "PIX QR CODE DINAMIC REM: DANIEL MARINHO SILVA  22/09",
+      "title": 759887,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45837,
+      "date": "2026-09-22",
+      "cents": 7200,
+      "numdoc": "N13454",
+      "desc": "PIX QR CODE DINAMIC REM: Apartinrio Hospedagen 22/09",
+      "title": 759888,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45838,
+      "date": "2026-09-22",
+      "cents": 8878,
+      "numdoc": "N1346A",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE DO CARMO N MARGA 22/09",
+      "title": 759948,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45839,
+      "date": "2026-09-22",
+      "cents": 5301,
+      "numdoc": "N13480",
+      "desc": "PIX QR CODE DINAMIC REM: ROBSON DE SOUZA CHAVE 22/09",
+      "title": 759890,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45840,
+      "date": "2026-09-22",
+      "cents": 2180,
+      "numdoc": "N13496",
+      "desc": "PIX QR CODE DINAMIC REM: Carlos Andr� Muniz Ri 22/09",
+      "title": 759891,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45841,
+      "date": "2026-09-22",
+      "cents": 8256,
+      "numdoc": "N134AC",
+      "desc": "PIX QR CODE DINAMIC REM: Elvis Presley Apareci 22/09",
+      "title": 759893,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45842,
+      "date": "2026-09-22",
+      "cents": 17981,
+      "numdoc": "N134C2",
+      "desc": "PIX QR CODE DINAMIC REM: CLAUDIO DIAS BARBOSA  22/09",
+      "title": 759894,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45843,
+      "date": "2026-09-22",
+      "cents": 18499,
+      "numdoc": "N134D8",
+      "desc": "PIX QR CODE DINAMIC REM: CLAUDIO DIAS BARBOSA  22/09",
+      "title": 759898,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45844,
+      "date": "2026-09-22",
+      "cents": 6290,
+      "numdoc": "N134EE",
+      "desc": "PIX QR CODE DINAMIC REM: Ir� Alves Corr�a      22/09",
+      "title": 759904,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45845,
+      "date": "2026-09-22",
+      "cents": 8490,
+      "numdoc": "N13504",
+      "desc": "PIX QR CODE DINAMIC REM: EV CRESPO DISTRIB PRO 22/09",
+      "title": 759909,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45846,
+      "date": "2026-09-22",
+      "cents": 3456,
+      "numdoc": "N1351A",
+      "desc": "PIX QR CODE DINAMIC REM: HOZAMO LIMA NASCIMENT 22/09",
+      "title": 759911,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45848,
+      "date": "2026-09-22",
+      "cents": 9030,
+      "numdoc": "N13546",
+      "desc": "PIX QR CODE DINAMIC REM: Luiz Barbosa da Cunha 22/09",
+      "title": 759936,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45849,
+      "date": "2026-09-22",
+      "cents": 5333,
+      "numdoc": "N1355C",
+      "desc": "PIX QR CODE DINAMIC REM: Bernardo Pereira De M 22/09",
+      "title": 759940,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45852,
+      "date": "2026-09-22",
+      "cents": 3090,
+      "numdoc": "N1359E",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 22/09",
+      "title": 759991,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45853,
+      "date": "2026-09-22",
+      "cents": 4731,
+      "numdoc": "N135B4",
+      "desc": "PIX QR CODE DINAMIC REM: RAFAEL PINTO NASCIMEN 22/09",
+      "title": 759987,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45854,
+      "date": "2026-09-22",
+      "cents": 3299,
+      "numdoc": "N135CA",
+      "desc": "PIX QR CODE DINAMIC REM: ANTONIO CARLOS GARCIA 22/09",
+      "title": 759985,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45855,
+      "date": "2026-09-22",
+      "cents": 6916,
+      "numdoc": "N135E0",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO VIEIRA PINTO 22/09",
+      "title": 760008,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45856,
+      "date": "2026-09-22",
+      "cents": 38490,
+      "numdoc": "N135F6",
+      "desc": "PIX QR CODE DINAMIC REM: EV CRESPO DISTRIB PRO 22/09",
+      "title": 760009,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45857,
+      "date": "2026-09-22",
+      "cents": 498,
+      "numdoc": "N1360C",
+      "desc": "PIX QR CODE DINAMIC REM: Andr� Luiz da Silva   22/09",
+      "title": 760012,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45858,
+      "date": "2026-09-22",
+      "cents": 3980,
+      "numdoc": "N13622",
+      "desc": "PIX QR CODE DINAMIC REM: Jo�o Bosco Ara jo Sil 22/09",
+      "title": 760016,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45859,
+      "date": "2026-09-22",
+      "cents": 4836,
+      "numdoc": "N13638",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 22/09",
+      "title": 760020,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45860,
+      "date": "2026-09-22",
+      "cents": 2649,
+      "numdoc": "N1364E",
+      "desc": "PIX QR CODE DINAMIC REM: JULIO PEREIRA DE ARAU 22/09",
+      "title": 760023,
+      "titleDate": "2026-09-22",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45864,
+      "date": "2026-09-23",
+      "cents": 12892,
+      "numdoc": "N136A6",
+      "desc": "PIX QR CODE DINAMIC REM: SERGIOMAR BRANDAO MOT 23/09",
+      "title": 760047,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45865,
+      "date": "2026-09-23",
+      "cents": 5280,
+      "numdoc": "N136BC",
+      "desc": "PIX QR CODE DINAMIC REM: Ir� Alves Corr�a      23/09",
+      "title": 760052,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45866,
+      "date": "2026-09-23",
+      "cents": 5270,
+      "numdoc": "N136D2",
+      "desc": "PIX QR CODE DINAMIC REM: Valquir Benedito Souz 23/09",
+      "title": 760056,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45867,
+      "date": "2026-09-23",
+      "cents": 6881,
+      "numdoc": "N136E8",
+      "desc": "PIX QR CODE DINAMIC REM: HOZAMO LIMA NASCIMENT 23/09",
+      "title": 760070,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45869,
+      "date": "2026-09-23",
+      "cents": 10420,
+      "numdoc": "N13714",
+      "desc": "PIX QR CODE DINAMIC REM: GILLIARD GONCALVES SI 23/09",
+      "title": 760086,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45870,
+      "date": "2026-09-23",
+      "cents": 1869,
+      "numdoc": "N1372A",
+      "desc": "PIX QR CODE DINAMIC REM: VANILSON ALVES SOUZA  23/09",
+      "title": 760089,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45871,
+      "date": "2026-09-23",
+      "cents": 2677,
+      "numdoc": "N13740",
+      "desc": "PIX QR CODE DINAMIC REM: Gabriel Mendonca da C 23/09",
+      "title": 760091,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45872,
+      "date": "2026-09-23",
+      "cents": 2590,
+      "numdoc": "N13756",
+      "desc": "PIX QR CODE DINAMIC REM: Ir� Alves Corr�a      23/09",
+      "title": 760092,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45873,
+      "date": "2026-09-23",
+      "cents": 4278,
+      "numdoc": "N1376C",
+      "desc": "PIX QR CODE DINAMIC REM: NATALINA DE FATIMA BA 23/09",
+      "title": 760098,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45874,
+      "date": "2026-09-23",
+      "cents": 1590,
+      "numdoc": "N13782",
+      "desc": "PIX QR CODE DINAMIC REM: 67 960 114 RAPHAELL O 23/09",
+      "title": 760095,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45875,
+      "date": "2026-09-23",
+      "cents": 1976,
+      "numdoc": "N13798",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIELE KARINE MAZZA  23/09",
+      "title": 760103,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45876,
+      "date": "2026-09-23",
+      "cents": 28842,
+      "numdoc": "N137AE",
+      "desc": "PIX QR CODE DINAMIC REM: Francisco Alan Lima d 23/09",
+      "title": 760104,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45877,
+      "date": "2026-09-23",
+      "cents": 5681,
+      "numdoc": "N137C4",
+      "desc": "PIX QR CODE DINAMIC REM: C�zar Henrique de Sal 23/09",
+      "title": 760111,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45878,
+      "date": "2026-09-23",
+      "cents": 940,
+      "numdoc": "N137DA",
+      "desc": "PIX QR CODE DINAMIC REM: IONE DA SILVA DELGADO 23/09",
+      "title": 760124,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45879,
+      "date": "2026-09-23",
+      "cents": 2799,
+      "numdoc": "N137F0",
+      "desc": "PIX QR CODE DINAMIC REM: WILLIAN CAMARGO ORTEG 23/09",
+      "title": 760125,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45880,
+      "date": "2026-09-23",
+      "cents": 6590,
+      "numdoc": "N13806",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIENE CONFESSOR ALV 23/09",
+      "title": 760127,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45881,
+      "date": "2026-09-23",
+      "cents": 689,
+      "numdoc": "N1381C",
+      "desc": "PIX QR CODE DINAMIC REM: WILLIAN CAMARGO ORTEG 23/09",
+      "title": 760129,
+      "titleDate": "2026-09-23",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45891,
+      "date": "2026-09-24",
+      "cents": 11520,
+      "numdoc": "N138F4",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIO FABIO LIMA BERN 24/09",
+      "title": 760136,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45892,
+      "date": "2026-09-24",
+      "cents": 3560,
+      "numdoc": "N1390A",
+      "desc": "PIX QR CODE DINAMIC REM: MARCIO ALMEIDA DE PAU 24/09",
+      "title": 760140,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45893,
+      "date": "2026-09-24",
+      "cents": 2399,
+      "numdoc": "N13920",
+      "desc": "PIX QR CODE DINAMIC REM: Marcio Rodrigues Luca 24/09",
+      "title": 760143,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45894,
+      "date": "2026-09-24",
+      "cents": 25440,
+      "numdoc": "N13936",
+      "desc": "PIX QR CODE DINAMIC REM: CESAR RACCA FILHO     24/09",
+      "title": 760147,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45895,
+      "date": "2026-09-24",
+      "cents": 3080,
+      "numdoc": "N1394C",
+      "desc": "PIX QR CODE DINAMIC REM: Francisco Alan Lima d 24/09",
+      "title": 760151,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45896,
+      "date": "2026-09-24",
+      "cents": 4690,
+      "numdoc": "N13962",
+      "desc": "PIX QR CODE DINAMIC REM: Cassiano C�ndido de L 24/09",
+      "title": 760154,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45897,
+      "date": "2026-09-24",
+      "cents": 4070,
+      "numdoc": "N13978",
+      "desc": "PIX QR CODE DINAMIC REM: OLARIA SOL DE JANEIRO 24/09",
+      "title": 760157,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45899,
+      "date": "2026-09-24",
+      "cents": 7380,
+      "numdoc": "N139A4",
+      "desc": "PIX QR CODE DINAMIC REM: Valquir Benedito Souz 24/09",
+      "title": 760176,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45901,
+      "date": "2026-09-24",
+      "cents": 6990,
+      "numdoc": "N139D0",
+      "desc": "PIX QR CODE DINAMIC REM: LUCAS RAIMUNDO DE MEL 24/09",
+      "title": 760213,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45902,
+      "date": "2026-09-24",
+      "cents": 689,
+      "numdoc": "N139E6",
+      "desc": "PIX QR CODE DINAMIC REM: GUTTEMBERG DA SILVA S 24/09",
+      "title": 760214,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45903,
+      "date": "2026-09-24",
+      "cents": 36310,
+      "numdoc": "N139FC",
+      "desc": "PIX QR CODE DINAMIC REM: VIVIANE RIBEIRO FERRE 24/09",
+      "title": 760209,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45904,
+      "date": "2026-09-24",
+      "cents": 390,
+      "numdoc": "N13A12",
+      "desc": "PIX QR CODE DINAMIC REM: FLUXUS BRASIL - PROJE 24/09",
+      "title": 760211,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45906,
+      "date": "2026-09-24",
+      "cents": 10042,
+      "numdoc": "N13A3E",
+      "desc": "PIX QR CODE DINAMIC REM: ALEXANDRE PAULO BAZAN 24/09",
+      "title": 760221,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45907,
+      "date": "2026-09-24",
+      "cents": 17972,
+      "numdoc": "N13A54",
+      "desc": "PIX QR CODE DINAMIC REM: KATIA CILENE DE SOUZA 24/09",
+      "title": 760223,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45908,
+      "date": "2026-09-24",
+      "cents": 5950,
+      "numdoc": "N13A6A",
+      "desc": "PIX QR CODE DINAMIC REM: WANDERLEY SOUSA DE OL 24/09",
+      "title": 760232,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45909,
+      "date": "2026-09-24",
+      "cents": 2337,
+      "numdoc": "N13A80",
+      "desc": "PIX QR CODE DINAMIC REM: Renan Lima Silva      24/09",
+      "title": 760235,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45910,
+      "date": "2026-09-24",
+      "cents": 8925,
+      "numdoc": "N13A96",
+      "desc": "PIX QR CODE DINAMIC REM: GRUPO FOLIUM          24/09",
+      "title": 760236,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45911,
+      "date": "2026-09-24",
+      "cents": 10700,
+      "numdoc": "N13AAC",
+      "desc": "PIX QR CODE DINAMIC REM: CAMILA CAMPBELL PINHE 24/09",
+      "title": 760237,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45912,
+      "date": "2026-09-24",
+      "cents": 6273,
+      "numdoc": "N13AC2",
+      "desc": "PIX QR CODE DINAMIC REM: GUILHERME THEODORO DO 24/09",
+      "title": 760241,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45913,
+      "date": "2026-09-24",
+      "cents": 1190,
+      "numdoc": "N13AD8",
+      "desc": "PIX QR CODE DINAMIC REM: Cassiano C�ndido de L 24/09",
+      "title": 760247,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45914,
+      "date": "2026-09-24",
+      "cents": 6000,
+      "numdoc": "N13AEE",
+      "desc": "PIX QR CODE DINAMIC REM: NATHALIE HENRIQUE TRU 24/09",
+      "title": 760249,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45915,
+      "date": "2026-09-24",
+      "cents": 469,
+      "numdoc": "N13B04",
+      "desc": "PIX QR CODE DINAMIC REM: Valquir Benedito Souz 24/09",
+      "title": 760255,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45917,
+      "date": "2026-09-24",
+      "cents": 3540,
+      "numdoc": "N13B30",
+      "desc": "PIX QR CODE DINAMIC REM: Renan Santos da Silva 24/09",
+      "title": 760279,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45918,
+      "date": "2026-09-24",
+      "cents": 3400,
+      "numdoc": "N13B46",
+      "desc": "PIX QR CODE DINAMIC REM: IONE DA SILVA DELGADO 24/09",
+      "title": 760286,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45919,
+      "date": "2026-09-24",
+      "cents": 482,
+      "numdoc": "N13B5C",
+      "desc": "PIX QR CODE DINAMIC REM: William Sampaio Sim e 24/09",
+      "title": 760295,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45921,
+      "date": "2026-09-24",
+      "cents": 670,
+      "numdoc": "N13B88",
+      "desc": "PIX QR CODE DINAMIC REM: LEANDRO PEREIRA       24/09",
+      "title": 760300,
+      "titleDate": "2026-09-24",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45924,
+      "date": "2026-09-25",
+      "cents": 5189,
+      "numdoc": "N13962",
+      "desc": "PIX QR CODE DINAMIC REM: CICERO GARCIA LEITE   25/09",
+      "title": 760312,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45925,
+      "date": "2026-09-25",
+      "cents": 18460,
+      "numdoc": "N13978",
+      "desc": "PIX QR CODE DINAMIC REM: Jose Joao da Silva    25/09",
+      "title": 760315,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45926,
+      "date": "2026-09-25",
+      "cents": 8594,
+      "numdoc": "N1398E",
+      "desc": "PIX QR CODE DINAMIC REM: ADEMIR THIAGO ABREU D 25/09",
+      "title": 760321,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45927,
+      "date": "2026-09-25",
+      "cents": 2290,
+      "numdoc": "N139A4",
+      "desc": "PIX QR CODE DINAMIC REM: DANIEL DA SILVA       25/09",
+      "title": 760322,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45928,
+      "date": "2026-09-25",
+      "cents": 892,
+      "numdoc": "N139BA",
+      "desc": "PIX QR CODE DINAMIC REM: HOZAMO LIMA NASCIMENT 25/09",
+      "title": 760327,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45929,
+      "date": "2026-09-25",
+      "cents": 20749,
+      "numdoc": "N139D0",
+      "desc": "PIX QR CODE DINAMIC REM: VITOR MARTINS DA CUNH 25/09",
+      "title": 760328,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45931,
+      "date": "2026-09-25",
+      "cents": 4790,
+      "numdoc": "N139FC",
+      "desc": "PIX QR CODE DINAMIC REM: HOZAMO LIMA NASCIMENT 25/09",
+      "title": 760339,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45932,
+      "date": "2026-09-25",
+      "cents": 15835,
+      "numdoc": "N13A12",
+      "desc": "PIX QR CODE DINAMIC REM: JULIO CESAR DE OLIVEI 25/09",
+      "title": 760343,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45933,
+      "date": "2026-09-25",
+      "cents": 5813,
+      "numdoc": "N13A28",
+      "desc": "PIX QR CODE DINAMIC REM: Luiz Claudio Giffoni  25/09",
+      "title": 760350,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45935,
+      "date": "2026-09-25",
+      "cents": 4459,
+      "numdoc": "N13A54",
+      "desc": "PIX QR CODE DINAMIC REM: LUCIO DE OLIVEIRA SAN 25/09",
+      "title": 760358,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45936,
+      "date": "2026-09-25",
+      "cents": 431,
+      "numdoc": "N13A6A",
+      "desc": "PIX QR CODE DINAMIC REM: Marciano de Brito Sil 25/09",
+      "title": 760388,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45937,
+      "date": "2026-09-25",
+      "cents": 890,
+      "numdoc": "N13A80",
+      "desc": "PIX QR CODE DINAMIC REM: ADALBERTO CARLOS DE S 25/09",
+      "title": 760377,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45938,
+      "date": "2026-09-25",
+      "cents": 2970,
+      "numdoc": "N13A96",
+      "desc": "PIX QR CODE DINAMIC REM: Jo�o Marcio Alves Vie 25/09",
+      "title": 760392,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45939,
+      "date": "2026-09-25",
+      "cents": 2490,
+      "numdoc": "N13AAC",
+      "desc": "PIX QR CODE DINAMIC REM: Jose Joao da Silva    25/09",
+      "title": 760393,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45940,
+      "date": "2026-09-25",
+      "cents": 4890,
+      "numdoc": "N13AC2",
+      "desc": "PIX QR CODE DINAMIC REM: LILIANE DOS SANTOS SA 25/09",
+      "title": 760395,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45942,
+      "date": "2026-09-25",
+      "cents": 3580,
+      "numdoc": "N13AEE",
+      "desc": "PIX QR CODE DINAMIC REM: CINTHIA CARDOSO TAYTH 25/09",
+      "title": 760399,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45944,
+      "date": "2026-09-25",
+      "cents": 4749,
+      "numdoc": "N13B1A",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE DO CARMO N MARGA 25/09",
+      "title": 760407,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45945,
+      "date": "2026-09-25",
+      "cents": 15342,
+      "numdoc": "N13B30",
+      "desc": "PIX QR CODE DINAMIC REM: Luiz Claudio Giffoni  25/09",
+      "title": 760424,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45946,
+      "date": "2026-09-25",
+      "cents": 940,
+      "numdoc": "N13B46",
+      "desc": "PIX QR CODE DINAMIC REM: Luiz Claudio Giffoni  25/09",
+      "title": 760414,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45947,
+      "date": "2026-09-25",
+      "cents": 2190,
+      "numdoc": "N13B5C",
+      "desc": "PIX QR CODE DINAMIC REM: JOGADORDOIPHONE COMER 25/09",
+      "title": 760412,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45948,
+      "date": "2026-09-25",
+      "cents": 3399,
+      "numdoc": "N13B72",
+      "desc": "PIX QR CODE DINAMIC REM: RODRIGO DO MONTE AFFO 25/09",
+      "title": 760420,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45949,
+      "date": "2026-09-25",
+      "cents": 1770,
+      "numdoc": "N13B88",
+      "desc": "PIX QR CODE DINAMIC REM: ANTONIO CARLOS PEREIR 25/09",
+      "title": 760428,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45950,
+      "date": "2026-09-25",
+      "cents": 2450,
+      "numdoc": "N13B9E",
+      "desc": "PIX QR CODE DINAMIC REM: PATRICIA DE OLIVEIRA  25/09",
+      "title": 760431,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45951,
+      "date": "2026-09-25",
+      "cents": 1890,
+      "numdoc": "N13BB4",
+      "desc": "PIX QR CODE DINAMIC REM: DJAIR FIRMINO TORROZO 25/09",
+      "title": 760437,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45952,
+      "date": "2026-09-25",
+      "cents": 2280,
+      "numdoc": "N13BCA",
+      "desc": "PIX QR CODE DINAMIC REM: CINTHIA CARDOSO TAYTH 25/09",
+      "title": 760443,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45954,
+      "date": "2026-09-25",
+      "cents": 2489,
+      "numdoc": "N13BE0",
+      "desc": "PIX QR CODE DINAMIC REM: Pedro Wudson Pereira  25/09",
+      "title": 760448,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45956,
+      "date": "2026-09-25",
+      "cents": 1880,
+      "numdoc": "N13BF6",
+      "desc": "PIX QR CODE DINAMIC REM: Jose Joao da Silva    25/09",
+      "title": 760452,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45958,
+      "date": "2026-09-25",
+      "cents": 3455,
+      "numdoc": "N13C0C",
+      "desc": "PIX QR CODE DINAMIC REM: Raphael Sanko Assad   25/09",
+      "title": 760466,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45962,
+      "date": "2026-09-25",
+      "cents": 16488,
+      "numdoc": "N13C38",
+      "desc": "PIX QR CODE DINAMIC REM: MARLUCIA FERREIRA MAC 25/09",
+      "title": 760465,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45964,
+      "date": "2026-09-25",
+      "cents": 11999,
+      "numdoc": "N13C4E",
+      "desc": "PIX QR CODE DINAMIC REM: CLARA CRISTINA NANI B 25/09",
+      "title": 760479,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45966,
+      "date": "2026-09-25",
+      "cents": 51970,
+      "numdoc": "N13C64",
+      "desc": "PIX QR CODE DINAMIC REM: RDG MOTTA ATELIE      25/09",
+      "title": 760483,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46209,
+      "date": "2026-09-28",
+      "cents": 3490,
+      "numdoc": "N13D3E",
+      "desc": "PIX QR CODE DINAMIC REM: SANDRO FERNANDES DA S 26/09",
+      "title": 760623,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46226,
+      "date": "2026-09-28",
+      "cents": 1990,
+      "numdoc": "N13EB4",
+      "desc": "PIX QR CODE DINAMIC REM: GABRIEL DA SILVA SOUZ 26/09",
+      "title": 760674,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46228,
+      "date": "2026-09-28",
+      "cents": 5681,
+      "numdoc": "N13EE0",
+      "desc": "PIX QR CODE DINAMIC REM: CESAR RACCA FILHO     28/09",
+      "title": 760593,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46229,
+      "date": "2026-09-28",
+      "cents": 5498,
+      "numdoc": "N13EF6",
+      "desc": "PIX QR CODE DINAMIC REM: Ressy Marie Milagres  28/09",
+      "title": 760600,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46230,
+      "date": "2026-09-28",
+      "cents": 5588,
+      "numdoc": "N13F0C",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO SEVERIO DA S 28/09",
+      "title": 760602,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46231,
+      "date": "2026-09-28",
+      "cents": 1470,
+      "numdoc": "N13F22",
+      "desc": "PIX QR CODE DINAMIC REM: Patrick Serrano Suter 28/09",
+      "title": 760606,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46234,
+      "date": "2026-09-28",
+      "cents": 1880,
+      "numdoc": "N13F4E",
+      "desc": "PIX QR CODE DINAMIC REM: WEDSON CLEISOM DIAS L 28/09",
+      "title": 760618,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46236,
+      "date": "2026-09-28",
+      "cents": 987,
+      "numdoc": "N13F64",
+      "desc": "PIX QR CODE DINAMIC REM: EDMILSON DIAS DOS SAN 28/09",
+      "title": 760628,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46238,
+      "date": "2026-09-28",
+      "cents": 3580,
+      "numdoc": "N13F7A",
+      "desc": "PIX QR CODE DINAMIC REM: Hermionesio Pinto Alv 28/09",
+      "title": 760651,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 46244,
+      "date": "2026-09-28",
+      "cents": 2700,
+      "numdoc": "N13FBC",
+      "desc": "PIX QR CODE DINAMIC REM: CE BIOCHAR BRASIL LTD 28/09",
+      "title": 760659,
+      "titleDate": "2026-09-28",
+      "rule": "mesmo dia"
+    }
+  ],
+  "collisions": [
+    {
+      "item": 45248,
+      "date": "2026-09-01",
+      "cents": 980,
+      "numdoc": "N101CE",
+      "desc": "PIX QR CODE DINAMIC REM: SIMONE DO SOCORRO OLI 01/09",
+      "title": 757305,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45252,
+      "date": "2026-09-01",
+      "cents": 490,
+      "numdoc": "N10226",
+      "desc": "PIX QR CODE DINAMIC REM: RONISON DIAS          01/09",
+      "title": 757329,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45255,
+      "date": "2026-09-01",
+      "cents": 980,
+      "numdoc": "N10268",
+      "desc": "PIX QR CODE DINAMIC REM: LEONARDO VIEIRA ARCOV 01/09",
+      "title": 757305,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45258,
+      "date": "2026-09-01",
+      "cents": 490,
+      "numdoc": "N102AA",
+      "desc": "PIX QR CODE DINAMIC REM: JOSE CLAUDIO VENTURA  01/09",
+      "title": 757329,
+      "titleDate": "2026-09-01",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45397,
+      "date": "2026-09-04",
+      "cents": 490,
+      "numdoc": "N10E92",
+      "desc": "PIX QR CODE DINAMIC REM: Romario de Oliveira M 04/09",
+      "title": 757867,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45405,
+      "date": "2026-09-04",
+      "cents": 490,
+      "numdoc": "N10F42",
+      "desc": "PIX QR CODE DINAMIC REM: JOABE DA SILVA OLIVEI 04/09",
+      "title": 757867,
+      "titleDate": "2026-09-04",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45422,
+      "date": "2026-09-08",
+      "cents": 2780,
+      "numdoc": "N110B8",
+      "desc": "PIX QR CODE DINAMIC REM: MICHELE MACHADO GALDI 05/09",
+      "title": 760660,
+      "titleDate": "2026-09-28",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45456,
+      "date": "2026-09-08",
+      "cents": 2499,
+      "numdoc": "N113A4",
+      "desc": "PIX QR CODE DINAMIC REM: AIMARTEPRO COMUNICACA 05/09",
+      "title": 758183,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45480,
+      "date": "2026-09-08",
+      "cents": 990,
+      "numdoc": "N115B4",
+      "desc": "PIX QR CODE DINAMIC REM: PATRICIA ROSA RJ ASSE 05/09",
+      "title": 758195,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45482,
+      "date": "2026-09-08",
+      "cents": 2780,
+      "numdoc": "N115E0",
+      "desc": "PIX QR CODE DINAMIC REM: Adriana De Oliveira D 05/09",
+      "title": 760660,
+      "titleDate": "2026-09-28",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45484,
+      "date": "2026-09-08",
+      "cents": 2499,
+      "numdoc": "N1160C",
+      "desc": "PIX QR CODE DINAMIC REM: MILTON JOSE NUNES     08/09",
+      "title": 758183,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45489,
+      "date": "2026-09-08",
+      "cents": 990,
+      "numdoc": "N1167A",
+      "desc": "PIX QR CODE DINAMIC REM: EDSON DIAS GOMES JUNI 08/09",
+      "title": 758195,
+      "titleDate": "2026-09-08",
+      "rule": "mesmo dia"
+    },
+    {
+      "item": 45639,
+      "date": "2026-09-14",
+      "cents": 5370,
+      "numdoc": "N1235C",
+      "desc": "PIX QR CODE DINAMIC REM: Raphael Sanko Assad   12/09",
+      "title": 760459,
+      "titleDate": "2026-09-25",
+      "rule": "dia posterior"
+    },
+    {
+      "item": 45960,
+      "date": "2026-09-25",
+      "cents": 5370,
+      "numdoc": "N13C22",
+      "desc": "PIX QR CODE DINAMIC REM: JORGE ANTONIO DE OLIV 25/09",
+      "title": 760459,
+      "titleDate": "2026-09-25",
+      "rule": "mesmo dia"
+    }
+  ]
+}

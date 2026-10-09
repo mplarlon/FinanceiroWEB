@@ -1,0 +1,17 @@
+{
+  "_instrucoes": "Preencha os dados do servidor de e-mail e salve como email_config.json. Reinicie o dashboard apos editar.",
+  "smtp_host": "smtp.gmail.com",
+  "smtp_port": 587,
+  "usar_tls": true,
+  "usar_ssl": false,
+  "smtp_user": "",
+  "smtp_password": "",
+  "remetente": "",
+  "destinatario": "",
+  "copia": "",
+  "assunto": "Arquivos Dashboard",
+  "enviar_documentos_nfe_automaticamente": false,
+  "assunto_documentos_nfe": "Nota fiscal e boleto(s)",
+  "mensagem_documentos_nfe": "Prezado cliente, seguem em anexo a nota fiscal e o(s) boleto(s).",
+  "copia_documentos_nfe": ""
+}

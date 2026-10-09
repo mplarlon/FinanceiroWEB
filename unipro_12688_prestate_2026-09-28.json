@@ -1,0 +1,17 @@
+{
+  "source_invoice": "000012668",
+  "system_invoice": "000012688",
+  "reason": "Confirmed by customer tax ID 30521728001363, amount 119.97 and order 661594",
+  "row": {
+    "controle": 758539,
+    "idempresa": 1,
+    "nrpedido": 661594,
+    "cdcliente": 19643,
+    "due": "2026-09-11",
+    "amount": 119.97,
+    "status": 1,
+    "nossonumero": null,
+    "statusboleto": null,
+    "databoleto": null
+  }
+}

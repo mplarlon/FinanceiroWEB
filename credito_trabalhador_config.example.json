@@ -1,0 +1,9 @@
+{
+  "_instrucoes": "Preencha os dados e salve como credito_trabalhador_config.json. Copie o certificado/chave para a maquina nova separadamente, se este modulo for usado.",
+  "api_url": "https://papiecotrab.dataprev.gov.br/credito-trabalhador-empregador/v1.0.0/dados-consignacoes-empregador",
+  "codigo_inscricao": "1",
+  "numero_inscricao": "",
+  "cert_path": "",
+  "key_path": "",
+  "cert_password": ""
+}

@@ -1,0 +1,4589 @@
+{
+  "created_at": "2026-09-29T10:28:38.622245",
+  "database": "100.92.55.29:C:\\Administracao\\db\\miautomec.FDB",
+  "method": "mutual unique exact amount; exact venc/mov/baixa date then venc within 3 days",
+  "stats": {
+    "date_venc": 498,
+    "date_mov": 15,
+    "date": 8,
+    "date_venc_3d": 51
+  },
+  "matches": [
+    {
+      "item": 46470,
+      "title": 744535,
+      "value": "18.00",
+      "bank_date": "2026-06-10",
+      "title_doc": "000302072CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46471,
+      "title": 746559,
+      "value": "414.00",
+      "bank_date": "2026-06-10",
+      "title_doc": "000303251CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46472,
+      "title": 744581,
+      "value": "89.20",
+      "bank_date": "2026-06-10",
+      "title_doc": "000302104CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46473,
+      "title": 744985,
+      "value": "111.24",
+      "bank_date": "2026-06-10",
+      "title_doc": "000302338CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46474,
+      "title": 744582,
+      "value": "22.90",
+      "bank_date": "2026-06-10",
+      "title_doc": "000302105CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46475,
+      "title": 744981,
+      "value": "418.95",
+      "bank_date": "2026-06-10",
+      "title_doc": "000302335CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46476,
+      "title": 747746,
+      "value": "765.00",
+      "bank_date": "2026-06-11",
+      "title_doc": "000304007CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46477,
+      "title": 744916,
+      "value": "508.00",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302287CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46479,
+      "title": 747356,
+      "value": "131.96",
+      "bank_date": "2026-06-11",
+      "title_doc": "000303772CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46480,
+      "title": 744936,
+      "value": "120.79",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302302CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46481,
+      "title": 744974,
+      "value": "240.00",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302326CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46482,
+      "title": 744969,
+      "value": "3165.93",
+      "bank_date": "2026-06-11",
+      "title_doc": "000012244",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46483,
+      "title": 744950,
+      "value": "612.75",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302309CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46485,
+      "title": 744978,
+      "value": "485.32",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302333CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46488,
+      "title": 744982,
+      "value": "332.60",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302336CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46489,
+      "title": 745012,
+      "value": "40.79",
+      "bank_date": "2026-06-11",
+      "title_doc": "000304102CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46490,
+      "title": 747351,
+      "value": "25.90",
+      "bank_date": "2026-06-11",
+      "title_doc": "000303767CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46491,
+      "title": 745059,
+      "value": "1257.64",
+      "bank_date": "2026-06-11",
+      "title_doc": "000302377CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46493,
+      "title": 745072,
+      "value": "43.30",
+      "bank_date": "2026-06-12",
+      "title_doc": "000302383CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46497,
+      "title": 747370,
+      "value": "30.70",
+      "bank_date": "2026-06-12",
+      "title_doc": "000303776CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46499,
+      "title": 745354,
+      "value": "272.93",
+      "bank_date": "2026-06-12",
+      "title_doc": "000302568CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46505,
+      "title": 745382,
+      "value": "1935.00",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302585CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46506,
+      "title": 745481,
+      "value": "189.90",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302645CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46507,
+      "title": 745863,
+      "value": "155.96",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302857CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46509,
+      "title": 745432,
+      "value": "72.90",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302614CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46510,
+      "title": 747400,
+      "value": "11.70",
+      "bank_date": "2026-06-15",
+      "title_doc": "000303795CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46511,
+      "title": 745464,
+      "value": "78.00",
+      "bank_date": "2026-06-15",
+      "title_doc": "000012251",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46512,
+      "title": 745454,
+      "value": "713.50",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302626CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46513,
+      "title": 745475,
+      "value": "130.00",
+      "bank_date": "2026-06-15",
+      "title_doc": "000012252",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46514,
+      "title": 745485,
+      "value": "13.47",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302646CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46515,
+      "title": 745490,
+      "value": "829.40",
+      "bank_date": "2026-06-15",
+      "title_doc": "650631",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46518,
+      "title": 747407,
+      "value": "353.20",
+      "bank_date": "2026-06-16",
+      "title_doc": "000303798CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46519,
+      "title": 747455,
+      "value": "29.90",
+      "bank_date": "2026-06-16",
+      "title_doc": "000303827CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46520,
+      "title": 745522,
+      "value": "87.00",
+      "bank_date": "2026-06-16",
+      "title_doc": "650662",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46521,
+      "title": 745607,
+      "value": "59.80",
+      "bank_date": "2026-06-17",
+      "title_doc": "000304112CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46522,
+      "title": 745640,
+      "value": "803.17",
+      "bank_date": "2026-06-17",
+      "title_doc": "000302722CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46523,
+      "title": 745636,
+      "value": "737.60",
+      "bank_date": "2026-06-17",
+      "title_doc": "000302719CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46524,
+      "title": 745653,
+      "value": "1234.25",
+      "bank_date": "2026-06-17",
+      "title_doc": "000012254",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46525,
+      "title": 745652,
+      "value": "184.95",
+      "bank_date": "2026-06-17",
+      "title_doc": "000012255",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46526,
+      "title": 745700,
+      "value": "83.90",
+      "bank_date": "2026-06-17",
+      "title_doc": "000302749CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46527,
+      "title": 747446,
+      "value": "736.94",
+      "bank_date": "2026-06-17",
+      "title_doc": "000303823CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46529,
+      "title": 745739,
+      "value": "99.80",
+      "bank_date": "2026-06-17",
+      "title_doc": "000302794CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46530,
+      "title": 745819,
+      "value": "125.89",
+      "bank_date": "2026-06-17",
+      "title_doc": "650868",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46532,
+      "title": 745780,
+      "value": "37.80",
+      "bank_date": "2026-06-18",
+      "title_doc": "000302819CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46533,
+      "title": 745817,
+      "value": "167.87",
+      "bank_date": "2026-06-18",
+      "title_doc": "000304077CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46536,
+      "title": 747480,
+      "value": "133.00",
+      "bank_date": "2026-06-18",
+      "title_doc": "000012295",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46537,
+      "title": 745938,
+      "value": "54.59",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302906CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46538,
+      "title": 745945,
+      "value": "164.95",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302910CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46539,
+      "title": 745966,
+      "value": "37.90",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302916CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46540,
+      "title": 745973,
+      "value": "322.43",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302922CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46541,
+      "title": 745988,
+      "value": "95.40",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302928CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46542,
+      "title": 746010,
+      "value": "175.00",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302942CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46544,
+      "title": 746062,
+      "value": "550.21",
+      "bank_date": "2026-06-19",
+      "title_doc": "000304078CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46548,
+      "title": 746093,
+      "value": "224.20",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302971CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46553,
+      "title": 746297,
+      "value": "59.80",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303101CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46554,
+      "title": 746248,
+      "value": "20.90",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303068CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46555,
+      "title": 746258,
+      "value": "149.70",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303074CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46557,
+      "title": 746281,
+      "value": "188.89",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303089CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46558,
+      "title": 746279,
+      "value": "25.30",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303087CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46559,
+      "title": 746290,
+      "value": "250.32",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303096CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46560,
+      "title": 747550,
+      "value": "159.90",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303887CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46561,
+      "title": 746352,
+      "value": "584.00",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303126CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46562,
+      "title": 746326,
+      "value": "77.98",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303119CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46563,
+      "title": 746353,
+      "value": "419.80",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303127CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46565,
+      "title": 746338,
+      "value": "194.95",
+      "bank_date": "2026-06-22",
+      "title_doc": "000012267",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46566,
+      "title": 746356,
+      "value": "139.30",
+      "bank_date": "2026-06-22",
+      "title_doc": "651468",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46567,
+      "title": 746385,
+      "value": "329.90",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303142CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46568,
+      "title": 746371,
+      "value": "639.00",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303133CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46569,
+      "title": 746377,
+      "value": "1027.50",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303136CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46572,
+      "title": 746718,
+      "value": "99.50",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303354CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46574,
+      "title": 746407,
+      "value": "35.98",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303157CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46575,
+      "title": 746492,
+      "value": "104.90",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303207CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46577,
+      "title": 746589,
+      "value": "947.48",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303276CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46578,
+      "title": 746547,
+      "value": "595.20",
+      "bank_date": "2026-06-23",
+      "title_doc": "000012271",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46579,
+      "title": 746545,
+      "value": "235.12",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303242CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46580,
+      "title": 746556,
+      "value": "45.00",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303248CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46581,
+      "title": 747613,
+      "value": "43.51",
+      "bank_date": "2026-06-23",
+      "title_doc": "000303923CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46582,
+      "title": 746606,
+      "value": "77.79",
+      "bank_date": "2026-06-24",
+      "title_doc": "000303288CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46583,
+      "title": 746645,
+      "value": "429.84",
+      "bank_date": "2026-06-24",
+      "title_doc": "000303312CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46584,
+      "title": 747738,
+      "value": "224.90",
+      "bank_date": "2026-06-24",
+      "title_doc": "000304002CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46585,
+      "title": 746617,
+      "value": "26.90",
+      "bank_date": "2026-06-24",
+      "title_doc": "000303297CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46586,
+      "title": 747744,
+      "value": "88.86",
+      "bank_date": "2026-06-24",
+      "title_doc": "000304006CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46587,
+      "title": 746642,
+      "value": "524.40",
+      "bank_date": "2026-06-24",
+      "title_doc": "000303310CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46588,
+      "title": 746671,
+      "value": "265.00",
+      "bank_date": "2026-06-24",
+      "title_doc": "000303327CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46591,
+      "title": 747629,
+      "value": "99.99",
+      "bank_date": "2026-06-25",
+      "title_doc": "000303929CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46592,
+      "title": 746747,
+      "value": "41.70",
+      "bank_date": "2026-06-25",
+      "title_doc": "000303372CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46593,
+      "title": 746759,
+      "value": "389.00",
+      "bank_date": "2026-06-25",
+      "title_doc": "000303394CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46596,
+      "title": 746842,
+      "value": "75.00",
+      "bank_date": "2026-06-26",
+      "title_doc": "000303439CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46597,
+      "title": 747645,
+      "value": "149.40",
+      "bank_date": "2026-06-26",
+      "title_doc": "000012298",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46598,
+      "title": 746884,
+      "value": "389.00",
+      "bank_date": "2026-06-26",
+      "title_doc": "000303464CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46604,
+      "title": 747079,
+      "value": "197.94",
+      "bank_date": "2026-06-29",
+      "title_doc": "000303590CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46605,
+      "title": 747136,
+      "value": "564.57",
+      "bank_date": "2026-06-29",
+      "title_doc": "000303628CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46607,
+      "title": 747212,
+      "value": "103.65",
+      "bank_date": "2026-06-29",
+      "title_doc": "000303676CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46608,
+      "title": 747194,
+      "value": "448.05",
+      "bank_date": "2026-06-30",
+      "title_doc": "000303663CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46609,
+      "title": 747712,
+      "value": "68.90",
+      "bank_date": "2026-06-30",
+      "title_doc": "000303985CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46611,
+      "title": 747211,
+      "value": "389.90",
+      "bank_date": "2026-06-30",
+      "title_doc": "652299",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46612,
+      "title": 747736,
+      "value": "1073.80",
+      "bank_date": "2026-06-30",
+      "title_doc": "000304000CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46613,
+      "title": 747305,
+      "value": "174.50",
+      "bank_date": "2026-06-30",
+      "title_doc": "000303739CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46614,
+      "title": 747290,
+      "value": "14.00",
+      "bank_date": "2026-06-30",
+      "title_doc": "000303730CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46615,
+      "title": 747303,
+      "value": "2443.50",
+      "bank_date": "2026-06-30",
+      "title_doc": "000303738CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46617,
+      "title": 747768,
+      "value": "99.60",
+      "bank_date": "2026-07-01",
+      "title_doc": "000304146CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46619,
+      "title": 747832,
+      "value": "885.00",
+      "bank_date": "2026-07-01",
+      "title_doc": "000304193CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46620,
+      "title": 748682,
+      "value": "2496.00",
+      "bank_date": "2026-07-01",
+      "title_doc": "000304734CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46621,
+      "title": 747869,
+      "value": "441.70",
+      "bank_date": "2026-07-01",
+      "title_doc": "000304219CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46624,
+      "title": 747897,
+      "value": "215.93",
+      "bank_date": "2026-07-01",
+      "title_doc": "000304237CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46628,
+      "title": 747951,
+      "value": "69.89",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304266CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46629,
+      "title": 747974,
+      "value": "1975.62",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304285CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46630,
+      "title": 748681,
+      "value": "467.00",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304733CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46631,
+      "title": 748029,
+      "value": "115.59",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304321CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46632,
+      "title": 748021,
+      "value": "58.60",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304316CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46633,
+      "title": 748074,
+      "value": "864.00",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304350CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46634,
+      "title": 748046,
+      "value": "99.72",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304333CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46635,
+      "title": 748048,
+      "value": "43.88",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304334CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46637,
+      "title": 748100,
+      "value": "36.88",
+      "bank_date": "2026-07-02",
+      "title_doc": "000307054CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46638,
+      "title": 748102,
+      "value": "599.60",
+      "bank_date": "2026-07-02",
+      "title_doc": "000304366CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46639,
+      "title": 748117,
+      "value": "194.95",
+      "bank_date": "2026-07-03",
+      "title_doc": "000304377CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46641,
+      "title": 748598,
+      "value": "692.55",
+      "bank_date": "2026-07-03",
+      "title_doc": "000012379",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46642,
+      "title": 748601,
+      "value": "645.62",
+      "bank_date": "2026-07-03",
+      "title_doc": "000012380",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46643,
+      "title": 748864,
+      "value": "129.78",
+      "bank_date": "2026-07-03",
+      "title_doc": "000304829CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46645,
+      "title": 748250,
+      "value": "484.19",
+      "bank_date": "2026-07-03",
+      "title_doc": "000304460CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46648,
+      "title": 748621,
+      "value": "995.60",
+      "bank_date": "2026-07-03",
+      "title_doc": "000012381",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46655,
+      "title": 748368,
+      "value": "685.84",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304542CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46657,
+      "title": 748377,
+      "value": "98.97",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304547CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46658,
+      "title": 748386,
+      "value": "569.70",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304551CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46659,
+      "title": 748402,
+      "value": "19.90",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304563CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46660,
+      "title": 748676,
+      "value": "1489.00",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304730CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46661,
+      "title": 748675,
+      "value": "4284.95",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304729CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46663,
+      "title": 748489,
+      "value": "85.65",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304620CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46665,
+      "title": 748490,
+      "value": "39.00",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304621CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46666,
+      "title": 748666,
+      "value": "339.80",
+      "bank_date": "2026-07-06",
+      "title_doc": "000012382",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46667,
+      "title": 748694,
+      "value": "71.95",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304741CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46668,
+      "title": 748541,
+      "value": "443.95",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304640CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46669,
+      "title": 748540,
+      "value": "487.90",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304639CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46671,
+      "title": 748761,
+      "value": "722.63",
+      "bank_date": "2026-07-07",
+      "title_doc": "000304783CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46672,
+      "title": 748692,
+      "value": "597.49",
+      "bank_date": "2026-07-07",
+      "title_doc": "000304740CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46674,
+      "title": 748814,
+      "value": "99.10",
+      "bank_date": "2026-07-07",
+      "title_doc": "000304813CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46675,
+      "title": 748919,
+      "value": "319.92",
+      "bank_date": "2026-07-07",
+      "title_doc": "000304872CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46676,
+      "title": 748853,
+      "value": "71.60",
+      "bank_date": "2026-07-07",
+      "title_doc": "000304996CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46677,
+      "title": 748887,
+      "value": "530.00",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304848CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46678,
+      "title": 748888,
+      "value": "94.90",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304849CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46679,
+      "title": 749391,
+      "value": "174.50",
+      "bank_date": "2026-07-08",
+      "title_doc": "000305190CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46680,
+      "title": 748898,
+      "value": "449.02",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304857CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46681,
+      "title": 748901,
+      "value": "196.40",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304860CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46682,
+      "title": 749116,
+      "value": "443.70",
+      "bank_date": "2026-07-08",
+      "title_doc": "000305036CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46683,
+      "title": 748918,
+      "value": "207.00",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304871CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46684,
+      "title": 748923,
+      "value": "796.20",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304875CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46685,
+      "title": 748966,
+      "value": "662.50",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304900CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46686,
+      "title": 748990,
+      "value": "126.00",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304915CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46687,
+      "title": 749007,
+      "value": "177.80",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304928CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46688,
+      "title": 749009,
+      "value": "346.01",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304929CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46691,
+      "title": 749952,
+      "value": "339.80",
+      "bank_date": "2026-07-09",
+      "title_doc": "000012410",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46692,
+      "title": 749061,
+      "value": "2349.50",
+      "bank_date": "2026-07-09",
+      "title_doc": "000304981CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46694,
+      "title": 749117,
+      "value": "305.86",
+      "bank_date": "2026-07-09",
+      "title_doc": "000305037CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46695,
+      "title": 749131,
+      "value": "688.56",
+      "bank_date": "2026-07-09",
+      "title_doc": "000305048CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46696,
+      "title": 749141,
+      "value": "1129.70",
+      "bank_date": "2026-07-09",
+      "title_doc": "000305054CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46699,
+      "title": 749181,
+      "value": "549.65",
+      "bank_date": "2026-07-09",
+      "title_doc": "000012408",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46703,
+      "title": 749319,
+      "value": "169.90",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305154CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46704,
+      "title": 749216,
+      "value": "449.70",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305102CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46705,
+      "title": 749390,
+      "value": "209.10",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305189CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46706,
+      "title": 749224,
+      "value": "49.90",
+      "bank_date": "2026-07-10",
+      "title_doc": "000012397",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46707,
+      "title": 749393,
+      "value": "452.16",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305191CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46708,
+      "title": 750005,
+      "value": "339.80",
+      "bank_date": "2026-07-10",
+      "title_doc": "000012412",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46709,
+      "title": 750106,
+      "value": "765.00",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305641CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46710,
+      "title": 749287,
+      "value": "469.70",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305137CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46711,
+      "title": 749388,
+      "value": "190.30",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305514CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46713,
+      "title": 749308,
+      "value": "91.20",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305148CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46714,
+      "title": 750012,
+      "value": "83.40",
+      "bank_date": "2026-07-10",
+      "title_doc": "000012413",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46715,
+      "title": 749389,
+      "value": "174.50",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305188CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46718,
+      "title": 750105,
+      "value": "459.80",
+      "bank_date": "2026-07-10",
+      "title_doc": "000305640CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46719,
+      "title": 749365,
+      "value": "327.40",
+      "bank_date": "2026-07-10",
+      "title_doc": "000012400",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46726,
+      "title": 750055,
+      "value": "459.90",
+      "bank_date": "2026-07-13",
+      "title_doc": "000012416",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46727,
+      "title": 749599,
+      "value": "260.96",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305310CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46728,
+      "title": 749618,
+      "value": "325.46",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305326CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46729,
+      "title": 750061,
+      "value": "95.60",
+      "bank_date": "2026-07-13",
+      "title_doc": "000012417",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46730,
+      "title": 749622,
+      "value": "138.49",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305330CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46731,
+      "title": 749664,
+      "value": "410.20",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305358CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46732,
+      "title": 749665,
+      "value": "30.11",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305359CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46733,
+      "title": 749680,
+      "value": "399.60",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305365CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46734,
+      "title": 749714,
+      "value": "199.40",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305389CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46735,
+      "title": 749715,
+      "value": "286.67",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305390CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46737,
+      "title": 749759,
+      "value": "65.18",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305523CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46738,
+      "title": 750437,
+      "value": "806.79",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305869CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46739,
+      "title": 749799,
+      "value": "67.98",
+      "bank_date": "2026-07-14",
+      "title_doc": "000012409",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46740,
+      "title": 749839,
+      "value": "622.92",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305463CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46741,
+      "title": 749837,
+      "value": "343.29",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305461CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46742,
+      "title": 749847,
+      "value": "167.00",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305468CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46743,
+      "title": 752025,
+      "value": "228.90",
+      "bank_date": "2026-07-14",
+      "title_doc": "000012455",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46744,
+      "title": 752026,
+      "value": "1439.20",
+      "bank_date": "2026-07-14",
+      "title_doc": "000012457",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46746,
+      "title": 749902,
+      "value": "611.72",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305516CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46748,
+      "title": 749962,
+      "value": "45.30",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305557CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46749,
+      "title": 752024,
+      "value": "1307.80",
+      "bank_date": "2026-07-14",
+      "title_doc": "000012454",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46750,
+      "title": 750041,
+      "value": "29.50",
+      "bank_date": "2026-07-14",
+      "title_doc": "000305604CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46752,
+      "title": 751262,
+      "value": "479.88",
+      "bank_date": "2026-07-14",
+      "title_doc": "000306347CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46753,
+      "title": 750124,
+      "value": "379.80",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305651CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46754,
+      "title": 750676,
+      "value": "317.90",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305999CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46755,
+      "title": 752027,
+      "value": "901.80",
+      "bank_date": "2026-07-15",
+      "title_doc": "000012456",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46758,
+      "title": 750218,
+      "value": "113.74",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305716CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46759,
+      "title": 750213,
+      "value": "123.70",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305713CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46760,
+      "title": 750232,
+      "value": "107.80",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305727CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46762,
+      "title": 750261,
+      "value": "690.81",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305746CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46763,
+      "title": 752349,
+      "value": "433.79",
+      "bank_date": "2026-07-15",
+      "title_doc": "000306995CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46764,
+      "title": 750269,
+      "value": "392.78",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305910CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46766,
+      "title": 750288,
+      "value": "125.40",
+      "bank_date": "2026-07-15",
+      "title_doc": "000305760CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46768,
+      "title": 750305,
+      "value": "188.89",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305773CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46769,
+      "title": 752358,
+      "value": "250.00",
+      "bank_date": "2026-07-16",
+      "title_doc": "000307001CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46770,
+      "title": 750315,
+      "value": "233.94",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305779CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46771,
+      "title": 752028,
+      "value": "207.00",
+      "bank_date": "2026-07-16",
+      "title_doc": "000012458",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46772,
+      "title": 752130,
+      "value": "2196.48",
+      "bank_date": "2026-07-16",
+      "title_doc": "000012480",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46773,
+      "title": 750384,
+      "value": "210.00",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305824CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46774,
+      "title": 750380,
+      "value": "212.10",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305820CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46776,
+      "title": 750409,
+      "value": "102.79",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305840CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46777,
+      "title": 750460,
+      "value": "500.00",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305887CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46778,
+      "title": 750456,
+      "value": "305.86",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305883CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46779,
+      "title": 752069,
+      "value": "4.49",
+      "bank_date": "2026-07-16",
+      "title_doc": "000306821CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46780,
+      "title": 750455,
+      "value": "566.67",
+      "bank_date": "2026-07-16",
+      "title_doc": "000305882CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46783,
+      "title": 750489,
+      "value": "124.78",
+      "bank_date": "2026-07-17",
+      "title_doc": "000305908CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46785,
+      "title": 750572,
+      "value": "582.50",
+      "bank_date": "2026-07-17",
+      "title_doc": "000307509CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46786,
+      "title": 750593,
+      "value": "147.45",
+      "bank_date": "2026-07-17",
+      "title_doc": "000305970CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46787,
+      "title": 752129,
+      "value": "809.05",
+      "bank_date": "2026-07-17",
+      "title_doc": "000012483",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46788,
+      "title": 750549,
+      "value": "266.87",
+      "bank_date": "2026-07-17",
+      "title_doc": "000305947CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46789,
+      "title": 750548,
+      "value": "182.38",
+      "bank_date": "2026-07-17",
+      "title_doc": "000305946CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46790,
+      "title": 752375,
+      "value": "58.69",
+      "bank_date": "2026-07-17",
+      "title_doc": "000307013CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46799,
+      "title": 750913,
+      "value": "384.85",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306143CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46800,
+      "title": 750936,
+      "value": "355.00",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306163CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46801,
+      "title": 750958,
+      "value": "197.94",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306183CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46802,
+      "title": 750957,
+      "value": "39.99",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306182CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46804,
+      "title": 751026,
+      "value": "155.96",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306220CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46806,
+      "title": 751075,
+      "value": "174.55",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306241CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46808,
+      "title": 751109,
+      "value": "349.80",
+      "bank_date": "2026-07-21",
+      "title_doc": "000012435",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46809,
+      "title": 752372,
+      "value": "74.74",
+      "bank_date": "2026-07-21",
+      "title_doc": "000307010CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46810,
+      "title": 751117,
+      "value": "661.55",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306263CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46811,
+      "title": 751116,
+      "value": "54.00",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306262CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46812,
+      "title": 751124,
+      "value": "714.55",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306266CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46813,
+      "title": 751125,
+      "value": "49.80",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306267CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46814,
+      "title": 751129,
+      "value": "28.50",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306268CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46815,
+      "title": 751168,
+      "value": "69.80",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306289CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46816,
+      "title": 751145,
+      "value": "73.89",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306277CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46817,
+      "title": 751148,
+      "value": "83.78",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306278CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46818,
+      "title": 751166,
+      "value": "479.00",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306287CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46819,
+      "title": 751167,
+      "value": "311.92",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306288CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46821,
+      "title": 751165,
+      "value": "136.77",
+      "bank_date": "2026-07-21",
+      "title_doc": "000306286CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46822,
+      "title": 751176,
+      "value": "779.80",
+      "bank_date": "2026-07-22",
+      "title_doc": "000306294CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46823,
+      "title": 751258,
+      "value": "356.85",
+      "bank_date": "2026-07-22",
+      "title_doc": "000306344CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46824,
+      "title": 751240,
+      "value": "479.80",
+      "bank_date": "2026-07-22",
+      "title_doc": "000306334CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46825,
+      "title": 751245,
+      "value": "64.90",
+      "bank_date": "2026-07-22",
+      "title_doc": "000306337CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46826,
+      "title": 752374,
+      "value": "549.80",
+      "bank_date": "2026-07-22",
+      "title_doc": "000307012CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46827,
+      "title": 752347,
+      "value": "404.75",
+      "bank_date": "2026-07-22",
+      "title_doc": "000012484",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46828,
+      "title": 751285,
+      "value": "568.11",
+      "bank_date": "2026-07-22",
+      "title_doc": "000306361CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46830,
+      "title": 751280,
+      "value": "382.08",
+      "bank_date": "2026-07-22",
+      "title_doc": "000307506CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46832,
+      "title": 751384,
+      "value": "122.70",
+      "bank_date": "2026-07-23",
+      "title_doc": "000012441",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46834,
+      "title": 751482,
+      "value": "410.21",
+      "bank_date": "2026-07-23",
+      "title_doc": "000306474CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46835,
+      "title": 752352,
+      "value": "730.00",
+      "bank_date": "2026-07-23",
+      "title_doc": "000306997CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46838,
+      "title": 751617,
+      "value": "128.80",
+      "bank_date": "2026-07-23",
+      "title_doc": "000012448",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46839,
+      "title": 752363,
+      "value": "294.55",
+      "bank_date": "2026-07-24",
+      "title_doc": "000307003CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46841,
+      "title": 752369,
+      "value": "139.60",
+      "bank_date": "2026-07-24",
+      "title_doc": "000307007CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46842,
+      "title": 751627,
+      "value": "1516.80",
+      "bank_date": "2026-07-24",
+      "title_doc": "000306561CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46843,
+      "title": 751636,
+      "value": "30.00",
+      "bank_date": "2026-07-24",
+      "title_doc": "000306566CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46845,
+      "title": 751652,
+      "value": "108.79",
+      "bank_date": "2026-07-24",
+      "title_doc": "000306578CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46849,
+      "title": 751796,
+      "value": "6.00",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306666CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46850,
+      "title": 751795,
+      "value": "150.00",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306666CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46851,
+      "title": 752370,
+      "value": "101.40",
+      "bank_date": "2026-07-27",
+      "title_doc": "000307008CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46852,
+      "title": 751809,
+      "value": "460.85",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306674CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46854,
+      "title": 751819,
+      "value": "477.60",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306681CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46857,
+      "title": 751836,
+      "value": "749.50",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306691CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46858,
+      "title": 751879,
+      "value": "137.70",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306719CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46859,
+      "title": 751888,
+      "value": "359.15",
+      "bank_date": "2026-07-27",
+      "title_doc": "656038",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46860,
+      "title": 751903,
+      "value": "41.70",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306726CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46861,
+      "title": 752238,
+      "value": "1090.70",
+      "bank_date": "2026-07-28",
+      "title_doc": "000306922CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46863,
+      "title": 751951,
+      "value": "152.68",
+      "bank_date": "2026-07-28",
+      "title_doc": "000306758CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46865,
+      "title": 752429,
+      "value": "1849.87",
+      "bank_date": "2026-07-28",
+      "title_doc": "000307048CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46866,
+      "title": 752038,
+      "value": "585.00",
+      "bank_date": "2026-07-28",
+      "title_doc": "000306806CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46867,
+      "title": 752935,
+      "value": "233.94",
+      "bank_date": "2026-07-28",
+      "title_doc": "000307414CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46868,
+      "title": 752197,
+      "value": "404.60",
+      "bank_date": "2026-07-28",
+      "title_doc": "000306893CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46869,
+      "title": 752543,
+      "value": "215.36",
+      "bank_date": "2026-07-28",
+      "title_doc": "000307121CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46870,
+      "title": 752381,
+      "value": "598.50",
+      "bank_date": "2026-07-28",
+      "title_doc": "000307020CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46871,
+      "title": 752405,
+      "value": "139.80",
+      "bank_date": "2026-07-28",
+      "title_doc": "656214",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46872,
+      "title": 752951,
+      "value": "163.50",
+      "bank_date": "2026-07-29",
+      "title_doc": "000307427CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46874,
+      "title": 752439,
+      "value": "332.07",
+      "bank_date": "2026-07-29",
+      "title_doc": "000307056CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46875,
+      "title": 752486,
+      "value": "275.60",
+      "bank_date": "2026-07-29",
+      "title_doc": "000012465",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46876,
+      "title": 752537,
+      "value": "829.70",
+      "bank_date": "2026-07-29",
+      "title_doc": "000307119CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46879,
+      "title": 752536,
+      "value": "39.99",
+      "bank_date": "2026-07-29",
+      "title_doc": "000307118CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46880,
+      "title": 752538,
+      "value": "610.70",
+      "bank_date": "2026-07-29",
+      "title_doc": "000307120CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46882,
+      "title": 752652,
+      "value": "200.00",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307184CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46883,
+      "title": 752653,
+      "value": "216.30",
+      "bank_date": "2026-07-30",
+      "title_doc": "000012468",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46885,
+      "title": 752664,
+      "value": "39.80",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307194CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46886,
+      "title": 752745,
+      "value": "181.58",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307272CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46887,
+      "title": 752700,
+      "value": "29.90",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307218CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46888,
+      "title": 752713,
+      "value": "87.60",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307225CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46889,
+      "title": 752730,
+      "value": "368.92",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307234CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46890,
+      "title": 753020,
+      "value": "49.75",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307466CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46891,
+      "title": 752738,
+      "value": "61.34",
+      "bank_date": "2026-07-30",
+      "title_doc": "656532",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46892,
+      "title": 752742,
+      "value": "2.99",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307489CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46894,
+      "title": 752776,
+      "value": "830.09",
+      "bank_date": "2026-07-31",
+      "title_doc": "000307287CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46896,
+      "title": 753711,
+      "value": "370.70",
+      "bank_date": "2026-07-31",
+      "title_doc": "000307918CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46899,
+      "title": 752872,
+      "value": "570.44",
+      "bank_date": "2026-07-31",
+      "title_doc": "000012475",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46902,
+      "title": 753029,
+      "value": "949.50",
+      "bank_date": "2026-07-31",
+      "title_doc": "000307473CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46910,
+      "title": 753237,
+      "value": "223.56",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307639CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46911,
+      "title": 753247,
+      "value": "101.70",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307645CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46913,
+      "title": 753291,
+      "value": "84.90",
+      "bank_date": "2026-08-03",
+      "title_doc": "000012488",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46914,
+      "title": 753293,
+      "value": "668.30",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307676CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46915,
+      "title": 753321,
+      "value": "584.85",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307694CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46916,
+      "title": 755770,
+      "value": "617.30",
+      "bank_date": "2026-08-03",
+      "title_doc": "000309244CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46918,
+      "title": 753342,
+      "value": "114.86",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307705CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46921,
+      "title": 753489,
+      "value": "184.60",
+      "bank_date": "2026-08-04",
+      "title_doc": "000307793CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46922,
+      "title": 753529,
+      "value": "363.95",
+      "bank_date": "2026-08-04",
+      "title_doc": "000307815CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46923,
+      "title": 755549,
+      "value": "64.60",
+      "bank_date": "2026-08-04",
+      "title_doc": "000309100CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46924,
+      "title": 754091,
+      "value": "250.00",
+      "bank_date": "2026-08-04",
+      "title_doc": "000012550",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46925,
+      "title": 753596,
+      "value": "53.33",
+      "bank_date": "2026-08-05",
+      "title_doc": "000309288CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46926,
+      "title": 753678,
+      "value": "305.24",
+      "bank_date": "2026-08-05",
+      "title_doc": "000307901CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46927,
+      "title": 753681,
+      "value": "5.00",
+      "bank_date": "2026-08-05",
+      "title_doc": "000307904CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46929,
+      "title": 753715,
+      "value": "37.89",
+      "bank_date": "2026-08-05",
+      "title_doc": "000307920CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46930,
+      "title": 753746,
+      "value": "465.50",
+      "bank_date": "2026-08-05",
+      "title_doc": "000307946CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46932,
+      "title": 753765,
+      "value": "1606.85",
+      "bank_date": "2026-08-06",
+      "title_doc": "000307958CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46934,
+      "title": 753894,
+      "value": "23.90",
+      "bank_date": "2026-08-06",
+      "title_doc": "000308038CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46935,
+      "title": 753908,
+      "value": "94.62",
+      "bank_date": "2026-08-07",
+      "title_doc": "000308045CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46938,
+      "title": 753941,
+      "value": "98.97",
+      "bank_date": "2026-08-07",
+      "title_doc": "000308065CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46939,
+      "title": 753963,
+      "value": "277.67",
+      "bank_date": "2026-08-07",
+      "title_doc": "000308083CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46941,
+      "title": 755773,
+      "value": "215.79",
+      "bank_date": "2026-08-07",
+      "title_doc": "000309246CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46942,
+      "title": 754002,
+      "value": "39.20",
+      "bank_date": "2026-08-07",
+      "title_doc": "000308111CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46945,
+      "title": 754068,
+      "value": "951.50",
+      "bank_date": "2026-08-07",
+      "title_doc": "000012549",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46950,
+      "title": 754269,
+      "value": "155.80",
+      "bank_date": "2026-08-10",
+      "title_doc": "000308271CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46951,
+      "title": 754268,
+      "value": "112.90",
+      "bank_date": "2026-08-10",
+      "title_doc": "000308270CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46953,
+      "title": 754295,
+      "value": "553.04",
+      "bank_date": "2026-08-11",
+      "title_doc": "000308295CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46957,
+      "title": 755627,
+      "value": "417.80",
+      "bank_date": "2026-08-11",
+      "title_doc": "000309147CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46958,
+      "title": 754406,
+      "value": "283.58",
+      "bank_date": "2026-08-12",
+      "title_doc": "000308383CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46959,
+      "title": 755649,
+      "value": "134.57",
+      "bank_date": "2026-08-12",
+      "title_doc": "000309162CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46960,
+      "title": 754509,
+      "value": "51.90",
+      "bank_date": "2026-08-12",
+      "title_doc": "000308453CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46961,
+      "title": 754510,
+      "value": "116.97",
+      "bank_date": "2026-08-12",
+      "title_doc": "000308454CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46962,
+      "title": 754507,
+      "value": "77.98",
+      "bank_date": "2026-08-12",
+      "title_doc": "000308451CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46963,
+      "title": 754508,
+      "value": "252.30",
+      "bank_date": "2026-08-12",
+      "title_doc": "000308452CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46966,
+      "title": 754575,
+      "value": "834.29",
+      "bank_date": "2026-08-13",
+      "title_doc": "000308490CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46969,
+      "title": 754744,
+      "value": "121.50",
+      "bank_date": "2026-08-14",
+      "title_doc": "000308593CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46970,
+      "title": 755682,
+      "value": "25.00",
+      "bank_date": "2026-08-14",
+      "title_doc": "000309181CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46972,
+      "title": 754820,
+      "value": "8644.20",
+      "bank_date": "2026-08-14",
+      "title_doc": "000012566",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46973,
+      "title": 756318,
+      "value": "149.78",
+      "bank_date": "2026-08-14",
+      "title_doc": "000309637CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46974,
+      "title": 755124,
+      "value": "561.50",
+      "bank_date": "2026-08-14",
+      "title_doc": "000012581",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46978,
+      "title": 755122,
+      "value": "253.90",
+      "bank_date": "2026-08-17",
+      "title_doc": "000308841CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46982,
+      "title": 755102,
+      "value": "3140.70",
+      "bank_date": "2026-08-17",
+      "title_doc": "000012572",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46985,
+      "title": 755188,
+      "value": "602.78",
+      "bank_date": "2026-08-17",
+      "title_doc": "000012575",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46987,
+      "title": 755231,
+      "value": "51.70",
+      "bank_date": "2026-08-18",
+      "title_doc": "000308907CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46988,
+      "title": 755744,
+      "value": "951.36",
+      "bank_date": "2026-08-18",
+      "title_doc": "000309224CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46989,
+      "title": 755763,
+      "value": "239.60",
+      "bank_date": "2026-08-18",
+      "title_doc": "000309237CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46990,
+      "title": 755247,
+      "value": "26.70",
+      "bank_date": "2026-08-18",
+      "title_doc": "000309285CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46991,
+      "title": 755279,
+      "value": "389.90",
+      "bank_date": "2026-08-18",
+      "title_doc": "000308936CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46992,
+      "title": 755275,
+      "value": "110.27",
+      "bank_date": "2026-08-18",
+      "title_doc": "658816",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46993,
+      "title": 755280,
+      "value": "58.89",
+      "bank_date": "2026-08-18",
+      "title_doc": "000308937CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46996,
+      "title": 755318,
+      "value": "246.87",
+      "bank_date": "2026-08-19",
+      "title_doc": "000308957CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46997,
+      "title": 755338,
+      "value": "247.57",
+      "bank_date": "2026-08-19",
+      "title_doc": "000308970CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46998,
+      "title": 755348,
+      "value": "53.80",
+      "bank_date": "2026-08-19",
+      "title_doc": "000308978CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46999,
+      "title": 755363,
+      "value": "285.00",
+      "bank_date": "2026-08-19",
+      "title_doc": "000308988CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47000,
+      "title": 755424,
+      "value": "130.00",
+      "bank_date": "2026-08-19",
+      "title_doc": "000309030CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47001,
+      "title": 755339,
+      "value": "13.40",
+      "bank_date": "2026-08-19",
+      "title_doc": "000308971CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47003,
+      "title": 755525,
+      "value": "1079.60",
+      "bank_date": "2026-08-19",
+      "title_doc": "000309085CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47004,
+      "title": 755792,
+      "value": "859.38",
+      "bank_date": "2026-08-19",
+      "title_doc": "000309299CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47005,
+      "title": 756403,
+      "value": "46.90",
+      "bank_date": "2026-08-20",
+      "title_doc": "000309693CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47006,
+      "title": 755842,
+      "value": "47.00",
+      "bank_date": "2026-08-20",
+      "title_doc": "000309579CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47008,
+      "title": 756425,
+      "value": "27.90",
+      "bank_date": "2026-08-20",
+      "title_doc": "000309708CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47009,
+      "title": 755848,
+      "value": "50.00",
+      "bank_date": "2026-08-20",
+      "title_doc": "000309331CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47010,
+      "title": 755909,
+      "value": "698.90",
+      "bank_date": "2026-08-20",
+      "title_doc": "000012586",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47013,
+      "title": 755945,
+      "value": "44.24",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309389CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47014,
+      "title": 755952,
+      "value": "34.40",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309395CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47015,
+      "title": 755978,
+      "value": "159.96",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309414CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47016,
+      "title": 755960,
+      "value": "156.29",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309400CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47017,
+      "title": 755962,
+      "value": "8.90",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309401CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47018,
+      "title": 755983,
+      "value": "64.27",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309417CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47019,
+      "title": 756483,
+      "value": "215.80",
+      "bank_date": "2026-08-21",
+      "title_doc": "000012603",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47020,
+      "title": 756003,
+      "value": "321.69",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309431CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47022,
+      "title": 756447,
+      "value": "75.00",
+      "bank_date": "2026-08-21",
+      "title_doc": "000012619",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47023,
+      "title": 756024,
+      "value": "6.50",
+      "bank_date": "2026-08-21",
+      "title_doc": "000309445CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47031,
+      "title": 756223,
+      "value": "232.18",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309573CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47032,
+      "title": 756263,
+      "value": "73.40",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309596CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47033,
+      "title": 756292,
+      "value": "134.90",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309617CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47034,
+      "title": 756337,
+      "value": "376.90",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309649CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47035,
+      "title": 756309,
+      "value": "5384.70",
+      "bank_date": "2026-08-24",
+      "title_doc": "000012601",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47037,
+      "title": 756358,
+      "value": "309.89",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309666CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47038,
+      "title": 756364,
+      "value": "498.20",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309671CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47039,
+      "title": 756369,
+      "value": "281.40",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309675CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47040,
+      "title": 756373,
+      "value": "24.90",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309677CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47042,
+      "title": 756515,
+      "value": "3124.74",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309767CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47043,
+      "title": 756514,
+      "value": "454.25",
+      "bank_date": "2026-08-25",
+      "title_doc": "000309766CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47046,
+      "title": 756651,
+      "value": "629.90",
+      "bank_date": "2026-08-26",
+      "title_doc": "000309850CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47047,
+      "title": 756695,
+      "value": "259.40",
+      "bank_date": "2026-08-26",
+      "title_doc": "000309876CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47052,
+      "title": 756821,
+      "value": "90.00",
+      "bank_date": "2026-08-27",
+      "title_doc": "000309949CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47053,
+      "title": 756877,
+      "value": "7.00",
+      "bank_date": "2026-08-28",
+      "title_doc": "000309985CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47054,
+      "title": 757201,
+      "value": "20.00",
+      "bank_date": "2026-08-28",
+      "title_doc": "000310214CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47055,
+      "title": 756883,
+      "value": "9.98",
+      "bank_date": "2026-08-28",
+      "title_doc": "000309987CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47056,
+      "title": 756904,
+      "value": "141.00",
+      "bank_date": "2026-08-28",
+      "title_doc": "000310002CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47058,
+      "title": 756933,
+      "value": "4.78",
+      "bank_date": "2026-08-28",
+      "title_doc": "000310018CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47067,
+      "title": 757151,
+      "value": "165.11",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310157CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47068,
+      "title": 757232,
+      "value": "253.59",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310237CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47069,
+      "title": 757224,
+      "value": "78.50",
+      "bank_date": "2026-08-31",
+      "title_doc": "000012620",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47070,
+      "title": 757253,
+      "value": "39.20",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310251CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47073,
+      "title": 757292,
+      "value": "766.78",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310277CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47075,
+      "title": 758878,
+      "value": "135.80",
+      "bank_date": "2026-09-01",
+      "title_doc": "000311288CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47076,
+      "title": 757337,
+      "value": "12.00",
+      "bank_date": "2026-09-01",
+      "title_doc": "000310304CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47077,
+      "title": 758874,
+      "value": "729.00",
+      "bank_date": "2026-09-01",
+      "title_doc": "000311285CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47079,
+      "title": 757403,
+      "value": "341.69",
+      "bank_date": "2026-09-01",
+      "title_doc": "000310349CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47080,
+      "title": 757410,
+      "value": "403.40",
+      "bank_date": "2026-09-01",
+      "title_doc": "000310355CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47082,
+      "title": 757420,
+      "value": "4500.00",
+      "bank_date": "2026-09-01",
+      "title_doc": "000012662",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47083,
+      "title": 757424,
+      "value": "899.00",
+      "bank_date": "2026-09-01",
+      "title_doc": "000012663",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47084,
+      "title": 759008,
+      "value": "319.48",
+      "bank_date": "2026-09-02",
+      "title_doc": "000311368CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47085,
+      "title": 757447,
+      "value": "389.90",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310383CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47086,
+      "title": 757491,
+      "value": "589.50",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310407CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47087,
+      "title": 757585,
+      "value": "167.86",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310469CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47090,
+      "title": 757547,
+      "value": "99.00",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310445CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47091,
+      "title": 757563,
+      "value": "10.90",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310455CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47092,
+      "title": 757575,
+      "value": "1929.63",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310461CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47097,
+      "title": 758027,
+      "value": "98.59",
+      "bank_date": "2026-09-03",
+      "title_doc": "000310756CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47099,
+      "title": 759007,
+      "value": "299.00",
+      "bank_date": "2026-09-03",
+      "title_doc": "000311367CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47100,
+      "title": 757670,
+      "value": "66.60",
+      "bank_date": "2026-09-03",
+      "title_doc": "000310519CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47101,
+      "title": 757753,
+      "value": "23.90",
+      "bank_date": "2026-09-03",
+      "title_doc": "000310576CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47102,
+      "title": 757740,
+      "value": "373.40",
+      "bank_date": "2026-09-03",
+      "title_doc": "000310567CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47107,
+      "title": 758026,
+      "value": "338.37",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310755CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47110,
+      "title": 758024,
+      "value": "1347.10",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310754CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47112,
+      "title": 757910,
+      "value": "341.00",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310676CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47119,
+      "title": 758091,
+      "value": "538.20",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310800CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47120,
+      "title": 758100,
+      "value": "50.00",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310806CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47121,
+      "title": 758138,
+      "value": "579.89",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310820CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47122,
+      "title": 758167,
+      "value": "359.65",
+      "bank_date": "2026-09-08",
+      "title_doc": "000012676",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47124,
+      "title": 758963,
+      "value": "49.70",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311340CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47125,
+      "title": 758222,
+      "value": "224.85",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310873CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47126,
+      "title": 758501,
+      "value": "344.85",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311046CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47127,
+      "title": 758965,
+      "value": "87.90",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311341CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47128,
+      "title": 758218,
+      "value": "18.80",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311932CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47130,
+      "title": 758971,
+      "value": "174.00",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311344CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47131,
+      "title": 758223,
+      "value": "301.20",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311931CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47132,
+      "title": 758752,
+      "value": "1423.39",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311201CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47134,
+      "title": 759004,
+      "value": "103.70",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311365CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47138,
+      "title": 758329,
+      "value": "284.40",
+      "bank_date": "2026-09-09",
+      "title_doc": "000310937CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47139,
+      "title": 758390,
+      "value": "851.23",
+      "bank_date": "2026-09-09",
+      "title_doc": "000012685",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47140,
+      "title": 758451,
+      "value": "938.50",
+      "bank_date": "2026-09-09",
+      "title_doc": "000311013CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47143,
+      "title": 758411,
+      "value": "351.76",
+      "bank_date": "2026-09-10",
+      "title_doc": "000310989CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47144,
+      "title": 758450,
+      "value": "241.66",
+      "bank_date": "2026-09-10",
+      "title_doc": "000311012CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47145,
+      "title": 758506,
+      "value": "326.20",
+      "bank_date": "2026-09-10",
+      "title_doc": "000311049CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47146,
+      "title": 758505,
+      "value": "168.62",
+      "bank_date": "2026-09-10",
+      "title_doc": "000311048CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47148,
+      "title": 758554,
+      "value": "37.75",
+      "bank_date": "2026-09-11",
+      "title_doc": "000311078CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47149,
+      "title": 758606,
+      "value": "42.70",
+      "bank_date": "2026-09-11",
+      "title_doc": "000311113CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47150,
+      "title": 758610,
+      "value": "808.00",
+      "bank_date": "2026-09-11",
+      "title_doc": "000311116CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47161,
+      "title": 759018,
+      "value": "19.80",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311374CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47162,
+      "title": 759023,
+      "value": "93.70",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311377CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47163,
+      "title": 759038,
+      "value": "111.00",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311386CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47164,
+      "title": 759028,
+      "value": "10.90",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311382CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47165,
+      "title": 759044,
+      "value": "807.00",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311391CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47166,
+      "title": 759033,
+      "value": "24.90",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311383CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47167,
+      "title": 759036,
+      "value": "27.80",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311385CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47168,
+      "title": 759048,
+      "value": "3431.09",
+      "bank_date": "2026-09-15",
+      "title_doc": "000012695",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47169,
+      "title": 759084,
+      "value": "129.60",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311415CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47170,
+      "title": 759042,
+      "value": "15.60",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311389CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47176,
+      "title": 759113,
+      "value": "134.60",
+      "bank_date": "2026-09-16",
+      "title_doc": "000311430CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47177,
+      "title": 759099,
+      "value": "10.50",
+      "bank_date": "2026-09-16",
+      "title_doc": "000311423CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47178,
+      "title": 759143,
+      "value": "360.81",
+      "bank_date": "2026-09-16",
+      "title_doc": "000311447CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47179,
+      "title": 759175,
+      "value": "577.32",
+      "bank_date": "2026-09-16",
+      "title_doc": "000311470CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47180,
+      "title": 759277,
+      "value": "21.90",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311528CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47181,
+      "title": 759298,
+      "value": "209.20",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311544CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47182,
+      "title": 759312,
+      "value": "342.70",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311551CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47183,
+      "title": 759329,
+      "value": "17.90",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311927CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47184,
+      "title": 759333,
+      "value": "115.50",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311565CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47185,
+      "title": 759389,
+      "value": "434.50",
+      "bank_date": "2026-09-17",
+      "title_doc": "000311597CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47186,
+      "title": 759397,
+      "value": "340.00",
+      "bank_date": "2026-09-17",
+      "title_doc": "000012711",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47187,
+      "title": 760319,
+      "value": "84.90",
+      "bank_date": "2026-09-17",
+      "title_doc": "000312225CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47188,
+      "title": 759478,
+      "value": "174.50",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311657CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47190,
+      "title": 759473,
+      "value": "449.20",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311652CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47191,
+      "title": 759474,
+      "value": "1170.00",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311653CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47192,
+      "title": 759469,
+      "value": "1559.00",
+      "bank_date": "2026-09-18",
+      "title_doc": "000012698",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47193,
+      "title": 759502,
+      "value": "96.60",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311673CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47195,
+      "title": 759550,
+      "value": "819.70",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311709CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47197,
+      "title": 759569,
+      "value": "116.97",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311721CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47204,
+      "title": 759751,
+      "value": "144.48",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311836CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47205,
+      "title": 759772,
+      "value": "493.70",
+      "bank_date": "2026-09-21",
+      "title_doc": "000012704",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47207,
+      "title": 759800,
+      "value": "436.59",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311864CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47208,
+      "title": 759833,
+      "value": "38.99",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311889CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47209,
+      "title": 759860,
+      "value": "97.27",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311938CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47210,
+      "title": 759855,
+      "value": "289.08",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311934CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47211,
+      "title": 759944,
+      "value": "1384.39",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311990CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47214,
+      "title": 759939,
+      "value": "54.90",
+      "bank_date": "2026-09-22",
+      "title_doc": "000311987CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47215,
+      "title": 759973,
+      "value": "228.48",
+      "bank_date": "2026-09-22",
+      "title_doc": "000312008CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47216,
+      "title": 760002,
+      "value": "11318.90",
+      "bank_date": "2026-09-22",
+      "title_doc": "000012713",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47220,
+      "title": 760078,
+      "value": "119.90",
+      "bank_date": "2026-09-23",
+      "title_doc": "000312075CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47221,
+      "title": 760087,
+      "value": "116.97",
+      "bank_date": "2026-09-23",
+      "title_doc": "000312082CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47222,
+      "title": 760126,
+      "value": "71.00",
+      "bank_date": "2026-09-23",
+      "title_doc": "000312109CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47223,
+      "title": 760146,
+      "value": "229.00",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312122CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47224,
+      "title": 760182,
+      "value": "149.90",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312144CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47227,
+      "title": 760231,
+      "value": "459.76",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312176CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47228,
+      "title": 760267,
+      "value": "49.40",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312190CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47229,
+      "title": 760299,
+      "value": "25.00",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312212CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47230,
+      "title": 760291,
+      "value": "141.50",
+      "bank_date": "2026-09-24",
+      "title_doc": "000312208CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47232,
+      "title": 760369,
+      "value": "1170.00",
+      "bank_date": "2026-09-25",
+      "title_doc": "000012717",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47233,
+      "title": 760362,
+      "value": "55.15",
+      "bank_date": "2026-09-25",
+      "title_doc": "000312254CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47234,
+      "title": 760379,
+      "value": "83.60",
+      "bank_date": "2026-09-25",
+      "title_doc": "000312264CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47235,
+      "title": 760396,
+      "value": "74.80",
+      "bank_date": "2026-09-25",
+      "title_doc": "000312274CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47236,
+      "title": 760468,
+      "value": "149.90",
+      "bank_date": "2026-09-25",
+      "title_doc": "000012721",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47237,
+      "title": 760476,
+      "value": "474.05",
+      "bank_date": "2026-09-25",
+      "title_doc": "000312327CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47245,
+      "title": 760591,
+      "value": "87.20",
+      "bank_date": "2026-09-28",
+      "title_doc": "000312401CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47247,
+      "title": 760647,
+      "value": "339.80",
+      "bank_date": "2026-09-28",
+      "title_doc": "000312440CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47249,
+      "title": 760717,
+      "value": "569.61",
+      "bank_date": "2026-09-28",
+      "title_doc": "000312484CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47250,
+      "title": 760718,
+      "value": "299.80",
+      "bank_date": "2026-09-28",
+      "title_doc": "000312485CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47253,
+      "title": 760753,
+      "value": "92.90",
+      "bank_date": "2026-09-29",
+      "title_doc": "000312508CFE",
+      "rule": "date_venc"
+    },
+    {
+      "item": 47254,
+      "title": 760780,
+      "value": "1800.00",
+      "bank_date": "2026-09-29",
+      "title_doc": "000012731",
+      "rule": "date_venc"
+    },
+    {
+      "item": 46496,
+      "title": 745184,
+      "value": "908.48",
+      "bank_date": "2026-06-12",
+      "title_doc": "000302449CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46504,
+      "title": 745357,
+      "value": "98.70",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302570CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46547,
+      "title": 746092,
+      "value": "313.99",
+      "bank_date": "2026-06-19",
+      "title_doc": "000302970CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46552,
+      "title": 746250,
+      "value": "219.45",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303069CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46602,
+      "title": 747075,
+      "value": "1190.15",
+      "bank_date": "2026-06-29",
+      "title_doc": "000303586CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46603,
+      "title": 747076,
+      "value": "129.90",
+      "bank_date": "2026-06-29",
+      "title_doc": "000303587CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46654,
+      "title": 748367,
+      "value": "245.65",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304541CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46831,
+      "title": 751263,
+      "value": "218.50",
+      "bank_date": "2026-07-22",
+      "title_doc": "000012533",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46864,
+      "title": 751950,
+      "value": "269.87",
+      "bank_date": "2026-07-28",
+      "title_doc": "000306757CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46895,
+      "title": 752924,
+      "value": "356.56",
+      "bank_date": "2026-07-31",
+      "title_doc": "000307405CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46897,
+      "title": 752865,
+      "value": "563.85",
+      "bank_date": "2026-07-31",
+      "title_doc": "000307340CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46968,
+      "title": 754740,
+      "value": "505.88",
+      "bank_date": "2026-08-14",
+      "title_doc": "000308589CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 47089,
+      "title": 757550,
+      "value": "1125.96",
+      "bank_date": "2026-09-02",
+      "title_doc": "000310448CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 47152,
+      "title": 758781,
+      "value": "27.80",
+      "bank_date": "2026-09-14",
+      "title_doc": "000311217CFE",
+      "rule": "date_mov"
+    },
+    {
+      "item": 47252,
+      "title": 760783,
+      "value": "1588.40",
+      "bank_date": "2026-09-29",
+      "title_doc": "000012732",
+      "rule": "date_mov"
+    },
+    {
+      "item": 46494,
+      "title": 744499,
+      "value": "470.79",
+      "bank_date": "2026-06-12",
+      "title_doc": "000012376",
+      "rule": "date"
+    },
+    {
+      "item": 46495,
+      "title": 744901,
+      "value": "1432.32",
+      "bank_date": "2026-06-12",
+      "title_doc": "999614096",
+      "rule": "date"
+    },
+    {
+      "item": 46689,
+      "title": 749025,
+      "value": "17.80",
+      "bank_date": "2026-07-08",
+      "title_doc": "000304940CFE",
+      "rule": "date"
+    },
+    {
+      "item": 46805,
+      "title": 750107,
+      "value": "3358.73",
+      "bank_date": "2026-07-21",
+      "title_doc": "999614854",
+      "rule": "date"
+    },
+    {
+      "item": 46912,
+      "title": 752404,
+      "value": "353.59",
+      "bank_date": "2026-08-03",
+      "title_doc": "656184",
+      "rule": "date"
+    },
+    {
+      "item": 47011,
+      "title": 755402,
+      "value": "70.52",
+      "bank_date": "2026-08-20",
+      "title_doc": "658992",
+      "rule": "date"
+    },
+    {
+      "item": 47066,
+      "title": 756977,
+      "value": "579.80",
+      "bank_date": "2026-08-31",
+      "title_doc": "000012621",
+      "rule": "date"
+    },
+    {
+      "item": 47118,
+      "title": 757059,
+      "value": "158.09",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310789CFE",
+      "rule": "date"
+    },
+    {
+      "item": 46487,
+      "title": 744524,
+      "value": "97.79",
+      "bank_date": "2026-06-11",
+      "title_doc": "649911",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46500,
+      "title": 747364,
+      "value": "389.90",
+      "bank_date": "2026-06-12",
+      "title_doc": "000012294",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46502,
+      "title": 745270,
+      "value": "2350.00",
+      "bank_date": "2026-06-15",
+      "title_doc": "000302510CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46503,
+      "title": 747385,
+      "value": "103.77",
+      "bank_date": "2026-06-15",
+      "title_doc": "000303787CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46528,
+      "title": 747482,
+      "value": "622.70",
+      "bank_date": "2026-06-17",
+      "title_doc": "000303846CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46543,
+      "title": 746336,
+      "value": "117.00",
+      "bank_date": "2026-06-19",
+      "title_doc": "000012266",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46549,
+      "title": 746105,
+      "value": "45.00",
+      "bank_date": "2026-06-19",
+      "title_doc": "000304083CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46550,
+      "title": 747512,
+      "value": "1159.60",
+      "bank_date": "2026-06-19",
+      "title_doc": "000012296",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46564,
+      "title": 746448,
+      "value": "300.00",
+      "bank_date": "2026-06-22",
+      "title_doc": "000304105CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46595,
+      "title": 746841,
+      "value": "322.46",
+      "bank_date": "2026-06-25",
+      "title_doc": "000012280",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46616,
+      "title": 748683,
+      "value": "837.00",
+      "bank_date": "2026-06-30",
+      "title_doc": "000304735CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46625,
+      "title": 747945,
+      "value": "1478.56",
+      "bank_date": "2026-07-01",
+      "title_doc": "000012340",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46652,
+      "title": 748333,
+      "value": "174.17",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304516CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46653,
+      "title": 748360,
+      "value": "21.80",
+      "bank_date": "2026-07-06",
+      "title_doc": "000304536CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46721,
+      "title": 749451,
+      "value": "1351.55",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305222CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46722,
+      "title": 750028,
+      "value": "1148.60",
+      "bank_date": "2026-07-13",
+      "title_doc": "000012415",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46723,
+      "title": 749559,
+      "value": "11.90",
+      "bank_date": "2026-07-13",
+      "title_doc": "000305291CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46794,
+      "title": 750774,
+      "value": "599.00",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306056CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46797,
+      "title": 750778,
+      "value": "45.50",
+      "bank_date": "2026-07-20",
+      "title_doc": "000306059CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46807,
+      "title": 751383,
+      "value": "817.80",
+      "bank_date": "2026-07-21",
+      "title_doc": "000012441",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46848,
+      "title": 751718,
+      "value": "622.89",
+      "bank_date": "2026-07-27",
+      "title_doc": "000306614CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46904,
+      "title": 755556,
+      "value": "100.00",
+      "bank_date": "2026-08-03",
+      "title_doc": "000309105CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46906,
+      "title": 753122,
+      "value": "68.66",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307572CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46907,
+      "title": 753133,
+      "value": "71.01",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307581CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46908,
+      "title": 753141,
+      "value": "113.62",
+      "bank_date": "2026-08-03",
+      "title_doc": "000307586CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46933,
+      "title": 753910,
+      "value": "2246.00",
+      "bank_date": "2026-08-06",
+      "title_doc": "000308047CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46947,
+      "title": 754083,
+      "value": "279.85",
+      "bank_date": "2026-08-10",
+      "title_doc": "000308156CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46955,
+      "title": 754426,
+      "value": "77.98",
+      "bank_date": "2026-08-11",
+      "title_doc": "000308399CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46956,
+      "title": 754425,
+      "value": "594.70",
+      "bank_date": "2026-08-11",
+      "title_doc": "000308398CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46964,
+      "title": 754600,
+      "value": "2666.60",
+      "bank_date": "2026-08-12",
+      "title_doc": "000012561",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 46994,
+      "title": 755923,
+      "value": "400.00",
+      "bank_date": "2026-08-18",
+      "title_doc": "000012597",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47002,
+      "title": 755922,
+      "value": "109.50",
+      "bank_date": "2026-08-19",
+      "title_doc": "000012597",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47026,
+      "title": 756113,
+      "value": "42.00",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309510CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47027,
+      "title": 756181,
+      "value": "29.00",
+      "bank_date": "2026-08-24",
+      "title_doc": "000309547CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47063,
+      "title": 757073,
+      "value": "121.00",
+      "bank_date": "2026-08-28",
+      "title_doc": "000310103CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47065,
+      "title": 757084,
+      "value": "461.82",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310109CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47093,
+      "title": 757612,
+      "value": "1842.70",
+      "bank_date": "2026-09-02",
+      "title_doc": "000012666",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47094,
+      "title": 757611,
+      "value": "350.00",
+      "bank_date": "2026-09-02",
+      "title_doc": "000012665",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47113,
+      "title": 757933,
+      "value": "12.90",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310690CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47114,
+      "title": 758022,
+      "value": "329.34",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310753CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47116,
+      "title": 757958,
+      "value": "119.60",
+      "bank_date": "2026-09-08",
+      "title_doc": "000310706CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47117,
+      "title": 758937,
+      "value": "78.20",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311318CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47137,
+      "title": 758750,
+      "value": "104.00",
+      "bank_date": "2026-09-09",
+      "title_doc": "000311200CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47151,
+      "title": 758630,
+      "value": "204.98",
+      "bank_date": "2026-09-14",
+      "title_doc": "000311128CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47153,
+      "title": 758696,
+      "value": "174.50",
+      "bank_date": "2026-09-14",
+      "title_doc": "000311166CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47158,
+      "title": 758837,
+      "value": "1796.00",
+      "bank_date": "2026-09-14",
+      "title_doc": "000311258CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47159,
+      "title": 758856,
+      "value": "3489.90",
+      "bank_date": "2026-09-14",
+      "title_doc": "000012690",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47198,
+      "title": 759579,
+      "value": "150.00",
+      "bank_date": "2026-09-18",
+      "title_doc": "000311729CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47199,
+      "title": 759643,
+      "value": "53.80",
+      "bank_date": "2026-09-21",
+      "title_doc": "000311767CFE",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47241,
+      "title": 760493,
+      "value": "59.80",
+      "bank_date": "2026-09-28",
+      "title_doc": "663351",
+      "rule": "date_venc_3d"
+    },
+    {
+      "item": 47242,
+      "title": 760581,
+      "value": "336.84",
+      "bank_date": "2026-09-28",
+      "title_doc": "000312392CFE",
+      "rule": "date_venc_3d"
+    }
+  ]
+}

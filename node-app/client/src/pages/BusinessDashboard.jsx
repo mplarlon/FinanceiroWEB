@@ -1,0 +1,88 @@
+import React, { useEffect, useState } from "react";
+import { api } from "../lib/api.js";
+
+const money = value => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const number = value => Number(value || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 });
+
+function Metric({ label, value }) {
+  return <article className="metric"><small>{label}</small><strong>{value}</strong></article>;
+}
+
+function Sales({ data }) {
+  const k = data.kpis || {};
+  return <>
+    <section className="grid">
+      <Metric label="Faturamento" value={money(k.faturamento_total)} />
+      <Metric label="Lucro bruto" value={money(k.lucro_bruto)} />
+      <Metric label="Margem" value={`${number(k.margem_lucro)}%`} />
+      <Metric label="Pedidos" value={number(k.quantidade_vendas)} />
+      <Metric label="Ticket médio" value={money(k.ticket_medio)} />
+    </section>
+    <section className="dashboard-columns">
+      <article className="panel"><h2>Produtos mais vendidos</h2><table className="tabela"><thead><tr><th>Produto</th><th>Qtd.</th><th className="money-cell">Total</th></tr></thead><tbody>
+        {(data.top_produtos || []).map(p => <tr key={p.CODIGO}><td>{p.CODIGO} — {p.PRODUTO}</td><td>{number(p.QTD)}</td><td className="money-cell">{money(p.TOTAL)}</td></tr>)}
+      </tbody></table></article>
+      <article className="panel"><h2>Vendedores</h2><table className="tabela"><thead><tr><th>Vendedor</th><th>Pedidos</th><th className="money-cell">Total</th></tr></thead><tbody>
+        {(data.por_vendedor || []).map(v => <tr key={v.ID}><td>{v.NOME}</td><td>{number(v.QTD)}</td><td className="money-cell">{money(v.TOTAL)}</td></tr>)}
+      </tbody></table></article>
+    </section>
+  </>;
+}
+
+function Purchases({ data }) {
+  const k = data.kpis || {};
+  return <>
+    <section className="grid">
+      <Metric label="Total comprado" value={money(k.total_comprado)} />
+      <Metric label="Entradas" value={number(k.numero_entradas)} />
+      <Metric label="Quantidade" value={number(k.quantidade_comprada)} />
+      <Metric label="Estoque" value={money(k.estoque_valor)} />
+      <Metric label="Abaixo do mínimo" value={number(k.estoque_abaixo_minimo)} />
+    </section>
+    <section className="dashboard-columns">
+      <article className="panel"><h2>Fornecedores</h2><table className="tabela"><thead><tr><th>Fornecedor</th><th>Entradas</th><th className="money-cell">Total</th></tr></thead><tbody>
+        {(data.fornecedores || []).map((f, i) => <tr key={f.ID || i}><td>{f.FORNECEDOR || f.NOME}</td><td>{number(f.ENTRADAS || f.QTD)}</td><td className="money-cell">{money(f.TOTAL)}</td></tr>)}
+      </tbody></table></article>
+      <article className="panel"><h2>Produtos comprados</h2><table className="tabela"><thead><tr><th>Produto</th><th>Qtd.</th><th className="money-cell">Total</th></tr></thead><tbody>
+        {(data.produtos || []).map((p, i) => <tr key={p.CODIGO || i}><td>{p.CODIGO} — {p.PRODUTO}</td><td>{number(p.QTD)}</td><td className="money-cell">{money(p.TOTAL)}</td></tr>)}
+      </tbody></table></article>
+    </section>
+  </>;
+}
+
+export default function BusinessDashboard({ type }) {
+  const [days, setDays] = useState(30);
+  const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const isSales = type === "sales";
+
+  async function load() {
+    setLoading(true); setError("");
+    try {
+      if (isSales) setData(await api.get("/dashboard-vendas/all", { dias: days }));
+      else {
+        const [summary, charts] = await Promise.all([
+          api.get("/dashboard-compras/summary", { dias: days }),
+          api.get("/dashboard-compras/charts", { dias: days })
+        ]);
+        setData({ ...summary, ...charts });
+      }
+    } catch (e) { setError(e.message); }
+    finally { setLoading(false); }
+  }
+
+  useEffect(() => { load(); }, [type]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return <>
+    <section className="panel dashboard-toolbar">
+      <div><h2>{isSales ? "Desempenho de vendas" : "Desempenho de compras"}</h2><p>Indicadores do banco Firebird</p></div>
+      <label>Período <select value={days} onChange={e => setDays(Number(e.target.value))}>
+        <option value={7}>7 dias</option><option value={30}>30 dias</option><option value={90}>90 dias</option><option value={365}>12 meses</option>
+      </select></label>
+      <button onClick={load} disabled={loading}>{loading ? "Atualizando..." : "Atualizar"}</button>
+    </section>
+    {error && <div className="error">{error}</div>}
+    {!error && (isSales ? <Sales data={data} /> : <Purchases data={data} />)}
+  </>;
+}

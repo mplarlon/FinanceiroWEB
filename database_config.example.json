@@ -1,0 +1,12 @@
+{
+  "type": "firebird",
+  "name": "Banco principal",
+  "host": "localhost",
+  "port": 3051,
+  "database": "C:\\Administracao\\db\\MIAUTOMEC.FDB",
+  "user": "SYSDBA",
+  "password": "",
+  "charset": "WIN1252",
+  "role": "",
+  "active": true
+}

@@ -1,0 +1,18 @@
+{
+  "enabled": false,
+  "provider": "acbr_monitor",
+  "host": "127.0.0.1",
+  "port": 3434,
+  "work_dir": "C:\\Dashboard\\acbr\\temporarios",
+  "certificate_thumbprint": "THUMBPRINT_DO_CERTIFICADO_NO_WINDOWS",
+  "cnpj": "PREENCHA_COM_O_CNPJ_SEM_MASCARA",
+  "ambiente": "homologacao",
+  "crt": 3,
+  "natureza_operacao": "VENDA DE MERCADORIA",
+  "meio_pagamento": "01",
+  "aliq_ibs_uf": 0.1,
+  "aliq_ibs_mun": 0,
+  "timeout_seconds": 60,
+  "verify_ssl": true,
+  "response_idle_seconds": 1.5
+}

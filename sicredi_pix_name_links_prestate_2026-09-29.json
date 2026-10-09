@@ -1,0 +1,93 @@
+{
+  "created_at": "2026-09-29T10:32:34.733368",
+  "matches": [
+    {
+      "item": 46700,
+      "title": 748154,
+      "bank_value": "2743.20",
+      "title_value": "2743.20",
+      "difference": "0",
+      "reason": "documento"
+    },
+    {
+      "item": 46781,
+      "title": 750976,
+      "bank_value": "199.40",
+      "title_value": "199.40",
+      "difference": "0",
+      "reason": "documento"
+    },
+    {
+      "item": 46795,
+      "title": 751261,
+      "bank_value": "84.90",
+      "title_value": "84.90",
+      "difference": "0",
+      "reason": "documento"
+    },
+    {
+      "item": 46909,
+      "title": 752484,
+      "bank_value": "390.40",
+      "title_value": "390.40",
+      "difference": "0",
+      "reason": "documento"
+    },
+    {
+      "item": 47061,
+      "title": 757068,
+      "bank_value": "13576.46",
+      "title_value": "13576.46",
+      "difference": "0",
+      "reason": "documento"
+    },
+    {
+      "item": 46551,
+      "title": 747519,
+      "bank_value": "99.00",
+      "title_value": "99.90",
+      "difference": "-0.9",
+      "reason": "documento"
+    },
+    {
+      "item": 46712,
+      "title": 748930,
+      "bank_value": "269.58",
+      "title_value": "259.78",
+      "difference": "9.8",
+      "reason": "documento"
+    },
+    {
+      "item": 46975,
+      "title": 754861,
+      "bank_value": "36335.81",
+      "title_value": "36336.01",
+      "difference": "-0.2",
+      "reason": "documento"
+    },
+    {
+      "item": 47096,
+      "title": 757644,
+      "bank_value": "160.00",
+      "title_value": "148.84",
+      "difference": "11.16",
+      "reason": "documento"
+    },
+    {
+      "item": 47202,
+      "title": 759748,
+      "bank_value": "915.00",
+      "title_value": "915.05",
+      "difference": "-0.05",
+      "reason": "documento"
+    },
+    {
+      "item": 47238,
+      "title": 760490,
+      "bank_value": "210.00",
+      "title_value": "209.94",
+      "difference": "0.06",
+      "reason": "documento"
+    }
+  ]
+}

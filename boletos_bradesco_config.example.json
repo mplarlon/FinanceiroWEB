@@ -1,0 +1,16 @@
+{
+  "ambiente": "homologacao",
+  "token_url": "URL_FORNECIDA_PELO_BRADESCO",
+  "issue_url": "URL_FORNECIDA_PELO_BRADESCO",
+  "query_url": "URL_FORNECIDA_PELO_BRADESCO",
+  "cancel_url": "URL_FORNECIDA_PELO_BRADESCO",
+  "client_id": "",
+  "client_secret": "",
+  "agencia": "",
+  "conta": "",
+  "carteira": "",
+  "convenio": "",
+  "cert_path": "",
+  "key_path": "",
+  "homologado": false
+}
