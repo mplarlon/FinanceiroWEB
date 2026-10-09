@@ -1,0 +1,13 @@
+{
+  "ambiente": "homologacao",
+  "client_id": "",
+  "client_secret": "",
+  "app_key": "",
+  "numero_convenio": "",
+  "numero_carteira": "17",
+  "variacao_carteira": "35",
+  "codigo_modalidade": 1,
+  "scope": "cobrancas.boletos-info cobrancas.boletos-requisicao",
+  "dias_limite_recebimento": 30,
+  "homologado": false
+}

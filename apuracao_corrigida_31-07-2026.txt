@@ -1,0 +1,30 @@
+APURACAO CORRIGIDA - 31/07/2026
+
+Fonte: E:\REP00004004530003513.txt
+Referencia: batidas individuais de 30/07/2026.
+Regra provisoria de hora extra: excedente a 8h por dia de segunda a sexta.
+Observacao: horarios marcados como inferidos nao constam no REP original.
+
+COLABORADOR | BATIDAS CONSIDERADAS EM 31/07 | HORAS TRABALHADAS | HORAS EXTRAS | CORRECAO INFERIDA
+ADRIANA SEVERINO DA SILVA | 08:18, 12:13, 13:13, 17:33 | 8h15 | 0h15 | saida 17:33
+ANDERSON ANTONIO VICENTE | 08:07, 12:38, 13:37, 17:37 | 8h31 | 0h31 | saida 17:37
+ANDRE LUIZ SILVA DOS SANTOS | 07:45, 11:38, 12:29, 17:01 | 8h25 | 0h25 | entrada 07:45, retorno 12:29 e saida 17:01
+ANTONIO DE JESUS | 07:47, 12:06, 13:03, 17:01 | 8h17 | 0h17 | saida 17:01
+DENISE DE MOURA | 10:40, 12:43, 13:45, 17:33 | 5h51 | 0h00 | saida 17:33
+EDMAR DOS SANTOS | 08:06, 12:18, 12:59, 16:57 | 8h10 | 0h10 | saida 16:57
+EDNALDO VICENTE BARBALHO | 08:04, 11:27, 12:15, 16:57 | 8h05 | 0h05 | saida 16:57
+FLAVIA MARIA CORDEIRO DOS SANTOS | 07:47, 13:57, 14:57, 17:24 | 8h37 | 0h37 | saida 17:24
+IONE DA SILVA DELGADO XAVIER | 07:59, 13:33, 14:30, 17:33 | 8h37 | 0h37 | saida 17:33
+LEONARDO MATIAS PEREIRA | 08:16, 11:11, 12:13, 17:01 | 7h43 | 0h00 | saida 17:01
+MICAEL SANTOS ROCHA DA SILVA | 08:21, 11:26, 12:37, 17:37 | 8h05 | 0h05 | saida 17:37
+RAIMUNDO NONATO DAMASCENO | 08:01, 11:29, 12:27, 17:00 | 8h01 | 0h01 | saida 17:00
+VALCIR BATISTA | 07:56, 13:19, 14:22, 16:58 | 7h59 | 0h00 | retorno 14:22 e saida 16:58
+
+TOTAL DE HORAS EXTRAS INFERIDAS EM 31/07: 3h03
+TOTAL MENSAL CALCULAVEL, INCLUINDO A CORRECAO DE 31/07: 86h31
+
+CRITERIO PARA INTERVALOS RECONSTRUIDOS
+- Andre Luiz: intervalo do dia 30 durou 51 minutos; aplicado apos a saida registrada as 11:38, resultando em retorno as 12:29.
+- Valcir Batista: intervalo do dia 30 durou 63 minutos; aplicado apos a saida registrada as 13:19, resultando em retorno as 14:22.
+
+Este documento e uma apuracao administrativa. O arquivo REP original nao foi alterado.

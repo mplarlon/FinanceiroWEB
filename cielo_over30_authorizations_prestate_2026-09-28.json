@@ -1,0 +1,1490 @@
+[
+  {
+    "bank": {
+      "sale_id": "2607270110300005070",
+      "when": "2026-07-27 12:07:00",
+      "amount": 14420,
+      "status": "Aprovada",
+      "authorization": "M83643",
+      "nsu": "790391",
+      "card": "679002 **** 2592",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 655978,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 2,
+      "day": "2026-07-27",
+      "times": [
+        "2026-07-27 12:54:47.076000",
+        "2026-07-27 11:36:21"
+      ],
+      "amount": 14420,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 1839.0,
+    "desired_authorization": "M83643"
+  },
+  {
+    "bank": {
+      "sale_id": "2609100110300005672",
+      "when": "2026-09-10 13:39:00",
+      "amount": 5590,
+      "status": "Aprovada",
+      "authorization": "mzunIn",
+      "nsu": "790805",
+      "card": "555507 **** 0701",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260901-20260927-1-1-csv.csv"
+    },
+    "system": {
+      "order": 661508,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-09-10",
+      "times": [
+        "2026-09-10 14:38:50.011000",
+        "2026-09-10 13:08:08"
+      ],
+      "amount": 5590,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 1852.0,
+    "desired_authorization": "mzunIn"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110300005179",
+      "when": "2026-07-28 15:35:00",
+      "amount": 6250,
+      "status": "Aprovada",
+      "authorization": "355574",
+      "nsu": "790466",
+      "card": "544731 **** 6727",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 656207,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 16:06:03.665000",
+        "2026-07-28 14:58:46"
+      ],
+      "amount": 6250,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 1863.665,
+    "desired_authorization": "355574"
+  },
+  {
+    "bank": {
+      "sale_id": "2604140110290004601",
+      "when": "2026-04-14 09:30:00",
+      "amount": 890,
+      "status": "Aprovada",
+      "authorization": "196496",
+      "nsu": "278253",
+      "card": "650570 **** 8684",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 642509,
+      "company": 1,
+      "receipt": 21,
+      "parcel": 1,
+      "day": "2026-04-14",
+      "times": [
+        "2026-04-14 10:02:02.943000",
+        "2026-04-14 08:41:41"
+      ],
+      "amount": 890,
+      "old_authorization": "3",
+      "old_card": ""
+    },
+    "difference_seconds": 1922.943,
+    "desired_authorization": "196496"
+  },
+  {
+    "bank": {
+      "sale_id": "2608190110310003364",
+      "when": "2026-08-19 16:31:00",
+      "amount": 690,
+      "status": "Aprovada",
+      "authorization": "305451",
+      "nsu": "447989",
+      "card": "524830 **** 7723",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615556,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-08-19",
+      "times": [
+        "2026-08-19 15:56:12.296000",
+        "2026-08-19 15:22:36"
+      ],
+      "amount": 690,
+      "old_authorization": "x",
+      "old_card": ""
+    },
+    "difference_seconds": 2087.704,
+    "desired_authorization": "305451"
+  },
+  {
+    "bank": {
+      "sale_id": "2604100110300006344",
+      "when": "2026-04-10 13:23:00",
+      "amount": 11034,
+      "status": "Aprovada",
+      "authorization": "wlehdQ",
+      "nsu": "278152",
+      "card": "230650 **** 4778",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 642124,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-04-10",
+      "times": [
+        "2026-04-10 11:30:46.740000",
+        "2026-04-10 12:47:13"
+      ],
+      "amount": 11034,
+      "old_authorization": "G",
+      "old_card": ""
+    },
+    "difference_seconds": 2147.0,
+    "desired_authorization": "wlehdQ"
+  },
+  {
+    "bank": {
+      "sale_id": "2607310110300006608",
+      "when": "2026-07-31 12:44:00",
+      "amount": 3499,
+      "status": "Aprovada",
+      "authorization": "XKSNST",
+      "nsu": "447788",
+      "card": "546561 **** 9764",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615394,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-31",
+      "times": [
+        "2026-07-31 20:10:41.351000",
+        "2026-07-31 12:07:17"
+      ],
+      "amount": 3499,
+      "old_authorization": "f",
+      "old_card": ""
+    },
+    "difference_seconds": 2203.0,
+    "desired_authorization": "XKSNST"
+  },
+  {
+    "bank": {
+      "sale_id": "2609210110290004105",
+      "when": "2026-09-21 10:45:00",
+      "amount": 13220,
+      "status": "Aprovada",
+      "authorization": "309326",
+      "nsu": "791169",
+      "card": "650033 **** 1893",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260901-20260927-1-1-csv.csv"
+    },
+    "system": {
+      "order": 662652,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-09-21",
+      "times": [
+        "2026-09-21 15:12:09.973000",
+        "2026-09-21 10:04:36"
+      ],
+      "amount": 13220,
+      "old_authorization": "V",
+      "old_card": ""
+    },
+    "difference_seconds": 2424.0,
+    "desired_authorization": "309326"
+  },
+  {
+    "bank": {
+      "sale_id": "2608180110300004856",
+      "when": "2026-08-18 12:49:00",
+      "amount": 14889,
+      "status": "Aprovada",
+      "authorization": "FN28QO",
+      "nsu": "791272",
+      "card": "518512 **** 2979",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 658830,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-08-18",
+      "times": [
+        "2026-08-18 13:30:37.706000",
+        "2026-08-18 10:55:00"
+      ],
+      "amount": 14889,
+      "old_authorization": "1",
+      "old_card": ""
+    },
+    "difference_seconds": 2497.706,
+    "desired_authorization": "FN28QO"
+  },
+  {
+    "bank": {
+      "sale_id": "2608190110010003578",
+      "when": "2026-08-19 10:20:00",
+      "amount": 780,
+      "status": "Aprovada",
+      "authorization": "ATZE78",
+      "nsu": "447987",
+      "card": "417402 **** 8014",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615691,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-08-19",
+      "times": [
+        "2026-08-19 16:33:16.937000",
+        "2026-08-19 09:38:13"
+      ],
+      "amount": 780,
+      "old_authorization": "5",
+      "old_card": ""
+    },
+    "difference_seconds": 2507.0,
+    "desired_authorization": "ATZE78"
+  },
+  {
+    "bank": {
+      "sale_id": "2603170110290004627",
+      "when": "2026-03-17 11:13:00",
+      "amount": 3090,
+      "status": "Aprovada",
+      "authorization": "ufnDwN",
+      "nsu": "277335",
+      "card": "555507 **** 8174",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 638976,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-17",
+      "times": [
+        "2026-03-17 12:00:10.231000",
+        "2026-03-17 11:56:08"
+      ],
+      "amount": 3090,
+      "old_authorization": "Ç",
+      "old_card": ""
+    },
+    "difference_seconds": 2588.0,
+    "desired_authorization": "ufnDwN"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110020004122",
+      "when": "2026-07-28 13:29:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "411688",
+      "nsu": "447719",
+      "card": "484378 **** 7479",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615283,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 12:45:02.494000",
+        "2026-07-28 16:33:34"
+      ],
+      "amount": 490,
+      "old_authorization": "S",
+      "old_card": ""
+    },
+    "difference_seconds": 2637.506,
+    "desired_authorization": "411688"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110020004123",
+      "when": "2026-07-28 14:34:00",
+      "amount": 1090,
+      "status": "Aprovada",
+      "authorization": "412056",
+      "nsu": "447723",
+      "card": "484378 **** 7479",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615244,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 13:49:55.925000",
+        "2026-07-28 11:20:31"
+      ],
+      "amount": 1090,
+      "old_authorization": ",",
+      "old_card": ""
+    },
+    "difference_seconds": 2644.075,
+    "desired_authorization": "412056"
+  },
+  {
+    "bank": {
+      "sale_id": "2605270110300005321",
+      "when": "2026-05-27 12:22:00",
+      "amount": 369,
+      "status": "Aprovada",
+      "authorization": "225749",
+      "nsu": "446787",
+      "card": "518052 **** 8646",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613829,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-05-27",
+      "times": [
+        "2026-05-27 22:31:35.195000",
+        "2026-05-27 11:37:14"
+      ],
+      "amount": 369,
+      "old_authorization": "C",
+      "old_card": ""
+    },
+    "difference_seconds": 2686.0,
+    "desired_authorization": "225749"
+  },
+  {
+    "bank": {
+      "sale_id": "2605210110290004521",
+      "when": "2026-05-21 08:59:00",
+      "amount": 5996,
+      "status": "Aprovada",
+      "authorization": "023510",
+      "nsu": "446681",
+      "card": "559524 **** 1309",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613250,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-05-21",
+      "times": [
+        "2026-05-21 12:42:29.515000",
+        "2026-05-21 08:14:02"
+      ],
+      "amount": 5996,
+      "old_authorization": "G",
+      "old_card": ""
+    },
+    "difference_seconds": 2698.0,
+    "desired_authorization": "023510"
+  },
+  {
+    "bank": {
+      "sale_id": "2606300110300006063",
+      "when": "2026-06-30 13:17:00",
+      "amount": 3980,
+      "status": "Aprovada",
+      "authorization": "234593",
+      "nsu": "447264",
+      "card": "537274 **** 1769",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999614619,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-06-30",
+      "times": [
+        "2026-06-30 22:35:07.763000",
+        "2026-06-30 12:29:50"
+      ],
+      "amount": 3980,
+      "old_authorization": "h",
+      "old_card": ""
+    },
+    "difference_seconds": 2830.0,
+    "desired_authorization": "234593"
+  },
+  {
+    "bank": {
+      "sale_id": "2606100110010004247",
+      "when": "2026-06-10 09:15:00",
+      "amount": 870,
+      "status": "Aprovada",
+      "authorization": "149837",
+      "nsu": "446997",
+      "card": "482414 **** 0244",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999614195,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-06-10",
+      "times": [
+        "2026-06-10 23:42:32.514000",
+        "2026-06-10 08:26:52"
+      ],
+      "amount": 870,
+      "old_authorization": "c",
+      "old_card": ""
+    },
+    "difference_seconds": 2888.0,
+    "desired_authorization": "149837"
+  },
+  {
+    "bank": {
+      "sale_id": "2605260110300005209",
+      "when": "2026-05-26 12:04:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "051954",
+      "nsu": "446764",
+      "card": "520635 **** 1466",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613706,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-05-26",
+      "times": [
+        "2026-05-26 11:13:51.741000",
+        "2026-05-26 11:08:12"
+      ],
+      "amount": 490,
+      "old_authorization": "C",
+      "old_card": ""
+    },
+    "difference_seconds": 3008.259,
+    "desired_authorization": "051954"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110300005169",
+      "when": "2026-07-28 14:25:00",
+      "amount": 3490,
+      "status": "Aprovada",
+      "authorization": "M08496",
+      "nsu": "447721",
+      "card": "523284 **** 9437",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615230,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 13:33:02.222000",
+        "2026-07-28 15:43:07"
+      ],
+      "amount": 3490,
+      "old_authorization": "F",
+      "old_card": ""
+    },
+    "difference_seconds": 3117.778,
+    "desired_authorization": "M08496"
+  },
+  {
+    "bank": {
+      "sale_id": "2608250110010003563",
+      "when": "2026-08-25 10:49:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "878563",
+      "nsu": "448034",
+      "card": "439267 **** 5591",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615765,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-08-25",
+      "times": [
+        "2026-08-25 13:18:28.009000",
+        "2026-08-25 09:56:31"
+      ],
+      "amount": 490,
+      "old_authorization": "0",
+      "old_card": ""
+    },
+    "difference_seconds": 3149.0,
+    "desired_authorization": "878563"
+  },
+  {
+    "bank": {
+      "sale_id": "2607160110300005658",
+      "when": "2026-07-16 12:28:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "M64768",
+      "nsu": "790005",
+      "card": "520650 **** 4968",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 654602,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-16",
+      "times": [
+        "2026-07-16 16:00:30.922000",
+        "2026-07-16 11:33:34"
+      ],
+      "amount": 490,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 3266.0,
+    "desired_authorization": "M64768"
+  },
+  {
+    "bank": {
+      "sale_id": "2606180110300005658",
+      "when": "2026-06-18 16:06:00",
+      "amount": 3490,
+      "status": "Aprovada",
+      "authorization": "046690",
+      "nsu": "789005",
+      "card": "516292 **** 8144",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 651044,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-06-18",
+      "times": [
+        "2026-06-18 10:11:50.061000",
+        "2026-06-18 15:11:10"
+      ],
+      "amount": 3490,
+      "old_authorization": "2",
+      "old_card": ""
+    },
+    "difference_seconds": 3290.0,
+    "desired_authorization": "046690"
+  },
+  {
+    "bank": {
+      "sale_id": "2603260110290004820",
+      "when": "2026-03-26 08:15:00",
+      "amount": 13980,
+      "status": "Aprovada",
+      "authorization": "363703",
+      "nsu": "505927",
+      "card": "516292 **** 1199",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612442,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-26",
+      "times": [
+        "2026-03-26 23:37:20.060000",
+        "2026-03-26 07:18:49"
+      ],
+      "amount": 13980,
+      "old_authorization": "4",
+      "old_card": ""
+    },
+    "difference_seconds": 3371.0,
+    "desired_authorization": "363703"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110290004150",
+      "when": "2026-07-28 11:27:00",
+      "amount": 1290,
+      "status": "Aprovada",
+      "authorization": "M44206",
+      "nsu": "447708",
+      "card": "589916 **** 9947",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615067,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 12:23:17.992000",
+        "2026-07-28 13:35:31"
+      ],
+      "amount": 1290,
+      "old_authorization": "D",
+      "old_card": ""
+    },
+    "difference_seconds": 3377.992,
+    "desired_authorization": "M44206"
+  },
+  {
+    "bank": {
+      "sale_id": "2607280110290004162",
+      "when": "2026-07-28 10:43:00",
+      "amount": 890,
+      "status": "Aprovada",
+      "authorization": "568041",
+      "nsu": "447704",
+      "card": "550209 **** 8198",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999615081,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 12:25:10.446000",
+        "2026-07-28 09:43:11"
+      ],
+      "amount": 890,
+      "old_authorization": "V",
+      "old_card": ""
+    },
+    "difference_seconds": 3589.0,
+    "desired_authorization": "568041"
+  },
+  {
+    "bank": {
+      "sale_id": "2606030110020005857",
+      "when": "2026-06-03 12:37:00",
+      "amount": 3199,
+      "status": "Aprovada",
+      "authorization": "137703",
+      "nsu": "788453",
+      "card": "402669 **** 1953",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 649007,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-06-03",
+      "times": [
+        "2026-06-03 23:08:35.577000",
+        "2026-06-03 11:35:44"
+      ],
+      "amount": 3199,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 3676.0,
+    "desired_authorization": "137703"
+  },
+  {
+    "bank": {
+      "sale_id": "25/03/2026|11:24|854306",
+      "when": "2026-03-25 11:24:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "854306",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 640052,
+      "company": 1,
+      "receipt": 4,
+      "parcel": 1,
+      "day": "2026-03-25",
+      "times": [
+        "2026-03-25 10:04:41.394000",
+        "2026-03-25 10:00:30"
+      ],
+      "amount": 490,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 4758.606,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "2604080110020005351",
+      "when": "2026-04-08 13:34:00",
+      "amount": 700,
+      "status": "Aprovada",
+      "authorization": "123628",
+      "nsu": "506070",
+      "card": "452204 **** 9102",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612636,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-04-08",
+      "times": [
+        "2026-04-08 08:38:35.756000",
+        "2026-04-08 12:13:46"
+      ],
+      "amount": 700,
+      "old_authorization": "8",
+      "old_card": ""
+    },
+    "difference_seconds": 4814.0,
+    "desired_authorization": "123628"
+  },
+  {
+    "bank": {
+      "sale_id": "2605250110020004250",
+      "when": "2026-05-25 12:30:00",
+      "amount": 690,
+      "status": "Aprovada",
+      "authorization": "645034",
+      "nsu": "446747",
+      "card": "498431 **** 6857",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613562,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-05-25",
+      "times": [
+        "2026-05-25 11:01:13.226000",
+        "2026-05-25 09:37:40"
+      ],
+      "amount": 690,
+      "old_authorization": "0",
+      "old_card": ""
+    },
+    "difference_seconds": 5326.774,
+    "desired_authorization": "645034"
+  },
+  {
+    "bank": {
+      "sale_id": "2609100110300005680",
+      "when": "2026-09-10 13:15:00",
+      "amount": 2940,
+      "status": "Aprovada",
+      "authorization": "775608",
+      "nsu": "246556",
+      "card": "550209 **** 6306",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260901-20260927-1-1-csv.csv"
+    },
+    "system": {
+      "order": 661484,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-09-10",
+      "times": [
+        "2026-09-10 11:43:53.947000",
+        "2026-09-10 11:40:18"
+      ],
+      "amount": 2940,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 5466.053,
+    "desired_authorization": "775608"
+  },
+  {
+    "bank": {
+      "sale_id": "2606100110300006465",
+      "when": "2026-06-10 14:04:00",
+      "amount": 8560,
+      "status": "Aprovada",
+      "authorization": "040568",
+      "nsu": "788737",
+      "card": "544731 **** 6730",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 649888,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-06-10",
+      "times": [
+        "2026-06-10 16:01:04.615000",
+        "2026-06-10 17:29:19"
+      ],
+      "amount": 8560,
+      "old_authorization": "1",
+      "old_card": ""
+    },
+    "difference_seconds": 7024.615,
+    "desired_authorization": "040568"
+  },
+  {
+    "bank": {
+      "sale_id": "26/03/2026|09:15|549144",
+      "when": "2026-03-26 09:15:00",
+      "amount": 1780,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "549144",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612347,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-26",
+      "times": [
+        "2026-03-26 22:42:10.332000",
+        "2026-03-26 07:15:32"
+      ],
+      "amount": 1780,
+      "old_authorization": "5",
+      "old_card": ""
+    },
+    "difference_seconds": 7168.0,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "26/03/2026|09:23|568095",
+      "when": "2026-03-26 09:23:00",
+      "amount": 6180,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "568095",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612358,
+      "company": 1,
+      "receipt": 6,
+      "parcel": 1,
+      "day": "2026-03-26",
+      "times": [
+        "2026-03-26 22:47:03.525000",
+        "2026-03-26 11:40:36"
+      ],
+      "amount": 6180,
+      "old_authorization": "e",
+      "old_card": ""
+    },
+    "difference_seconds": 8256.0,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "2605250110300005271",
+      "when": "2026-05-25 13:09:00",
+      "amount": 870,
+      "status": "Aprovada",
+      "authorization": "M00173",
+      "nsu": "446749",
+      "card": "589916 **** 3106",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613510,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-05-25",
+      "times": [
+        "2026-05-25 10:51:14.417000",
+        "2026-05-25 17:39:53"
+      ],
+      "amount": 870,
+      "old_authorization": "X",
+      "old_card": ""
+    },
+    "difference_seconds": 8265.583,
+    "desired_authorization": "M00173"
+  },
+  {
+    "bank": {
+      "sale_id": "2607060110300006322",
+      "when": "2026-07-06 13:50:00",
+      "amount": 980,
+      "status": "Aprovada",
+      "authorization": "M27357",
+      "nsu": "447348",
+      "card": "515470 **** 1833",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999614751,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-06",
+      "times": [
+        "2026-07-06 22:14:00.912000",
+        "2026-07-06 11:21:27"
+      ],
+      "amount": 980,
+      "old_authorization": "cx",
+      "old_card": ""
+    },
+    "difference_seconds": 8913.0,
+    "desired_authorization": "M27357"
+  },
+  {
+    "bank": {
+      "sale_id": "2604080110310004069",
+      "when": "2026-04-08 17:25:00",
+      "amount": 490,
+      "status": "Aprovada",
+      "authorization": "073986",
+      "nsu": "506076",
+      "card": "550209 **** 1733",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612702,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-04-08",
+      "times": [
+        "2026-04-08 08:50:19.592000",
+        "2026-04-08 14:43:51"
+      ],
+      "amount": 490,
+      "old_authorization": "7",
+      "old_card": ""
+    },
+    "difference_seconds": 9669.0,
+    "desired_authorization": "073986"
+  },
+  {
+    "bank": {
+      "sale_id": "2604080110020005350",
+      "when": "2026-04-08 15:31:00",
+      "amount": 1690,
+      "status": "Aprovada",
+      "authorization": "GMKBBT",
+      "nsu": "506073",
+      "card": "417402 **** 8014",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612639,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-04-08",
+      "times": [
+        "2026-04-08 08:38:24.063000",
+        "2026-04-08 12:47:14"
+      ],
+      "amount": 1690,
+      "old_authorization": "7",
+      "old_card": ""
+    },
+    "difference_seconds": 9826.0,
+    "desired_authorization": "GMKBBT"
+  },
+  {
+    "bank": {
+      "sale_id": "2604290110310003523",
+      "when": "2026-04-29 17:22:00",
+      "amount": 590,
+      "status": "Aprovada",
+      "authorization": "123456",
+      "nsu": "446397",
+      "card": "516292 **** 9587",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613049,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 2,
+      "day": "2026-04-29",
+      "times": [
+        "2026-04-29 14:19:52.838000",
+        "2026-04-29 09:47:16"
+      ],
+      "amount": 590,
+      "old_authorization": "c",
+      "old_card": ""
+    },
+    "difference_seconds": 10927.162,
+    "desired_authorization": "123456"
+  },
+  {
+    "bank": {
+      "sale_id": "2606080110010004257",
+      "when": "2026-06-08 10:06:00",
+      "amount": 4990,
+      "status": "Aprovada",
+      "authorization": "765033",
+      "nsu": "446967",
+      "card": "404025 **** 9020",
+      "payment": "Débito pré-pago",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 649631,
+      "company": 1,
+      "receipt": 4,
+      "parcel": 1,
+      "day": "2026-06-08",
+      "times": [
+        "2026-06-08 14:58:32.704000",
+        "2026-06-08 13:12:30"
+      ],
+      "amount": 4990,
+      "old_authorization": "A",
+      "old_card": ""
+    },
+    "difference_seconds": 11190.0,
+    "desired_authorization": "765033"
+  },
+  {
+    "bank": {
+      "sale_id": "2605260110020004208",
+      "when": "2026-05-26 15:27:00",
+      "amount": 1990,
+      "status": "Aprovada",
+      "authorization": "M47704",
+      "nsu": "446769",
+      "card": "489725 **** 2014",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999613771,
+      "company": 1,
+      "receipt": 13,
+      "parcel": 1,
+      "day": "2026-05-26",
+      "times": [
+        "2026-05-26 11:13:11.201000",
+        "2026-05-26 12:16:21"
+      ],
+      "amount": 1990,
+      "old_authorization": "C",
+      "old_card": ""
+    },
+    "difference_seconds": 11439.0,
+    "desired_authorization": "M47704"
+  },
+  {
+    "bank": {
+      "sale_id": "2604080110300006559",
+      "when": "2026-04-08 11:54:00",
+      "amount": 2190,
+      "status": "Aprovada",
+      "authorization": "123111",
+      "nsu": "506068",
+      "card": "650488 **** 8200",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612652,
+      "company": 1,
+      "receipt": 4,
+      "parcel": 1,
+      "day": "2026-04-08",
+      "times": [
+        "2026-04-08 08:42:42.008000",
+        "2026-04-08 07:53:45"
+      ],
+      "amount": 2190,
+      "old_authorization": "b",
+      "old_card": ""
+    },
+    "difference_seconds": 11477.992,
+    "desired_authorization": "123111"
+  },
+  {
+    "bank": {
+      "sale_id": "18/03/2026|10:15|656602",
+      "when": "2026-03-18 10:15:00",
+      "amount": 3580,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "656602",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612286,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-18",
+      "times": [
+        "2026-03-18 21:03:16.696000",
+        "2026-03-18 13:27:22"
+      ],
+      "amount": 3580,
+      "old_authorization": "v",
+      "old_card": ""
+    },
+    "difference_seconds": 11542.0,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "18/03/2026|16:53|1853566",
+      "when": "2026-03-18 16:53:00",
+      "amount": 1490,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "1853566",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612040,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-18",
+      "times": [
+        "2026-03-18 20:09:01.508000",
+        "2026-03-18 12:30:19"
+      ],
+      "amount": 1490,
+      "old_authorization": "x",
+      "old_card": ""
+    },
+    "difference_seconds": 11761.508,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "2606260110030003072",
+      "when": "2026-06-26 16:55:00",
+      "amount": 7680,
+      "status": "Aprovada",
+      "authorization": "M10495",
+      "nsu": "789257",
+      "card": "479445 **** 6133",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260501-20260630-1-1-csv.csv"
+    },
+    "system": {
+      "order": 652012,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-06-26",
+      "times": [
+        "2026-06-26 23:04:22.306000",
+        "2026-06-26 13:27:16"
+      ],
+      "amount": 7680,
+      "old_authorization": "4",
+      "old_card": ""
+    },
+    "difference_seconds": 12464.0,
+    "desired_authorization": "M10495"
+  },
+  {
+    "bank": {
+      "sale_id": "2607130110300005451",
+      "when": "2026-07-13 16:23:00",
+      "amount": 890,
+      "status": "Aprovada",
+      "authorization": "M12256",
+      "nsu": "447449",
+      "card": "589916 **** 4785",
+      "payment": "Débito à vista",
+      "entry_type": "Venda débito",
+      "machine": "02000026",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260701-20260831-1-1-csv.csv"
+    },
+    "system": {
+      "order": 654090,
+      "company": 1,
+      "receipt": 4,
+      "parcel": 1,
+      "day": "2026-07-13",
+      "times": [
+        "2026-07-13 12:52:14.502000",
+        "2026-07-13 12:48:32"
+      ],
+      "amount": 890,
+      "old_authorization": "Z",
+      "old_card": ""
+    },
+    "difference_seconds": 12645.498,
+    "desired_authorization": "M12256"
+  },
+  {
+    "bank": {
+      "sale_id": "18/03/2026|10:49|744082",
+      "when": "2026-03-18 10:49:00",
+      "amount": 4490,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "744082",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612294,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-18",
+      "times": [
+        "2026-03-18 21:03:39.189000",
+        "2026-03-18 14:52:58"
+      ],
+      "amount": 4490,
+      "old_authorization": "v",
+      "old_card": ""
+    },
+    "difference_seconds": 14638.0,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "26/03/2026|13:04|1206592",
+      "when": "2026-03-26 13:04:00",
+      "amount": 2980,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "1206592",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 999612417,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-26",
+      "times": [
+        "2026-03-26 23:14:35.735000",
+        "2026-03-26 08:17:19"
+      ],
+      "amount": 2980,
+      "old_authorization": "c",
+      "old_card": ""
+    },
+    "difference_seconds": 17201.0,
+    "desired_authorization": "000000"
+  },
+  {
+    "bank": {
+      "sale_id": "17/03/2026|16:59|1743369",
+      "when": "2026-03-17 16:59:00",
+      "amount": 890,
+      "status": "Aprovada",
+      "authorization": "000000",
+      "nsu": "1743369",
+      "card": "",
+      "payment": "Pix",
+      "entry_type": "Venda Pix",
+      "machine": "02000027",
+      "file": "C:\\Users\\Carol\\Downloads\\Vendas_cielo_historico_detalhe-20260301-20260430-1-1-csv.csv"
+    },
+    "system": {
+      "order": 638980,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-03-17",
+      "times": [
+        "2026-03-17 12:11:29.737000",
+        "2026-03-17 12:08:46"
+      ],
+      "amount": 890,
+      "old_authorization": "1",
+      "old_card": ""
+    },
+    "difference_seconds": 17250.263,
+    "desired_authorization": "000000"
+  }
+]

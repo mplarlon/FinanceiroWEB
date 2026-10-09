@@ -1,0 +1,13 @@
+{
+  "8C8059CA-EB66-4B6A-B293-AB846A652C9D": {
+    "data_transacao": "2026-02-03 09:01:00",
+    "autorizacao": "225014",
+    "valor_bruto": 4028.61,
+    "valor_liquido_relatorio": 3766.76,
+    "ajuste_repasse": 40.08,
+    "valor_liquido_ajustado": 3806.84,
+    "taxa_ajustada": 221.77,
+    "credito_caixa": "2026-02-04",
+    "motivo": "Ajuste para o valor efetivamente repassado no lote D+1 da Caixa"
+  }
+}

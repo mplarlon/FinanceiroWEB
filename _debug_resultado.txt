@@ -1,0 +1,45 @@
+============================================================
+Periodo: 2026-04-01 a 2026-06-18
+============================================================
+
+[1] So periodo:             10823
+[2] + STATUS=1:              1050
+[3] + NRPEDIDO NOT NULL:     1050
+[4] + JOIN RECEBTO:          1050
+[5] + CARTEIRA ou DEV/CART:  1049
+
+--- Amostra passo 5 (5 registros) ---
+  CONTROLE=726981 CDCLIENTE=21011 NRPEDIDO=635617 VALOR=238.5 RECEBTO=04 - CARTEIRA
+  CONTROLE=733657 CDCLIENTE=16010 NRPEDIDO=640945 VALOR=11.4 RECEBTO=04 - CARTEIRA
+  CONTROLE=733661 CDCLIENTE=16440 NRPEDIDO=640641 VALOR=272.93 RECEBTO=04 - CARTEIRA
+  CONTROLE=733700 CDCLIENTE=15911 NRPEDIDO=640992 VALOR=357.7 RECEBTO=04 - CARTEIRA
+  CONTROLE=733691 CDCLIENTE=15852 NRPEDIDO=640981 VALOR=806.6999999999999 RECEBTO=04 - CARTEIRA
+
+--- Versao atual do fechamento_carteira.py ---
+  L36:             'SELECT COALESCE(MAX(CAST(n.NRDOC AS INTEGER)), 0) + 1'
+  L38:             " WHERE n.IDEMPRESA = ? AND n.NRDOC SIMILAR TO '[0-9]+'",
+  L122:             " COALESCE(cr.NRDOC, '') AS NRDOC,"
+  L123:             " COALESCE(cr.NRDOC2, '') AS NRDOC2,"
+  L131:             " CASE WHEN UPPER(rec.RECEBTO) LIKE '%DEV%' THEN 1 ELSE 0 END AS IS_DESCONTO"
+  L139:             "   AND (UPPER(rec.RECEBTO) LIKE '%CARTEIRA%' OR UPPER(rec.RECEBTO) LIKE '%DEV%CART%' OR UPPER(rec.RECEBTO) LIKE '%DEV/CART%')"
+  L244:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL"
+  L250:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L256:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L257:                 " AND COALESCE(TRIM(cr.NRDOC), '') = CAST(cr.NRPEDIDO AS VARCHAR(20))"
+  L264:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L265:                 " AND COALESCE(TRIM(cr.NRDOC), '') = CAST(cr.NRPEDIDO AS VARCHAR(20))"
+  L272:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L273:                 " AND COALESCE(TRIM(cr.NRDOC), '') = CAST(cr.NRPEDIDO AS VARCHAR(20))"
+  L274:                 " AND UPPER(rec.RECEBTO) LIKE '%CARTEIRA%'"
+  L278:             # Amostra de NRDOC x NRPEDIDO para entender o passo 5
+  L280:                 "SELECT FIRST 10 cr.NRPEDIDO, cr.NRDOC,"
+  L283:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L287:                 {'NRPEDIDO': r[0], 'NRDOC': r[1], 'NRPEDIDO_CAST': r[2]}
+  L294:                 " WHERE cr.STATUS = 1 AND cr.DTCOB IS NULL AND cr.NRPEDIDO IS NOT NULL"
+  L370:                     'NRDOC':              nrdoc,
+  L498:                         ' SET NRDOC = ?,'
+  L507:                         "   AND COALESCE(TRIM(NRDOC), '') = CAST(NRPEDIDO AS VARCHAR(20))",
+  L512:                     'NRDOC':     nrdoc,
+
+============================================================
+Diagnostico concluido.

@@ -1,0 +1,10 @@
+{
+  "2026-02-05": {
+    "vendas_de": "2026-02-04",
+    "valor_liquido_relatorio": 7018.08,
+    "ajuste_repasse": 559.92,
+    "valor_repassado_caixa": 7578.00,
+    "diferenca_apos_ajuste": 0.00,
+    "motivo": "Repasse efetivo confirmado no extrato da Caixa; vendas não conciliadas do dia não compõem isoladamente a diferença"
+  }
+}

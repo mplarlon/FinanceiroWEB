@@ -1,0 +1,5540 @@
+[
+  {
+    "IDENTREGA": 9,
+    "DTENTREGA": "30/01/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 10,
+    "DTENTREGA": "31/01/2023",
+    "MOTORISTA": "",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 11,
+    "DTENTREGA": "31/01/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 12,
+    "DTENTREGA": "31/01/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 13,
+    "DTENTREGA": "01/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 14,
+    "DTENTREGA": "01/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 15,
+    "DTENTREGA": "02/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 16,
+    "DTENTREGA": "02/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 17,
+    "DTENTREGA": "02/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 18,
+    "DTENTREGA": "03/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 19,
+    "DTENTREGA": "03/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 20,
+    "DTENTREGA": "03/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 21,
+    "DTENTREGA": "03/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 22,
+    "DTENTREGA": "03/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 23,
+    "DTENTREGA": "04/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 24,
+    "DTENTREGA": "04/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 25,
+    "DTENTREGA": "04/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 26,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 27,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 28,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 29,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 30,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 31,
+    "DTENTREGA": "06/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 32,
+    "DTENTREGA": "07/02/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 33,
+    "DTENTREGA": "07/02/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 34,
+    "DTENTREGA": "07/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 35,
+    "DTENTREGA": "08/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 36,
+    "DTENTREGA": "08/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 37,
+    "DTENTREGA": "08/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 38,
+    "DTENTREGA": "08/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 39,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 40,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 41,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 42,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 43,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 44,
+    "DTENTREGA": "09/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 45,
+    "DTENTREGA": "10/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 46,
+    "DTENTREGA": "10/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 47,
+    "DTENTREGA": "10/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 48,
+    "DTENTREGA": "10/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 49,
+    "DTENTREGA": "11/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 50,
+    "DTENTREGA": "11/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 51,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 52,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 53,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 54,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 55,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 56,
+    "DTENTREGA": "14/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 57,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 58,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 59,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 60,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 61,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 62,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 63,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 64,
+    "DTENTREGA": "15/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 65,
+    "DTENTREGA": "16/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 66,
+    "DTENTREGA": "16/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 67,
+    "DTENTREGA": "16/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 68,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 69,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 70,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 71,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 72,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 73,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 74,
+    "DTENTREGA": "17/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 75,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 76,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 77,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 78,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 79,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 80,
+    "DTENTREGA": "23/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 81,
+    "DTENTREGA": "24/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 82,
+    "DTENTREGA": "24/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 83,
+    "DTENTREGA": "24/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 84,
+    "DTENTREGA": "24/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 85,
+    "DTENTREGA": "27/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 86,
+    "DTENTREGA": "27/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 87,
+    "DTENTREGA": "27/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 88,
+    "DTENTREGA": "27/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 89,
+    "DTENTREGA": "27/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 90,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 91,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 92,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 93,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 94,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 95,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 96,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 97,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 98,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 99,
+    "DTENTREGA": "28/02/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 100,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 101,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 102,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 103,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 104,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 105,
+    "DTENTREGA": "01/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 106,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 107,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 108,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 109,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 110,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 111,
+    "DTENTREGA": "03/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 112,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 113,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 114,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 115,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 116,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 117,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 118,
+    "DTENTREGA": "06/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 119,
+    "DTENTREGA": "07/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 120,
+    "DTENTREGA": "07/03/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 121,
+    "DTENTREGA": "07/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 122,
+    "DTENTREGA": "07/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 123,
+    "DTENTREGA": "08/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 124,
+    "DTENTREGA": "08/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 125,
+    "DTENTREGA": "08/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 126,
+    "DTENTREGA": "08/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 127,
+    "DTENTREGA": "09/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 128,
+    "DTENTREGA": "09/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 129,
+    "DTENTREGA": "09/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 130,
+    "DTENTREGA": "09/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 131,
+    "DTENTREGA": "13/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 132,
+    "DTENTREGA": "13/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 133,
+    "DTENTREGA": "13/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 134,
+    "DTENTREGA": "13/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 135,
+    "DTENTREGA": "14/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 136,
+    "DTENTREGA": "14/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 137,
+    "DTENTREGA": "14/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 138,
+    "DTENTREGA": "14/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 139,
+    "DTENTREGA": "14/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 140,
+    "DTENTREGA": "15/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 141,
+    "DTENTREGA": "15/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 142,
+    "DTENTREGA": "15/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 143,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 144,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 145,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 146,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 147,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 148,
+    "DTENTREGA": "16/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 149,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 150,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 18
+  },
+  {
+    "IDENTREGA": 151,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 152,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 153,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 154,
+    "DTENTREGA": "20/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 155,
+    "DTENTREGA": "22/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 156,
+    "DTENTREGA": "22/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 157,
+    "DTENTREGA": "22/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 158,
+    "DTENTREGA": "22/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 159,
+    "DTENTREGA": "23/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 160,
+    "DTENTREGA": "23/03/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 161,
+    "DTENTREGA": "23/03/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 162,
+    "DTENTREGA": "23/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 163,
+    "DTENTREGA": "24/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 164,
+    "DTENTREGA": "24/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 165,
+    "DTENTREGA": "24/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 166,
+    "DTENTREGA": "24/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 167,
+    "DTENTREGA": "27/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 168,
+    "DTENTREGA": "27/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 169,
+    "DTENTREGA": "27/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 170,
+    "DTENTREGA": "27/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 171,
+    "DTENTREGA": "27/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 172,
+    "DTENTREGA": "28/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 173,
+    "DTENTREGA": "28/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 174,
+    "DTENTREGA": "30/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 175,
+    "DTENTREGA": "30/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 176,
+    "DTENTREGA": "30/03/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 177,
+    "DTENTREGA": "30/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 178,
+    "DTENTREGA": "30/03/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 179,
+    "DTENTREGA": "31/03/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 180,
+    "DTENTREGA": "31/03/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 181,
+    "DTENTREGA": "03/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 182,
+    "DTENTREGA": "03/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 183,
+    "DTENTREGA": "03/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 184,
+    "DTENTREGA": "03/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 185,
+    "DTENTREGA": "03/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 186,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 187,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 188,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 189,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 190,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 191,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 192,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 193,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 194,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 195,
+    "DTENTREGA": "04/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 196,
+    "DTENTREGA": "06/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 197,
+    "DTENTREGA": "06/04/2023",
+    "MOTORISTA": "",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 198,
+    "DTENTREGA": "06/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 199,
+    "DTENTREGA": "06/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 200,
+    "DTENTREGA": "06/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 201,
+    "DTENTREGA": "11/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 202,
+    "DTENTREGA": "11/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 203,
+    "DTENTREGA": "11/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 204,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 205,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 206,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 207,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 208,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 209,
+    "DTENTREGA": "12/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 210,
+    "DTENTREGA": "13/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 211,
+    "DTENTREGA": "13/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 212,
+    "DTENTREGA": "14/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 213,
+    "DTENTREGA": "14/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 214,
+    "DTENTREGA": "17/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 215,
+    "DTENTREGA": "17/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 216,
+    "DTENTREGA": "18/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 217,
+    "DTENTREGA": "18/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 218,
+    "DTENTREGA": "20/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 219,
+    "DTENTREGA": "20/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 220,
+    "DTENTREGA": "24/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 221,
+    "DTENTREGA": "24/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 222,
+    "DTENTREGA": "24/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 223,
+    "DTENTREGA": "25/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 224,
+    "DTENTREGA": "25/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 225,
+    "DTENTREGA": "25/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 226,
+    "DTENTREGA": "25/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 227,
+    "DTENTREGA": "25/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 228,
+    "DTENTREGA": "26/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 229,
+    "DTENTREGA": "27/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 230,
+    "DTENTREGA": "27/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 231,
+    "DTENTREGA": "27/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 232,
+    "DTENTREGA": "27/04/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 233,
+    "DTENTREGA": "27/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 234,
+    "DTENTREGA": "28/04/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 235,
+    "DTENTREGA": "28/04/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 236,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 237,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 238,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 239,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 240,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 241,
+    "DTENTREGA": "02/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 242,
+    "DTENTREGA": "03/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 243,
+    "DTENTREGA": "03/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 244,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 245,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 246,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 247,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 248,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 249,
+    "DTENTREGA": "04/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 250,
+    "DTENTREGA": "05/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 251,
+    "DTENTREGA": "05/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 252,
+    "DTENTREGA": "05/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 253,
+    "DTENTREGA": "08/05/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 254,
+    "DTENTREGA": "08/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 255,
+    "DTENTREGA": "08/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 256,
+    "DTENTREGA": "08/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 257,
+    "DTENTREGA": "08/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 258,
+    "DTENTREGA": "09/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 259,
+    "DTENTREGA": "10/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 260,
+    "DTENTREGA": "10/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 261,
+    "DTENTREGA": "17/05/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 262,
+    "DTENTREGA": "17/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 263,
+    "DTENTREGA": "17/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 26
+  },
+  {
+    "IDENTREGA": 264,
+    "DTENTREGA": "17/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 265,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 266,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 267,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 268,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 269,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 270,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 271,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 272,
+    "DTENTREGA": "18/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 273,
+    "DTENTREGA": "19/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 274,
+    "DTENTREGA": "19/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 275,
+    "DTENTREGA": "19/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 276,
+    "DTENTREGA": "22/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 277,
+    "DTENTREGA": "22/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 278,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 279,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 280,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 281,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 282,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 283,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 284,
+    "DTENTREGA": "24/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 285,
+    "DTENTREGA": "25/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 286,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 287,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 288,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 289,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 290,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 291,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 292,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 293,
+    "DTENTREGA": "26/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 294,
+    "DTENTREGA": "31/05/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 295,
+    "DTENTREGA": "31/05/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 296,
+    "DTENTREGA": "05/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 297,
+    "DTENTREGA": "05/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 298,
+    "DTENTREGA": "06/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 299,
+    "DTENTREGA": "06/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 300,
+    "DTENTREGA": "06/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 301,
+    "DTENTREGA": "06/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 302,
+    "DTENTREGA": "07/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 303,
+    "DTENTREGA": "07/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 304,
+    "DTENTREGA": "07/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 305,
+    "DTENTREGA": "07/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 306,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 307,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 308,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 309,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 310,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 311,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 312,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 313,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 314,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 315,
+    "DTENTREGA": "12/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 316,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 317,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 318,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 319,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 320,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 321,
+    "DTENTREGA": "13/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 322,
+    "DTENTREGA": "15/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 323,
+    "DTENTREGA": "15/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 324,
+    "DTENTREGA": "15/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 325,
+    "DTENTREGA": "15/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 326,
+    "DTENTREGA": "15/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 327,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 328,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 329,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 330,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 331,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 332,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 333,
+    "DTENTREGA": "16/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 334,
+    "DTENTREGA": "19/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 335,
+    "DTENTREGA": "19/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 336,
+    "DTENTREGA": "20/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 337,
+    "DTENTREGA": "20/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 338,
+    "DTENTREGA": "21/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 339,
+    "DTENTREGA": "21/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 340,
+    "DTENTREGA": "21/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 341,
+    "DTENTREGA": "22/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 342,
+    "DTENTREGA": "22/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 343,
+    "DTENTREGA": "22/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 344,
+    "DTENTREGA": "22/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 345,
+    "DTENTREGA": "23/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 346,
+    "DTENTREGA": "23/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 347,
+    "DTENTREGA": "23/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 348,
+    "DTENTREGA": "26/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 349,
+    "DTENTREGA": "26/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 350,
+    "DTENTREGA": "26/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 351,
+    "DTENTREGA": "26/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 352,
+    "DTENTREGA": "27/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 353,
+    "DTENTREGA": "27/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 354,
+    "DTENTREGA": "27/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 355,
+    "DTENTREGA": "27/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 356,
+    "DTENTREGA": "27/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 357,
+    "DTENTREGA": "28/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 358,
+    "DTENTREGA": "28/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 359,
+    "DTENTREGA": "29/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 360,
+    "DTENTREGA": "29/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 361,
+    "DTENTREGA": "29/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 362,
+    "DTENTREGA": "29/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 363,
+    "DTENTREGA": "29/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 364,
+    "DTENTREGA": "30/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 365,
+    "DTENTREGA": "30/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 366,
+    "DTENTREGA": "30/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 367,
+    "DTENTREGA": "30/06/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 368,
+    "DTENTREGA": "30/06/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 369,
+    "DTENTREGA": "03/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 370,
+    "DTENTREGA": "03/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 371,
+    "DTENTREGA": "05/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 372,
+    "DTENTREGA": "05/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 373,
+    "DTENTREGA": "05/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 374,
+    "DTENTREGA": "05/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 375,
+    "DTENTREGA": "05/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 376,
+    "DTENTREGA": "06/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 377,
+    "DTENTREGA": "06/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 378,
+    "DTENTREGA": "06/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 379,
+    "DTENTREGA": "06/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 380,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 16
+  },
+  {
+    "IDENTREGA": 381,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 382,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 383,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 384,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 385,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 386,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 387,
+    "DTENTREGA": "10/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 388,
+    "DTENTREGA": "12/07/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 389,
+    "DTENTREGA": "12/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 390,
+    "DTENTREGA": "12/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 15
+  },
+  {
+    "IDENTREGA": 391,
+    "DTENTREGA": "14/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 392,
+    "DTENTREGA": "14/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 393,
+    "DTENTREGA": "14/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 394,
+    "DTENTREGA": "14/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 395,
+    "DTENTREGA": "14/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 396,
+    "DTENTREGA": "17/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 397,
+    "DTENTREGA": "17/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 398,
+    "DTENTREGA": "17/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 399,
+    "DTENTREGA": "19/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 400,
+    "DTENTREGA": "19/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 401,
+    "DTENTREGA": "19/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 402,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 403,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 404,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 405,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 406,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 407,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 408,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 409,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 410,
+    "DTENTREGA": "21/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 411,
+    "DTENTREGA": "24/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 412,
+    "DTENTREGA": "24/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 413,
+    "DTENTREGA": "24/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 414,
+    "DTENTREGA": "24/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 415,
+    "DTENTREGA": "24/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 416,
+    "DTENTREGA": "26/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 417,
+    "DTENTREGA": "26/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 418,
+    "DTENTREGA": "26/07/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 419,
+    "DTENTREGA": "26/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 420,
+    "DTENTREGA": "26/07/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 421,
+    "DTENTREGA": "01/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 422,
+    "DTENTREGA": "01/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 423,
+    "DTENTREGA": "01/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 424,
+    "DTENTREGA": "01/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 425,
+    "DTENTREGA": "01/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 426,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 427,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 428,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 429,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 430,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 431,
+    "DTENTREGA": "03/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 432,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 433,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 434,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 435,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 436,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 437,
+    "DTENTREGA": "07/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 438,
+    "DTENTREGA": "09/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 439,
+    "DTENTREGA": "09/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 440,
+    "DTENTREGA": "09/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 441,
+    "DTENTREGA": "09/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 442,
+    "DTENTREGA": "09/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 443,
+    "DTENTREGA": "11/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 444,
+    "DTENTREGA": "11/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 445,
+    "DTENTREGA": "11/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 446,
+    "DTENTREGA": "14/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 447,
+    "DTENTREGA": "14/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 448,
+    "DTENTREGA": "16/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 449,
+    "DTENTREGA": "16/08/2023",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 450,
+    "DTENTREGA": "16/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 451,
+    "DTENTREGA": "16/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 452,
+    "DTENTREGA": "18/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 453,
+    "DTENTREGA": "21/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 454,
+    "DTENTREGA": "21/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 455,
+    "DTENTREGA": "25/08/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 456,
+    "DTENTREGA": "25/08/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 457,
+    "DTENTREGA": "01/09/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 458,
+    "DTENTREGA": "01/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 15
+  },
+  {
+    "IDENTREGA": 459,
+    "DTENTREGA": "01/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 460,
+    "DTENTREGA": "01/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 461,
+    "DTENTREGA": "04/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 462,
+    "DTENTREGA": "04/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 463,
+    "DTENTREGA": "05/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 464,
+    "DTENTREGA": "05/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 465,
+    "DTENTREGA": "05/09/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 466,
+    "DTENTREGA": "05/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 467,
+    "DTENTREGA": "05/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 468,
+    "DTENTREGA": "06/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 469,
+    "DTENTREGA": "06/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 470,
+    "DTENTREGA": "11/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 471,
+    "DTENTREGA": "11/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 472,
+    "DTENTREGA": "12/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 473,
+    "DTENTREGA": "12/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 474,
+    "DTENTREGA": "14/09/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 475,
+    "DTENTREGA": "14/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 476,
+    "DTENTREGA": "14/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 477,
+    "DTENTREGA": "22/09/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 18
+  },
+  {
+    "IDENTREGA": 478,
+    "DTENTREGA": "22/09/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 35
+  },
+  {
+    "IDENTREGA": 479,
+    "DTENTREGA": "02/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 480,
+    "DTENTREGA": "02/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 481,
+    "DTENTREGA": "02/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 482,
+    "DTENTREGA": "02/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 483,
+    "DTENTREGA": "04/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 484,
+    "DTENTREGA": "04/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 485,
+    "DTENTREGA": "04/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 486,
+    "DTENTREGA": "04/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 487,
+    "DTENTREGA": "09/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 488,
+    "DTENTREGA": "09/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 489,
+    "DTENTREGA": "09/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 490,
+    "DTENTREGA": "09/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 491,
+    "DTENTREGA": "11/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 492,
+    "DTENTREGA": "11/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 493,
+    "DTENTREGA": "11/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 494,
+    "DTENTREGA": "11/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 495,
+    "DTENTREGA": "18/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 496,
+    "DTENTREGA": "18/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 497,
+    "DTENTREGA": "18/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 29
+  },
+  {
+    "IDENTREGA": 498,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 499,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 500,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 501,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 502,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 503,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 504,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 505,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 506,
+    "DTENTREGA": "25/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 507,
+    "DTENTREGA": "27/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 508,
+    "DTENTREGA": "27/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 509,
+    "DTENTREGA": "27/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 510,
+    "DTENTREGA": "31/10/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 511,
+    "DTENTREGA": "31/10/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 512,
+    "DTENTREGA": "01/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 513,
+    "DTENTREGA": "01/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 514,
+    "DTENTREGA": "06/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 515,
+    "DTENTREGA": "06/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 26
+  },
+  {
+    "IDENTREGA": 516,
+    "DTENTREGA": "06/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 32
+  },
+  {
+    "IDENTREGA": 517,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 518,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 519,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 520,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 521,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 522,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 523,
+    "DTENTREGA": "08/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 524,
+    "DTENTREGA": "10/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 525,
+    "DTENTREGA": "10/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 526,
+    "DTENTREGA": "10/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 527,
+    "DTENTREGA": "10/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 528,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 529,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 530,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 531,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 532,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 533,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 534,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 535,
+    "DTENTREGA": "13/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 536,
+    "DTENTREGA": "17/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 537,
+    "DTENTREGA": "17/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 538,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 29
+  },
+  {
+    "IDENTREGA": 539,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 540,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 541,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 542,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 543,
+    "DTENTREGA": "22/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 544,
+    "DTENTREGA": "24/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 545,
+    "DTENTREGA": "24/11/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 546,
+    "DTENTREGA": "24/11/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 547,
+    "DTENTREGA": "27/11/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 548,
+    "DTENTREGA": "27/11/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 549,
+    "DTENTREGA": "27/11/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 550,
+    "DTENTREGA": "02/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 41
+  },
+  {
+    "IDENTREGA": 551,
+    "DTENTREGA": "02/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 28
+  },
+  {
+    "IDENTREGA": 552,
+    "DTENTREGA": "04/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 553,
+    "DTENTREGA": "04/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 554,
+    "DTENTREGA": "04/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 555,
+    "DTENTREGA": "07/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 556,
+    "DTENTREGA": "07/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 557,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 22
+  },
+  {
+    "IDENTREGA": 558,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 559,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 560,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 561,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 35
+  },
+  {
+    "IDENTREGA": 562,
+    "DTENTREGA": "16/12/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 563,
+    "DTENTREGA": "18/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 564,
+    "DTENTREGA": "18/12/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 565,
+    "DTENTREGA": "18/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 566,
+    "DTENTREGA": "18/12/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 567,
+    "DTENTREGA": "18/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 568,
+    "DTENTREGA": "20/12/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 569,
+    "DTENTREGA": "20/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 570,
+    "DTENTREGA": "20/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 571,
+    "DTENTREGA": "27/12/2023",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 572,
+    "DTENTREGA": "27/12/2023",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 573,
+    "DTENTREGA": "27/12/2023",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 21
+  },
+  {
+    "IDENTREGA": 574,
+    "DTENTREGA": "03/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 575,
+    "DTENTREGA": "03/01/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 576,
+    "DTENTREGA": "05/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 577,
+    "DTENTREGA": "05/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 578,
+    "DTENTREGA": "08/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 579,
+    "DTENTREGA": "08/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 580,
+    "DTENTREGA": "08/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 581,
+    "DTENTREGA": "08/01/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 582,
+    "DTENTREGA": "11/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 583,
+    "DTENTREGA": "11/01/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 19
+  },
+  {
+    "IDENTREGA": 584,
+    "DTENTREGA": "11/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 585,
+    "DTENTREGA": "11/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 586,
+    "DTENTREGA": "12/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 587,
+    "DTENTREGA": "17/01/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 588,
+    "DTENTREGA": "17/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 589,
+    "DTENTREGA": "18/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 590,
+    "DTENTREGA": "18/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 591,
+    "DTENTREGA": "18/01/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 592,
+    "DTENTREGA": "18/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 593,
+    "DTENTREGA": "18/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 594,
+    "DTENTREGA": "19/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 595,
+    "DTENTREGA": "19/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 596,
+    "DTENTREGA": "22/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 597,
+    "DTENTREGA": "22/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 598,
+    "DTENTREGA": "26/01/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 599,
+    "DTENTREGA": "26/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 600,
+    "DTENTREGA": "26/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 601,
+    "DTENTREGA": "26/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 602,
+    "DTENTREGA": "26/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 603,
+    "DTENTREGA": "29/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 604,
+    "DTENTREGA": "29/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 605,
+    "DTENTREGA": "29/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 606,
+    "DTENTREGA": "30/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 607,
+    "DTENTREGA": "30/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 608,
+    "DTENTREGA": "31/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 609,
+    "DTENTREGA": "31/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 610,
+    "DTENTREGA": "31/01/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 611,
+    "DTENTREGA": "31/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 612,
+    "DTENTREGA": "31/01/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 613,
+    "DTENTREGA": "02/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 614,
+    "DTENTREGA": "02/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 615,
+    "DTENTREGA": "02/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 616,
+    "DTENTREGA": "02/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 617,
+    "DTENTREGA": "06/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 618,
+    "DTENTREGA": "06/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 619,
+    "DTENTREGA": "06/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 620,
+    "DTENTREGA": "06/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 621,
+    "DTENTREGA": "07/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 622,
+    "DTENTREGA": "07/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 623,
+    "DTENTREGA": "07/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 624,
+    "DTENTREGA": "08/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 625,
+    "DTENTREGA": "08/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 626,
+    "DTENTREGA": "09/02/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 627,
+    "DTENTREGA": "09/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 628,
+    "DTENTREGA": "09/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 629,
+    "DTENTREGA": "14/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 630,
+    "DTENTREGA": "14/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 631,
+    "DTENTREGA": "16/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 632,
+    "DTENTREGA": "16/02/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 633,
+    "DTENTREGA": "16/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 634,
+    "DTENTREGA": "16/02/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 635,
+    "DTENTREGA": "16/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 636,
+    "DTENTREGA": "21/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 637,
+    "DTENTREGA": "21/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 20
+  },
+  {
+    "IDENTREGA": 638,
+    "DTENTREGA": "21/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 25
+  },
+  {
+    "IDENTREGA": 639,
+    "DTENTREGA": "22/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 640,
+    "DTENTREGA": "22/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 641,
+    "DTENTREGA": "22/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 642,
+    "DTENTREGA": "22/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 643,
+    "DTENTREGA": "23/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 644,
+    "DTENTREGA": "23/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 645,
+    "DTENTREGA": "26/02/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 646,
+    "DTENTREGA": "26/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 647,
+    "DTENTREGA": "26/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 648,
+    "DTENTREGA": "26/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 649,
+    "DTENTREGA": "27/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 650,
+    "DTENTREGA": "27/02/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 651,
+    "DTENTREGA": "27/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 652,
+    "DTENTREGA": "28/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 653,
+    "DTENTREGA": "28/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 654,
+    "DTENTREGA": "29/02/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 655,
+    "DTENTREGA": "29/02/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 656,
+    "DTENTREGA": "01/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 657,
+    "DTENTREGA": "01/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 658,
+    "DTENTREGA": "04/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 659,
+    "DTENTREGA": "04/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 660,
+    "DTENTREGA": "04/03/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 661,
+    "DTENTREGA": "04/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 662,
+    "DTENTREGA": "04/03/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 663,
+    "DTENTREGA": "07/03/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 664,
+    "DTENTREGA": "07/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 665,
+    "DTENTREGA": "07/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 666,
+    "DTENTREGA": "08/03/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 667,
+    "DTENTREGA": "11/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 668,
+    "DTENTREGA": "11/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 669,
+    "DTENTREGA": "12/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 670,
+    "DTENTREGA": "13/03/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 671,
+    "DTENTREGA": "13/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 672,
+    "DTENTREGA": "21/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 673,
+    "DTENTREGA": "21/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 674,
+    "DTENTREGA": "21/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 675,
+    "DTENTREGA": "21/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 676,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 677,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 678,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 25
+  },
+  {
+    "IDENTREGA": 679,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 680,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 681,
+    "DTENTREGA": "22/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 682,
+    "DTENTREGA": "25/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 683,
+    "DTENTREGA": "25/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 684,
+    "DTENTREGA": "25/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 685,
+    "DTENTREGA": "25/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 686,
+    "DTENTREGA": "26/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 687,
+    "DTENTREGA": "26/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 688,
+    "DTENTREGA": "26/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 689,
+    "DTENTREGA": "27/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 690,
+    "DTENTREGA": "27/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 691,
+    "DTENTREGA": "27/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 692,
+    "DTENTREGA": "28/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 693,
+    "DTENTREGA": "28/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 694,
+    "DTENTREGA": "28/03/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 695,
+    "DTENTREGA": "28/03/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 696,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 697,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 698,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 699,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 700,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 701,
+    "DTENTREGA": "01/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 702,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 703,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 704,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 705,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 706,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 707,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 708,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 709,
+    "DTENTREGA": "02/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 710,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 711,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 712,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 713,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 714,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 715,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 716,
+    "DTENTREGA": "03/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 717,
+    "DTENTREGA": "04/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 718,
+    "DTENTREGA": "04/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 719,
+    "DTENTREGA": "04/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 720,
+    "DTENTREGA": "05/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 721,
+    "DTENTREGA": "05/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 722,
+    "DTENTREGA": "05/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 723,
+    "DTENTREGA": "08/04/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 724,
+    "DTENTREGA": "08/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 725,
+    "DTENTREGA": "08/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 726,
+    "DTENTREGA": "08/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 727,
+    "DTENTREGA": "09/04/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 728,
+    "DTENTREGA": "09/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 729,
+    "DTENTREGA": "09/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 730,
+    "DTENTREGA": "09/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 731,
+    "DTENTREGA": "09/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 732,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 733,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 734,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 735,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 736,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 737,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 738,
+    "DTENTREGA": "12/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 739,
+    "DTENTREGA": "15/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 740,
+    "DTENTREGA": "15/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 741,
+    "DTENTREGA": "15/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 742,
+    "DTENTREGA": "15/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 743,
+    "DTENTREGA": "15/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 744,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 745,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 746,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 747,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 748,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 749,
+    "DTENTREGA": "16/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 750,
+    "DTENTREGA": "19/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 751,
+    "DTENTREGA": "19/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 752,
+    "DTENTREGA": "19/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 753,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 754,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 17
+  },
+  {
+    "IDENTREGA": 755,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 756,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 757,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 758,
+    "DTENTREGA": "24/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 759,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 760,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 761,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "PAULO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 762,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 763,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 764,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 765,
+    "DTENTREGA": "25/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 766,
+    "DTENTREGA": "26/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 767,
+    "DTENTREGA": "26/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 768,
+    "DTENTREGA": "26/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 769,
+    "DTENTREGA": "26/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 770,
+    "DTENTREGA": "29/04/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 771,
+    "DTENTREGA": "29/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 772,
+    "DTENTREGA": "30/04/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 773,
+    "DTENTREGA": "30/04/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 774,
+    "DTENTREGA": "30/04/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 775,
+    "DTENTREGA": "03/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 776,
+    "DTENTREGA": "03/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 777,
+    "DTENTREGA": "03/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 778,
+    "DTENTREGA": "03/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 779,
+    "DTENTREGA": "06/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 780,
+    "DTENTREGA": "06/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 781,
+    "DTENTREGA": "06/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 782,
+    "DTENTREGA": "07/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 783,
+    "DTENTREGA": "07/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 784,
+    "DTENTREGA": "09/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 785,
+    "DTENTREGA": "09/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 786,
+    "DTENTREGA": "10/05/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 787,
+    "DTENTREGA": "10/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 788,
+    "DTENTREGA": "10/05/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 789,
+    "DTENTREGA": "10/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 19
+  },
+  {
+    "IDENTREGA": 790,
+    "DTENTREGA": "13/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 791,
+    "DTENTREGA": "13/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 792,
+    "DTENTREGA": "13/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 793,
+    "DTENTREGA": "13/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 794,
+    "DTENTREGA": "14/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 795,
+    "DTENTREGA": "14/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 796,
+    "DTENTREGA": "14/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 797,
+    "DTENTREGA": "17/05/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 798,
+    "DTENTREGA": "17/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 799,
+    "DTENTREGA": "17/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 15
+  },
+  {
+    "IDENTREGA": 800,
+    "DTENTREGA": "17/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 801,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 11
+  },
+  {
+    "IDENTREGA": 802,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 803,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 804,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 805,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 806,
+    "DTENTREGA": "21/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 807,
+    "DTENTREGA": "22/05/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 808,
+    "DTENTREGA": "22/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 809,
+    "DTENTREGA": "22/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 810,
+    "DTENTREGA": "23/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 811,
+    "DTENTREGA": "23/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 812,
+    "DTENTREGA": "23/05/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 813,
+    "DTENTREGA": "23/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 814,
+    "DTENTREGA": "23/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 815,
+    "DTENTREGA": "24/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 816,
+    "DTENTREGA": "24/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 817,
+    "DTENTREGA": "28/05/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 818,
+    "DTENTREGA": "28/05/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 819,
+    "DTENTREGA": "28/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 820,
+    "DTENTREGA": "28/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 821,
+    "DTENTREGA": "29/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 822,
+    "DTENTREGA": "30/05/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 823,
+    "DTENTREGA": "03/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 824,
+    "DTENTREGA": "03/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 825,
+    "DTENTREGA": "03/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 826,
+    "DTENTREGA": "04/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 827,
+    "DTENTREGA": "04/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 828,
+    "DTENTREGA": "05/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 6
+  },
+  {
+    "IDENTREGA": 829,
+    "DTENTREGA": "05/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 830,
+    "DTENTREGA": "05/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 831,
+    "DTENTREGA": "05/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 832,
+    "DTENTREGA": "06/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 833,
+    "DTENTREGA": "06/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 834,
+    "DTENTREGA": "06/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 835,
+    "DTENTREGA": "10/06/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 836,
+    "DTENTREGA": "10/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 12
+  },
+  {
+    "IDENTREGA": 837,
+    "DTENTREGA": "10/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 15
+  },
+  {
+    "IDENTREGA": 838,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 839,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 840,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 14
+  },
+  {
+    "IDENTREGA": 841,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 842,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 843,
+    "DTENTREGA": "12/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 844,
+    "DTENTREGA": "13/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 845,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 846,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 847,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 848,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 849,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 850,
+    "DTENTREGA": "14/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 851,
+    "DTENTREGA": "17/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 852,
+    "DTENTREGA": "17/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 853,
+    "DTENTREGA": "17/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 854,
+    "DTENTREGA": "17/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 855,
+    "DTENTREGA": "18/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 856,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 857,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 858,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 859,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 860,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 861,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 862,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 863,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 864,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 865,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 866,
+    "DTENTREGA": "19/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 867,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 868,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 18
+  },
+  {
+    "IDENTREGA": 869,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 13
+  },
+  {
+    "IDENTREGA": 870,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 871,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 872,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 873,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 874,
+    "DTENTREGA": "24/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 875,
+    "DTENTREGA": "26/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 10
+  },
+  {
+    "IDENTREGA": 876,
+    "DTENTREGA": "26/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 877,
+    "DTENTREGA": "26/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 878,
+    "DTENTREGA": "26/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 879,
+    "DTENTREGA": "26/06/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 880,
+    "DTENTREGA": "27/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 881,
+    "DTENTREGA": "27/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 882,
+    "DTENTREGA": "27/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 883,
+    "DTENTREGA": "28/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 884,
+    "DTENTREGA": "28/06/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 885,
+    "DTENTREGA": "28/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 886,
+    "DTENTREGA": "28/06/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 887,
+    "DTENTREGA": "01/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 888,
+    "DTENTREGA": "01/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 889,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 890,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 891,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 892,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 893,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 894,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 895,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 896,
+    "DTENTREGA": "02/07/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 897,
+    "DTENTREGA": "05/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 898,
+    "DTENTREGA": "05/07/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 899,
+    "DTENTREGA": "05/07/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 900,
+    "DTENTREGA": "05/07/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 901,
+    "DTENTREGA": "05/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 20
+  },
+  {
+    "IDENTREGA": 902,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 903,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 4
+  },
+  {
+    "IDENTREGA": 904,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 905,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 906,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 907,
+    "DTENTREGA": "09/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 908,
+    "DTENTREGA": "10/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 909,
+    "DTENTREGA": "10/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 910,
+    "DTENTREGA": "10/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 911,
+    "DTENTREGA": "10/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 912,
+    "DTENTREGA": "10/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 913,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 914,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 915,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 916,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 917,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 918,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 919,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 3
+  },
+  {
+    "IDENTREGA": 920,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 921,
+    "DTENTREGA": "15/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 922,
+    "DTENTREGA": "18/07/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 9
+  },
+  {
+    "IDENTREGA": 923,
+    "DTENTREGA": "18/07/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 8
+  },
+  {
+    "IDENTREGA": 924,
+    "DTENTREGA": "18/07/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 1
+  },
+  {
+    "IDENTREGA": 925,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "ALEX TEMPORARIO",
+    "PARADAS": 7
+  },
+  {
+    "IDENTREGA": 926,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "COXINHA",
+    "PARADAS": 2
+  },
+  {
+    "IDENTREGA": 927,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "BRUNO",
+    "PARADAS": 5
+  },
+  {
+    "IDENTREGA": 928,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 23
+  },
+  {
+    "IDENTREGA": 929,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "RANGEL",
+    "PARADAS": 31
+  },
+  {
+    "IDENTREGA": 930,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 16
+  },
+  {
+    "IDENTREGA": 931,
+    "DTENTREGA": "02/08/2024",
+    "MOTORISTA": "DIMAS",
+    "PARADAS": 38
+  }
+]

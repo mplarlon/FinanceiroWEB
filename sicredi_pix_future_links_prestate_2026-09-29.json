@@ -1,0 +1,78 @@
+{
+  "created_at": "2026-09-29T10:34:56.419231",
+  "method": "unique exact amount on later Miautomec date, maximum 7 days",
+  "matches": [
+    {
+      "item": 46573,
+      "title": 746487,
+      "value": "1649.50",
+      "bank_date": "2026-06-22",
+      "title_doc": "000303204CFE",
+      "future_days": 1
+    },
+    {
+      "item": 46775,
+      "title": 748838,
+      "value": "524.70",
+      "bank_date": "2026-07-16",
+      "title_doc": "000012432",
+      "future_days": 4
+    },
+    {
+      "item": 46884,
+      "title": 753046,
+      "value": "13.90",
+      "bank_date": "2026-07-30",
+      "title_doc": "000307527CFE",
+      "future_days": 2
+    },
+    {
+      "item": 47072,
+      "title": 757872,
+      "value": "18.90",
+      "bank_date": "2026-08-31",
+      "title_doc": "000310650CFE",
+      "future_days": 4
+    },
+    {
+      "item": 47105,
+      "title": 758280,
+      "value": "19.00",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310907CFE",
+      "future_days": 5
+    },
+    {
+      "item": 47109,
+      "title": 758267,
+      "value": "39.90",
+      "bank_date": "2026-09-04",
+      "title_doc": "000310901CFE",
+      "future_days": 5
+    },
+    {
+      "item": 47135,
+      "title": 758693,
+      "value": "13.90",
+      "bank_date": "2026-09-08",
+      "title_doc": "000311164CFE",
+      "future_days": 4
+    },
+    {
+      "item": 47173,
+      "title": 759775,
+      "value": "98.97",
+      "bank_date": "2026-09-15",
+      "title_doc": "000311847CFE",
+      "future_days": 6
+    },
+    {
+      "item": 47239,
+      "title": 760790,
+      "value": "1919.20",
+      "bank_date": "2026-09-25",
+      "title_doc": "661928",
+      "future_days": 4
+    }
+  ]
+}

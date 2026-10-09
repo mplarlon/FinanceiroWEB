@@ -1,0 +1,1239 @@
+{
+  "created_at": "2026-09-29T11:25:03.872801",
+  "count": 154,
+  "total": "1787.27",
+  "items": [
+    {
+      "item": 47265,
+      "date": "2026-02-04",
+      "original_description": "COB ALTOSS",
+      "original_value": "-4.00",
+      "canonical": "COB ALT055",
+      "payable_value": "4.00"
+    },
+    {
+      "item": 47289,
+      "date": "2026-02-06",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47339,
+      "date": "2026-02-10",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 47381,
+      "date": "2026-02-11",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47412,
+      "date": "2026-02-12",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47418,
+      "date": "2026-02-13",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47426,
+      "date": "2026-02-14",
+      "original_description": "COB COMPE",
+      "original_value": "-46.25",
+      "canonical": "COB COMPE",
+      "payable_value": "46.25"
+    },
+    {
+      "item": 47452,
+      "date": "2026-02-19",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47460,
+      "date": "2026-02-20",
+      "original_description": "MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 47468,
+      "date": "2026-02-21",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47469,
+      "date": "2026-02-21",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47476,
+      "date": "2026-02-24",
+      "original_description": "COB ALTOSS",
+      "original_value": "-4.00",
+      "canonical": "COB ALT055",
+      "payable_value": "4.00"
+    },
+    {
+      "item": 47481,
+      "date": "2026-02-25",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47482,
+      "date": "2026-02-25",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47496,
+      "date": "2026-02-28",
+      "original_description": "COB EMIO",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 47497,
+      "date": "2026-02-28",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47500,
+      "date": "2026-02-28",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47531,
+      "date": "2026-03-03",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47532,
+      "date": "2026-03-03",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47538,
+      "date": "2026-03-04",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47576,
+      "date": "2026-03-06",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47577,
+      "date": "2026-03-06",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47625,
+      "date": "2026-03-10",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47626,
+      "date": "2026-03-10",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47630,
+      "date": "2026-03-11",
+      "original_description": "COB COMPE",
+      "original_value": "-31.45",
+      "canonical": "COB COMPE",
+      "payable_value": "31.45"
+    },
+    {
+      "item": 47635,
+      "date": "2026-03-12",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47636,
+      "date": "2026-03-12",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 47640,
+      "date": "2026-03-13",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47641,
+      "date": "2026-03-13",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47645,
+      "date": "2026-03-14",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47646,
+      "date": "2026-03-14",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47676,
+      "date": "2026-03-17",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47681,
+      "date": "2026-03-18",
+      "original_description": "COB ALTOSS",
+      "original_value": "-4.00",
+      "canonical": "COB ALT055",
+      "payable_value": "4.00"
+    },
+    {
+      "item": 47682,
+      "date": "2026-03-18",
+      "original_description": "COB RET ON",
+      "original_value": "-0.27",
+      "canonical": "COB RET ON",
+      "payable_value": "0.27"
+    },
+    {
+      "item": 47683,
+      "date": "2026-03-18",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 47708,
+      "date": "2026-03-20",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47709,
+      "date": "2026-03-20",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47711,
+      "date": "2026-03-20",
+      "original_description": "MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 47719,
+      "date": "2026-03-21",
+      "original_description": "COB ALTOSS",
+      "original_value": "-8.00",
+      "canonical": "COB ALT055",
+      "payable_value": "8.00"
+    },
+    {
+      "item": 47720,
+      "date": "2026-03-21",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47721,
+      "date": "2026-03-21",
+      "original_description": "COB INTERN",
+      "original_value": "-4.60",
+      "canonical": "COB INTERNA",
+      "payable_value": "4.60"
+    },
+    {
+      "item": 47744,
+      "date": "2026-03-24",
+      "original_description": "COB COMPE",
+      "original_value": "-16.65",
+      "canonical": "COB COMPE",
+      "payable_value": "16.65"
+    },
+    {
+      "item": 47776,
+      "date": "2026-03-27",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47836,
+      "date": "2026-03-31",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47837,
+      "date": "2026-03-31",
+      "original_description": "COB COMPE",
+      "original_value": "-7.40",
+      "canonical": "COB COMPE",
+      "payable_value": "7.40"
+    },
+    {
+      "item": 47842,
+      "date": "2026-04-01",
+      "original_description": "COB EMIO",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 47850,
+      "date": "2026-04-03",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47851,
+      "date": "2026-04-03",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47891,
+      "date": "2026-04-09",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47892,
+      "date": "2026-04-09",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47911,
+      "date": "2026-04-11",
+      "original_description": "COB ALTOSS",
+      "original_value": "-8.00",
+      "canonical": "COB ALT055",
+      "payable_value": "8.00"
+    },
+    {
+      "item": 47912,
+      "date": "2026-04-11",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47913,
+      "date": "2026-04-11",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47939,
+      "date": "2026-04-14",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47943,
+      "date": "2026-04-15",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 47972,
+      "date": "2026-04-17",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 47977,
+      "date": "2026-04-18",
+      "original_description": "COBALTOSS",
+      "original_value": "-8.00",
+      "canonical": "COB ALT055",
+      "payable_value": "8.00"
+    },
+    {
+      "item": 47978,
+      "date": "2026-04-18",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 47979,
+      "date": "2026-04-18",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48014,
+      "date": "2026-04-20",
+      "original_description": "MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 48019,
+      "date": "2026-04-21",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48020,
+      "date": "2026-04-21",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48030,
+      "date": "2026-04-23",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48031,
+      "date": "2026-04-23",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 48061,
+      "date": "2026-04-25",
+      "original_description": "COB ALTOSS",
+      "original_value": "-12.00",
+      "canonical": "COB ALT055",
+      "payable_value": "12.00"
+    },
+    {
+      "item": 48062,
+      "date": "2026-04-25",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48063,
+      "date": "2026-04-25",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48091,
+      "date": "2026-05-01",
+      "original_description": "COB EMIO",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 48092,
+      "date": "2026-05-01",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48094,
+      "date": "2026-05-01",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48201,
+      "date": "2026-05-12",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48203,
+      "date": "2026-05-12",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48218,
+      "date": "2026-05-14",
+      "original_description": "COB COMPE",
+      "original_value": "-22.20",
+      "canonical": "COB COMPE",
+      "payable_value": "22.20"
+    },
+    {
+      "item": 48269,
+      "date": "2026-05-20",
+      "original_description": "+ MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 48298,
+      "date": "2026-05-26",
+      "original_description": "COBALTOSS",
+      "original_value": "-12.00",
+      "canonical": "COB ALT055",
+      "payable_value": "12.00"
+    },
+    {
+      "item": 48307,
+      "date": "2026-05-27",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48326,
+      "date": "2026-05-28",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48375,
+      "date": "2026-06-02",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 48401,
+      "date": "2026-06-06",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48402,
+      "date": "2026-06-06",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48413,
+      "date": "2026-06-09",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48423,
+      "date": "2026-06-11",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48427,
+      "date": "2026-06-12",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48449,
+      "date": "2026-06-13",
+      "original_description": "COB RET ON",
+      "original_value": "-0.18",
+      "canonical": "COB RET ON",
+      "payable_value": "0.18"
+    },
+    {
+      "item": 48450,
+      "date": "2026-06-13",
+      "original_description": "COB COMPE",
+      "original_value": "-35.15",
+      "canonical": "COB COMPE",
+      "payable_value": "35.15"
+    },
+    {
+      "item": 48485,
+      "date": "2026-06-16",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48486,
+      "date": "2026-06-16",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48491,
+      "date": "2026-06-17",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48497,
+      "date": "2026-06-18",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48498,
+      "date": "2026-06-18",
+      "original_description": "COBINTERN",
+      "original_value": "-4.60",
+      "canonical": "COB INTERNA",
+      "payable_value": "4.60"
+    },
+    {
+      "item": 48499,
+      "date": "2026-06-18",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48533,
+      "date": "2026-06-20",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48537,
+      "date": "2026-06-22",
+      "original_description": "MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 48556,
+      "date": "2026-06-24",
+      "original_description": "COB ALTOSS",
+      "original_value": "-4.00",
+      "canonical": "COB ALT055",
+      "payable_value": "4.00"
+    },
+    {
+      "item": 48568,
+      "date": "2026-06-26",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48569,
+      "date": "2026-06-26",
+      "original_description": "COB COMPE",
+      "original_value": "-12.95",
+      "canonical": "COB COMPE",
+      "payable_value": "12.95"
+    },
+    {
+      "item": 48586,
+      "date": "2026-07-01",
+      "original_description": "COB EMIO",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 48587,
+      "date": "2026-07-01",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48624,
+      "date": "2026-07-04",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48636,
+      "date": "2026-07-07",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48687,
+      "date": "2026-07-11",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48688,
+      "date": "2026-07-11",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48708,
+      "date": "2026-07-14",
+      "original_description": "COBALTOSS",
+      "original_value": "-16.00",
+      "canonical": "COB ALT055",
+      "payable_value": "16.00"
+    },
+    {
+      "item": 48709,
+      "date": "2026-07-14",
+      "original_description": "COB COMPE",
+      "original_value": "-29.60",
+      "canonical": "COB COMPE",
+      "payable_value": "29.60"
+    },
+    {
+      "item": 48710,
+      "date": "2026-07-14",
+      "original_description": "COBINTERN",
+      "original_value": "-4.60",
+      "canonical": "COB INTERNA",
+      "payable_value": "4.60"
+    },
+    {
+      "item": 48733,
+      "date": "2026-07-16",
+      "original_description": "COBRETON",
+      "original_value": "-0.18",
+      "canonical": "COB RET ON",
+      "payable_value": "0.18"
+    },
+    {
+      "item": 48734,
+      "date": "2026-07-16",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48755,
+      "date": "2026-07-18",
+      "original_description": "COBRET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48756,
+      "date": "2026-07-18",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 48764,
+      "date": "2026-07-20",
+      "original_description": "MENSALIDADE CESTA SERVICO",
+      "original_value": "-189.00",
+      "canonical": "MENSALIDADE CESTA SERVICO",
+      "payable_value": "189.00"
+    },
+    {
+      "item": 48781,
+      "date": "2026-07-22",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48802,
+      "date": "2026-07-23",
+      "original_description": "COBALTOSS",
+      "original_value": "-12.00",
+      "canonical": "COB ALT055",
+      "payable_value": "12.00"
+    },
+    {
+      "item": 48803,
+      "date": "2026-07-23",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48813,
+      "date": "2026-07-24",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48837,
+      "date": "2026-07-28",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48838,
+      "date": "2026-07-28",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 48854,
+      "date": "2026-07-31",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48870,
+      "date": "2026-08-01",
+      "original_description": "COB EMI",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 48885,
+      "date": "2026-08-05",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48886,
+      "date": "2026-08-05",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48904,
+      "date": "2026-08-06",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48919,
+      "date": "2026-08-08",
+      "original_description": "COB RET ON",
+      "original_value": "-0.18",
+      "canonical": "COB RET ON",
+      "payable_value": "0.18"
+    },
+    {
+      "item": 48920,
+      "date": "2026-08-08",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 48933,
+      "date": "2026-08-11",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48934,
+      "date": "2026-08-11",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 48936,
+      "date": "2026-08-12",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48950,
+      "date": "2026-08-13",
+      "original_description": "COB ALTOSS",
+      "original_value": "-16.00",
+      "canonical": "COB ALT055",
+      "payable_value": "16.00"
+    },
+    {
+      "item": 48951,
+      "date": "2026-08-13",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 48958,
+      "date": "2026-08-14",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48959,
+      "date": "2026-08-14",
+      "original_description": "COB COMPE",
+      "original_value": "-44.40",
+      "canonical": "COB COMPE",
+      "payable_value": "44.40"
+    },
+    {
+      "item": 48973,
+      "date": "2026-08-15",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 48974,
+      "date": "2026-08-15",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 49008,
+      "date": "2026-08-18",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 49016,
+      "date": "2026-08-19",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49017,
+      "date": "2026-08-19",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 49039,
+      "date": "2026-08-21",
+      "original_description": "COB ALTOSS",
+      "original_value": "-8.00",
+      "canonical": "COB ALT055",
+      "payable_value": "8.00"
+    },
+    {
+      "item": 49081,
+      "date": "2026-08-26",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49082,
+      "date": "2026-08-26",
+      "original_description": "COB COMPE",
+      "original_value": "-3.70",
+      "canonical": "COB COMPE",
+      "payable_value": "3.70"
+    },
+    {
+      "item": 49113,
+      "date": "2026-09-01",
+      "original_description": "COB EMI",
+      "original_value": "-471.28",
+      "canonical": "COB EMI047",
+      "payable_value": "1.28"
+    },
+    {
+      "item": 49137,
+      "date": "2026-09-05",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 49160,
+      "date": "2026-09-09",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49168,
+      "date": "2026-09-10",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 49178,
+      "date": "2026-09-11",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 49184,
+      "date": "2026-09-12",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49185,
+      "date": "2026-09-12",
+      "original_description": "COB COMPE",
+      "original_value": "-49.95",
+      "canonical": "COB COMPE",
+      "payable_value": "49.95"
+    },
+    {
+      "item": 49222,
+      "date": "2026-09-15",
+      "original_description": "COBALTOSS",
+      "original_value": "-8.00",
+      "canonical": "COB ALT055",
+      "payable_value": "8.00"
+    },
+    {
+      "item": 49226,
+      "date": "2026-09-16",
+      "original_description": "COBRETON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49237,
+      "date": "2026-09-17",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49238,
+      "date": "2026-09-17",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 49289,
+      "date": "2026-09-23",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49290,
+      "date": "2026-09-23",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    },
+    {
+      "item": 49325,
+      "date": "2026-09-26",
+      "original_description": "COB COMPE",
+      "original_value": "-5.55",
+      "canonical": "COB COMPE",
+      "payable_value": "5.55"
+    },
+    {
+      "item": 49343,
+      "date": "2026-09-29",
+      "original_description": "COB RET ON",
+      "original_value": "-0.09",
+      "canonical": "COB RET ON",
+      "payable_value": "0.09"
+    },
+    {
+      "item": 49344,
+      "date": "2026-09-29",
+      "original_description": "COB COMPE",
+      "original_value": "-1.85",
+      "canonical": "COB COMPE",
+      "payable_value": "1.85"
+    }
+  ]
+}

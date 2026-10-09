@@ -1,0 +1,5766 @@
+{
+  "database": "100.92.55.29:C:\\Administracao\\db\\miautomec.FDB",
+  "criterion": "same date and exact amount; closest sale time up to 30 minutes",
+  "rows": [
+    {
+      "bank": {
+        "txid": "62D47F29-3580-4BB8-B71E-7A7A3A3096DE",
+        "when": "2026-07-31 15:29:00",
+        "amount": 66117,
+        "status": "Aprovada",
+        "authorization": "293562",
+        "nsu": "621218262490",
+        "card": "449325******9757",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 656697,
+        "company": 1,
+        "receipt": 72,
+        "parcel": 1,
+        "day": "2026-07-31",
+        "times": [
+          "2026-07-31 08:03:22.957000",
+          "2026-07-31 15:10:26"
+        ],
+        "amount": 66117,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-07-31 15:30:13.0000"
+      },
+      "difference_seconds": 1114.0
+    },
+    {
+      "bank": {
+        "txid": "94EAA758-DC37-4D6A-811A-F90728508130",
+        "when": "2026-07-28 09:07:00",
+        "amount": 3690,
+        "status": "Aprovada",
+        "authorization": "HGRCJC",
+        "nsu": "072806814013",
+        "card": "553665******0149",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999615290,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-28",
+        "times": [
+          "2026-07-28 13:39:45.279000",
+          "2026-07-28 08:51:06"
+        ],
+        "amount": 3690,
+        "row_count": 1,
+        "old_authorization_min": "X",
+        "old_authorization_max": "X",
+        "old_card": "",
+        "changed": "2026-07-28 13:39:41.5280"
+      },
+      "difference_seconds": 954.0
+    },
+    {
+      "bank": {
+        "txid": "6D34A82E-FC66-4431-A982-B9B127A87AFA",
+        "when": "2026-07-28 08:13:00",
+        "amount": 5990,
+        "status": "Aprovada",
+        "authorization": "SAJSU7",
+        "nsu": "072878414012",
+        "card": "549288******8062",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999615288,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-28",
+        "times": [
+          "2026-07-28 13:26:46.205000",
+          "2026-07-28 07:55:56"
+        ],
+        "amount": 5990,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-07-28 13:26:17.7960"
+      },
+      "difference_seconds": 1024.0
+    },
+    {
+      "bank": {
+        "txid": "C521EC4C-214C-44BC-B58F-6183750703E6",
+        "when": "2026-07-23 15:54:00",
+        "amount": 73946,
+        "status": "Aprovada",
+        "authorization": "545170",
+        "nsu": "620418102653",
+        "card": "422061******0975",
+        "payment": "Crédito",
+        "installment": "Parcelado 7x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 655670,
+        "company": 1,
+        "receipt": 36,
+        "parcel": 1,
+        "day": "2026-07-23",
+        "times": [
+          "2026-07-23 16:51:35.957000",
+          "2026-07-23 15:24:37"
+        ],
+        "amount": 73946,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-07-23 15:55:41.9260"
+      },
+      "difference_seconds": 1763.0
+    },
+    {
+      "bank": {
+        "txid": "756CC716-6165-48C2-811C-56EB7CAE0AEA",
+        "when": "2026-07-21 10:54:00",
+        "amount": 6980,
+        "status": "Aprovada",
+        "authorization": "192862",
+        "nsu": "620213982995",
+        "card": "421958******0824",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 655237,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 2,
+        "day": "2026-07-21",
+        "times": [
+          "2026-07-21 16:33:41.070000",
+          "2026-07-21 10:38:53"
+        ],
+        "amount": 6980,
+        "row_count": 1,
+        "old_authorization_min": "Z",
+        "old_authorization_max": "Z",
+        "old_card": "",
+        "changed": "2026-07-21 10:45:47.4190"
+      },
+      "difference_seconds": 907.0
+    },
+    {
+      "bank": {
+        "txid": "1D506ABB-A98F-430A-9B03-269E62D8704A",
+        "when": "2026-07-18 12:10:00",
+        "amount": 50079,
+        "status": "Aprovada",
+        "authorization": "LG4SEJ",
+        "nsu": "071883712774",
+        "card": "515520******9290",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 654959,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-18",
+        "times": [
+          "2026-07-18 09:12:59.518000",
+          "2026-07-18 11:46:30"
+        ],
+        "amount": 50079,
+        "row_count": 1,
+        "old_authorization_min": "Ç",
+        "old_authorization_max": "Ç",
+        "old_card": "",
+        "changed": "2026-07-18 12:11:14.8870"
+      },
+      "difference_seconds": 1410.0
+    },
+    {
+      "bank": {
+        "txid": "0C821835-138C-415B-976C-0F18CF7B0B92",
+        "when": "2026-07-17 08:21:00",
+        "amount": 7390,
+        "status": "Aprovada",
+        "authorization": "610523",
+        "nsu": "619811189139",
+        "card": "406655******7024",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 654687,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-07-17",
+        "times": [
+          "2026-07-17 08:51:59.484000",
+          "2026-07-17 07:52:18"
+        ],
+        "amount": 7390,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-07-17 08:21:31.0670"
+      },
+      "difference_seconds": 1722.0
+    },
+    {
+      "bank": {
+        "txid": "27EA20E1-9342-4C65-A4D1-DC153B2AEDAA",
+        "when": "2026-07-14 10:43:00",
+        "amount": 1160,
+        "status": "Aprovada",
+        "authorization": "014633",
+        "nsu": "071490513974",
+        "card": "553665******2619",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999614959,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-14",
+        "times": [
+          "2026-07-14 23:37:34.399000",
+          "2026-07-14 10:22:37"
+        ],
+        "amount": 1160,
+        "row_count": 1,
+        "old_authorization_min": "c",
+        "old_authorization_max": "c",
+        "old_card": "",
+        "changed": "2026-07-14 23:37:29.0940"
+      },
+      "difference_seconds": 1223.0
+    },
+    {
+      "bank": {
+        "txid": "BFE65BF1-8CF2-4C29-B468-FC109EC4DBE5",
+        "when": "2026-07-14 09:02:00",
+        "amount": 15449,
+        "status": "Aprovada",
+        "authorization": "031515",
+        "nsu": "071429112616",
+        "card": "530034******2225",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 654182,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-14",
+        "times": [
+          "2026-07-14 09:28:47.728000",
+          "2026-07-14 08:41:32"
+        ],
+        "amount": 15449,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-07-14 09:26:27.7530"
+      },
+      "difference_seconds": 1228.0
+    },
+    {
+      "bank": {
+        "txid": "20F9B279-CEC0-4358-BEE5-91BD3C0383C9",
+        "when": "2026-07-09 12:46:00",
+        "amount": 300,
+        "status": "Aprovada",
+        "authorization": "077362",
+        "nsu": "619015910643",
+        "card": "407267******0169",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 653587,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-09",
+        "times": [
+          "2026-07-09 16:07:50.840000",
+          "2026-07-09 12:22:55"
+        ],
+        "amount": 300,
+        "row_count": 1,
+        "old_authorization_min": "V",
+        "old_authorization_max": "V",
+        "old_card": "",
+        "changed": "2026-07-09 12:56:56.1750"
+      },
+      "difference_seconds": 1385.0
+    },
+    {
+      "bank": {
+        "txid": "9BB1E8D4-8D75-4DAC-92E1-13CB976B755E",
+        "when": "2026-07-07 16:35:00",
+        "amount": 38149,
+        "status": "Aprovada",
+        "authorization": "227228",
+        "nsu": "618819500023",
+        "card": "498431******2847",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 653317,
+        "company": 1,
+        "receipt": 69,
+        "parcel": 1,
+        "day": "2026-07-07",
+        "times": [
+          "2026-07-07 10:24:19.638000",
+          "2026-07-07 16:11:36"
+        ],
+        "amount": 38149,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-07-07 16:39:21.8840"
+      },
+      "difference_seconds": 1404.0
+    },
+    {
+      "bank": {
+        "txid": "D27CE8AC-955C-4CCB-BB6F-6A67BDDF641A",
+        "when": "2026-07-06 10:21:00",
+        "amount": 995,
+        "status": "Aprovada",
+        "authorization": "211975",
+        "nsu": "618713902960",
+        "card": "425850******5939",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999614746,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-07-06",
+        "times": [
+          "2026-07-06 22:12:48.255000",
+          "2026-07-06 09:52:29"
+        ],
+        "amount": 995,
+        "row_count": 1,
+        "old_authorization_min": "5",
+        "old_authorization_max": "5",
+        "old_card": "",
+        "changed": "2026-07-06 22:12:40.1310"
+      },
+      "difference_seconds": 1711.0
+    },
+    {
+      "bank": {
+        "txid": "A76ECBC2-E0CB-47C4-A023-7104CF156377",
+        "when": "2026-07-06 07:35:00",
+        "amount": 1980,
+        "status": "Aprovada",
+        "authorization": "056638",
+        "nsu": "070662313928",
+        "card": "552640******1528",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999614735,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-07-06",
+        "times": [
+          "2026-07-06 22:09:41.048000",
+          "2026-07-06 07:12:28"
+        ],
+        "amount": 1980,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-07-06 22:09:00.5180"
+      },
+      "difference_seconds": 1352.0
+    },
+    {
+      "bank": {
+        "txid": "EFD675A8-F9F6-42C8-A3DC-679018ECD106",
+        "when": "2026-07-02 14:24:00",
+        "amount": 31065,
+        "status": "Aprovada",
+        "authorization": "243169",
+        "nsu": "070271030886",
+        "card": "522840******2557",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 652712,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-07-02",
+        "times": [
+          "2026-07-02 14:43:14.703000",
+          "2026-07-02 13:58:51"
+        ],
+        "amount": 31065,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-07-02 14:24:58.2650"
+      },
+      "difference_seconds": 1154.703
+    },
+    {
+      "bank": {
+        "txid": "35D1F78E-59E2-4503-A014-A91A71775115",
+        "when": "2026-07-02 09:21:00",
+        "amount": 18990,
+        "status": "Aprovada",
+        "authorization": "OXZILV",
+        "nsu": "618312816646",
+        "card": "470598******3948",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 652545,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-07-02",
+        "times": [
+          "2026-07-02 09:42:35.651000",
+          "2026-07-02 15:30:40"
+        ],
+        "amount": 18990,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-07-02 09:42:29.6810"
+      },
+      "difference_seconds": 1295.651
+    },
+    {
+      "bank": {
+        "txid": "466983EB-163E-48C5-BEA5-D70E9835C5B2",
+        "when": "2026-06-26 08:09:00",
+        "amount": 6790,
+        "status": "Aprovada",
+        "authorization": "011794",
+        "nsu": "617711682140",
+        "card": "467092******7219",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651885,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-06-26",
+        "times": [
+          "2026-06-26 08:31:33.923000",
+          "2026-06-26 07:51:49"
+        ],
+        "amount": 6790,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-26 08:31:24.5480"
+      },
+      "difference_seconds": 1031.0
+    },
+    {
+      "bank": {
+        "txid": "F51FD443-7AA3-4268-886C-0508D683155A",
+        "when": "2026-06-26 10:32:00",
+        "amount": 32739,
+        "status": "Aprovada",
+        "authorization": "321370",
+        "nsu": "617713357716",
+        "card": "425850******6547",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651924,
+        "company": 1,
+        "receipt": 69,
+        "parcel": 1,
+        "day": "2026-06-26",
+        "times": [
+          "2026-06-26 11:13:38.991000",
+          "2026-06-26 10:14:51"
+        ],
+        "amount": 32739,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-26 10:34:20.2110"
+      },
+      "difference_seconds": 1029.0
+    },
+    {
+      "bank": {
+        "txid": "2BB80774-3D52-46DA-B6B7-04533DC22715",
+        "when": "2026-06-25 13:48:00",
+        "amount": 8470,
+        "status": "Aprovada",
+        "authorization": "RSHUFY",
+        "nsu": "062564112207",
+        "card": "545931******4973",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651862,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-06-25",
+        "times": [
+          "2026-06-25 14:53:55.575000",
+          "2026-06-25 13:30:39"
+        ],
+        "amount": 8470,
+        "row_count": 1,
+        "old_authorization_min": "G",
+        "old_authorization_max": "G",
+        "old_card": "",
+        "changed": "2026-06-25 14:53:50.4330"
+      },
+      "difference_seconds": 1041.0
+    },
+    {
+      "bank": {
+        "txid": "E80F3E40-045C-4FE0-B261-889983172928",
+        "when": "2026-06-24 14:52:00",
+        "amount": 201760,
+        "status": "Aprovada",
+        "authorization": "052616",
+        "nsu": "062423312193",
+        "card": "530033******6301",
+        "payment": "Crédito",
+        "installment": "Parcelado 4x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651786,
+        "company": 1,
+        "receipt": 51,
+        "parcel": 1,
+        "day": "2026-06-24",
+        "times": [
+          "2026-06-24 15:10:21.665000",
+          "2026-06-24 14:23:48"
+        ],
+        "amount": 201760,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-24 15:08:02.0590"
+      },
+      "difference_seconds": 1101.665
+    },
+    {
+      "bank": {
+        "txid": "00B2EF28-391D-433B-944B-B3FEBEDA6CD6",
+        "when": "2026-06-24 09:37:00",
+        "amount": 11900,
+        "status": "Aprovada",
+        "authorization": "184424",
+        "nsu": "062464112172",
+        "card": "554906******6334",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651711,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-06-24",
+        "times": [
+          "2026-06-24 10:50:46.853000",
+          "2026-06-24 09:18:46"
+        ],
+        "amount": 11900,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-06-24 09:38:06.5830"
+      },
+      "difference_seconds": 1094.0
+    },
+    {
+      "bank": {
+        "txid": "094B6E2F-6B86-4E5B-B32B-6970BD2C6562",
+        "when": "2026-06-20 13:20:00",
+        "amount": 49411,
+        "status": "Aprovada",
+        "authorization": "R82159",
+        "nsu": "062086012128",
+        "card": "230650******6174",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 651342,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 2,
+        "day": "2026-06-20",
+        "times": [
+          "2026-06-20 09:47:21.400000",
+          "2026-06-20 13:02:32"
+        ],
+        "amount": 49411,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-20 13:21:24.2670"
+      },
+      "difference_seconds": 1048.0
+    },
+    {
+      "bank": {
+        "txid": "8CD20E3F-C901-4089-860F-2098C9794B5F",
+        "when": "2026-06-18 15:35:00",
+        "amount": 26950,
+        "status": "Aprovada",
+        "authorization": "150931",
+        "nsu": "061880530845",
+        "card": "536518******2136",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650959,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-06-18",
+        "times": [
+          "2026-06-18 16:03:27.713000",
+          "2026-06-18 11:08:32"
+        ],
+        "amount": 26950,
+        "row_count": 1,
+        "old_authorization_min": "Q",
+        "old_authorization_max": "Q",
+        "old_card": "",
+        "changed": "2026-06-18 16:03:21.6180"
+      },
+      "difference_seconds": 1707.713
+    },
+    {
+      "bank": {
+        "txid": "E847590D-BB29-4D4D-852A-5C92058E219B",
+        "when": "2026-06-18 10:35:00",
+        "amount": 50445,
+        "status": "Aprovada",
+        "authorization": "061577",
+        "nsu": "616913417634",
+        "card": "434949******3593",
+        "payment": "Crédito",
+        "installment": "Parcelado 5x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650793,
+        "company": 1,
+        "receipt": 71,
+        "parcel": 1,
+        "day": "2026-06-18",
+        "times": [
+          "2026-06-18 13:50:51.763000",
+          "2026-06-18 11:01:14"
+        ],
+        "amount": 50445,
+        "row_count": 1,
+        "old_authorization_min": "M",
+        "old_authorization_max": "M",
+        "old_card": "",
+        "changed": "2026-06-18 13:50:20.8250"
+      },
+      "difference_seconds": 1574.0
+    },
+    {
+      "bank": {
+        "txid": "15381C06-3DE1-4726-B9B3-DE7F1CD0BD92",
+        "when": "2026-06-15 13:41:00",
+        "amount": 21000,
+        "status": "Aprovada",
+        "authorization": "095468",
+        "nsu": "061528112006",
+        "card": "530034******4296",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650602,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-06-15",
+        "times": [
+          "2026-06-15 13:21:22.432000",
+          "2026-06-15 13:23:39"
+        ],
+        "amount": 21000,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-15 13:42:11.2700"
+      },
+      "difference_seconds": 1041.0
+    },
+    {
+      "bank": {
+        "txid": "2CE09B40-B60B-4748-9834-F97557F395A4",
+        "when": "2026-06-12 13:31:00",
+        "amount": 14990,
+        "status": "Aprovada",
+        "authorization": "795747",
+        "nsu": "616316675297",
+        "card": "439267******0808",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650290,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-06-12",
+        "times": [
+          "2026-06-12 13:47:39.960000",
+          "2026-06-12 11:49:30"
+        ],
+        "amount": 14990,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-12 13:38:11.3380"
+      },
+      "difference_seconds": 999.96
+    },
+    {
+      "bank": {
+        "txid": "DCADF2A4-9D86-4E1B-A374-6C10C464F302",
+        "when": "2026-06-11 13:40:00",
+        "amount": 118,
+        "status": "Aprovada",
+        "authorization": "602873",
+        "nsu": "616216451302",
+        "card": "406655******0577",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650162,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 2,
+        "day": "2026-06-11",
+        "times": [
+          "2026-06-11 23:00:51.963000",
+          "2026-06-11 13:22:05"
+        ],
+        "amount": 118,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-11 13:39:50.2300"
+      },
+      "difference_seconds": 1075.0
+    },
+    {
+      "bank": {
+        "txid": "D2617C4B-5AFE-43A0-A33A-C594440F29F5",
+        "when": "2026-06-11 09:06:00",
+        "amount": 85388,
+        "status": "Aprovada",
+        "authorization": "669239",
+        "nsu": "061102519777",
+        "card": "516292******7222",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 650081,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-06-11",
+        "times": [
+          "2026-06-11 09:52:45.415000",
+          "2026-06-11 08:43:57"
+        ],
+        "amount": 85388,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-11 09:09:02.8600"
+      },
+      "difference_seconds": 1323.0
+    },
+    {
+      "bank": {
+        "txid": "85798D04-25D8-4D3D-B627-F834D81A120E",
+        "when": "2026-06-06 13:46:00",
+        "amount": 20440,
+        "status": "Aprovada",
+        "authorization": "462969",
+        "nsu": "060690411835",
+        "card": "544806******0510",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649512,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-06-06",
+        "times": [
+          "2026-06-06 14:11:06.511000",
+          "2026-06-06 13:30:40"
+        ],
+        "amount": 20440,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-06-06 13:46:55.0450"
+      },
+      "difference_seconds": 920.0
+    },
+    {
+      "bank": {
+        "txid": "20E64164-622F-4991-B9F6-66E69BB894FA",
+        "when": "2026-06-06 10:47:00",
+        "amount": 23394,
+        "status": "Aprovada",
+        "authorization": "736602",
+        "nsu": "615713180205",
+        "card": "439267******3268",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649398,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-06-06",
+        "times": [
+          "2026-06-06 11:20:03.880000",
+          "2026-06-06 10:21:02"
+        ],
+        "amount": 23394,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-06 11:19:56.0830"
+      },
+      "difference_seconds": 1558.0
+    },
+    {
+      "bank": {
+        "txid": "5E4CE0DE-66F2-4B93-893D-5463A8FBA93B",
+        "when": "2026-06-06 09:57:00",
+        "amount": 25013,
+        "status": "Aprovada",
+        "authorization": "R39350",
+        "nsu": "060616211814",
+        "card": "536537******7127",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649389,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-06-06",
+        "times": [
+          "2026-06-06 14:08:12.305000",
+          "2026-06-06 09:41:08"
+        ],
+        "amount": 25013,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-06-06 09:57:42.5310"
+      },
+      "difference_seconds": 952.0
+    },
+    {
+      "bank": {
+        "txid": "11D9646B-5C84-4A9A-BDFE-482759CB9BDF",
+        "when": "2026-06-06 09:11:00",
+        "amount": 8990,
+        "status": "Aprovada",
+        "authorization": "FSMAHJ",
+        "nsu": "060680911811",
+        "card": "531681******5949",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649376,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-06-06",
+        "times": [
+          "2026-06-06 14:07:20.857000",
+          "2026-06-06 08:54:14"
+        ],
+        "amount": 8990,
+        "row_count": 1,
+        "old_authorization_min": "Z",
+        "old_authorization_max": "Z",
+        "old_card": "",
+        "changed": "2026-06-06 09:16:18.5910"
+      },
+      "difference_seconds": 1006.0
+    },
+    {
+      "bank": {
+        "txid": "97C2D450-5A96-4C51-8F15-2178B872ED60",
+        "when": "2026-06-05 10:27:00",
+        "amount": 4614,
+        "status": "Aprovada",
+        "authorization": "480755",
+        "nsu": "060570311786",
+        "card": "550209******7274",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649237,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-06-05",
+        "times": [
+          "2026-06-05 11:30:23.340000",
+          "2026-06-05 10:09:55"
+        ],
+        "amount": 4614,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-06-05 10:28:55.6880"
+      },
+      "difference_seconds": 1025.0
+    },
+    {
+      "bank": {
+        "txid": "7B395622-0B28-45A1-AF75-117032355EAD",
+        "when": "2026-06-03 15:36:00",
+        "amount": 129883,
+        "status": "Aprovada",
+        "authorization": "290281",
+        "nsu": "615418994197",
+        "card": "498431******7057",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 649076,
+        "company": 1,
+        "receipt": 72,
+        "parcel": 1,
+        "day": "2026-06-03",
+        "times": [
+          "2026-06-03 11:56:07.604000",
+          "2026-06-03 15:16:50"
+        ],
+        "amount": 129883,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-03 15:37:28.0770"
+      },
+      "difference_seconds": 1150.0
+    },
+    {
+      "bank": {
+        "txid": "C0F54CA0-DE70-4226-936A-30EF2EBB9053",
+        "when": "2026-06-02 13:43:00",
+        "amount": 111733,
+        "status": "Aprovada",
+        "authorization": "066878",
+        "nsu": "615316415495",
+        "card": "477176******0410",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 648862,
+        "company": 1,
+        "receipt": 69,
+        "parcel": 2,
+        "day": "2026-06-02",
+        "times": [
+          "2026-06-02 14:01:51.335000",
+          "2026-06-02 13:24:17"
+        ],
+        "amount": 111733,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-06-02 13:41:18.6390"
+      },
+      "difference_seconds": 1123.0
+    },
+    {
+      "bank": {
+        "txid": "D203500F-F283-4C10-9671-5F058F30D15B",
+        "when": "2026-06-02 12:13:00",
+        "amount": 2940,
+        "status": "Aprovada",
+        "authorization": "QQUYMY",
+        "nsu": "615315144557",
+        "card": "470598******0033",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 648847,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-06-02",
+        "times": [
+          "2026-06-02 14:19:04.855000",
+          "2026-06-02 11:50:03"
+        ],
+        "amount": 2940,
+        "row_count": 1,
+        "old_authorization_min": "H",
+        "old_authorization_max": "H",
+        "old_card": "",
+        "changed": "2026-06-02 12:13:54.2680"
+      },
+      "difference_seconds": 1377.0
+    },
+    {
+      "bank": {
+        "txid": "874E5929-C441-4B2F-AC73-38C345C16170",
+        "when": "2026-05-27 14:34:00",
+        "amount": 2290,
+        "status": "Aprovada",
+        "authorization": "791782",
+        "nsu": "614717754890",
+        "card": "466763******4691",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999613835,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-05-27",
+        "times": [
+          "2026-05-27 22:32:24.627000",
+          "2026-05-27 14:17:59"
+        ],
+        "amount": 2290,
+        "row_count": 1,
+        "old_authorization_min": "C",
+        "old_authorization_max": "C",
+        "old_card": "",
+        "changed": "2026-05-27 22:32:20.4330"
+      },
+      "difference_seconds": 961.0
+    },
+    {
+      "bank": {
+        "txid": "6DFA8855-4DC4-4C39-852F-86E0DA4D1CB0",
+        "when": "2026-05-27 12:57:00",
+        "amount": 3877,
+        "status": "Aprovada",
+        "authorization": "850045",
+        "nsu": "052784013797",
+        "card": "516292******6194",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 999613831,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-05-27",
+        "times": [
+          "2026-05-27 22:33:02.923000",
+          "2026-05-27 12:28:38"
+        ],
+        "amount": 3877,
+        "row_count": 1,
+        "old_authorization_min": "C",
+        "old_authorization_max": "C",
+        "old_card": "",
+        "changed": "2026-05-27 22:32:58.6940"
+      },
+      "difference_seconds": 1702.0
+    },
+    {
+      "bank": {
+        "txid": "970237EC-137B-48EE-9C56-A3B00BA0FC51",
+        "when": "2026-05-25 10:18:00",
+        "amount": 9580,
+        "status": "Aprovada",
+        "authorization": "853103",
+        "nsu": "052567611579",
+        "card": "223346******1779",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 647687,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-05-25",
+        "times": [
+          "2026-05-25 11:16:10.754000",
+          "2026-05-25 10:01:32"
+        ],
+        "amount": 9580,
+        "row_count": 1,
+        "old_authorization_min": "K",
+        "old_authorization_max": "K",
+        "old_card": "",
+        "changed": "2026-05-25 11:15:51.8800"
+      },
+      "difference_seconds": 988.0
+    },
+    {
+      "bank": {
+        "txid": "74D2497A-148C-4BB6-BA44-8C2A3071E4F4",
+        "when": "2026-05-22 11:11:00",
+        "amount": 4130,
+        "status": "Aprovada",
+        "authorization": "615440",
+        "nsu": "061111500916",
+        "card": "374769******7022",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 647427,
+        "company": 1,
+        "receipt": 30,
+        "parcel": 1,
+        "day": "2026-05-22",
+        "times": [
+          "2026-05-22 22:40:20.199000",
+          "2026-05-22 10:51:37"
+        ],
+        "amount": 4130,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-05-22 11:12:21.7790"
+      },
+      "difference_seconds": 1163.0
+    },
+    {
+      "bank": {
+        "txid": "C94053B0-F8FD-4EED-92D5-A16070D0A8E1",
+        "when": "2026-05-21 14:50:00",
+        "amount": 14393,
+        "status": "Aprovada",
+        "authorization": "601694",
+        "nsu": "51450849759",
+        "card": "655051******6012",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 647351,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-05-21",
+        "times": [
+          "2026-05-21 22:39:04.332000",
+          "2026-05-21 14:32:48"
+        ],
+        "amount": 14393,
+        "row_count": 1,
+        "old_authorization_min": "X",
+        "old_authorization_max": "X",
+        "old_card": "",
+        "changed": "2026-05-21 15:03:53.5740"
+      },
+      "difference_seconds": 1032.0
+    },
+    {
+      "bank": {
+        "txid": "C146E51A-5B11-4FAE-9D7D-EFB92AF9A9A2",
+        "when": "2026-05-19 14:15:00",
+        "amount": 10990,
+        "status": "Aprovada",
+        "authorization": "016949",
+        "nsu": "051976230659",
+        "card": "545931******4973",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 647125,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-05-19",
+        "times": [
+          "2026-05-19 22:49:26.307000",
+          "2026-05-19 13:52:01"
+        ],
+        "amount": 10990,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-05-19 14:15:51.1360"
+      },
+      "difference_seconds": 1379.0
+    },
+    {
+      "bank": {
+        "txid": "E5CF1EDC-3DAF-4E32-80A6-55A8AF2836EF",
+        "when": "2026-05-19 09:51:00",
+        "amount": 6699,
+        "status": "Aprovada",
+        "authorization": "614325",
+        "nsu": "613912313814",
+        "card": "406655******0150",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 647053,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-05-19",
+        "times": [
+          "2026-05-19 22:46:45.229000",
+          "2026-05-19 09:31:07"
+        ],
+        "amount": 6699,
+        "row_count": 1,
+        "old_authorization_min": "j",
+        "old_authorization_max": "j",
+        "old_card": "",
+        "changed": "2026-05-19 09:52:25.7460"
+      },
+      "difference_seconds": 1193.0
+    },
+    {
+      "bank": {
+        "txid": "07A6F821-6CE4-4499-9B4C-0E3199DDED76",
+        "when": "2026-05-18 10:36:00",
+        "amount": 109413,
+        "status": "Aprovada",
+        "authorization": "660255",
+        "nsu": "21036641445",
+        "card": "655051******6012",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 646905,
+        "company": 1,
+        "receipt": 66,
+        "parcel": 1,
+        "day": "2026-05-18",
+        "times": [
+          "2026-05-18 12:25:59.054000",
+          "2026-05-18 10:07:00"
+        ],
+        "amount": 109413,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-05-18 10:40:35.2020"
+      },
+      "difference_seconds": 1740.0
+    },
+    {
+      "bank": {
+        "txid": "1322750F-D08E-41D2-9BA8-D9080BEE5467",
+        "when": "2026-05-18 10:35:00",
+        "amount": 37669,
+        "status": "Aprovada",
+        "authorization": "VMDUDZ",
+        "nsu": "051878811433",
+        "card": "521433******1746",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 646909,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 1,
+        "day": "2026-05-18",
+        "times": [
+          "2026-05-18 10:54:20.740000",
+          "2026-05-18 10:16:26"
+        ],
+        "amount": 37669,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-05-18 10:39:27.6240"
+      },
+      "difference_seconds": 1114.0
+    },
+    {
+      "bank": {
+        "txid": "81E6CBEB-10C8-4893-94D1-6FEA2BB05677",
+        "when": "2026-05-13 10:38:00",
+        "amount": 373298,
+        "status": "Aprovada",
+        "authorization": "040086",
+        "nsu": "613313372274",
+        "card": "407505******2392",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 646215,
+        "company": 1,
+        "receipt": 69,
+        "parcel": 1,
+        "day": "2026-05-13",
+        "times": [
+          "2026-05-13 11:04:19.322000",
+          "2026-05-13 09:16:58"
+        ],
+        "amount": 373298,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-05-13 11:04:03.4930"
+      },
+      "difference_seconds": 1579.322
+    },
+    {
+      "bank": {
+        "txid": "3AF80128-92CD-43BB-BA76-A93148FA8387",
+        "when": "2026-05-05 14:25:00",
+        "amount": 14990,
+        "status": "Aprovada",
+        "authorization": "BXOYX9",
+        "nsu": "612517479157",
+        "card": "470598******3948",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 644885,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-05-05",
+        "times": [
+          "2026-05-05 14:48:51.035000",
+          "2026-05-05 10:35:14"
+        ],
+        "amount": 14990,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-05-05 14:48:33.8780"
+      },
+      "difference_seconds": 1431.035
+    },
+    {
+      "bank": {
+        "txid": "C486A812-1B02-430F-B1FB-2DB8A0522112",
+        "when": "2026-05-04 11:12:00",
+        "amount": 59138,
+        "status": "Aprovada",
+        "authorization": "160552",
+        "nsu": "612414549818",
+        "card": "466763******3127",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (1).csv"
+      },
+      "system": {
+        "order": 644899,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-05-04",
+        "times": [
+          "2026-05-04 12:36:24.941000",
+          "2026-05-04 10:51:51"
+        ],
+        "amount": 59138,
+        "row_count": 1,
+        "old_authorization_min": "H",
+        "old_authorization_max": "H",
+        "old_card": "",
+        "changed": "2026-05-04 11:12:39.5660"
+      },
+      "difference_seconds": 1209.0
+    },
+    {
+      "bank": {
+        "txid": "A3180736-F729-4739-9C9F-C37A9D238178",
+        "when": "2026-09-25 16:06:00",
+        "amount": 2290,
+        "status": "Aprovada",
+        "authorization": "053492",
+        "nsu": "626819515273",
+        "card": "412177******0184",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663330,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:07:08.453000",
+          "2026-09-25 16:04:22"
+        ],
+        "amount": 2290,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 16:06:53.1200"
+      },
+      "difference_seconds": 68.453
+    },
+    {
+      "bank": {
+        "txid": "FB8F3F6F-453D-4AF5-A2A8-60B929B21C18",
+        "when": "2026-09-25 08:45:00",
+        "amount": 66510,
+        "status": "Aprovada",
+        "authorization": "066849",
+        "nsu": "092583814021",
+        "card": "549167******1821",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663170,
+        "company": 1,
+        "receipt": 53,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 09:05:01.707000",
+          "2026-09-25 16:31:20"
+        ],
+        "amount": 66510,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 09:04:30.8660"
+      },
+      "difference_seconds": 1201.707
+    },
+    {
+      "bank": {
+        "txid": "249E30E6-5EF0-42E6-AC4F-B55756D1AC1F",
+        "when": "2026-09-25 16:09:00",
+        "amount": 3180,
+        "status": "Aprovada",
+        "authorization": "693102",
+        "nsu": "61609421282",
+        "card": "651652******9414",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663331,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:10:23.076000",
+          "2026-09-25 16:07:43"
+        ],
+        "amount": 3180,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-09-25 16:09:56.0910"
+      },
+      "difference_seconds": 77.0
+    },
+    {
+      "bank": {
+        "txid": "43480091-357D-4162-BF5F-FB8AE6812A97",
+        "when": "2026-09-17 16:53:00",
+        "amount": 8990,
+        "status": "Aprovada",
+        "authorization": "040369",
+        "nsu": "091781013868",
+        "card": "545915******9387",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 662300,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-17",
+        "times": [
+          "2026-09-17 15:23:13.015000",
+          "2026-09-17 16:29:33"
+        ],
+        "amount": 8990,
+        "row_count": 1,
+        "old_authorization_min": "C",
+        "old_authorization_max": "C",
+        "old_card": "",
+        "changed": "2026-09-17 17:12:12.2210"
+      },
+      "difference_seconds": 1407.0
+    },
+    {
+      "bank": {
+        "txid": "8DC13800-4ACB-4570-835F-A3653A74A78A",
+        "when": "2026-09-17 13:24:00",
+        "amount": 61860,
+        "status": "Aprovada",
+        "authorization": "094386",
+        "nsu": "091726313864",
+        "card": "549167******1821",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 662222,
+        "company": 1,
+        "receipt": 53,
+        "parcel": 1,
+        "day": "2026-09-17",
+        "times": [
+          "2026-09-17 13:41:29.607000",
+          "2026-09-17 11:40:03"
+        ],
+        "amount": 61860,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-09-17 13:51:09.0620"
+      },
+      "difference_seconds": 1049.607
+    },
+    {
+      "bank": {
+        "txid": "CF9B8FF7-6BAC-4710-9CC2-7B51A3FA20A7",
+        "when": "2026-09-17 10:25:00",
+        "amount": 10178,
+        "status": "Aprovada",
+        "authorization": "253663",
+        "nsu": "091759013854",
+        "card": "520622******1693",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 662198,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-17",
+        "times": [
+          "2026-09-17 13:23:39.950000",
+          "2026-09-17 10:07:27"
+        ],
+        "amount": 10178,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-09-17 10:25:54.1110"
+      },
+      "difference_seconds": 1053.0
+    },
+    {
+      "bank": {
+        "txid": "B754ECF6-532D-45C9-B32C-74A2136CF78C",
+        "when": "2026-09-15 13:43:00",
+        "amount": 51810,
+        "status": "Aprovada",
+        "authorization": "435969",
+        "nsu": "625816341531",
+        "card": "425850******9148",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661935,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-09-15",
+        "times": [
+          "2026-09-15 14:09:38.146000",
+          "2026-09-15 13:07:41"
+        ],
+        "amount": 51810,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-09-15 13:55:12.3910"
+      },
+      "difference_seconds": 1598.146
+    },
+    {
+      "bank": {
+        "txid": "503E8375-7291-49BA-857C-EE6CD302A14E",
+        "when": "2026-09-14 11:16:00",
+        "amount": 11890,
+        "status": "Aprovada",
+        "authorization": "R04889",
+        "nsu": "091451113782",
+        "card": "555507******0212",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661814,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-14",
+        "times": [
+          "2026-09-14 13:10:53.667000",
+          "2026-09-14 10:59:29"
+        ],
+        "amount": 11890,
+        "row_count": 1,
+        "old_authorization_min": "B",
+        "old_authorization_max": "B",
+        "old_card": "",
+        "changed": "2026-09-14 11:17:56.0480"
+      },
+      "difference_seconds": 991.0
+    },
+    {
+      "bank": {
+        "txid": "32900425-0375-4054-B20A-0E81CF24CB4B",
+        "when": "2026-09-10 13:44:00",
+        "amount": 2689,
+        "status": "Aprovada",
+        "authorization": "498406",
+        "nsu": "091066213745",
+        "card": "541674******8186",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661514,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-10",
+        "times": [
+          "2026-09-10 14:38:05.082000",
+          "2026-09-10 13:21:45"
+        ],
+        "amount": 2689,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-10 14:37:55.8720"
+      },
+      "difference_seconds": 1335.0
+    },
+    {
+      "bank": {
+        "txid": "2F492E75-88E4-400C-9774-75119EF63876",
+        "when": "2026-09-09 14:48:00",
+        "amount": 299942,
+        "status": "Aprovada",
+        "authorization": "116361",
+        "nsu": "090971813719",
+        "card": "536518******1206",
+        "payment": "Crédito",
+        "installment": "Parcelado 5x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661387,
+        "company": 1,
+        "receipt": 52,
+        "parcel": 1,
+        "day": "2026-09-09",
+        "times": [
+          "2026-09-09 08:56:07.326000",
+          "2026-09-09 14:26:34"
+        ],
+        "amount": 299942,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-09-09 14:49:15.7760"
+      },
+      "difference_seconds": 1286.0
+    },
+    {
+      "bank": {
+        "txid": "D0EAF941-09F8-4D1D-ACEF-B4B72DB69727",
+        "when": "2026-09-09 12:53:00",
+        "amount": 11570,
+        "status": "Aprovada",
+        "authorization": "R2ZGNF",
+        "nsu": "625215229000",
+        "card": "417400******2119",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661367,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-09",
+        "times": [
+          "2026-09-09 13:49:21.137000",
+          "2026-09-09 12:31:22"
+        ],
+        "amount": 11570,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-09-09 13:49:00.4490"
+      },
+      "difference_seconds": 1298.0
+    },
+    {
+      "bank": {
+        "txid": "66F5350E-DD43-4632-9CB6-520C64F03D3B",
+        "when": "2026-09-09 10:02:00",
+        "amount": 28006,
+        "status": "Aprovada",
+        "authorization": "025756",
+        "nsu": "625213865220",
+        "card": "422061******7172",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661324,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-09-09",
+        "times": [
+          "2026-09-09 11:59:58.503000",
+          "2026-09-09 09:35:28"
+        ],
+        "amount": 28006,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-09-09 10:03:30.6400"
+      },
+      "difference_seconds": 1592.0
+    },
+    {
+      "bank": {
+        "txid": "A35ACB9E-D05D-4907-8028-E7D8005427D7",
+        "when": "2026-09-08 14:10:00",
+        "amount": 63443,
+        "status": "Aprovada",
+        "authorization": "093591",
+        "nsu": "090870813697",
+        "card": "543882******6703",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 661213,
+        "company": 1,
+        "receipt": 53,
+        "parcel": 1,
+        "day": "2026-09-08",
+        "times": [
+          "2026-09-08 14:34:24.547000",
+          "2026-09-08 12:15:37"
+        ],
+        "amount": 63443,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-09-08 14:33:06.8200"
+      },
+      "difference_seconds": 1464.547
+    },
+    {
+      "bank": {
+        "txid": "77789BD3-5A03-4DE3-A915-4EB42DB45741",
+        "when": "2026-09-04 16:01:00",
+        "amount": 19580,
+        "status": "Aprovada",
+        "authorization": "ZBWHQT",
+        "nsu": "624719578399",
+        "card": "417400******5384",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 660958,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-09-04",
+        "times": [
+          "2026-09-04 16:23:20.860000",
+          "2026-09-04 14:59:12"
+        ],
+        "amount": 19580,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-09-04 16:23:08.7140"
+      },
+      "difference_seconds": 1340.86
+    },
+    {
+      "bank": {
+        "txid": "C6F72E1E-566D-4FF7-B5CD-65268C42080A",
+        "when": "2026-09-04 15:04:00",
+        "amount": 96908,
+        "status": "Aprovada",
+        "authorization": "552324",
+        "nsu": "090430013661",
+        "card": "520020******4497",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 660957,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 1,
+        "day": "2026-09-04",
+        "times": [
+          "2026-09-04 15:23:24.379000",
+          "2026-09-04 14:46:33"
+        ],
+        "amount": 96908,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-04 15:22:36.9280"
+      },
+      "difference_seconds": 1047.0
+    },
+    {
+      "bank": {
+        "txid": "6194F8EF-E171-4D63-85D7-24A5EA076F2F",
+        "when": "2026-09-02 16:45:00",
+        "amount": 71918,
+        "status": "Aprovada",
+        "authorization": "9BOMV4",
+        "nsu": "090240713617",
+        "card": "520335******1107",
+        "payment": "Crédito",
+        "installment": "Parcelado 7x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 660674,
+        "company": 1,
+        "receipt": 54,
+        "parcel": 1,
+        "day": "2026-09-02",
+        "times": [
+          "2026-09-02 08:03:20.292000",
+          "2026-09-02 16:23:55"
+        ],
+        "amount": 71918,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-02 16:45:59.1480"
+      },
+      "difference_seconds": 1265.0
+    },
+    {
+      "bank": {
+        "txid": "953CD636-6777-47B1-98D2-7E9A8E6015A2",
+        "when": "2026-08-31 12:04:00",
+        "amount": 31996,
+        "status": "Aprovada",
+        "authorization": "R29508",
+        "nsu": "083103213578",
+        "card": "536119******4638",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 660322,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-08-31",
+        "times": [
+          "2026-08-31 09:50:07.718000",
+          "2026-08-31 11:44:08"
+        ],
+        "amount": 31996,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-31 12:05:20.4810"
+      },
+      "difference_seconds": 1192.0
+    },
+    {
+      "bank": {
+        "txid": "90E8681C-4F5A-48D3-A0AC-ED96A9390F83",
+        "when": "2026-08-26 14:16:00",
+        "amount": 7150,
+        "status": "Aprovada",
+        "authorization": "LYXICV",
+        "nsu": "082680013490",
+        "card": "530599******1308",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 659854,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-08-26",
+        "times": [
+          "2026-08-26 10:18:15.017000",
+          "2026-08-26 13:59:57"
+        ],
+        "amount": 7150,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-26 14:16:47.7750"
+      },
+      "difference_seconds": 963.0
+    },
+    {
+      "bank": {
+        "txid": "98985F82-F8A5-4C39-ADAE-96D952F11794",
+        "when": "2026-08-20 10:37:00",
+        "amount": 19830,
+        "status": "Aprovada",
+        "authorization": "A1TA2L",
+        "nsu": "623213975175",
+        "card": "470598******5529",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 659092,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-08-20",
+        "times": [
+          "2026-08-20 10:59:14.451000",
+          "2026-08-20 09:07:18"
+        ],
+        "amount": 19830,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-08-20 10:59:06.0220"
+      },
+      "difference_seconds": 1334.451
+    },
+    {
+      "bank": {
+        "txid": "CB0E8D13-D095-4BE0-99F6-485415D83EAD",
+        "when": "2026-08-18 15:24:00",
+        "amount": 69960,
+        "status": "Aprovada",
+        "authorization": "645205",
+        "nsu": "623018033389",
+        "card": "406669******2744",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 658844,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-08-18",
+        "times": [
+          "2026-08-18 15:50:18.664000",
+          "2026-08-18 13:30:39"
+        ],
+        "amount": 69960,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-08-18 15:50:03.2510"
+      },
+      "difference_seconds": 1578.664
+    },
+    {
+      "bank": {
+        "txid": "C3C14E73-B988-46CC-9BC4-43477D73C7B0",
+        "when": "2026-08-18 13:58:00",
+        "amount": 9180,
+        "status": "Aprovada",
+        "authorization": "583753",
+        "nsu": "081821713366",
+        "card": "544731******1410",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 658849,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-08-18",
+        "times": [
+          "2026-08-18 14:22:32.759000",
+          "2026-08-18 13:34:28"
+        ],
+        "amount": 9180,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-18 14:22:24.9600"
+      },
+      "difference_seconds": 1412.0
+    },
+    {
+      "bank": {
+        "txid": "0ECD7180-FF3F-4E49-B23E-914F203CD5C9",
+        "when": "2026-08-18 09:09:00",
+        "amount": 117730,
+        "status": "Aprovada",
+        "authorization": "WPOSPI",
+        "nsu": "081854613359",
+        "card": "545915******1017",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 658729,
+        "company": 1,
+        "receipt": 57,
+        "parcel": 1,
+        "day": "2026-08-18",
+        "times": [
+          "2026-08-18 09:35:53.971000",
+          "2026-08-18 15:55:41"
+        ],
+        "amount": 117730,
+        "row_count": 1,
+        "old_authorization_min": "B",
+        "old_authorization_max": "B",
+        "old_card": "",
+        "changed": "2026-08-18 09:34:35.7470"
+      },
+      "difference_seconds": 1613.971
+    },
+    {
+      "bank": {
+        "txid": "05CDBBFD-FD6F-4D68-BC30-F1527F030543",
+        "when": "2026-08-15 09:13:00",
+        "amount": 64810,
+        "status": "Aprovada",
+        "authorization": "WDOIDK",
+        "nsu": "622712339939",
+        "card": "422250******4820",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 658507,
+        "company": 1,
+        "receipt": 72,
+        "parcel": 1,
+        "day": "2026-08-15",
+        "times": [
+          "2026-08-15 11:06:40.754000",
+          "2026-08-15 08:44:08"
+        ],
+        "amount": 64810,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-15 09:14:00.8330"
+      },
+      "difference_seconds": 1732.0
+    },
+    {
+      "bank": {
+        "txid": "8B2B7037-7643-430C-8AB7-19CB36D0702E",
+        "when": "2026-08-14 12:38:00",
+        "amount": 43218,
+        "status": "Aprovada",
+        "authorization": "EKNWTO",
+        "nsu": "622615263201",
+        "card": "422250******4820",
+        "payment": "Crédito",
+        "installment": "Parcelado 4x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 658420,
+        "company": 1,
+        "receipt": 70,
+        "parcel": 1,
+        "day": "2026-08-14",
+        "times": [
+          "2026-08-14 14:12:18.979000",
+          "2026-08-14 12:13:19"
+        ],
+        "amount": 43218,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-14 12:41:26.3640"
+      },
+      "difference_seconds": 1481.0
+    },
+    {
+      "bank": {
+        "txid": "28B9815E-FF0D-49FB-B10E-E89D14CC6E87",
+        "when": "2026-08-11 12:55:00",
+        "amount": 22260,
+        "status": "Aprovada",
+        "authorization": "898682",
+        "nsu": "622315839872",
+        "card": "498408******1453",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 657953,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-08-11",
+        "times": [
+          "2026-08-11 13:18:38.847000",
+          "2026-08-11 12:31:04"
+        ],
+        "amount": 22260,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-11 12:56:27.6010"
+      },
+      "difference_seconds": 1418.847
+    },
+    {
+      "bank": {
+        "txid": "CE021F7A-42BC-4356-81BD-9AEEC9A936FB",
+        "when": "2026-08-06 10:29:00",
+        "amount": 35895,
+        "status": "Aprovada",
+        "authorization": "274279",
+        "nsu": "621813936924",
+        "card": "439267******0808",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 657393,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-08-06",
+        "times": [
+          "2026-08-06 10:53:26.716000",
+          "2026-08-06 17:05:46"
+        ],
+        "amount": 35895,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-06 10:53:16.7350"
+      },
+      "difference_seconds": 1466.716
+    },
+    {
+      "bank": {
+        "txid": "6873174F-020D-4883-8AC3-0159412FAA1A",
+        "when": "2026-08-04 15:06:00",
+        "amount": 62179,
+        "status": "Aprovada",
+        "authorization": "019547",
+        "nsu": "080436419833",
+        "card": "525320******3510",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 657188,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 1,
+        "day": "2026-08-04",
+        "times": [
+          "2026-08-04 09:15:09.483000",
+          "2026-08-04 14:49:37"
+        ],
+        "amount": 62179,
+        "row_count": 1,
+        "old_authorization_min": "a",
+        "old_authorization_max": "a",
+        "old_card": "",
+        "changed": "2026-08-04 15:07:55.2340"
+      },
+      "difference_seconds": 983.0
+    },
+    {
+      "bank": {
+        "txid": "76884485-8280-49FF-B752-420C7DDDC995",
+        "when": "2026-08-04 08:20:00",
+        "amount": 27040,
+        "status": "Aprovada",
+        "authorization": "856805",
+        "nsu": "080429513099",
+        "card": "544315******0198",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (2).csv"
+      },
+      "system": {
+        "order": 657057,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-08-04",
+        "times": [
+          "2026-08-04 16:50:27.108000",
+          "2026-08-04 08:00:19"
+        ],
+        "amount": 27040,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-08-04 08:21:13.7880"
+      },
+      "difference_seconds": 1181.0
+    },
+    {
+      "bank": {
+        "txid": "FD0D1144-4A74-405C-9043-334D99B40B06",
+        "when": "2026-09-28 08:28:00",
+        "amount": 7768,
+        "status": "Aprovada",
+        "authorization": "R66569",
+        "nsu": "092873814066",
+        "card": "515494******6696",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663449,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-28",
+        "times": [
+          "2026-09-28 08:29:40.254000",
+          "2026-09-28 08:10:09"
+        ],
+        "amount": 7768,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-28 08:29:40.2220"
+      },
+      "difference_seconds": 100.254
+    },
+    {
+      "bank": {
+        "txid": "FFFFB8FC-599F-495F-B2D9-139F64C9A1FC",
+        "when": "2026-09-28 08:10:00",
+        "amount": 4690,
+        "status": "Aprovada",
+        "authorization": "603294",
+        "nsu": "20810563109",
+        "card": "650485******5250",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663447,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-09-28",
+        "times": [
+          "2026-09-28 08:25:34.834000",
+          "2026-09-28 08:08:55"
+        ],
+        "amount": 4690,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-09-28 08:25:15.3490"
+      },
+      "difference_seconds": 65.0
+    },
+    {
+      "bank": {
+        "txid": "DC870958-9517-4936-8BE5-75E9A261EE1E",
+        "when": "2026-09-26 11:21:00",
+        "amount": 9900,
+        "status": "Aprovada",
+        "authorization": "RQ3E78",
+        "nsu": "092662814064",
+        "card": "512215******5332",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663414,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 11:21:55.588000",
+          "2026-09-26 11:18:36"
+        ],
+        "amount": 9900,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 11:21:35.8850"
+      },
+      "difference_seconds": 55.588
+    },
+    {
+      "bank": {
+        "txid": "671FA24C-5846-4B24-8815-A33F51D5819B",
+        "when": "2026-09-26 11:13:00",
+        "amount": 3090,
+        "status": "Aprovada",
+        "authorization": "2JSPUQ",
+        "nsu": "626914876650",
+        "card": "417400******2083",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663410,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 11:14:11.786000",
+          "2026-09-26 11:10:48"
+        ],
+        "amount": 3090,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 11:14:01.0750"
+      },
+      "difference_seconds": 71.786
+    },
+    {
+      "bank": {
+        "txid": "5CCE4AE6-B7F1-40B3-9452-F4CF40A13632",
+        "when": "2026-09-26 10:46:00",
+        "amount": 490,
+        "status": "Aprovada",
+        "authorization": "617976",
+        "nsu": "626913148435",
+        "card": "407838******0135",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663403,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 10:47:27.880000",
+          "2026-09-26 10:44:53"
+        ],
+        "amount": 490,
+        "row_count": 1,
+        "old_authorization_min": "Q",
+        "old_authorization_max": "Q",
+        "old_card": "",
+        "changed": "2026-09-26 10:47:17.5160"
+      },
+      "difference_seconds": 67.0
+    },
+    {
+      "bank": {
+        "txid": "3A2C1173-7B06-4F2D-9142-E841B75BB01C",
+        "when": "2026-09-26 10:08:00",
+        "amount": 2580,
+        "status": "Aprovada",
+        "authorization": "085061",
+        "nsu": "092633514061",
+        "card": "546040******8267",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663388,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 10:09:23.814000",
+          "2026-09-26 10:07:26"
+        ],
+        "amount": 2580,
+        "row_count": 1,
+        "old_authorization_min": "W",
+        "old_authorization_max": "W",
+        "old_card": "",
+        "changed": "2026-09-26 10:09:23.7670"
+      },
+      "difference_seconds": 34.0
+    },
+    {
+      "bank": {
+        "txid": "4A24E7F0-69BD-469B-AAB4-ED4D4EA67328",
+        "when": "2026-09-26 09:52:00",
+        "amount": 18888,
+        "status": "Aprovada",
+        "authorization": "049381",
+        "nsu": "092681014060",
+        "card": "520048******5583",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663382,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 09:52:37.626000",
+          "2026-09-26 09:40:35"
+        ],
+        "amount": 18888,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 09:52:30.6580"
+      },
+      "difference_seconds": 37.626
+    },
+    {
+      "bank": {
+        "txid": "DA29EF97-3FA6-4103-A94B-E414FBF3FB9C",
+        "when": "2026-09-26 08:51:00",
+        "amount": 2280,
+        "status": "Aprovada",
+        "authorization": "847874",
+        "nsu": "70851628548",
+        "card": "650512******0022",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663362,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:57:03.687000",
+          "2026-09-26 08:49:44"
+        ],
+        "amount": 2280,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-09-26 08:52:39.9370"
+      },
+      "difference_seconds": 76.0
+    },
+    {
+      "bank": {
+        "txid": "CABA2320-A7A3-4E61-BB29-982445DB733F",
+        "when": "2026-09-26 08:48:00",
+        "amount": 15350,
+        "status": "Aprovada",
+        "authorization": "682922",
+        "nsu": "626911874824",
+        "card": "406669******0891",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663361,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:49:02.977000",
+          "2026-09-26 08:41:49"
+        ],
+        "amount": 15350,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:48:54.1810"
+      },
+      "difference_seconds": 62.977
+    },
+    {
+      "bank": {
+        "txid": "C606BD7D-E184-4EBE-8CF7-1F8AA5E72165",
+        "when": "2026-09-26 08:47:00",
+        "amount": 896,
+        "status": "Aprovada",
+        "authorization": "044386",
+        "nsu": "626911870956",
+        "card": "477176******3810",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663360,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:48:12.268000",
+          "2026-09-26 08:33:10"
+        ],
+        "amount": 896,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:47:33.5070"
+      },
+      "difference_seconds": 72.268
+    },
+    {
+      "bank": {
+        "txid": "85275F3D-9A04-4B7D-B0E9-C29D512EF2D7",
+        "when": "2026-09-26 08:41:00",
+        "amount": 4479,
+        "status": "Aprovada",
+        "authorization": "412573",
+        "nsu": "092653714055",
+        "card": "548056******9609",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663359,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:41:54.093000",
+          "2026-09-26 08:24:27"
+        ],
+        "amount": 4479,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:41:42.6600"
+      },
+      "difference_seconds": 54.093
+    },
+    {
+      "bank": {
+        "txid": "2A3C2BC7-19EB-4115-8898-5FA63505596A",
+        "when": "2026-09-26 08:41:00",
+        "amount": 2190,
+        "status": "Aprovada",
+        "authorization": "4Z59KO",
+        "nsu": "626911857912",
+        "card": "417400******6734",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663358,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:43:16.037000",
+          "2026-09-26 08:38:49"
+        ],
+        "amount": 2190,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:42:06.2470"
+      },
+      "difference_seconds": 131.0
+    },
+    {
+      "bank": {
+        "txid": "9CFE8976-367C-47E6-8820-5DC3622B5F69",
+        "when": "2026-09-26 08:37:00",
+        "amount": 3990,
+        "status": "Aprovada",
+        "authorization": "ER2VKG",
+        "nsu": "626911847342",
+        "card": "417400******6734",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663356,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:35:34.638000",
+          "2026-09-26 08:30:30"
+        ],
+        "amount": 3990,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:35:34.5900"
+      },
+      "difference_seconds": 85.362
+    },
+    {
+      "bank": {
+        "txid": "536868EC-80CF-46A2-A766-6ED542CEB503",
+        "when": "2026-09-26 08:33:00",
+        "amount": 3990,
+        "status": "Aprovada",
+        "authorization": "975511",
+        "nsu": "092646314052",
+        "card": "550209******5398",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663357,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-26",
+        "times": [
+          "2026-09-26 08:38:29.453000",
+          "2026-09-26 08:31:33"
+        ],
+        "amount": 3990,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-26 08:38:29.4220"
+      },
+      "difference_seconds": 87.0
+    },
+    {
+      "bank": {
+        "txid": "ADC156ED-60E1-4C02-9FF1-16CE6FC4A85E",
+        "when": "2026-09-25 17:12:00",
+        "amount": 796,
+        "status": "Aprovada",
+        "authorization": "009038",
+        "nsu": "092539514051",
+        "card": "518053******0184",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663344,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 17:12:45.103000",
+          "2026-09-25 17:11:09"
+        ],
+        "amount": 796,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 17:12:24.6490"
+      },
+      "difference_seconds": 45.103
+    },
+    {
+      "bank": {
+        "txid": "DF137709-AABC-4F5E-895D-0608E600E642",
+        "when": "2026-09-25 17:09:00",
+        "amount": 1950,
+        "status": "Aprovada",
+        "authorization": "509782",
+        "nsu": "092532514050",
+        "card": "550209******6663",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663342,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 17:10:16.502000",
+          "2026-09-25 17:00:44"
+        ],
+        "amount": 1950,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 17:09:45.6720"
+      },
+      "difference_seconds": 76.502
+    },
+    {
+      "bank": {
+        "txid": "49FB806D-F2A1-45F5-A983-D3EDCDE5A580",
+        "when": "2026-09-25 16:57:00",
+        "amount": 2289,
+        "status": "Aprovada",
+        "authorization": "067788",
+        "nsu": "092563314049",
+        "card": "512215******5154",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 662995,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:59:03.221000",
+          "2026-09-25 15:04:44"
+        ],
+        "amount": 2289,
+        "row_count": 1,
+        "old_authorization_min": "Q",
+        "old_authorization_max": "Q",
+        "old_card": "",
+        "changed": "2026-09-25 16:58:50.8830"
+      },
+      "difference_seconds": 123.221
+    },
+    {
+      "bank": {
+        "txid": "CA2D9D5B-B47A-46BB-89E1-97359A0D7F2D",
+        "when": "2026-09-25 16:43:00",
+        "amount": 3550,
+        "status": "Aprovada",
+        "authorization": "630061",
+        "nsu": "61643974656",
+        "card": "650486******9010",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663338,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:43:40.417000",
+          "2026-09-25 16:24:11"
+        ],
+        "amount": 3550,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 16:43:23.7050"
+      },
+      "difference_seconds": 40.417
+    },
+    {
+      "bank": {
+        "txid": "B8D0305B-CAD8-447B-BFCD-6944A46F3D65",
+        "when": "2026-09-25 16:25:00",
+        "amount": 2860,
+        "status": "Aprovada",
+        "authorization": "589678",
+        "nsu": "626819567261",
+        "card": "421958******0824",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663336,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:32:03.347000",
+          "2026-09-25 15:51:11"
+        ],
+        "amount": 2860,
+        "row_count": 1,
+        "old_authorization_min": "W",
+        "old_authorization_max": "W",
+        "old_card": "",
+        "changed": "2026-09-25 16:28:29.8770"
+      },
+      "difference_seconds": 423.347
+    },
+    {
+      "bank": {
+        "txid": "438CFB7D-DD15-4AB0-99F6-6D06F670FB61",
+        "when": "2026-09-25 16:24:00",
+        "amount": 2580,
+        "status": "Aprovada",
+        "authorization": "067483",
+        "nsu": "092545914046",
+        "card": "518053******0184",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663335,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 16:28:16.270000",
+          "2026-09-25 16:08:32"
+        ],
+        "amount": 2580,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 16:27:57.8190"
+      },
+      "difference_seconds": 256.27
+    },
+    {
+      "bank": {
+        "txid": "F365EE8A-09C5-4409-94C1-95704C304A19",
+        "when": "2026-09-25 15:29:00",
+        "amount": 700,
+        "status": "Aprovada",
+        "authorization": "105770",
+        "nsu": "092592914043",
+        "card": "550209******2701",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663320,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:30:30.804000",
+          "2026-09-25 15:19:35"
+        ],
+        "amount": 700,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 15:30:23.4980"
+      },
+      "difference_seconds": 90.804
+    },
+    {
+      "bank": {
+        "txid": "D110E997-D28F-41B1-9B82-258E43461521",
+        "when": "2026-09-25 15:27:00",
+        "amount": 7090,
+        "status": "Aprovada",
+        "authorization": "986658",
+        "nsu": "092554314042",
+        "card": "550209******2701",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663318,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:30:16.853000",
+          "2026-09-25 14:21:10"
+        ],
+        "amount": 7090,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 15:29:34.0060"
+      },
+      "difference_seconds": 196.853
+    },
+    {
+      "bank": {
+        "txid": "67436006-E64B-4434-862C-293325BF5D31",
+        "when": "2026-09-25 15:15:00",
+        "amount": 1790,
+        "status": "Aprovada",
+        "authorization": "4INSQP",
+        "nsu": "092536714041",
+        "card": "553665******6259",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663316,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:16:40.337000",
+          "2026-09-25 15:08:43"
+        ],
+        "amount": 1790,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 15:16:31.5960"
+      },
+      "difference_seconds": 100.337
+    },
+    {
+      "bank": {
+        "txid": "609139B3-B7CE-4486-B295-2C0B0E6DB23C",
+        "when": "2026-09-25 15:11:00",
+        "amount": 2990,
+        "status": "Aprovada",
+        "authorization": "583581",
+        "nsu": "092564714040",
+        "card": "550209******2701",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663315,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:17:15.267000",
+          "2026-09-25 15:09:27"
+        ],
+        "amount": 2990,
+        "row_count": 1,
+        "old_authorization_min": "Q",
+        "old_authorization_max": "Q",
+        "old_card": "",
+        "changed": "2026-09-25 15:17:05.8220"
+      },
+      "difference_seconds": 93.0
+    },
+    {
+      "bank": {
+        "txid": "4720AFC3-DE4B-44B4-8971-CC2FBC655802",
+        "when": "2026-09-25 15:09:00",
+        "amount": 8318,
+        "status": "Aprovada",
+        "authorization": "061890",
+        "nsu": "092530214039",
+        "card": "518053******0184",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663314,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:16:56.645000",
+          "2026-09-25 15:01:38"
+        ],
+        "amount": 8318,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 15:16:46.8420"
+      },
+      "difference_seconds": 442.0
+    },
+    {
+      "bank": {
+        "txid": "614F572F-8FDF-4DB3-B6BA-BA19EA47C93B",
+        "when": "2026-09-25 15:01:00",
+        "amount": 14999,
+        "status": "Aprovada",
+        "authorization": "M7Z3A9",
+        "nsu": "626818825918",
+        "card": "417400******9469",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663313,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 15:01:58.722000",
+          "2026-09-25 15:00:09"
+        ],
+        "amount": 14999,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 15:01:47.8050"
+      },
+      "difference_seconds": 51.0
+    },
+    {
+      "bank": {
+        "txid": "44C66C1D-6C6B-42B2-A6E7-658C717F8CA3",
+        "when": "2026-09-25 14:15:00",
+        "amount": 1560,
+        "status": "Aprovada",
+        "authorization": "788633",
+        "nsu": "61415337725",
+        "card": "509264******0018",
+        "payment": "Crédito",
+        "installment": "pré pago",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663301,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 14:16:32.663000",
+          "2026-09-25 14:14:13"
+        ],
+        "amount": 1560,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 14:16:13.9770"
+      },
+      "difference_seconds": 47.0
+    },
+    {
+      "bank": {
+        "txid": "62E9C183-3A9A-44FE-9873-1D04D63B100E",
+        "when": "2026-09-25 14:08:00",
+        "amount": 8360,
+        "status": "Aprovada",
+        "authorization": "U2SA9G",
+        "nsu": "626817698698",
+        "card": "417400******9469",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663300,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 14:09:40.540000",
+          "2026-09-25 13:57:49"
+        ],
+        "amount": 8360,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 14:08:52.6620"
+      },
+      "difference_seconds": 100.54
+    },
+    {
+      "bank": {
+        "txid": "685DFEE0-F261-4BE5-8844-B37D77CA03A7",
+        "when": "2026-09-25 13:19:00",
+        "amount": 4780,
+        "status": "Aprovada",
+        "authorization": "925963",
+        "nsu": "626816565630",
+        "card": "485464******1648",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663284,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 13:35:08.090000",
+          "2026-09-25 13:16:31"
+        ],
+        "amount": 4780,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 13:34:59.5050"
+      },
+      "difference_seconds": 149.0
+    },
+    {
+      "bank": {
+        "txid": "0EB201CB-39FD-483B-BFDF-0E2CCCE5F359",
+        "when": "2026-09-25 13:03:00",
+        "amount": 9290,
+        "status": "Aprovada",
+        "authorization": "121749",
+        "nsu": "626816338998",
+        "card": "466763******6853",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663279,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 13:36:29.122000",
+          "2026-09-25 12:57:45"
+        ],
+        "amount": 9290,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 13:36:19.6300"
+      },
+      "difference_seconds": 315.0
+    },
+    {
+      "bank": {
+        "txid": "230A36E8-2D51-43CD-A29B-21988AB9BB7D",
+        "when": "2026-09-25 12:16:00",
+        "amount": 1890,
+        "status": "Aprovada",
+        "authorization": "691661",
+        "nsu": "092598114033",
+        "card": "550209******3598",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank (3).csv"
+      },
+      "system": {
+        "order": 663269,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-09-25",
+        "times": [
+          "2026-09-25 12:18:27.079000",
+          "2026-09-25 12:10:16"
+        ],
+        "amount": 1890,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-09-25 12:17:30.5010"
+      },
+      "difference_seconds": 147.079
+    },
+    {
+      "bank": {
+        "txid": "64978028-0787-4AA8-8E82-AB46AD7C0BBB",
+        "when": "2026-04-29 12:14:00",
+        "amount": 690,
+        "status": "Aprovada",
+        "authorization": "009704",
+        "nsu": "042934613698",
+        "card": "512215******6684",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 999612978,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-04-29",
+        "times": [
+          "2026-04-29 12:38:42.120000",
+          "2026-04-29 09:29:57"
+        ],
+        "amount": 690,
+        "row_count": 1,
+        "old_authorization_min": "D",
+        "old_authorization_max": "D",
+        "old_card": "",
+        "changed": "2026-04-29 12:38:34.4630"
+      },
+      "difference_seconds": 1482.12
+    },
+    {
+      "bank": {
+        "txid": "21B0A08E-D607-4577-AC9F-9BF65386D863",
+        "when": "2026-04-29 10:30:00",
+        "amount": 1789,
+        "status": "Aprovada",
+        "authorization": "073873",
+        "nsu": "611913399787",
+        "card": "407505******2940",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 644404,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-04-29",
+        "times": [
+          "2026-04-29 08:39:22.416000",
+          "2026-04-29 10:07:57"
+        ],
+        "amount": 1789,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-04-29 10:30:27.5690"
+      },
+      "difference_seconds": 1323.0
+    },
+    {
+      "bank": {
+        "txid": "8C7794CD-64E2-44ED-950D-2B6E1F4ACFB8",
+        "when": "2026-04-29 09:17:00",
+        "amount": 48310,
+        "status": "Aprovada",
+        "authorization": "099548",
+        "nsu": "042991430599",
+        "card": "524474******3916",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 644387,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-04-29",
+        "times": [
+          "2026-04-29 09:50:34.955000",
+          "2026-04-29 09:01:14"
+        ],
+        "amount": 48310,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-04-29 09:18:01.4420"
+      },
+      "difference_seconds": 946.0
+    },
+    {
+      "bank": {
+        "txid": "167C488F-057A-47D7-94A3-DC570147AD60",
+        "when": "2026-04-29 08:47:00",
+        "amount": 9233,
+        "status": "Aprovada",
+        "authorization": "485405",
+        "nsu": "042984030597",
+        "card": "554906******6334",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 644377,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-04-29",
+        "times": [
+          "2026-04-29 08:27:04.856000",
+          "2026-04-29 08:23:23"
+        ],
+        "amount": 9233,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-04-29 08:48:31.7100"
+      },
+      "difference_seconds": 1195.144
+    },
+    {
+      "bank": {
+        "txid": "B8BE8D19-2925-463C-A190-08B3757FCB64",
+        "when": "2026-04-24 13:17:00",
+        "amount": 23423,
+        "status": "Aprovada",
+        "authorization": "M59740",
+        "nsu": "042499010945",
+        "card": "525663******5986",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 643768,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-04-24",
+        "times": [
+          "2026-04-24 13:45:32.561000",
+          "2026-04-24 08:51:00"
+        ],
+        "amount": 23423,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-04-24 13:45:16.4840"
+      },
+      "difference_seconds": 1712.561
+    },
+    {
+      "bank": {
+        "txid": "E647E3A7-84F6-4750-9450-6BBBC9033C23",
+        "when": "2026-04-24 09:32:00",
+        "amount": 19290,
+        "status": "Aprovada",
+        "authorization": "RJG4AF",
+        "nsu": "611412879158",
+        "card": "464297******6155",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 643779,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-04-24",
+        "times": [
+          "2026-04-24 10:16:18.070000",
+          "2026-04-24 09:14:44"
+        ],
+        "amount": 19290,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-04-24 09:33:19.5230"
+      },
+      "difference_seconds": 1036.0
+    },
+    {
+      "bank": {
+        "txid": "514D9447-6781-4938-BC6E-BC5E39AFE61D",
+        "when": "2026-04-22 13:09:00",
+        "amount": 1190,
+        "status": "Aprovada",
+        "authorization": "091389",
+        "nsu": "611216303924",
+        "card": "489389******3359",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 643612,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-04-22",
+        "times": [
+          "2026-04-22 12:51:50.893000",
+          "2026-04-22 12:46:47"
+        ],
+        "amount": 1190,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-04-22 12:51:45.8140"
+      },
+      "difference_seconds": 1029.107
+    },
+    {
+      "bank": {
+        "txid": "72EE8F0B-BCAD-42CA-8547-24C46E3D9665",
+        "when": "2026-04-20 08:20:00",
+        "amount": 91698,
+        "status": "Aprovada",
+        "authorization": "080849",
+        "nsu": "611011669436",
+        "card": "421960******7166",
+        "payment": "Crédito",
+        "installment": "Parcelado 9x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 643238,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-04-20",
+        "times": [
+          "2026-04-20 15:36:31.421000",
+          "2026-04-20 08:04:05"
+        ],
+        "amount": 91698,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-04-20 08:26:45.1180"
+      },
+      "difference_seconds": 955.0
+    },
+    {
+      "bank": {
+        "txid": "846BFD24-3366-42A0-86EA-2B16DE9A016A",
+        "when": "2026-04-15 15:31:00",
+        "amount": 21780,
+        "status": "Aprovada",
+        "authorization": "693075",
+        "nsu": "41531917601",
+        "card": "650507******0045",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 642762,
+        "company": 1,
+        "receipt": 34,
+        "parcel": 1,
+        "day": "2026-04-15",
+        "times": [
+          "2026-04-15 14:19:23.118000",
+          "2026-04-15 15:14:34"
+        ],
+        "amount": 21780,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-04-15 15:38:29.8390"
+      },
+      "difference_seconds": 986.0
+    },
+    {
+      "bank": {
+        "txid": "1CAEE9CF-00E6-4BA5-AFC4-E1C58010479B",
+        "when": "2026-04-14 09:48:00",
+        "amount": 5800,
+        "status": "Aprovada",
+        "authorization": "091246",
+        "nsu": "041414130537",
+        "card": "523431******3632",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 642514,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-04-14",
+        "times": [
+          "2026-04-14 10:06:04.320000",
+          "2026-04-14 09:31:01"
+        ],
+        "amount": 5800,
+        "row_count": 1,
+        "old_authorization_min": "F",
+        "old_authorization_max": "F",
+        "old_card": "",
+        "changed": "2026-04-14 10:05:58.6170"
+      },
+      "difference_seconds": 1019.0
+    },
+    {
+      "bank": {
+        "txid": "24EE6E68-CAB8-4876-9CC1-4DEB23183A36",
+        "when": "2026-04-08 09:45:00",
+        "amount": 73932,
+        "status": "Aprovada",
+        "authorization": "073359",
+        "nsu": "040885610624",
+        "card": "524474******3916",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 641736,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-04-08",
+        "times": [
+          "2026-04-08 14:28:01.031000",
+          "2026-04-08 09:23:13"
+        ],
+        "amount": 73932,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-04-08 09:46:59.8690"
+      },
+      "difference_seconds": 1307.0
+    },
+    {
+      "bank": {
+        "txid": "2735D2AB-CE99-408D-B189-0B12E720E2A4",
+        "when": "2026-04-06 08:41:00",
+        "amount": 4170,
+        "status": "Aprovada",
+        "authorization": "414572",
+        "nsu": "609611713758",
+        "card": "410863******6955",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 641371,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-04-06",
+        "times": [
+          "2026-04-06 09:08:08.830000",
+          "2026-04-06 08:12:05"
+        ],
+        "amount": 4170,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-04-06 09:07:59.7130"
+      },
+      "difference_seconds": 1628.83
+    },
+    {
+      "bank": {
+        "txid": "F8541466-BAB6-48A6-A65C-FE6375D01BBB",
+        "when": "2026-04-01 09:23:00",
+        "amount": 44079,
+        "status": "Aprovada",
+        "authorization": "317405",
+        "nsu": "40923109072",
+        "card": "506722******0369",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 640928,
+        "company": 1,
+        "receipt": 21,
+        "parcel": 1,
+        "day": "2026-04-01",
+        "times": [
+          "2026-04-01 09:49:50.646000",
+          "2026-04-01 15:12:43"
+        ],
+        "amount": 44079,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-04-01 09:44:11.6010"
+      },
+      "difference_seconds": 1610.646
+    },
+    {
+      "bank": {
+        "txid": "1E6CEE50-2F46-4BEF-8F44-C07762DBBAD7",
+        "when": "2026-03-31 15:57:00",
+        "amount": 8590,
+        "status": "Aprovada",
+        "authorization": "072460",
+        "nsu": "033195013601",
+        "card": "545462******2787",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 999612574,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-03-31",
+        "times": [
+          "2026-03-31 21:21:08.964000",
+          "2026-03-31 15:28:13"
+        ],
+        "amount": 8590,
+        "row_count": 1,
+        "old_authorization_min": "h",
+        "old_authorization_max": "h",
+        "old_card": "",
+        "changed": "2026-03-31 21:20:55.2640"
+      },
+      "difference_seconds": 1727.0
+    },
+    {
+      "bank": {
+        "txid": "6FF72DE0-E8F3-4FB9-9FAF-63FAD4AB1699",
+        "when": "2026-03-31 09:57:00",
+        "amount": 118530,
+        "status": "Aprovada",
+        "authorization": "PKSOEG",
+        "nsu": "609012331903",
+        "card": "470598******3948",
+        "payment": "Crédito",
+        "installment": "Parcelado 6x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 640786,
+        "company": 1,
+        "receipt": 72,
+        "parcel": 1,
+        "day": "2026-03-31",
+        "times": [
+          "2026-03-31 10:14:40.013000",
+          "2026-03-31 15:58:44"
+        ],
+        "amount": 118530,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-03-31 10:14:24.2860"
+      },
+      "difference_seconds": 1060.013
+    },
+    {
+      "bank": {
+        "txid": "08F2F346-68FC-45AF-B940-B250263FEA4D",
+        "when": "2026-03-31 08:18:00",
+        "amount": 50372,
+        "status": "Aprovada",
+        "authorization": "683291",
+        "nsu": "033134910510",
+        "card": "552316******6407",
+        "payment": "Crédito",
+        "installment": "Parcelado 4x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 640817,
+        "company": 1,
+        "receipt": 51,
+        "parcel": 2,
+        "day": "2026-03-31",
+        "times": [
+          "2026-03-31 22:45:06.147000",
+          "2026-03-31 08:01:13"
+        ],
+        "amount": 50372,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-03-31 08:19:51.2560"
+      },
+      "difference_seconds": 1007.0
+    },
+    {
+      "bank": {
+        "txid": "B31B2455-4885-4BE0-808A-7CDB664E1445",
+        "when": "2026-03-27 16:27:00",
+        "amount": 113930,
+        "status": "Aprovada",
+        "authorization": "658224",
+        "nsu": "032751210441",
+        "card": "522626******8471",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 640452,
+        "company": 1,
+        "receipt": 57,
+        "parcel": 1,
+        "day": "2026-03-27",
+        "times": [
+          "2026-03-27 16:54:38.207000",
+          "2026-03-27 14:09:31"
+        ],
+        "amount": 113930,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-03-27 16:54:30.4100"
+      },
+      "difference_seconds": 1658.207
+    },
+    {
+      "bank": {
+        "txid": "C9D69621-5AAD-4672-963F-D314FF92838B",
+        "when": "2026-03-25 16:59:00",
+        "amount": 167220,
+        "status": "Aprovada",
+        "authorization": "695562",
+        "nsu": "041659010971",
+        "card": "373781******8405",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 640155,
+        "company": 1,
+        "receipt": 96,
+        "parcel": 1,
+        "day": "2026-03-25",
+        "times": [
+          "2026-03-25 07:53:10.136000",
+          "2026-03-25 16:40:55"
+        ],
+        "amount": 167220,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-03-25 17:01:13.6240"
+      },
+      "difference_seconds": 1085.0
+    },
+    {
+      "bank": {
+        "txid": "5FE2BF18-9084-4B7F-9184-853D93EC35C8",
+        "when": "2026-03-23 14:14:00",
+        "amount": 12709,
+        "status": "Aprovada",
+        "authorization": "144958",
+        "nsu": "032313910396",
+        "card": "554612******9730",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 639713,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 2,
+        "day": "2026-03-23",
+        "times": [
+          "2026-03-23 14:42:41.271000",
+          "2026-03-23 10:15:59"
+        ],
+        "amount": 12709,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-03-23 14:41:53.2200"
+      },
+      "difference_seconds": 1721.271
+    },
+    {
+      "bank": {
+        "txid": "5902AFE0-935D-4722-859F-C7E2B7254BCE",
+        "when": "2026-03-16 16:17:00",
+        "amount": 25278,
+        "status": "Aprovada",
+        "authorization": "308122",
+        "nsu": "607519765865",
+        "card": "498408******8723",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638876,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-03-16",
+        "times": [
+          "2026-03-16 17:12:29.015000",
+          "2026-03-16 15:48:35"
+        ],
+        "amount": 25278,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-03-16 16:17:58.2300"
+      },
+      "difference_seconds": 1705.0
+    },
+    {
+      "bank": {
+        "txid": "1C98A439-3331-48BA-8AAA-2667EA968D01",
+        "when": "2026-03-16 14:48:00",
+        "amount": 48159,
+        "status": "Aprovada",
+        "authorization": "097305",
+        "nsu": "031605319557",
+        "card": "512215******7658",
+        "payment": "Crédito",
+        "installment": "Parcelado 4x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638808,
+        "company": 1,
+        "receipt": 51,
+        "parcel": 1,
+        "day": "2026-03-16",
+        "times": [
+          "2026-03-16 15:05:22.374000",
+          "2026-03-16 12:36:54"
+        ],
+        "amount": 48159,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-03-16 15:05:09.4530"
+      },
+      "difference_seconds": 1042.374
+    },
+    {
+      "bank": {
+        "txid": "3805A5B4-311D-4EA4-B1FA-3556EDF16CBD",
+        "when": "2026-03-13 15:08:00",
+        "amount": 22979,
+        "status": "Aprovada",
+        "authorization": "443084",
+        "nsu": "61508916622",
+        "card": "650507******0045",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638587,
+        "company": 1,
+        "receipt": 34,
+        "parcel": 1,
+        "day": "2026-03-13",
+        "times": [
+          "2026-03-13 11:27:50.082000",
+          "2026-03-13 14:46:35"
+        ],
+        "amount": 22979,
+        "row_count": 1,
+        "old_authorization_min": "F",
+        "old_authorization_max": "F",
+        "old_card": "",
+        "changed": "2026-03-13 15:09:05.9480"
+      },
+      "difference_seconds": 1285.0
+    },
+    {
+      "bank": {
+        "txid": "95494C9E-9DBA-4AB4-8D2F-BC6F51BF02FE",
+        "when": "2026-03-11 12:13:00",
+        "amount": 31459,
+        "status": "Aprovada",
+        "authorization": "635159",
+        "nsu": "607015109759",
+        "card": "407618******6996",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638287,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-03-11",
+        "times": [
+          "2026-03-11 11:05:03.434000",
+          "2026-03-11 11:54:12"
+        ],
+        "amount": 31459,
+        "row_count": 1,
+        "old_authorization_min": "N",
+        "old_authorization_max": "N",
+        "old_card": "",
+        "changed": "2026-03-11 12:14:14.3600"
+      },
+      "difference_seconds": 1128.0
+    },
+    {
+      "bank": {
+        "txid": "7D287782-7693-49F3-A0DE-18766CF38AB9",
+        "when": "2026-03-10 13:22:00",
+        "amount": 3189,
+        "status": "Aprovada",
+        "authorization": "222071",
+        "nsu": "606916975993",
+        "card": "425850******1367",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638181,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-03-10",
+        "times": [
+          "2026-03-10 13:48:41.706000",
+          "2026-03-10 12:24:22"
+        ],
+        "amount": 3189,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-03-10 13:47:56.7220"
+      },
+      "difference_seconds": 1601.706
+    },
+    {
+      "bank": {
+        "txid": "4F717456-3433-4CDD-A40B-680B8A0B4A4D",
+        "when": "2026-03-09 14:01:00",
+        "amount": 9970,
+        "status": "Aprovada",
+        "authorization": "014744",
+        "nsu": "606817991900",
+        "card": "422061******1351",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 638031,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-03-09",
+        "times": [
+          "2026-03-09 10:47:17.228000",
+          "2026-03-09 13:40:16"
+        ],
+        "amount": 9970,
+        "row_count": 1,
+        "old_authorization_min": "C",
+        "old_authorization_max": "C",
+        "old_card": "",
+        "changed": "2026-03-09 14:30:15.1660"
+      },
+      "difference_seconds": 1244.0
+    },
+    {
+      "bank": {
+        "txid": "50C006DE-6EB6-4ACB-BFAB-7BAE258E09AC",
+        "when": "2026-03-04 11:53:00",
+        "amount": 30918,
+        "status": "Aprovada",
+        "authorization": "M02372",
+        "nsu": "030431210074",
+        "card": "549167******0855",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 637336,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-03-04",
+        "times": [
+          "2026-03-04 09:23:01.994000",
+          "2026-03-04 11:37:15"
+        ],
+        "amount": 30918,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-03-04 11:53:46.4220"
+      },
+      "difference_seconds": 945.0
+    },
+    {
+      "bank": {
+        "txid": "660D0B05-1FC5-4B36-A224-C2351FB753BF",
+        "when": "2026-03-02 15:51:00",
+        "amount": 23556,
+        "status": "Aprovada",
+        "authorization": "514461",
+        "nsu": "030297909985",
+        "card": "544731******1205",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 637053,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-03-02",
+        "times": [
+          "2026-03-02 17:11:01.925000",
+          "2026-03-02 15:34:35"
+        ],
+        "amount": 23556,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-03-02 15:52:24.0710"
+      },
+      "difference_seconds": 985.0
+    },
+    {
+      "bank": {
+        "txid": "78FA2644-0F42-4446-9142-375D1446FCA5",
+        "when": "2026-02-27 10:44:00",
+        "amount": 30000,
+        "status": "Aprovada",
+        "authorization": "938233",
+        "nsu": "022711609842",
+        "card": "550209******6432",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 636680,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 2,
+        "day": "2026-02-27",
+        "times": [
+          "2026-02-27 08:25:49.663000",
+          "2026-02-27 10:28:31"
+        ],
+        "amount": 30000,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-27 11:18:22.6930"
+      },
+      "difference_seconds": 929.0
+    },
+    {
+      "bank": {
+        "txid": "35D17B9B-954D-4BB3-96CB-363DBAA45F67",
+        "when": "2026-02-26 09:39:00",
+        "amount": 108462,
+        "status": "Aprovada",
+        "authorization": "185712",
+        "nsu": "022606230328",
+        "card": "544209******9089",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 636520,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 1,
+        "day": "2026-02-26",
+        "times": [
+          "2026-02-26 22:21:11.621000",
+          "2026-02-26 09:22:58"
+        ],
+        "amount": 108462,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-26 09:39:59.4270"
+      },
+      "difference_seconds": 962.0
+    },
+    {
+      "bank": {
+        "txid": "E93899E9-8596-44E9-B064-01307B417D56",
+        "when": "2026-02-26 07:40:00",
+        "amount": 7798,
+        "status": "Aprovada",
+        "authorization": "041729",
+        "nsu": "022665209781",
+        "card": "521437******8011",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 636502,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-02-26",
+        "times": [
+          "2026-02-26 07:57:57.189000",
+          "2026-02-26 07:56:38"
+        ],
+        "amount": 7798,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-26 07:57:23.0340"
+      },
+      "difference_seconds": 998.0
+    },
+    {
+      "bank": {
+        "txid": "B12DC252-334C-4DBE-ADDA-3A9F208D338D",
+        "when": "2026-02-20 10:07:00",
+        "amount": 47700,
+        "status": "Aprovada",
+        "authorization": "659625",
+        "nsu": "605113952903",
+        "card": "466200******0787",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 635710,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-02-20",
+        "times": [
+          "2026-02-20 10:31:23.746000",
+          "2026-02-20 09:50:56"
+        ],
+        "amount": 47700,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-20 10:09:39.9510"
+      },
+      "difference_seconds": 964.0
+    },
+    {
+      "bank": {
+        "txid": "6869C86A-287E-48F0-9E2E-D83C09E44050",
+        "when": "2026-02-14 12:19:00",
+        "amount": 315629,
+        "status": "Aprovada",
+        "authorization": "464946",
+        "nsu": "021484109288",
+        "card": "515501******6479",
+        "payment": "Crédito",
+        "installment": "Parcelado 5x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 635372,
+        "company": 1,
+        "receipt": 52,
+        "parcel": 1,
+        "day": "2026-02-14",
+        "times": [
+          "2026-02-14 22:24:25.558000",
+          "2026-02-14 11:56:27"
+        ],
+        "amount": 315629,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-14 12:21:09.1890"
+      },
+      "difference_seconds": 1353.0
+    },
+    {
+      "bank": {
+        "txid": "5F56BCC7-5E96-480C-A879-E7E1D149A648",
+        "when": "2026-02-12 16:02:00",
+        "amount": 75689,
+        "status": "Aprovada",
+        "authorization": "267258",
+        "nsu": "604319283410",
+        "card": "466763******7222",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 635061,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-02-12",
+        "times": [
+          "2026-02-12 16:38:05.890000",
+          "2026-02-12 15:46:56"
+        ],
+        "amount": 75689,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-12 16:04:57.1170"
+      },
+      "difference_seconds": 904.0
+    },
+    {
+      "bank": {
+        "txid": "88243A31-BBC9-44B9-B643-99E54FEFFABF",
+        "when": "2026-02-10 16:49:00",
+        "amount": 42957,
+        "status": "Aprovada",
+        "authorization": "819814",
+        "nsu": "31649972507",
+        "card": "506722******8604",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 634754,
+        "company": 1,
+        "receipt": 21,
+        "parcel": 1,
+        "day": "2026-02-10",
+        "times": [
+          "2026-02-10 08:15:05.660000",
+          "2026-02-10 16:26:04"
+        ],
+        "amount": 42957,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-10 16:50:19.5410"
+      },
+      "difference_seconds": 1376.0
+    },
+    {
+      "bank": {
+        "txid": "B959988E-2AB2-4D10-8CB3-602C17CC3B16",
+        "when": "2026-02-10 08:37:00",
+        "amount": 13990,
+        "status": "Aprovada",
+        "authorization": "644926",
+        "nsu": "30837571655",
+        "card": "651653******1781",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 634600,
+        "company": 1,
+        "receipt": 21,
+        "parcel": 1,
+        "day": "2026-02-10",
+        "times": [
+          "2026-02-10 08:56:39.755000",
+          "2026-02-10 16:47:12"
+        ],
+        "amount": 13990,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-10 08:56:28.2230"
+      },
+      "difference_seconds": 1179.755
+    },
+    {
+      "bank": {
+        "txid": "1954DE03-5234-474C-BD77-B05CFD4EE618",
+        "when": "2026-02-06 17:11:00",
+        "amount": 162256,
+        "status": "Aprovada",
+        "authorization": "DADZ2O",
+        "nsu": "020618908788",
+        "card": "548984******1623",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 634304,
+        "company": 1,
+        "receipt": 57,
+        "parcel": 1,
+        "day": "2026-02-06",
+        "times": [
+          "2026-02-06 08:09:09.659000",
+          "2026-02-06 16:41:34"
+        ],
+        "amount": 162256,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-06 17:12:25.1340"
+      },
+      "difference_seconds": 1766.0
+    },
+    {
+      "bank": {
+        "txid": "F12CA5AD-4EF4-46CA-9559-6BA7CA780894",
+        "when": "2026-02-06 13:44:00",
+        "amount": 4181,
+        "status": "Aprovada",
+        "authorization": "094697",
+        "nsu": "603716022900",
+        "card": "452204******0306",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 634258,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-02-06",
+        "times": [
+          "2026-02-06 14:25:12.146000",
+          "2026-02-06 13:28:45"
+        ],
+        "amount": 4181,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-06 14:24:56.9790"
+      },
+      "difference_seconds": 915.0
+    },
+    {
+      "bank": {
+        "txid": "EA9E3E4D-7A4B-4CA3-A936-51785893AEFF",
+        "when": "2026-02-05 10:10:00",
+        "amount": 130090,
+        "status": "Aprovada",
+        "authorization": "101965",
+        "nsu": "603613881094",
+        "card": "425850******1444",
+        "payment": "Crédito",
+        "installment": "Parcelado 5x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 634042,
+        "company": 1,
+        "receipt": 71,
+        "parcel": 1,
+        "day": "2026-02-05",
+        "times": [
+          "2026-02-05 10:47:08.871000",
+          "2026-02-05 09:54:44"
+        ],
+        "amount": 130090,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-05 10:12:02.9890"
+      },
+      "difference_seconds": 916.0
+    },
+    {
+      "bank": {
+        "txid": "33EC7371-56E0-4A10-A80F-809E7BDA8DF8",
+        "when": "2026-02-04 08:20:00",
+        "amount": 147939,
+        "status": "Aprovada",
+        "authorization": "203667",
+        "nsu": "020453408563",
+        "card": "515590******9803",
+        "payment": "Crédito",
+        "installment": "Parcelado 5x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633845,
+        "company": 1,
+        "receipt": 52,
+        "parcel": 1,
+        "day": "2026-02-04",
+        "times": [
+          "2026-02-04 08:42:49.434000",
+          "2026-02-04 07:53:54"
+        ],
+        "amount": 147939,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-04 08:21:13.6340"
+      },
+      "difference_seconds": 1369.434
+    },
+    {
+      "bank": {
+        "txid": "9DB832AB-9268-43D0-B5FD-D2B0E64BB4DA",
+        "when": "2026-02-03 13:24:00",
+        "amount": 109616,
+        "status": "Aprovada",
+        "authorization": "242152",
+        "nsu": "603416963691",
+        "card": "480630******7543",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633670,
+        "company": 1,
+        "receipt": 76,
+        "parcel": 1,
+        "day": "2026-02-03",
+        "times": [
+          "2026-02-03 13:45:34.224000",
+          "2026-02-03 16:59:17"
+        ],
+        "amount": 109616,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-02-03 13:28:49.3030"
+      },
+      "difference_seconds": 1294.224
+    },
+    {
+      "bank": {
+        "txid": "5A9ED8D2-640E-434A-B1B5-483191D474F0",
+        "when": "2026-02-03 11:12:00",
+        "amount": 64820,
+        "status": "Aprovada",
+        "authorization": "625442",
+        "nsu": "603414468355",
+        "card": "406669******2744",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633682,
+        "company": 1,
+        "receipt": 35,
+        "parcel": 1,
+        "day": "2026-02-03",
+        "times": [
+          "2026-02-03 11:40:57.451000",
+          "2026-02-03 08:21:06"
+        ],
+        "amount": 64820,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-03 11:40:47.9520"
+      },
+      "difference_seconds": 1737.451
+    },
+    {
+      "bank": {
+        "txid": "98564112-0E7E-4D81-AD3A-7E5ADCD95A97",
+        "when": "2026-02-02 09:37:00",
+        "amount": 66019,
+        "status": "Aprovada",
+        "authorization": "2MPK21",
+        "nsu": "020255108413",
+        "card": "234028******8655",
+        "payment": "Crédito",
+        "installment": "Parcelado 3x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633542,
+        "company": 1,
+        "receipt": 50,
+        "parcel": 1,
+        "day": "2026-02-02",
+        "times": [
+          "2026-02-02 13:28:19.898000",
+          "2026-02-02 09:13:03"
+        ],
+        "amount": 66019,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-02 09:39:26.3030"
+      },
+      "difference_seconds": 1437.0
+    },
+    {
+      "bank": {
+        "txid": "B24A708A-5D40-42E3-8A42-2551A9CE9F7C",
+        "when": "2026-02-02 09:01:00",
+        "amount": 60885,
+        "status": "Aprovada",
+        "authorization": "015870",
+        "nsu": "020215308409",
+        "card": "526259******8364",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633531,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-02-02",
+        "times": [
+          "2026-02-02 10:24:32.655000",
+          "2026-02-02 08:44:03"
+        ],
+        "amount": 60885,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-02-02 09:14:33.8280"
+      },
+      "difference_seconds": 1017.0
+    },
+    {
+      "bank": {
+        "txid": "6F9517A2-307D-4495-B6C0-A90840DA3EEB",
+        "when": "2026-01-29 10:29:00",
+        "amount": 579,
+        "status": "Aprovada",
+        "authorization": "340849",
+        "nsu": "51029135580",
+        "card": "509063******6015",
+        "payment": "Crédito",
+        "installment": "pré pago",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633116,
+        "company": 1,
+        "receipt": 22,
+        "parcel": 2,
+        "day": "2026-01-29",
+        "times": [
+          "2026-01-29 10:52:58.929000",
+          "2026-01-29 10:09:53"
+        ],
+        "amount": 579,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-29 10:52:40.3360"
+      },
+      "difference_seconds": 1147.0
+    },
+    {
+      "bank": {
+        "txid": "71A117F1-9B17-4EA8-9EE3-40D194B87597",
+        "when": "2026-01-28 13:45:00",
+        "amount": 24322,
+        "status": "Aprovada",
+        "authorization": "OVFSBN",
+        "nsu": "012829808161",
+        "card": "553665******1077",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 633023,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 1,
+        "day": "2026-01-28",
+        "times": [
+          "2026-01-28 15:55:36.375000",
+          "2026-01-28 13:25:48"
+        ],
+        "amount": 24322,
+        "row_count": 1,
+        "old_authorization_min": "X",
+        "old_authorization_max": "X",
+        "old_card": "",
+        "changed": "2026-01-28 13:45:40.9300"
+      },
+      "difference_seconds": 1152.0
+    },
+    {
+      "bank": {
+        "txid": "6B726D53-B0F4-4A48-90C7-E2B68F6CE459",
+        "when": "2026-01-27 16:30:00",
+        "amount": 11236,
+        "status": "Aprovada",
+        "authorization": "051433",
+        "nsu": "012702608115",
+        "card": "543960******9124",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632897,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-27",
+        "times": [
+          "2026-01-27 15:53:49.895000",
+          "2026-01-27 16:11:36"
+        ],
+        "amount": 11236,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-27 16:30:42.2040"
+      },
+      "difference_seconds": 1104.0
+    },
+    {
+      "bank": {
+        "txid": "49D77E95-B9DD-40EE-852A-82DE2D4C9B5A",
+        "when": "2026-01-26 17:13:00",
+        "amount": 164033,
+        "status": "Aprovada",
+        "authorization": "016764",
+        "nsu": "012671508027",
+        "card": "530033******6956",
+        "payment": "Crédito",
+        "installment": "Parcelado 10x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632714,
+        "company": 1,
+        "receipt": 57,
+        "parcel": 4,
+        "day": "2026-01-26",
+        "times": [
+          "2026-01-26 08:37:38.326000",
+          "2026-01-26 16:46:00"
+        ],
+        "amount": 164033,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-26 17:17:14.5380"
+      },
+      "difference_seconds": 1620.0
+    },
+    {
+      "bank": {
+        "txid": "D82EA911-B30B-4E3B-BDF2-53BBDD0F1C8C",
+        "when": "2026-01-26 10:49:00",
+        "amount": 22782,
+        "status": "Aprovada",
+        "authorization": "M11709",
+        "nsu": "012614807970",
+        "card": "589916******0941",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632587,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-26",
+        "times": [
+          "2026-01-26 12:40:34.541000",
+          "2026-01-26 10:32:27"
+        ],
+        "amount": 22782,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-01-26 10:51:17.3190"
+      },
+      "difference_seconds": 993.0
+    },
+    {
+      "bank": {
+        "txid": "97FE5F60-941F-4A3F-8732-D53CFE60C448",
+        "when": "2026-01-23 16:06:00",
+        "amount": 8230,
+        "status": "Aprovada",
+        "authorization": "064351",
+        "nsu": "602319948118",
+        "card": "410863******1100",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632413,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-23",
+        "times": [
+          "2026-01-23 17:35:08.838000",
+          "2026-01-23 15:38:30"
+        ],
+        "amount": 8230,
+        "row_count": 1,
+        "old_authorization_min": ",",
+        "old_authorization_max": ",",
+        "old_card": "",
+        "changed": "2026-01-23 16:07:10.1530"
+      },
+      "difference_seconds": 1650.0
+    },
+    {
+      "bank": {
+        "txid": "7BAEE864-86B1-431A-8804-828F3C2C7726",
+        "when": "2026-01-22 16:08:00",
+        "amount": 1900,
+        "status": "Aprovada",
+        "authorization": "862023",
+        "nsu": "602219896889",
+        "card": "459384******1236",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632339,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-01-22",
+        "times": [
+          "2026-01-22 17:03:23.857000",
+          "2026-01-22 15:48:41"
+        ],
+        "amount": 1900,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-01-22 16:09:15.1500"
+      },
+      "difference_seconds": 1159.0
+    },
+    {
+      "bank": {
+        "txid": "785CF968-31B4-49B1-9DF5-18BB9045255E",
+        "when": "2026-01-22 16:04:00",
+        "amount": 2245,
+        "status": "Aprovada",
+        "authorization": "FO7545",
+        "nsu": "602219885998",
+        "card": "417402******0303",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632338,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-22",
+        "times": [
+          "2026-01-22 16:41:55.987000",
+          "2026-01-22 15:48:13"
+        ],
+        "amount": 2245,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-01-22 16:04:45.8070"
+      },
+      "difference_seconds": 947.0
+    },
+    {
+      "bank": {
+        "txid": "713C99BC-CF41-4962-B020-2F371660F79B",
+        "when": "2026-01-21 10:58:00",
+        "amount": 490,
+        "status": "Aprovada",
+        "authorization": "018806",
+        "nsu": "012130107739",
+        "card": "531705******0738",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632139,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-21",
+        "times": [
+          "2026-01-21 11:26:28.389000",
+          "2026-01-21 10:30:50"
+        ],
+        "amount": 490,
+        "row_count": 1,
+        "old_authorization_min": "H",
+        "old_authorization_max": "H",
+        "old_card": "",
+        "changed": "2026-01-21 11:25:11.8260"
+      },
+      "difference_seconds": 1630.0
+    },
+    {
+      "bank": {
+        "txid": "085C58C9-5116-4F2A-9928-8A7DB7EBA5C1",
+        "when": "2026-01-19 16:29:00",
+        "amount": 3380,
+        "status": "Aprovada",
+        "authorization": "191880",
+        "nsu": "011992807673",
+        "card": "515467******8704",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 632019,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-19",
+        "times": [
+          "2026-01-19 16:44:15.825000",
+          "2026-01-19 14:54:02"
+        ],
+        "amount": 3380,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-19 16:31:56.3270"
+      },
+      "difference_seconds": 915.825
+    },
+    {
+      "bank": {
+        "txid": "A10F6D4C-4A6C-4D92-A317-6B45533C2C5B",
+        "when": "2026-01-19 10:55:00",
+        "amount": 20798,
+        "status": "Aprovada",
+        "authorization": "900526",
+        "nsu": "011901707628",
+        "card": "544315******2577",
+        "payment": "Crédito",
+        "installment": "Parcelado 2x",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631929,
+        "company": 1,
+        "receipt": 32,
+        "parcel": 2,
+        "day": "2026-01-19",
+        "times": [
+          "2026-01-19 12:36:10.037000",
+          "2026-01-19 10:38:32"
+        ],
+        "amount": 20798,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-19 12:35:57.8580"
+      },
+      "difference_seconds": 988.0
+    },
+    {
+      "bank": {
+        "txid": "5FF60AE7-6BEA-4E62-8825-D04DBA0627D3",
+        "when": "2026-01-17 08:22:00",
+        "amount": 4678,
+        "status": "Aprovada",
+        "authorization": "134152",
+        "nsu": "70822074066",
+        "card": "650407******7660",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631751,
+        "company": 1,
+        "receipt": 21,
+        "parcel": 1,
+        "day": "2026-01-17",
+        "times": [
+          "2026-01-17 16:57:13.995000",
+          "2026-01-17 08:01:43"
+        ],
+        "amount": 4678,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-01-17 08:23:18.7800"
+      },
+      "difference_seconds": 1217.0
+    },
+    {
+      "bank": {
+        "txid": "13205789-0FA1-46BB-BC93-491C6FB8DD30",
+        "when": "2026-01-16 09:43:00",
+        "amount": 6449,
+        "status": "Aprovada",
+        "authorization": "MZVSWQ",
+        "nsu": "601612332290",
+        "card": "439354******7377",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631597,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-01-16",
+        "times": [
+          "2026-01-16 17:06:12.242000",
+          "2026-01-16 09:24:52"
+        ],
+        "amount": 6449,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-01-16 09:46:06.1940"
+      },
+      "difference_seconds": 1088.0
+    },
+    {
+      "bank": {
+        "txid": "00C56CDC-D53C-4CB4-828C-DCE8FE09C540",
+        "when": "2026-01-16 09:03:00",
+        "amount": 678,
+        "status": "Aprovada",
+        "authorization": "035454",
+        "nsu": "601612780150",
+        "card": "480630******7372",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631581,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-01-16",
+        "times": [
+          "2026-01-16 17:47:25.284000",
+          "2026-01-16 08:47:10"
+        ],
+        "amount": 678,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-01-16 09:04:27.3100"
+      },
+      "difference_seconds": 950.0
+    },
+    {
+      "bank": {
+        "txid": "A986FFDF-98B1-4579-A8EC-2AF980D94E18",
+        "when": "2026-01-15 15:59:00",
+        "amount": 270,
+        "status": "Aprovada",
+        "authorization": "890601",
+        "nsu": "011521407440",
+        "card": "550209******7602",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631534,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-15",
+        "times": [
+          "2026-01-15 12:15:26.058000",
+          "2026-01-15 15:38:53"
+        ],
+        "amount": 270,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-15 16:03:00.2960"
+      },
+      "difference_seconds": 1207.0
+    },
+    {
+      "bank": {
+        "txid": "1D890009-DB27-41F5-A360-B0CB8412173C",
+        "when": "2026-01-15 12:53:00",
+        "amount": 450,
+        "status": "Aprovada",
+        "authorization": "510118",
+        "nsu": "011500207423",
+        "card": "550209******6293",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631488,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-15",
+        "times": [
+          "2026-01-15 11:57:18.110000",
+          "2026-01-15 12:26:16"
+        ],
+        "amount": 450,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-15 12:56:36.3610"
+      },
+      "difference_seconds": 1604.0
+    },
+    {
+      "bank": {
+        "txid": "13BFA370-E3F9-4508-B4EA-21623773AE81",
+        "when": "2026-01-15 10:04:00",
+        "amount": 7249,
+        "status": "Aprovada",
+        "authorization": "087100",
+        "nsu": "011515907392",
+        "card": "553636******0093",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631431,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 2,
+        "day": "2026-01-15",
+        "times": [
+          "2026-01-15 11:39:12.936000",
+          "2026-01-15 09:48:58"
+        ],
+        "amount": 7249,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-15 10:04:30.3910"
+      },
+      "difference_seconds": 902.0
+    },
+    {
+      "bank": {
+        "txid": "4AEA6E56-775F-4DE7-BF6C-6EAD4C2F61E4",
+        "when": "2026-01-15 08:20:00",
+        "amount": 6669,
+        "status": "Aprovada",
+        "authorization": "544199",
+        "nsu": "601511683951",
+        "card": "439267******5910",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631387,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-15",
+        "times": [
+          "2026-01-15 11:31:13.342000",
+          "2026-01-15 08:03:54"
+        ],
+        "amount": 6669,
+        "row_count": 1,
+        "old_authorization_min": "A",
+        "old_authorization_max": "A",
+        "old_card": "",
+        "changed": "2026-01-15 08:21:01.1950"
+      },
+      "difference_seconds": 966.0
+    },
+    {
+      "bank": {
+        "txid": "209F2323-F501-4738-8CF1-EBB78E104DB1",
+        "when": "2026-01-14 09:06:00",
+        "amount": 4999,
+        "status": "Aprovada",
+        "authorization": "482526",
+        "nsu": "601412780758",
+        "card": "439267******8559",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631221,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-14",
+        "times": [
+          "2026-01-14 10:30:58.249000",
+          "2026-01-14 08:36:25"
+        ],
+        "amount": 4999,
+        "row_count": 1,
+        "old_authorization_min": "S",
+        "old_authorization_max": "S",
+        "old_card": "",
+        "changed": "2026-01-14 09:06:48.2040"
+      },
+      "difference_seconds": 1775.0
+    },
+    {
+      "bank": {
+        "txid": "419BE484-5918-42BD-A2EA-3BD703B27360",
+        "when": "2026-01-14 08:40:00",
+        "amount": 63749,
+        "status": "Aprovada",
+        "authorization": "M43144",
+        "nsu": "011432907321",
+        "card": "589916******2544",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 631213,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-14",
+        "times": [
+          "2026-01-14 10:30:18.749000",
+          "2026-01-14 08:15:45"
+        ],
+        "amount": 63749,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-14 08:41:19.2510"
+      },
+      "difference_seconds": 1455.0
+    },
+    {
+      "bank": {
+        "txid": "BE2B7D7F-4E47-4E00-AC20-86F6B4BD8993",
+        "when": "2026-01-12 15:06:00",
+        "amount": 3050,
+        "status": "Aprovada",
+        "authorization": "441215",
+        "nsu": "011273107208",
+        "card": "536518******8792",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630950,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-12",
+        "times": [
+          "2026-01-12 19:05:46.993000",
+          "2026-01-12 14:42:29"
+        ],
+        "amount": 3050,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-12 15:06:54.8250"
+      },
+      "difference_seconds": 1411.0
+    },
+    {
+      "bank": {
+        "txid": "D331E8F4-4E6F-4698-A16A-554DA790C6F4",
+        "when": "2026-01-12 14:50:00",
+        "amount": 5700,
+        "status": "Aprovada",
+        "authorization": "798893",
+        "nsu": "601217694755",
+        "card": "439267******7151",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630946,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-12",
+        "times": [
+          "2026-01-12 17:33:14.487000",
+          "2026-01-12 14:31:59"
+        ],
+        "amount": 5700,
+        "row_count": 1,
+        "old_authorization_min": "P",
+        "old_authorization_max": "P",
+        "old_card": "",
+        "changed": "2026-01-12 14:50:44.6070"
+      },
+      "difference_seconds": 1081.0
+    },
+    {
+      "bank": {
+        "txid": "62028E38-3684-4082-947C-AA19D19C5CD0",
+        "when": "2026-01-12 13:52:00",
+        "amount": 3770,
+        "status": "Aprovada",
+        "authorization": "295176",
+        "nsu": "011288007200",
+        "card": "230744******8872",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630931,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-12",
+        "times": [
+          "2026-01-12 17:29:46.069000",
+          "2026-01-12 13:26:35"
+        ],
+        "amount": 3770,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-12 13:53:08.2510"
+      },
+      "difference_seconds": 1525.0
+    },
+    {
+      "bank": {
+        "txid": "627A3A97-E62D-47C0-9C2D-38D316B6156C",
+        "when": "2026-01-10 11:56:00",
+        "amount": 13280,
+        "status": "Aprovada",
+        "authorization": "643013",
+        "nsu": "601014473965",
+        "card": "498408******4580",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630807,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-10",
+        "times": [
+          "2026-01-10 12:16:23.004000",
+          "2026-01-10 11:13:42"
+        ],
+        "amount": 13280,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-10 12:16:00.5990"
+      },
+      "difference_seconds": 1223.004
+    },
+    {
+      "bank": {
+        "txid": "8F5CB61E-6316-438B-9C26-075D614B71BB",
+        "when": "2026-01-09 09:17:00",
+        "amount": 3197,
+        "status": "Aprovada",
+        "authorization": "262720",
+        "nsu": "600912266681",
+        "card": "499818******2555",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630587,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-01-09",
+        "times": [
+          "2026-01-09 17:39:06.363000",
+          "2026-01-09 09:01:40"
+        ],
+        "amount": 3197,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-09 09:19:04.6580"
+      },
+      "difference_seconds": 920.0
+    },
+    {
+      "bank": {
+        "txid": "4180C05E-86E8-4D4C-9D16-A81A9BD76920",
+        "when": "2026-01-08 12:03:00",
+        "amount": 2591,
+        "status": "Aprovada",
+        "authorization": "035169",
+        "nsu": "010886606958",
+        "card": "544731******5834",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630468,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-08",
+        "times": [
+          "2026-01-08 17:44:06.124000",
+          "2026-01-08 11:43:54"
+        ],
+        "amount": 2591,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-01-08 12:04:34.7360"
+      },
+      "difference_seconds": 1146.0
+    },
+    {
+      "bank": {
+        "txid": "6BACCC4E-A1BD-4DDC-A2AA-7246B308647D",
+        "when": "2026-01-08 10:33:00",
+        "amount": 5398,
+        "status": "Aprovada",
+        "authorization": "418933",
+        "nsu": "600813421622",
+        "card": "499818******3456",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630452,
+        "company": 1,
+        "receipt": 6,
+        "parcel": 1,
+        "day": "2026-01-08",
+        "times": [
+          "2026-01-08 09:41:29.042000",
+          "2026-01-08 10:17:20"
+        ],
+        "amount": 5398,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-01-08 10:33:43.2780"
+      },
+      "difference_seconds": 940.0
+    },
+    {
+      "bank": {
+        "txid": "0239EF9A-9859-4886-AF5D-BC19A7259664",
+        "when": "2026-01-06 14:49:00",
+        "amount": 990,
+        "status": "Aprovada",
+        "authorization": "309799",
+        "nsu": "010674106830",
+        "card": "537274******8720",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630195,
+        "company": 1,
+        "receipt": 5,
+        "parcel": 1,
+        "day": "2026-01-06",
+        "times": [
+          "2026-01-06 17:49:01.066000",
+          "2026-01-06 14:27:32"
+        ],
+        "amount": 990,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-06 14:49:39.7550"
+      },
+      "difference_seconds": 1288.0
+    },
+    {
+      "bank": {
+        "txid": "559CFDD8-C995-452B-A4DC-E415C1964EFC",
+        "when": "2026-01-06 12:53:00",
+        "amount": 9097,
+        "status": "Aprovada",
+        "authorization": "SQL1AF",
+        "nsu": "010698206813",
+        "card": "520941******2985",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630154,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-06",
+        "times": [
+          "2026-01-06 10:18:56.624000",
+          "2026-01-06 12:28:29"
+        ],
+        "amount": 9097,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-01-06 12:53:30.9840"
+      },
+      "difference_seconds": 1471.0
+    },
+    {
+      "bank": {
+        "txid": "B4AB7972-BD1F-4245-920F-0E3354534131",
+        "when": "2026-01-06 12:13:00",
+        "amount": 16129,
+        "status": "Aprovada",
+        "authorization": "R47082",
+        "nsu": "010680606808",
+        "card": "230650******6391",
+        "payment": "Crédito",
+        "installment": "à Vista",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 630142,
+        "company": 1,
+        "receipt": 4,
+        "parcel": 1,
+        "day": "2026-01-06",
+        "times": [
+          "2026-01-06 10:17:21.577000",
+          "2026-01-06 11:46:40"
+        ],
+        "amount": 16129,
+        "row_count": 1,
+        "old_authorization_min": "1",
+        "old_authorization_max": "1",
+        "old_card": "",
+        "changed": "2026-01-06 12:13:52.5830"
+      },
+      "difference_seconds": 1580.0
+    },
+    {
+      "bank": {
+        "txid": "7D0AB6DB-8B33-4A23-B088-2F87CEF91EF8",
+        "when": "2026-01-02 12:42:00",
+        "amount": 2050,
+        "status": "Aprovada",
+        "authorization": "SB91H5",
+        "nsu": "600215180744",
+        "card": "417402******5107",
+        "payment": "Débito",
+        "installment": "",
+        "file": "C:\\Users\\Carol\\Downloads\\Relatório O que vendi - PagBank.csv"
+      },
+      "system": {
+        "order": 629743,
+        "company": 1,
+        "receipt": 13,
+        "parcel": 1,
+        "day": "2026-01-02",
+        "times": [
+          "2026-01-02 14:34:26.931000",
+          "2026-01-02 12:23:07"
+        ],
+        "amount": 2050,
+        "row_count": 1,
+        "old_authorization_min": "2",
+        "old_authorization_max": "2",
+        "old_card": "",
+        "changed": "2026-01-02 12:42:39.0680"
+      },
+      "difference_seconds": 1133.0
+    }
+  ]
+}

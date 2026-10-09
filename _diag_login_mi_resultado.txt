@@ -1,0 +1,12 @@
+========================================================================
+  DIAGNOSTICO LOGIN MI
+========================================================================
+Banco: C:\Administracao\db\MIAUTOMEC.FDB
+Host configurado: localhost:3051
+
+Usuario: IDUSUARIO=1 LOGIN='MI' NOME='Pontual Tecnologia'
+Status: INATIVO=0 | Senha cadastrada=sim
+Permissoes Dashboard: 0 de 18
+[FALHA] Usuario sem permissao do Dashboard.
+
+========================================================================

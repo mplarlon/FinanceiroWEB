@@ -1,0 +1,1253 @@
+{
+  "transactions": 9014,
+  "matched": 8500,
+  "matched_by_method": {
+    "999_date_value_time": 446,
+    "auth": 8054
+  },
+  "matched_999": 483,
+  "groups": [
+    {
+      "day": "2026-02-02",
+      "item": 47257,
+      "transactions": 0,
+      "mapped": 0,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 12293.59
+    },
+    {
+      "day": "2026-02-03",
+      "item": 47262,
+      "transactions": 74,
+      "mapped": 70,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-04",
+      "item": 47266,
+      "transactions": 80,
+      "mapped": 78,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 40.08
+    },
+    {
+      "day": "2026-02-05",
+      "item": 47270,
+      "transactions": 78,
+      "mapped": 75,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 559.92
+    },
+    {
+      "day": "2026-02-09",
+      "item": 47318,
+      "transactions": 136,
+      "mapped": 132,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-10",
+      "item": 47342,
+      "transactions": 67,
+      "mapped": 64,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-11",
+      "item": 47384,
+      "transactions": 69,
+      "mapped": 65,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-12",
+      "item": 47414,
+      "transactions": 77,
+      "mapped": 74,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-13",
+      "item": 47420,
+      "transactions": 67,
+      "mapped": 65,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-18",
+      "item": 47429,
+      "transactions": 138,
+      "mapped": 134,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-19",
+      "item": 47454,
+      "transactions": 59,
+      "mapped": 56,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-20",
+      "item": 47462,
+      "transactions": 69,
+      "mapped": 66,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-23",
+      "item": 47471,
+      "transactions": 137,
+      "mapped": 133,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-25",
+      "item": 47485,
+      "transactions": 86,
+      "mapped": 84,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 66103.2
+    },
+    {
+      "day": "2026-02-26",
+      "item": 47491,
+      "transactions": 88,
+      "mapped": 86,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-02-27",
+      "item": 47494,
+      "transactions": 52,
+      "mapped": 50,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-02",
+      "item": 47502,
+      "transactions": 138,
+      "mapped": 135,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-03",
+      "item": 47534,
+      "transactions": 69,
+      "mapped": 66,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-04",
+      "item": 47540,
+      "transactions": 63,
+      "mapped": 62,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-05",
+      "item": 47569,
+      "transactions": 76,
+      "mapped": 72,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-06",
+      "item": 47579,
+      "transactions": 75,
+      "mapped": 72,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-09",
+      "item": 47584,
+      "transactions": 165,
+      "mapped": 156,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-10",
+      "item": 47628,
+      "transactions": 48,
+      "mapped": 47,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-13",
+      "item": 47642,
+      "transactions": 73,
+      "mapped": 67,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": -8582.15
+    },
+    {
+      "day": "2026-03-16",
+      "item": 47651,
+      "transactions": 32,
+      "mapped": 29,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-18",
+      "item": 47686,
+      "transactions": 18,
+      "mapped": 16,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-19",
+      "item": 47703,
+      "transactions": 30,
+      "mapped": 28,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-20",
+      "item": 47713,
+      "transactions": 23,
+      "mapped": 21,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-23",
+      "item": 47724,
+      "transactions": 58,
+      "mapped": 56,
+      "mapped_999": 6,
+      "net_999": 193.53,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-25",
+      "item": 47760,
+      "transactions": 70,
+      "mapped": 67,
+      "mapped_999": 12,
+      "net_999": 443.15,
+      "difference": -3955.73
+    },
+    {
+      "day": "2026-03-26",
+      "item": 47762,
+      "transactions": 39,
+      "mapped": 32,
+      "mapped_999": 6,
+      "net_999": 177.03,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-27",
+      "item": 47778,
+      "transactions": 30,
+      "mapped": 28,
+      "mapped_999": 4,
+      "net_999": 153.15,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-30",
+      "item": 47834,
+      "transactions": 58,
+      "mapped": 57,
+      "mapped_999": 7,
+      "net_999": 558.89,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-03-31",
+      "item": 47839,
+      "transactions": 41,
+      "mapped": 38,
+      "mapped_999": 6,
+      "net_999": 420.21,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-01",
+      "item": 47843,
+      "transactions": 31,
+      "mapped": 27,
+      "mapped_999": 2,
+      "net_999": 104.01,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-02",
+      "item": 47848,
+      "transactions": 29,
+      "mapped": 25,
+      "mapped_999": 4,
+      "net_999": 106.27,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-06",
+      "item": 47854,
+      "transactions": 64,
+      "mapped": 61,
+      "mapped_999": 10,
+      "net_999": 476.65,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-07",
+      "item": 47866,
+      "transactions": 35,
+      "mapped": 33,
+      "mapped_999": 5,
+      "net_999": 443.16,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-08",
+      "item": 47872,
+      "transactions": 16,
+      "mapped": 15,
+      "mapped_999": 3,
+      "net_999": 207.0,
+      "difference": 20144.4
+    },
+    {
+      "day": "2026-04-09",
+      "item": 47894,
+      "transactions": 41,
+      "mapped": 38,
+      "mapped_999": 5,
+      "net_999": 185.71,
+      "difference": 100.0
+    },
+    {
+      "day": "2026-04-10",
+      "item": 47907,
+      "transactions": 29,
+      "mapped": 28,
+      "mapped_999": 5,
+      "net_999": 187.01,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-13",
+      "item": 47915,
+      "transactions": 62,
+      "mapped": 56,
+      "mapped_999": 7,
+      "net_999": 191.82,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-14",
+      "item": 47941,
+      "transactions": 36,
+      "mapped": 34,
+      "mapped_999": 7,
+      "net_999": 365.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-15",
+      "item": 47945,
+      "transactions": 33,
+      "mapped": 30,
+      "mapped_999": 4,
+      "net_999": 102.85,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-16",
+      "item": 47958,
+      "transactions": 18,
+      "mapped": 16,
+      "mapped_999": 4,
+      "net_999": 176.63,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-22",
+      "item": 48022,
+      "transactions": 152,
+      "mapped": 143,
+      "mapped_999": 13,
+      "net_999": 810.02,
+      "difference": -8860.7
+    },
+    {
+      "day": "2026-04-24",
+      "item": 48033,
+      "transactions": 53,
+      "mapped": 50,
+      "mapped_999": 5,
+      "net_999": 376.74,
+      "difference": -3910.93
+    },
+    {
+      "day": "2026-04-27",
+      "item": 48065,
+      "transactions": 46,
+      "mapped": 43,
+      "mapped_999": 7,
+      "net_999": 359.76,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-28",
+      "item": 48067,
+      "transactions": 37,
+      "mapped": 37,
+      "mapped_999": 4,
+      "net_999": 133.71,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-29",
+      "item": 48079,
+      "transactions": 31,
+      "mapped": 30,
+      "mapped_999": 4,
+      "net_999": 211.57,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-04-30",
+      "item": 48082,
+      "transactions": 28,
+      "mapped": 24,
+      "mapped_999": 2,
+      "net_999": 32.9,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-04",
+      "item": 48128,
+      "transactions": 65,
+      "mapped": 59,
+      "mapped_999": 7,
+      "net_999": 200.36,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-05",
+      "item": 48131,
+      "transactions": 43,
+      "mapped": 40,
+      "mapped_999": 6,
+      "net_999": 284.54,
+      "difference": 100.0
+    },
+    {
+      "day": "2026-05-07",
+      "item": 48152,
+      "transactions": 53,
+      "mapped": 52,
+      "mapped_999": 5,
+      "net_999": 247.28,
+      "difference": -3613.75
+    },
+    {
+      "day": "2026-05-08",
+      "item": 48157,
+      "transactions": 33,
+      "mapped": 30,
+      "mapped_999": 4,
+      "net_999": 90.99,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-11",
+      "item": 48188,
+      "transactions": 64,
+      "mapped": 61,
+      "mapped_999": 6,
+      "net_999": 383.57,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-12",
+      "item": 48209,
+      "transactions": 24,
+      "mapped": 21,
+      "mapped_999": 3,
+      "net_999": 71.53,
+      "difference": -136.26
+    },
+    {
+      "day": "2026-05-13",
+      "item": 48215,
+      "transactions": 50,
+      "mapped": 48,
+      "mapped_999": 6,
+      "net_999": 438.41,
+      "difference": -486.69
+    },
+    {
+      "day": "2026-05-14",
+      "item": 48220,
+      "transactions": 29,
+      "mapped": 28,
+      "mapped_999": 2,
+      "net_999": 56.72,
+      "difference": 622.95
+    },
+    {
+      "day": "2026-05-15",
+      "item": 48228,
+      "transactions": 67,
+      "mapped": 64,
+      "mapped_999": 8,
+      "net_999": 369.22,
+      "difference": -2266.01
+    },
+    {
+      "day": "2026-05-19",
+      "item": 48242,
+      "transactions": 98,
+      "mapped": 83,
+      "mapped_999": 7,
+      "net_999": 295.95,
+      "difference": -8088.99
+    },
+    {
+      "day": "2026-05-20",
+      "item": 48270,
+      "transactions": 2,
+      "mapped": 2,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 4453.97
+    },
+    {
+      "day": "2026-05-21",
+      "item": 48290,
+      "transactions": 16,
+      "mapped": 15,
+      "mapped_999": 1,
+      "net_999": 19.07,
+      "difference": 35.98
+    },
+    {
+      "day": "2026-05-22",
+      "item": 48291,
+      "transactions": 24,
+      "mapped": 23,
+      "mapped_999": 7,
+      "net_999": 317.53,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-25",
+      "item": 48294,
+      "transactions": 79,
+      "mapped": 72,
+      "mapped_999": 6,
+      "net_999": 328.65,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-05-26",
+      "item": 48299,
+      "transactions": 73,
+      "mapped": 69,
+      "mapped_999": 10,
+      "net_999": 3862.89,
+      "difference": -5940.39
+    },
+    {
+      "day": "2026-05-27",
+      "item": 48308,
+      "transactions": 11,
+      "mapped": 9,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 5940.39
+    },
+    {
+      "day": "2026-05-28",
+      "item": 48330,
+      "transactions": 32,
+      "mapped": 30,
+      "mapped_999": 3,
+      "net_999": 106.64,
+      "difference": 42819.9
+    },
+    {
+      "day": "2026-05-29",
+      "item": 48333,
+      "transactions": 33,
+      "mapped": 31,
+      "mapped_999": 2,
+      "net_999": 69.6,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-01",
+      "item": 48368,
+      "transactions": 58,
+      "mapped": 52,
+      "mapped_999": 8,
+      "net_999": 569.65,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-03",
+      "item": 48391,
+      "transactions": 72,
+      "mapped": 65,
+      "mapped_999": 9,
+      "net_999": 895.21,
+      "difference": -6819.79
+    },
+    {
+      "day": "2026-06-05",
+      "item": 48393,
+      "transactions": 56,
+      "mapped": 54,
+      "mapped_999": 5,
+      "net_999": 271.06,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-08",
+      "item": 48405,
+      "transactions": 76,
+      "mapped": 71,
+      "mapped_999": 7,
+      "net_999": 296.56,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-09",
+      "item": 48415,
+      "transactions": 37,
+      "mapped": 34,
+      "mapped_999": 4,
+      "net_999": 94.08,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-10",
+      "item": 48419,
+      "transactions": 46,
+      "mapped": 45,
+      "mapped_999": 4,
+      "net_999": 706.4,
+      "difference": 61246.25
+    },
+    {
+      "day": "2026-06-12",
+      "item": 48430,
+      "transactions": 49,
+      "mapped": 46,
+      "mapped_999": 3,
+      "net_999": 82.43,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-15",
+      "item": 48483,
+      "transactions": 50,
+      "mapped": 46,
+      "mapped_999": 4,
+      "net_999": 213.82,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-16",
+      "item": 48488,
+      "transactions": 36,
+      "mapped": 33,
+      "mapped_999": 3,
+      "net_999": 93.49,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-17",
+      "item": 48493,
+      "transactions": 15,
+      "mapped": 15,
+      "mapped_999": 3,
+      "net_999": 212.44,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-18",
+      "item": 48500,
+      "transactions": 33,
+      "mapped": 31,
+      "mapped_999": 2,
+      "net_999": 60.02,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-19",
+      "item": 48520,
+      "transactions": 43,
+      "mapped": 38,
+      "mapped_999": 5,
+      "net_999": 251.65,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-22",
+      "item": 48538,
+      "transactions": 55,
+      "mapped": 54,
+      "mapped_999": 7,
+      "net_999": 865.97,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-23",
+      "item": 48541,
+      "transactions": 32,
+      "mapped": 23,
+      "mapped_999": 3,
+      "net_999": 195.45,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-24",
+      "item": 48557,
+      "transactions": 36,
+      "mapped": 32,
+      "mapped_999": 5,
+      "net_999": 436.45,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-25",
+      "item": 48559,
+      "transactions": 32,
+      "mapped": 29,
+      "mapped_999": 1,
+      "net_999": 47.2,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-26",
+      "item": 48570,
+      "transactions": 14,
+      "mapped": 14,
+      "mapped_999": 2,
+      "net_999": 27.06,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-29",
+      "item": 48572,
+      "transactions": 63,
+      "mapped": 61,
+      "mapped_999": 9,
+      "net_999": 394.21,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-06-30",
+      "item": 48582,
+      "transactions": 39,
+      "mapped": 35,
+      "mapped_999": 5,
+      "net_999": 170.11,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-01",
+      "item": 48589,
+      "transactions": 37,
+      "mapped": 36,
+      "mapped_999": 4,
+      "net_999": 351.32,
+      "difference": 13.05
+    },
+    {
+      "day": "2026-07-02",
+      "item": 48605,
+      "transactions": 30,
+      "mapped": 29,
+      "mapped_999": 6,
+      "net_999": 441.41,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-03",
+      "item": 48616,
+      "transactions": 35,
+      "mapped": 32,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-06",
+      "item": 48628,
+      "transactions": 62,
+      "mapped": 60,
+      "mapped_999": 8,
+      "net_999": 508.95,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-07",
+      "item": 48639,
+      "transactions": 36,
+      "mapped": 36,
+      "mapped_999": 11,
+      "net_999": 547.99,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-08",
+      "item": 48656,
+      "transactions": 31,
+      "mapped": 31,
+      "mapped_999": 5,
+      "net_999": 258.33,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-09",
+      "item": 48658,
+      "transactions": 37,
+      "mapped": 35,
+      "mapped_999": 3,
+      "net_999": 145.66,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-10",
+      "item": 48667,
+      "transactions": 45,
+      "mapped": 43,
+      "mapped_999": 5,
+      "net_999": 3484.24,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-13",
+      "item": 48691,
+      "transactions": 64,
+      "mapped": 61,
+      "mapped_999": 12,
+      "net_999": 365.35,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-14",
+      "item": 48714,
+      "transactions": 27,
+      "mapped": 26,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-15",
+      "item": 48715,
+      "transactions": 37,
+      "mapped": 35,
+      "mapped_999": 5,
+      "net_999": 225.59,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-16",
+      "item": 48736,
+      "transactions": 42,
+      "mapped": 41,
+      "mapped_999": 4,
+      "net_999": 238.14,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-17",
+      "item": 48740,
+      "transactions": 43,
+      "mapped": 41,
+      "mapped_999": 3,
+      "net_999": 72.8,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-20",
+      "item": 48765,
+      "transactions": 73,
+      "mapped": 70,
+      "mapped_999": 5,
+      "net_999": 396.76,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-21",
+      "item": 48779,
+      "transactions": 44,
+      "mapped": 41,
+      "mapped_999": 2,
+      "net_999": 169.04,
+      "difference": 162.2
+    },
+    {
+      "day": "2026-07-23",
+      "item": 48805,
+      "transactions": 86,
+      "mapped": 78,
+      "mapped_999": 7,
+      "net_999": 689.77,
+      "difference": -2815.08
+    },
+    {
+      "day": "2026-07-24",
+      "item": 48815,
+      "transactions": 24,
+      "mapped": 24,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 16247.9
+    },
+    {
+      "day": "2026-07-27",
+      "item": 48818,
+      "transactions": 52,
+      "mapped": 48,
+      "mapped_999": 6,
+      "net_999": 1697.04,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-28",
+      "item": 48841,
+      "transactions": 25,
+      "mapped": 24,
+      "mapped_999": 4,
+      "net_999": 326.02,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-29",
+      "item": 48842,
+      "transactions": 30,
+      "mapped": 29,
+      "mapped_999": 4,
+      "net_999": 127.96,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-07-31",
+      "item": 48857,
+      "transactions": 60,
+      "mapped": 56,
+      "mapped_999": 5,
+      "net_999": 262.68,
+      "difference": -5166.94
+    },
+    {
+      "day": "2026-08-04",
+      "item": 48883,
+      "transactions": 107,
+      "mapped": 100,
+      "mapped_999": 13,
+      "net_999": 490.96,
+      "difference": -7228.68
+    },
+    {
+      "day": "2026-08-05",
+      "item": 48888,
+      "transactions": 26,
+      "mapped": 24,
+      "mapped_999": 3,
+      "net_999": 201.16,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-07",
+      "item": 48908,
+      "transactions": 68,
+      "mapped": 64,
+      "mapped_999": 9,
+      "net_999": 121.84,
+      "difference": -2231.97
+    },
+    {
+      "day": "2026-08-13",
+      "item": 48953,
+      "transactions": 123,
+      "mapped": 109,
+      "mapped_999": 5,
+      "net_999": 213.71,
+      "difference": -13358.89
+    },
+    {
+      "day": "2026-08-14",
+      "item": 48961,
+      "transactions": 30,
+      "mapped": 28,
+      "mapped_999": 2,
+      "net_999": 35.9,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-17",
+      "item": 49003,
+      "transactions": 52,
+      "mapped": 46,
+      "mapped_999": 4,
+      "net_999": 92.98,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-18",
+      "item": 49009,
+      "transactions": 35,
+      "mapped": 35,
+      "mapped_999": 2,
+      "net_999": 74.64,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-19",
+      "item": 49019,
+      "transactions": 34,
+      "mapped": 30,
+      "mapped_999": 5,
+      "net_999": 161.35,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-20",
+      "item": 49033,
+      "transactions": 32,
+      "mapped": 31,
+      "mapped_999": 2,
+      "net_999": 52.26,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-21",
+      "item": 49040,
+      "transactions": 23,
+      "mapped": 23,
+      "mapped_999": 3,
+      "net_999": 52.93,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-24",
+      "item": 49078,
+      "transactions": 50,
+      "mapped": 49,
+      "mapped_999": 2,
+      "net_999": 17.32,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-25",
+      "item": 49080,
+      "transactions": 16,
+      "mapped": 15,
+      "mapped_999": 1,
+      "net_999": 118.54,
+      "difference": 218.84
+    },
+    {
+      "day": "2026-08-26",
+      "item": 49084,
+      "transactions": 35,
+      "mapped": 33,
+      "mapped_999": 5,
+      "net_999": 76.2,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-27",
+      "item": 49096,
+      "transactions": 37,
+      "mapped": 34,
+      "mapped_999": 3,
+      "net_999": 36.86,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-08-31",
+      "item": 49109,
+      "transactions": 72,
+      "mapped": 69,
+      "mapped_999": 7,
+      "net_999": 213.31,
+      "difference": -765.2
+    },
+    {
+      "day": "2026-09-01",
+      "item": 49115,
+      "transactions": 28,
+      "mapped": 27,
+      "mapped_999": 2,
+      "net_999": 32.7,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-03",
+      "item": 49125,
+      "transactions": 23,
+      "mapped": 22,
+      "mapped_999": 2,
+      "net_999": 39.7,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-08",
+      "item": 49150,
+      "transactions": 76,
+      "mapped": 71,
+      "mapped_999": 4,
+      "net_999": 191.22,
+      "difference": -2269.91
+    },
+    {
+      "day": "2026-09-09",
+      "item": 49162,
+      "transactions": 27,
+      "mapped": 26,
+      "mapped_999": 3,
+      "net_999": 157.82,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-10",
+      "item": 49170,
+      "transactions": 34,
+      "mapped": 29,
+      "mapped_999": 2,
+      "net_999": 68.22,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-11",
+      "item": 49179,
+      "transactions": 25,
+      "mapped": 22,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-14",
+      "item": 49219,
+      "transactions": 33,
+      "mapped": 30,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-16",
+      "item": 49229,
+      "transactions": 29,
+      "mapped": 24,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-17",
+      "item": 49240,
+      "transactions": 26,
+      "mapped": 26,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-18",
+      "item": 49241,
+      "transactions": 28,
+      "mapped": 27,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-21",
+      "item": 49256,
+      "transactions": 64,
+      "mapped": 59,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-23",
+      "item": 49292,
+      "transactions": 33,
+      "mapped": 33,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-28",
+      "item": 49329,
+      "transactions": 46,
+      "mapped": 44,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    },
+    {
+      "day": "2026-09-29",
+      "item": 49347,
+      "transactions": 37,
+      "mapped": 2,
+      "mapped_999": 0,
+      "net_999": 0.0,
+      "difference": 0.0
+    }
+  ]
+}

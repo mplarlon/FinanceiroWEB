@@ -1,0 +1,15 @@
+{
+  "ambiente": "homologacao",
+  "agencia": "",
+  "conta": "",
+  "codigo_beneficiario": "",
+  "convenio": "",
+  "cnpj_beneficiario": "",
+  "nome_beneficiario": "",
+  "nosso_numero_prefixo": "14",
+  "output_dir": "boletos_caixa",
+  "pdf_output_dir": "C:\\administracao\\Boleto\\boletos",
+  "remessa_output_dir": "C:\\administracao\\Boleto\\RemessaBoleto",
+  "geracao_automatica": true,
+  "homologado": false
+}

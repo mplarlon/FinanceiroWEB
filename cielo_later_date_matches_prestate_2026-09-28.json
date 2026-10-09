@@ -1,0 +1,56 @@
+[
+  {
+    "target": {
+      "order": 999613812,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-05-27",
+      "amount": 490,
+      "old": "C",
+      "new": "M29265",
+      "nsu": "446773"
+    },
+    "system_prestate": {
+      "order": 999613812,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-05-27",
+      "times": [
+        "2026-05-27 22:28:21.448000",
+        "2026-05-27 17:27:27"
+      ],
+      "amount": 490,
+      "old_authorization": "C",
+      "old_card": ""
+    }
+  },
+  {
+    "target": {
+      "order": 999615039,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "amount": 490,
+      "old": "S",
+      "new": "M88238",
+      "nsu": "447507"
+    },
+    "system_prestate": {
+      "order": 999615039,
+      "company": 1,
+      "receipt": 5,
+      "parcel": 1,
+      "day": "2026-07-28",
+      "times": [
+        "2026-07-28 12:05:53.677000",
+        "2026-07-28 14:51:59"
+      ],
+      "amount": 490,
+      "old_authorization": "S",
+      "old_card": ""
+    }
+  }
+]

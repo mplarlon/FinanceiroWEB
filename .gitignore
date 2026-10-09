@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+node-app/node_modules/
+
+# Generated application bundles and build artifacts
+.artifact/
+build/
+dist/
+node-app/dist/
+output/
+outputs/
+tmp/
+
+# Bundled third-party runtimes
+Firebird-5.0.4/
+third_party/
+vendor/
+
+# Logs and temporary files
+logs/
+*.log
+*.err.log
+*.out.log
+*.tmp
+.~lock.*
+
+# Large generated archives, installers, and database backups
+*.exe
+*.zip
+*.fbk
+
+# Local configuration and certificates
+certificados/
+certificados_ct/
+database_config.json
+email_config.json
+nfe_sefaz_config.json
+boletos_caixa_config.json
+credito_trabalhador_config.json
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

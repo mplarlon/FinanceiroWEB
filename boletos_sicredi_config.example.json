@@ -1,0 +1,12 @@
+{
+  "ambiente": "homologacao",
+  "api_key": "",
+  "codigo_acesso": "",
+  "cooperativa": "6789",
+  "posto": "03",
+  "codigo_beneficiario": "12345",
+  "tipo_cobranca": "NORMAL",
+  "especie_documento": "DUPLICATA_MERCANTIL_INDICACAO",
+  "informativo": "Boleto emitido pelo sistema",
+  "homologado": false
+}

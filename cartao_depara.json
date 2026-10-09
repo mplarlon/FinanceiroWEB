@@ -1,0 +1,86 @@
+{
+  "combos_conhecidos": [
+    "Elo|Débito|",
+    "Mastercard|Crédito|",
+    "Mastercard|Crédito|Parcelado 2x",
+    "Mastercard|Crédito|Parcelado 3x",
+    "Mastercard|Crédito|Parcelado 5x",
+    "Mastercard|Crédito|à Vista",
+    "Mastercard|Débito|",
+    "Visa|Crédito|",
+    "Visa|Crédito|Parcelado 10x",
+    "Visa|Crédito|Parcelado 2x",
+    "Visa|Crédito|Parcelado 3x",
+    "Visa|Crédito|Parcelado 8x",
+    "Visa|Crédito|pré pago",
+    "Visa|Crédito|à Vista",
+    "Visa|D?bito|",
+    "Visa|Débito|"
+  ],
+  "mapeamentos": {
+    "Elo|Débito|": {
+      "cdrecebto": 21,
+      "descricao": "08 - ELO DÉBITO"
+    },
+    "Mastercard|Crédito|": {
+      "cdrecebto": 4,
+      "descricao": "11 - MASTERCARD (1X)"
+    },
+    "Mastercard|Crédito|Parcelado 2x": {
+      "cdrecebto": 32,
+      "descricao": "11.1 - MASTERCARD (2x)"
+    },
+    "Mastercard|Crédito|Parcelado 3x": {
+      "cdrecebto": 50,
+      "descricao": "11.2 - MASTERCARD (3x)"
+    },
+    "Mastercard|Crédito|Parcelado 5x": {
+      "cdrecebto": 52,
+      "descricao": "11.4 - MASTERCARD (5x)"
+    },
+    "Mastercard|Crédito|à Vista": {
+      "cdrecebto": 4,
+      "descricao": "11 - MASTERCARD (1X)"
+    },
+    "Mastercard|Débito|": {
+      "cdrecebto": 5,
+      "descricao": "07 - REDESHOP"
+    },
+    "Visa|Crédito|": {
+      "cdrecebto": 6,
+      "descricao": "13 - VISA (1x)"
+    },
+    "Visa|Crédito|Parcelado 10x": {
+      "cdrecebto": 76,
+      "descricao": "13.9 - VISA (10x)"
+    },
+    "Visa|Crédito|Parcelado 2x": {
+      "cdrecebto": 35,
+      "descricao": "13.1 - VISA (2x)"
+    },
+    "Visa|Crédito|Parcelado 3x": {
+      "cdrecebto": 69,
+      "descricao": "13.2 - VISA (3x)"
+    },
+    "Visa|Crédito|Parcelado 8x": {
+      "cdrecebto": 74,
+      "descricao": "13.8 - VISA (8x)"
+    },
+    "Visa|Crédito|pré pago": {
+      "cdrecebto": 6,
+      "descricao": "13 - VISA (1x)"
+    },
+    "Visa|Crédito|à Vista": {
+      "cdrecebto": 6,
+      "descricao": "13 - VISA (1x)"
+    },
+    "Visa|D?bito|": {
+      "cdrecebto": 13,
+      "descricao": "09 - VISA ELETRON"
+    },
+    "Visa|Débito|": {
+      "cdrecebto": 13,
+      "descricao": "09 - VISA ELETRON"
+    }
+  }
+}

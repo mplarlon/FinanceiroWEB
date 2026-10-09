@@ -1,0 +1,2 @@
+Usuario: IDUSUARIO=1 LOGIN=MI NOME=Pontual Tecnologia
+OK: 18 permissoes concedidas/atualizadas.

@@ -1,0 +1,106 @@
+{
+  "created_at": "2026-09-29T10:54:30.535430",
+  "method": "Pix equals exact sum of 2-4 invoices for same identified customer",
+  "matches": [
+    {
+      "item": 46556,
+      "bank_date": "2026-06-22",
+      "bank_value": "1363.90",
+      "payer": "Ricardo Marreiros Neto",
+      "titles": [
+        {
+          "control": 743615,
+          "invoice": "649016",
+          "value": "564.70"
+        },
+        {
+          "control": 743811,
+          "invoice": "649190",
+          "value": "739.70"
+        },
+        {
+          "control": 743855,
+          "invoice": "649301",
+          "value": "59.50"
+        }
+      ]
+    },
+    {
+      "item": 46717,
+      "bank_date": "2026-07-10",
+      "bank_value": "990.00",
+      "payer": "PLATINUM DESIGN E CENOGRAFIA LTDA",
+      "titles": [
+        {
+          "control": 750018,
+          "invoice": "000012414",
+          "value": "899.80"
+        },
+        {
+          "control": 750027,
+          "invoice": "000012415",
+          "value": "90.20"
+        }
+      ]
+    },
+    {
+      "item": 46784,
+      "bank_date": "2026-07-17",
+      "bank_value": "419.70",
+      "payer": "PLATINUM DESIGN E CENOGRAFIA LTDA",
+      "titles": [
+        {
+          "control": 752127,
+          "invoice": "000012482",
+          "value": "329.80"
+        },
+        {
+          "control": 752128,
+          "invoice": "000012483",
+          "value": "89.90"
+        }
+      ]
+    },
+    {
+      "item": 46948,
+      "bank_date": "2026-08-10",
+      "bank_value": "1570.17",
+      "payer": "DANIEL ARDITTI",
+      "titles": [
+        {
+          "control": 751905,
+          "invoice": "655997",
+          "value": "1061.40"
+        },
+        {
+          "control": 752774,
+          "invoice": "656572",
+          "value": "152.63"
+        },
+        {
+          "control": 752847,
+          "invoice": "656648",
+          "value": "356.14"
+        }
+      ]
+    },
+    {
+      "item": 46980,
+      "bank_date": "2026-08-17",
+      "bank_value": "1769.30",
+      "payer": "INSTITUTO ASSISTENCIAL ATITUDE",
+      "titles": [
+        {
+          "control": 755237,
+          "invoice": "000012584",
+          "value": "599.60"
+        },
+        {
+          "control": 755957,
+          "invoice": "000012590",
+          "value": "1169.70"
+        }
+      ]
+    }
+  ]
+}
