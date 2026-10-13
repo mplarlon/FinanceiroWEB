@@ -32,7 +32,7 @@ if not exist "node-app\dist\index.html" (
     popd
 )
 
-if "%DASHBOARD_PORT%"=="" set DASHBOARD_PORT=506
+if "%DASHBOARD_PORT%"=="" set DASHBOARD_PORT=505
 
 echo  Iniciando servidor...
 echo  Acesse: http://localhost:%DASHBOARD_PORT%

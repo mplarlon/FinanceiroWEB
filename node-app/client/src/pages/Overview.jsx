@@ -178,13 +178,13 @@ function FinancialPosition({ finance = {} }) {
 export default function Overview({ status, onNavigate }) {
   const today = new Date(),
     monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
-  const [periodMode, setPeriodMode] = useState("30");
+  const [periodMode, setPeriodMode] = useState("custom");
   const [customPeriod, setCustomPeriod] = useState({
     data_inicio: monthStart.toISOString().slice(0, 10),
     data_fim: today.toISOString().slice(0, 10),
   });
   const [data, setData] = useState({ sales: {}, purchases: {}, finance: {} });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [updatedAt, setUpdatedAt] = useState();
 
@@ -250,7 +250,7 @@ export default function Overview({ status, onNavigate }) {
   }
 
   useEffect(() => {
-    if (periodMode !== "custom") load();
+    load();
   }, [periodMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sales = data.sales || {},

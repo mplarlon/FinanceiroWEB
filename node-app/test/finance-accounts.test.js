@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   agreementStatusSql,
   buildAccountFilters,
+  completeAccountInput,
   firebirdDate,
   financeStatusLabel,
   newAccountInput,
@@ -26,6 +27,21 @@ test("valida e normaliza novo titulo financeiro", () => {
   assert.equal(input.installment, 2);
   assert.equal(input.amount, 125.46);
   assert.equal(input.history, "Mensalidade");
+});
+
+test("completa novo titulo com os mesmos padroes operacionais do Automec", () => {
+  const completed = completeAccountInput(
+    newAccountInput({
+      tipo: "receber", idempresa: 1, pessoa_id: 2, vencimento: "2026-10-31",
+      documento: "X", valor: 10, forma_pagamento: 7,
+    }),
+    { CDGRUPO: 4, CCUSTO: 1, CDCONTA: "2", CDSUBCONTA: "16" },
+  );
+  assert.equal(completed.cash, 1);
+  assert.equal(completed.receiptGroup, 4);
+  assert.equal(completed.costCenter, 1);
+  assert.equal(completed.account, "2");
+  assert.equal(completed.subaccount, "16");
 });
 
 test("rejeita novo titulo sem dados obrigatorios", () => {

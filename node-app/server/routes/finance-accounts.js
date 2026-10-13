@@ -113,6 +113,36 @@ async function nextAccountControl(tx, table) {
   }
   return Number((await tx.singleton(`SELECT COALESCE(MAX(CONTROLE),0)+1 AS ID FROM ${table}`)).ID);
 }
+
+async function accountPaymentDefaults(tx, input) {
+  if (!input.payment) return {};
+  const receive = input.type === "receber";
+  const table = receive ? "RECEBTO" : "PAGTO";
+  const key = receive ? "CDRECEBTO" : "CDPAGTO";
+  const rows = await tx.query(
+    `SELECT FIRST 1 ${receive ? "CDGRUPO,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA" : "CDGRUPO"} FROM ${table} WHERE ${key}=?`,
+    [input.payment],
+  );
+  return rows[0] || {};
+}
+
+export function completeAccountInput(input, paymentDefaults = {}) {
+  const pick = (provided, fallback) => provided ?? fallback ?? null;
+  return {
+    ...input,
+    cash: input.cash ?? 1,
+    costCenter: pick(input.costCenter, paymentDefaults.CCUSTO),
+    account: pick(input.account, paymentDefaults.CDCONTA),
+    subaccount: pick(input.subaccount, paymentDefaults.CDSUBCONTA),
+    thirdAccount: pick(input.thirdAccount, paymentDefaults.CDSUBSUBCONTA),
+    fourthAccount: pick(input.fourthAccount, paymentDefaults.CDSUBSUBSUBCONTA),
+    receiptGroup: receivePaymentGroup(input, paymentDefaults),
+  };
+}
+
+function receivePaymentGroup(input, paymentDefaults) {
+  return input.type === "receber" ? paymentDefaults.CDGRUPO ?? null : null;
+}
 async function ensureAgreementSchema(tx) {
   const has = async (kind, name) =>
     Boolean(
@@ -494,6 +524,7 @@ router.get("/operacoes/opcoes", async (_req, res) => {
     const result = await withDatabase(async (db) => {
       const walletRows = await query(db,"SELECT FIRST 1 CDRECEBTO,RECEBTO,CDGRUPO,CCUSTO FROM RECEBTO WHERE UPPER(TRIM(RECEBTO)) CONTAINING 'CARTEIRA' ORDER BY CASE WHEN UPPER(TRIM(RECEBTO))='CARTEIRA' THEN 0 ELSE 1 END,CDRECEBTO");
       const formas = await query(db,"SELECT CDRECEBTO,RECEBTO,COALESCE(DESCONTO,0) AS TAXA_RETENCAO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY RECEBTO");
+      const formas_pagar = await query(db,"SELECT CDPAGTO,PAGTO,CDGRUPO FROM PAGTO WHERE COALESCE(INATIVO,0)=0 ORDER BY PAGTO");
       const bancos = await query(db,"SELECT CDBANCO,BANCO FROM BANCO ORDER BY BANCO");
       const contas_bancarias = await query(db,"SELECT cc.CDBANCO,b.BANCO,cc.AGENCIA,cc.NUMCONTA FROM CONTACORRENTE cc LEFT JOIN BANCO b ON b.CDBANCO=cc.CDBANCO ORDER BY b.BANCO,cc.AGENCIA,cc.NUMCONTA");
       const caixas = await query(db,"SELECT CDCAIXA,CAIXA FROM TPCAIXA WHERE COALESCE(INATIVO,0)=0 ORDER BY CAIXA,CDCAIXA");
@@ -514,6 +545,7 @@ router.get("/operacoes/opcoes", async (_req, res) => {
         ok: true,
         carteira: walletRows[0] || null,
         formas,
+        formas_pagar,
         bancos,
         contas_bancarias,
         caixas,
@@ -543,23 +575,29 @@ router.get("/operacoes/opcoes", async (_req, res) => {
 
 router.post("/operacoes/criar", async (req, res) => {
   try {
-    const input = newAccountInput(req.body || {});
+    let input = newAccountInput(req.body || {});
     const user = Number(req.dashboardSession?.user?.idusuario || 1);
     const result = await withWriteTransaction(async (tx) => {
       const table = input.type === "receber" ? "CTARECEBER" : "CTAPAGAR";
       const control = await nextAccountControl(tx, table);
+      input = completeAccountInput(input, await accountPaymentDefaults(tx, input));
       if (input.type === "receber") {
         await tx.execute(
-          "INSERT INTO CTARECEBER (CONTROLE,IDEMPRESA,NRDOC,PARCELA,CDCLIENTE,DTVENC,VALOR,INTERVALO,ORIGEM,DIVIDA,TOTALPG,DTCOB,CAIXA,CODPAGTO,DTMOV,TPPAGTO,STATUS,CDUSR,DTLOG,CDRECGRUPO,NRDOC2,ACORDO,DTALTER,SIST_ALT,CDCAIXAORIGEM,HISTORICO,VLPGLIQ,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA) VALUES (?,?,?,?,?,?,?,0,'LANCAMENTO MANUAL',?,0,NULL,?,?,CURRENT_TIMESTAMP,?,1,?,CURRENT_TIMESTAMP,NULL,?,0,CURRENT_TIMESTAMP,'LOCAL',?,?,0,?,?,?,?,?)",
-          [control,input.company,input.document,input.installment,input.person,input.dueDate,input.amount,input.amount,input.cash,input.payment,input.payment,user,input.document,input.cash,input.history,input.costCenter,input.account,input.subaccount,input.thirdAccount,input.fourthAccount],
+          "INSERT INTO CTARECEBER (CONTROLE,IDEMPRESA,NRDOC,PARCELA,CDCLIENTE,DTVENC,VALOR,INTERVALO,ORIGEM,DIVIDA,TOTALPG,DTCOB,CAIXA,CODPAGTO,DTMOV,TPPAGTO,STATUS,CDUSR,DTLOG,HORALOG,CDRECGRUPO,NRDOC2,ACORDO,DTALTER,SIST_ALT,CDCAIXAORIGEM,HISTORICO,VLPGLIQ,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,JUROS,DESCONTO,RETENCAO,AVISOS) VALUES (?,?,?,?,?,?,?,0,'LANCAMENTO MANUAL',?,0,NULL,?,?,CURRENT_TIMESTAMP,?,1,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,0,CURRENT_TIMESTAMP,'LOCAL',?,?,0,?,?,?,?,?,0,0,0,0)",
+          [control,input.company,input.document,input.installment,input.person,input.dueDate,input.amount,input.amount,input.cash,input.payment,input.payment,user,input.receiptGroup,input.document,input.cash,input.history,input.costCenter,input.account,input.subaccount,input.thirdAccount,input.fourthAccount],
         );
       } else {
         await tx.execute(
-          "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,NRDOC,DTVENC,DTPAGTO,DTINCLUSAO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,1,?,?,?,?,?,?,NULL,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,0,?,'LOCAL','LANCAMENTO MANUAL',?)",
-          [control,input.company,input.document,input.document.slice(0,10),input.person,input.installment,input.cash,input.costCenter,input.payment,input.payment,input.document,input.dueDate,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,input.amount,input.amount,user,input.dueDate],
+          "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,INTERVALO,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,NRDOC,NRDOC2,DTVENC,DTPAGTO,DTINCLUSAO,DTLOG,HORALOG,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS,DESCONTO,RETENCAO,ACORDO,COMBOLETO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,0,1,?,?,?,?,?,?,?,NULL,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,0,0,0,0,0,0,?,'LOCAL','LANCAMENTO MANUAL',?)",
+          [control,input.company,input.document,input.document.slice(0,10),input.person,input.installment,input.cash,input.costCenter,input.payment,input.payment,input.document,input.document,input.dueDate,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,input.amount,input.amount,user,input.dueDate],
         );
       }
-      return { controle: control, idempresa: input.company, tipo: input.type };
+      return {
+        controle: control,
+        idempresa: input.company,
+        tipo: input.type,
+        vencimento: input.dueDate.toISOString().slice(0, 10),
+      };
     });
     res.status(201).json({ ok: true, mensagem: `Conta a ${result.tipo} criada com sucesso.`, ...result });
   } catch (error) {

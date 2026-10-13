@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export const port = Number(process.env.DASHBOARD_PORT || 506);
+export const port = Number(process.env.DASHBOARD_PORT || 505);
 export const dataDir = process.env.DASHBOARD_DATA_DIR ||
-  path.join(process.env.PROGRAMDATA || "C:\\ProgramData", "Dashboard");
+  "C:\\administracao\\Dashboard";
 export const appRoot = path.resolve(import.meta.dirname, "..");
 export const clientDist = path.join(appRoot, "dist");
 export const schemaFile = path.resolve(appRoot, "..", "schema.json");
-export const configFile = path.join(dataDir, "database_config.json");
+export const configFile = path.join(dataDir, "start.ini");
 const legacyConfigFile = path.resolve(appRoot, "..", "database_config.json");
 
 const defaults = {

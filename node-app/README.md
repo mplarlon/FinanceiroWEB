@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-React abre em `http://localhost:5173` e encaminha as APIs ao Node na porta 506.
+React abre em `http://localhost:5173` e encaminha as APIs ao Node na porta 505.
 
 ## Ollama no Charlie
 
@@ -40,7 +40,7 @@ npm run build
 npm start
 ```
 
-Os dados locais continuam em `%ProgramData%\Dashboard`. A migração inclui
+Os dados locais ficam em `C:\administracao\Dashboard`. A migração inclui
 configuração do Firebird, autenticação, dashboards, módulos fiscal, financeiro,
 comercial, compras, DP, boletos, expedição e integrações. O módulo Crédito
 Trabalhador foi removido por decisão de produto.

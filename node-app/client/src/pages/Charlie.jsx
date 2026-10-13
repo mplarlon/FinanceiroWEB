@@ -2,27 +2,31 @@ import React, { useEffect, useRef, useState } from "react";
 import { api } from "../lib/api.js";
 
 const starters = [
-  "Abrir o dia",
-  "Vendas de hoje",
-  "Top 10 produtos vendidos",
-  "Estoque baixo",
-  "Produtos com estoque negativo",
-  "Contas a receber",
-  "Contas a pagar",
+  "O que tenho para pagar hoje?",
+  "O que vence amanhã?",
+  "Tem alguma conta atrasada?",
+  "Quanto preciso pagar até sexta?",
+  "Contas a receber vencidas",
+  "Contas parcialmente pagas",
   "Saldo dos bancos",
-  "Resumo do caixa",
+  "O que você olharia nos relatórios?",
+  "Abrir o dia",
 ];
 const greeting = {
   role: "assistant",
-  text: "Olá! Sou o Charlie. Em que posso ajudar?",
+  text: "Olá! Sou o Charlie, seu assistente financeiro. Pergunte do seu jeito sobre contas a pagar, receber, vencimentos, fornecedores, clientes, bancos ou caixa.",
   at: Date.now(),
 };
 const format = (value, column) => {
-  if (column === "TOTAL_RECEBIDO")
+  if (["TOTAL_RECEBIDO", "SALDO", "VALOR_ORIGINAL", "VALOR_BAIXADO", "TOTAL"].includes(column))
     return Number(value || 0).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
+  if (["VENCIMENTO", "DATA_BAIXA"].includes(column) && value) {
+    const date = new Date(value);
+    if (!Number.isNaN(date.getTime())) return date.toLocaleDateString("pt-BR");
+  }
   return typeof value === "number"
     ? value.toLocaleString("pt-BR", { maximumFractionDigits: 2 })
     : String(value ?? "");
@@ -262,7 +266,7 @@ export default function Charlie() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={keyDown}
-            placeholder="Pergunte sobre vendas, estoque, financeiro ou caixa"
+            placeholder="Ex.: Quanto preciso pagar até sexta?"
             disabled={busy}
           />
           <button

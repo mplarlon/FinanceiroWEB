@@ -16,7 +16,11 @@ PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir=..\output\installer
+#ifdef WithOllama
+OutputBaseFilename=DashboardCliente-Setup-{#AppVersion}-Com-Ollama
+#else
 OutputBaseFilename=DashboardCliente-Setup-{#AppVersion}
+#endif
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
@@ -31,7 +35,7 @@ Name: "{commonappdata}\Dashboard\boletos_caixa\pdf"; Permissions: users-modify
 Name: "{commonappdata}\Dashboard\boletos_caixa\remessas"; Permissions: users-modify
 
 [Files]
-Source: "..\dist\DashboardService\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\build\cliente-sem-fontes\runtime\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\database_config.example.json"; DestDir: "{commonappdata}\Dashboard"; DestName: "database_config.json"; Flags: onlyifdoesntexist
 Source: "..\credito_trabalhador_config.example.json"; DestDir: "{commonappdata}\Dashboard"; DestName: "credito_trabalhador_config.json"; Flags: onlyifdoesntexist
 Source: "..\email_config.example.json"; DestDir: "{commonappdata}\Dashboard"; DestName: "email_config.json"; Flags: onlyifdoesntexist
@@ -47,16 +51,20 @@ Name: "{group}\Configuração boleto CAIXA"; Filename: "notepad.exe"; Parameters
 Name: "{group}\Logs do serviço"; Filename: "{commonappdata}\Dashboard\logs"
 
 [Run]
-Filename: "{app}\DashboardService.exe"; Parameters: "--startup auto install"; StatusMsg: "Instalando serviço..."; Flags: runhidden waituntilterminated; Check: InstallNewService
-Filename: "{app}\DashboardService.exe"; Parameters: "--startup auto update"; StatusMsg: "Atualizando serviço..."; Flags: runhidden waituntilterminated; Check: UpdateExistingService
+Filename: "{sys}\sc.exe"; Parameters: "create {#ServiceName} start= auto DisplayName= ""Dashboard Gerencial"" binPath= """"{app}\DashboardNode.exe"" ""{app}\node-app\server\dashboard.mjs"""""; StatusMsg: "Instalando serviço..."; Flags: runhidden waituntilterminated; Check: InstallNewService
+Filename: "{sys}\sc.exe"; Parameters: "config {#ServiceName} start= auto binPath= """"{app}\DashboardNode.exe"" ""{app}\node-app\server\dashboard.mjs"""""; StatusMsg: "Atualizando serviço..."; Flags: runhidden waituntilterminated; Check: UpdateExistingService
 Filename: "{sys}\sc.exe"; Parameters: "failure {#ServiceName} reset= 86400 actions= restart/5000/restart/5000/restart/30000"; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Dashboard Gerencial 805"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Dashboard Gerencial 805"" dir=in action=allow protocol=TCP localport=805"; Flags: runhidden waituntilterminated
 Filename: "{sys}\sc.exe"; Parameters: "start {#ServiceName}"; StatusMsg: "Iniciando serviço..."; Flags: runhidden waituntilterminated
+#ifdef WithOllama
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""if (-not (Test-Path (Join-Path $env:LOCALAPPDATA 'Programs\Ollama\ollama.exe'))) {{ irm https://ollama.com/install.ps1 | iex }}"""; StatusMsg: "Instalando o Ollama oficial..."; Flags: runhidden waituntilterminated
+Filename: "{localappdata}\Programs\Ollama\ollama.exe"; Parameters: "pull qwen3:8b"; StatusMsg: "Baixando o modelo qwen3:8b (aproximadamente 5,2 GB)..."; Flags: runhidden waituntilterminated; Check: OllamaInstalled
+#endif
 
 [UninstallRun]
 Filename: "{sys}\sc.exe"; Parameters: "stop {#ServiceName}"; Flags: runhidden waituntilterminated; RunOnceId: StopService
-Filename: "{app}\DashboardService.exe"; Parameters: "remove"; Flags: runhidden waituntilterminated; RunOnceId: RemoveService
+Filename: "{sys}\sc.exe"; Parameters: "delete {#ServiceName}"; Flags: runhidden waituntilterminated; RunOnceId: RemoveService
 
 [Code]
 var
@@ -86,4 +94,9 @@ end;
 function UpdateExistingService(): Boolean;
 begin
   Result := ServiceWasInstalled;
+end;
+
+function OllamaInstalled(): Boolean;
+begin
+  Result := FileExists(ExpandConstant('{localappdata}\Programs\Ollama\ollama.exe'));
 end;

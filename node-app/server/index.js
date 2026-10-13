@@ -45,6 +45,8 @@ import boletoOtherBankRoutes from "./routes/boleto-other-banks.js";
 import boletoCaixaRoutes from "./routes/boleto-caixa.js";
 import reportsExtraRoutes from "./routes/reports-extra.js";
 import purchaseReplenishmentRoutes from "./routes/purchase-replenishment.js";
+import managementReportRoutes from "./routes/management-reports.js";
+import { startManagementScheduler } from "./management-scheduler.js";
 
 const app = express();
 app.use(
@@ -240,6 +242,7 @@ app.use("/api/boletos", boletoOtherBankRoutes);
 app.use("/api/boletos/caixa", boletoCaixaRoutes);
 app.use("/api", reportsExtraRoutes);
 app.use("/api/dashboard-compras", purchaseReplenishmentRoutes);
+app.use("/api/relatorios-gerenciais", managementReportRoutes);
 
 app.get("/api/debug/rotas", (_req, res) => {
   const rotas = app.router.stack
@@ -267,5 +270,6 @@ app.get("*splat", (_req, res) =>
 app.listen(port, "0.0.0.0", () =>
   console.log(`Dashboard Node iniciado em http://localhost:${port}`),
 );
+startManagementScheduler();
 
 export default app;

@@ -3,6 +3,10 @@ import { api } from "../lib/api.js";
 import SearchableSelect from "../components/SearchableSelect.jsx";
 
 const today = () => new Date().toISOString().slice(0, 10);
+const monthStart = () => {
+  const value = new Date();
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-01`;
+};
 const money = (value) =>
   Number(value || 0).toLocaleString("pt-BR", {
     style: "currency",
@@ -25,8 +29,8 @@ const statusClass = (status) =>
 const initialFilters = () => ({
   status: "aberto",
   busca: "",
-  data_inicio: "",
-  data_fim: "",
+  data_inicio: monthStart(),
+  data_fim: today(),
   tipo_data: "vencimento",
 });
 
@@ -51,7 +55,25 @@ function NewAccountModal({ type, options, onClose, onDone }) {
   const [error, setError] = useState("");
   const set = (name, value) =>
     setForm((current) => ({ ...current, [name]: value }));
+  const setAccountLevel = (name, value) =>
+    setForm((current) => {
+      const next = { ...current, [name]: value };
+      if (name === "conta") {
+        next.subconta = "";
+        next.subsubconta = "";
+        next.subsubsubconta = "";
+      } else if (name === "subconta") {
+        next.subsubconta = "";
+        next.subsubsubconta = "";
+      } else if (name === "subsubconta") {
+        next.subsubsubconta = "";
+      }
+      return next;
+    });
   const people = type === "receber" ? options.clientes : options.fornecedores;
+  const paymentOptions = type === "receber"
+    ? (options.formas || []).map((item) => ({ ...item, value: item.CDRECEBTO, label: item.RECEBTO }))
+    : (options.formas_pagar || []).map((item) => ({ ...item, value: item.CDPAGTO, label: item.PAGTO }));
   const personOptions = (people || []).map((item) => ({
     value: type === "receber" ? item.CDCLIENTE : item.CDFORNECEDOR,
     label: type === "receber" ? item.CLIENTE : item.FORNECEDOR,
@@ -94,15 +116,17 @@ function NewAccountModal({ type, options, onClose, onDone }) {
           <label>Valor<input type="number" min="0.01" step="0.01" value={form.valor} onChange={(e) => set("valor", e.target.value)} required /></label>
         </div>
         <div className="form-grid">
-          <label>Forma prevista<select value={form.forma_pagamento} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">Não informada</option>{options.formas?.map((item) => <option key={item.CDRECEBTO} value={item.CDRECEBTO}>{item.RECEBTO}</option>)}</select></label>
+          <label>Forma prevista<select value={form.forma_pagamento} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">Não informada</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
           <label>Caixa<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder="Não informado" options={[{ value: "", label: "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
-          <label>Centro de custo<select value={form.centro_custo} onChange={(e) => set("centro_custo", e.target.value)}><option value="">Não informado</option>{options.centros_custo?.map((item) => <option key={item.CCUSTO} value={item.CCUSTO}>{item.CENTROCUSTO}</option>)}</select></label>
         </div>
         <details className="finance-advanced">
           <summary>Classificação contábil</summary>
           <div className="form-grid">
-            <label>Conta<select value={form.conta} onChange={(e) => set("conta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.contas?.map((item) => <option key={item.CDCONTA} value={item.CDCONTA}>{item.CONTA}</option>)}</select></label>
-            <label>Subconta<select value={form.subconta} onChange={(e) => set("subconta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.subcontas?.filter((item) => !form.conta || String(item.CDCONTA) === String(form.conta)).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}`} value={item.CDSUBCONTA}>{item.SUBCONTA}</option>)}</select></label>
+            <label>Centro de custo<select value={form.centro_custo} onChange={(e) => set("centro_custo", e.target.value)}><option value="">Não informado</option>{options.centros_custo?.map((item) => <option key={item.CCUSTO} value={item.CCUSTO}>{item.CENTROCUSTO}</option>)}</select></label>
+            <label>Conta de nível 1<select value={form.conta} onChange={(e) => setAccountLevel("conta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.contas?.map((item) => <option key={item.CDCONTA} value={item.CDCONTA}>{item.CONTA}</option>)}</select></label>
+            <label>Conta de nível 2<select value={form.subconta} onChange={(e) => setAccountLevel("subconta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.subcontas?.filter((item) => !form.conta || String(item.CDCONTA) === String(form.conta)).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}`} value={item.CDSUBCONTA}>{item.SUBCONTA}</option>)}</select></label>
+            <label>Conta de nível 3<select value={form.subsubconta} onChange={(e) => setAccountLevel("subsubconta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.subsubcontas?.filter((item) => (!form.conta || String(item.CDCONTA) === String(form.conta)) && (!form.subconta || String(item.CDSUBCONTA) === String(form.subconta))).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}-${item.CDSUBSUBCONTA}`} value={item.CDSUBSUBCONTA}>{item.SUBSUBCONTA}</option>)}</select></label>
+            <label>Conta de nível 4<select value={form.subsubsubconta} onChange={(e) => setAccountLevel("subsubsubconta", e.target.value)}><option value="">Não informada</option>{options.plano_contas?.subsubsubcontas?.filter((item) => (!form.conta || String(item.CDCONTA) === String(form.conta)) && (!form.subconta || String(item.CDSUBCONTA) === String(form.subconta)) && (!form.subsubconta || String(item.CDSUBSUBCONTA) === String(form.subsubconta))).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}-${item.CDSUBSUBCONTA}-${item.CDSUBSUBSUBCONTA}`} value={item.CDSUBSUBSUBCONTA}>{item.SUBSUBSUBCONTA}</option>)}</select></label>
           </div>
         </details>
         <label>Histórico<textarea rows="3" maxLength="255" value={form.historico} onChange={(e) => set("historico", e.target.value)} placeholder="Descrição do lançamento" /></label>
@@ -520,13 +544,13 @@ export default function FinanceAccounts() {
     () => rows.filter((row) => selected.has(ref(row))),
     [rows, selected],
   );
-  async function load() {
+  async function load(filterOverride = filters) {
     setLoading(true);
     setError("");
     setSelected(new Set());
     try {
       const [accounts, agreementData] = await Promise.all([
-        api.get(`/financeiro/contas-${type}`, filters),
+        api.get(`/financeiro/contas-${type}`, filterOverride),
         api.get("/financeiro/operacoes/acordos", { tipo: type }),
       ]);
       setRows(accounts.dados || []);
@@ -687,10 +711,10 @@ export default function FinanceAccounts() {
               <label>Condição de pagamento<select value={filters.condicao_pagamento || ""} onChange={(e) => setFilter("condicao_pagamento", e.target.value)}><option value="">Todas</option>{options.formas?.map((x) => <option key={x.CDRECEBTO} value={x.CDRECEBTO}>{x.RECEBTO}</option>)}</select></label>
               <label>Tipo/forma prevista<select value={filters.tipo_pagamento || ""} onChange={(e) => setFilter("tipo_pagamento", e.target.value)}><option value="">Todos</option>{options.formas?.map((x) => <option key={x.CDRECEBTO} value={x.CDRECEBTO}>{x.RECEBTO}</option>)}</select></label>
               <label>Centro de custo<select value={filters.centro_custo || ""} onChange={(e) => setFilter("centro_custo", e.target.value)}><option value="">Todos</option>{options.centros_custo?.map((x) => <option key={x.CCUSTO} value={x.CCUSTO}>{x.CENTROCUSTO}</option>)}</select></label>
-              <label>Conta<select value={filters.conta || ""} onChange={(e) => setFilter("conta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.contas?.map((x) => <option key={x.CDCONTA} value={x.CDCONTA}>{x.CONTA}</option>)}</select></label>
-              <label>Subconta<select value={filters.subconta || ""} onChange={(e) => setFilter("subconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}`} value={x.CDSUBCONTA}>{x.SUBCONTA}</option>)}</select></label>
-              <label>Subconta 3<select value={filters.subsubconta || ""} onChange={(e) => setFilter("subsubconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subsubcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}-${x.CDSUBSUBCONTA}`} value={x.CDSUBSUBCONTA}>{x.SUBSUBCONTA}</option>)}</select></label>
-              <label>Subconta 4<select value={filters.subsubsubconta || ""} onChange={(e) => setFilter("subsubsubconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subsubsubcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}-${x.CDSUBSUBCONTA}-${x.CDSUBSUBSUBCONTA}`} value={x.CDSUBSUBSUBCONTA}>{x.SUBSUBSUBCONTA}</option>)}</select></label>
+              <label>Conta de nível 1<select value={filters.conta || ""} onChange={(e) => setFilter("conta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.contas?.map((x) => <option key={x.CDCONTA} value={x.CDCONTA}>{x.CONTA}</option>)}</select></label>
+              <label>Conta de nível 2<select value={filters.subconta || ""} onChange={(e) => setFilter("subconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}`} value={x.CDSUBCONTA}>{x.SUBCONTA}</option>)}</select></label>
+              <label>Conta de nível 3<select value={filters.subsubconta || ""} onChange={(e) => setFilter("subsubconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subsubcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}-${x.CDSUBSUBCONTA}`} value={x.CDSUBSUBCONTA}>{x.SUBSUBCONTA}</option>)}</select></label>
+              <label>Conta de nível 4<select value={filters.subsubsubconta || ""} onChange={(e) => setFilter("subsubsubconta", e.target.value)}><option value="">Todas</option>{options.plano_contas?.subsubsubcontas?.filter((x) => !filters.conta || String(x.CDCONTA) === String(filters.conta)).map((x) => <option key={`${x.CDCONTA}-${x.CDSUBCONTA}-${x.CDSUBSUBCONTA}-${x.CDSUBSUBSUBCONTA}`} value={x.CDSUBSUBSUBCONTA}>{x.SUBSUBSUBCONTA}</option>)}</select></label>
               <label>Histórico<input value={filters.historico || ""} onChange={(e) => setFilter("historico", e.target.value)} /></label>
               <label>Documento<input value={filters.documento || ""} onChange={(e) => setFilter("documento", e.target.value)} /></label>
               <label>Documento 2<input value={filters.documento_2 || ""} onChange={(e) => setFilter("documento_2", e.target.value)} /></label>
@@ -906,7 +930,16 @@ export default function FinanceAccounts() {
           onDone={async (result) => {
             setCreating(false);
             setNotice(result.mensagem);
-            await load();
+            const due = String(result.vencimento || "").slice(0, 10);
+            const nextFilters = due
+              ? {
+                  ...filters,
+                  data_inicio: !filters.data_inicio || due < filters.data_inicio ? due : filters.data_inicio,
+                  data_fim: !filters.data_fim || due > filters.data_fim ? due : filters.data_fim,
+                }
+              : filters;
+            setFilters(nextFilters);
+            await load(nextFilters);
           }}
         />
       )}

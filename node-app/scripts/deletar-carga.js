@@ -17,7 +17,7 @@
 //          RELATENTREGA da carga.
 //
 // Precisa rodar na máquina onde o Firebird do Dashboard está acessível
-// (usa a mesma config de C:\ProgramData\Dashboard\database_config.json).
+// (usa a mesma config de C:\administracao\Dashboard\start.ini).
 
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";

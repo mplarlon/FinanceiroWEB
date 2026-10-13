@@ -12,6 +12,11 @@ import {
   interpretWithOllama,
 } from "../lib/charlie-ai.js";
 import { getOllamaStatus } from "../lib/ollama.js";
+import {
+  answerFinancialQuestion,
+  detectFinancialIntent,
+} from "../lib/finance-assistant.js";
+import { answerReportQuestion, detectReportIntent } from "../lib/report-assistant.js";
 
 const router = express.Router();
 const money = (value) =>
@@ -42,6 +47,10 @@ export function detectIntent(question) {
     p.includes("como pode ajudar")
   )
     return { type: "ajuda" };
+  const financialIntent = detectFinancialIntent(question);
+  if (financialIntent) return financialIntent;
+  const reportIntent = detectReportIntent(question);
+  if (reportIntent) return reportIntent;
   if (p.includes("estoque") && p.includes("negativ"))
     return { type: "estoque_negativo" };
   if (p.includes("estoque") && (p.includes("baixo") || p.includes("minimo")))
@@ -72,6 +81,27 @@ export function detectIntent(question) {
   )
     return { type: "vendas" };
   return null;
+}
+export function resolveConversationIntent(intent, conversation) {
+  if (
+    intent?.type !== "financeiro_titulos" ||
+    !intent.domain ||
+    intent.date ||
+    intent.person ||
+    !conversation?.messages?.length
+  )
+    return intent;
+  const previous = [...conversation.messages]
+    .reverse()
+    .find((message) => message.role === "assistant" && message.intent)?.intent;
+  if (previous?.type !== "financeiro_titulos" || !previous.needsClarification)
+    return intent;
+  return {
+    ...previous,
+    domain: intent.domain,
+    needsClarification: false,
+    interpretador: intent.interpretador,
+  };
 }
 async function answer(db, question, selectedIntent) {
   const intent = selectedIntent || detectIntent(question);
@@ -154,6 +184,10 @@ async function answer(db, question, selectedIntent) {
       SALDO: row.SALDO,
     }));
     response = `Saldo consolidado: ${money(data.reduce((sum, row) => sum + Number(row.SALDO || 0), 0))}.`;
+  } else if (intent.type === "financeiro_titulos") {
+    return answerFinancialQuestion(db, intent);
+  } else if (intent.type === "relatorios") {
+    return answerReportQuestion(db, intent);
   } else if (intent.type.startsWith("contas_")) {
     const table = intent.type === "contas_receber" ? "CTARECEBER" : "CTAPAGAR";
     data = await query(
@@ -274,7 +308,12 @@ router.post("/perguntar", async (req, res) => {
       .json({ ok: false, erro: 'Informe a pergunta no campo "pergunta".' });
   try {
     const started = Date.now();
-    const intent = await interpretWithOllama(question, detectIntent(question));
+    const user = req.dashboardSession?.user?.idusuario;
+    const conversation = req.body?.contexto?.conversaId
+      ? getCharlieConversation(user, req.body.contexto.conversaId)
+      : null;
+    const localIntent = resolveConversationIntent(detectIntent(question), conversation);
+    const intent = await interpretWithOllama(question, localIntent);
     const result = await withDatabase((db) => answer(db, question, intent));
     const improved = await improveAnswerWithOllama(question, result);
     if (improved) result.resposta = improved;
@@ -296,7 +335,7 @@ router.post("/perguntar", async (req, res) => {
           ]
         : [];
     const conversationId = saveCharlieTurn(
-      req.dashboardSession?.user?.idusuario,
+      user,
       req.body?.contexto?.conversaId,
       question,
       { ...result, sugestoes: suggestions, alertas: alerts },
