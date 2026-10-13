@@ -15,7 +15,8 @@ export default function Reconciliation() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [ofxFile, setOfxFile] = useState(null);
-  const [ofxForm, setOfxForm] = useState({ account: "", data_ini: "", data_fim: "" });
+  const now = new Date(), firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const [ofxForm, setOfxForm] = useState({ account: "", data_ini: firstDay.toISOString().slice(0, 10), data_fim: now.toISOString().slice(0, 10) });
   const [preview, setPreview] = useState(null);
   const [cardFile, setCardFile] = useState(null);
   const [cardPreview, setCardPreview] = useState(null);

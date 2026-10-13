@@ -6,5 +6,5 @@ export default defineConfig({
   root: import.meta.dirname,
   plugins: [react()],
   build: { outDir: path.resolve(import.meta.dirname, "..", "dist"), emptyOutDir: true },
-  server: { port: 5173, proxy: { "/api": "http://localhost:506" } }
+  server: { port: 5173, proxy: { "/api": "http://localhost:505" } }
 });

@@ -13,9 +13,14 @@ function statusNota(n) {
   return "pendente";
 }
 const STATUS_LABEL = { pendente: "Pendente", autorizada: "Autorizada", cancelada: "Cancelada" };
+const hojeIso = () => new Date().toISOString().slice(0, 10);
+const inicioMesIso = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+};
 
 function NotasFiscais() {
-  const [filtros, setFiltros] = useState({ busca: "", status: "", tipo_documento: "", data_inicio: "", data_fim: "" });
+  const [filtros, setFiltros] = useState({ busca: "", status: "", tipo_documento: "", data_inicio: inicioMesIso(), data_fim: hojeIso() });
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

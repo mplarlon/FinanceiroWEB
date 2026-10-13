@@ -8,6 +8,7 @@ import FinanceAccounts from "./pages/FinanceAccounts.jsx";
 import Charlie from "./pages/Charlie.jsx";
 import Reconciliation from "./pages/Reconciliation.jsx";
 import ManagementDashboard from "./pages/ManagementDashboard.jsx";
+import ExecutiveReports from "./pages/ExecutiveReports.jsx";
 import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
 
 const PAGES = [
@@ -22,6 +23,17 @@ const PAGES = [
   { id: "compras", label: "Compras", icon: "▣", group: "reports" },
   { id: "clientes", label: "Clientes", icon: "◎", group: "reports" },
   { id: "estoque", label: "Estoque", icon: "▦", group: "reports" },
+  { id: "painel-executivo", label: "Painel executivo", icon: "◆", group: "reports", executive: "executive" },
+  { id: "lojas", label: "Comparativo de lojas", icon: "▤", group: "reports", executive: "stores" },
+  { id: "metas", label: "Metas e realizado", icon: "◎", group: "reports", executive: "goals" },
+  { id: "margens", label: "Margem e rentabilidade", icon: "%", group: "reports", executive: "margins" },
+  { id: "estoque-gerencial", label: "Estoque gerencial", icon: "▦", group: "reports", executive: "inventory" },
+  { id: "fluxo-projetado", label: "Fluxo projetado", icon: "↗", group: "reports", executive: "cashflow" },
+  { id: "vendedores", label: "Vendedores", icon: "♙", group: "reports", executive: "sellers" },
+  { id: "retencao", label: "Clientes e retenção", icon: "◉", group: "reports", executive: "retention" },
+  { id: "fornecedores", label: "Fornecedores", icon: "▣", group: "reports", executive: "suppliers" },
+  { id: "alertas", label: "Central de alertas", icon: "!", group: "reports", executive: "alerts" },
+  { id: "resumo-diario", label: "Resumo diário", icon: "☷", group: "reports", executive: "daily" },
 ];
 
 const MAIN_PAGES = PAGES.filter((item) => !item.group);
@@ -185,6 +197,7 @@ export default function App() {
         {page === "compras" && <BusinessDashboard type="purchases" />}
         {page === "clientes" && <ManagementDashboard type="customers" />}
         {page === "fiscal" && <FiscalNfe />}
+        {current.executive && <ExecutiveReports type={current.executive} />}
       </main>
     </div>
   );

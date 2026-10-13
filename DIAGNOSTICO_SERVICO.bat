@@ -6,5 +6,5 @@ echo Tarefa automatica:
 schtasks /Query /TN "DashboardGerencialNode" /V /FO LIST
 echo.
 echo Porta 506:
-netstat -ano | findstr ":506 "
+netstat -ano | findstr ":505 "
 pause

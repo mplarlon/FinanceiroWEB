@@ -248,5 +248,5 @@ export function verifyWebhookSignature(
   );
 }
 
-export { loadConfig, publicConfig, saveConfig };
+export { loadConfig, publicConfig, saveConfig, sendText };
 export default router;

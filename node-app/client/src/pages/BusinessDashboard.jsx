@@ -51,7 +51,9 @@ function Purchases({ data }) {
 }
 
 export default function BusinessDashboard({ type }) {
-  const [days, setDays] = useState(30);
+  const [days, setDays] = useState("custom");
+  const today = new Date(), monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const [customPeriod, setCustomPeriod] = useState({ data_inicio: monthStart.toISOString().slice(0, 10), data_fim: today.toISOString().slice(0, 10) });
   const [data, setData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -60,11 +62,12 @@ export default function BusinessDashboard({ type }) {
   async function load() {
     setLoading(true); setError("");
     try {
-      if (isSales) setData(await api.get("/dashboard-vendas/all", { dias: days }));
+      const period = days === "custom" ? customPeriod : { dias: days };
+      if (isSales) setData(await api.get("/dashboard-vendas/all", period));
       else {
         const [summary, charts] = await Promise.all([
-          api.get("/dashboard-compras/summary", { dias: days }),
-          api.get("/dashboard-compras/charts", { dias: days })
+          api.get("/dashboard-compras/summary", period),
+          api.get("/dashboard-compras/charts", period)
         ]);
         setData({ ...summary, ...charts });
       }
@@ -77,10 +80,11 @@ export default function BusinessDashboard({ type }) {
   return <>
     <section className="panel dashboard-toolbar">
       <div><h2>{isSales ? "Desempenho de vendas" : "Desempenho de compras"}</h2><p>Indicadores do banco Firebird</p></div>
-      <label>Período <select value={days} onChange={e => setDays(Number(e.target.value))}>
-        <option value={7}>7 dias</option><option value={30}>30 dias</option><option value={90}>90 dias</option><option value={365}>12 meses</option>
+      <label>Período <select value={days} onChange={e => setDays(e.target.value === "custom" ? "custom" : Number(e.target.value))}>
+        <option value={7}>7 dias</option><option value={30}>30 dias</option><option value={90}>90 dias</option><option value={365}>12 meses</option><option value="custom">Personalizado</option>
       </select></label>
-      <button onClick={load} disabled={loading}>{loading ? "Atualizando..." : "Atualizar"}</button>
+      {days === "custom" && <div className="custom-period-fields"><label>Data inicial<input type="date" value={customPeriod.data_inicio} max={customPeriod.data_fim} onChange={e => setCustomPeriod(p => ({ ...p, data_inicio: e.target.value }))} /></label><label>Data final<input type="date" value={customPeriod.data_fim} min={customPeriod.data_inicio} onChange={e => setCustomPeriod(p => ({ ...p, data_fim: e.target.value }))} /></label></div>}
+      <button onClick={load} disabled={loading || (days === "custom" && (!customPeriod.data_inicio || !customPeriod.data_fim))}>{loading ? "Atualizando..." : "Atualizar"}</button>
     </section>
     {error && <div className="error">{error}</div>}
     {!error && (isSales ? <Sales data={data} /> : <Purchases data={data} />)}

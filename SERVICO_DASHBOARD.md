@@ -8,4 +8,4 @@ O Dashboard usa Node.js e inicia pela tarefa agendada `DashboardGerencialNode`.
 
 Os comandos `INICIAR_SERVICO.bat`, `PARAR_SERVICO.bat`,
 `reiniciar_servico.bat` e `REMOVER_SERVICO.bat` controlam a tarefa. O log fica
-em `%ProgramData%\Dashboard\logs\dashboard-node.log`.
+em `C:\administracao\Dashboard\logs\dashboard-node.log`.

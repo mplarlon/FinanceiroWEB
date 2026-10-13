@@ -17,8 +17,8 @@ echo.
 echo [1] Parando servico Windows (se ativo)...
 schtasks /End /TN "DashboardGerencialNode" >nul 2>&1
 
-echo [2] Encerrando processo na porta 506...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":506 " 2^>nul') do (
+echo [2] Encerrando processo na porta 505...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":505 " 2^>nul') do (
     taskkill /F /PID %%a >nul 2>&1
 )
 
@@ -44,8 +44,8 @@ timeout /t 5 /nobreak >nul
 echo.
 echo ============================================
 echo  Servidor iniciado!
-echo  Acesse: http://localhost:506
-echo  Logs: %ProgramData%\Dashboard\logs\dashboard-node.log
+echo  Acesse: http://localhost:505
+echo  Logs: C:\administracao\Dashboard\logs\dashboard-node.log
 echo  (Uma janela "BocadoMato Dashboard - Servidor" deve estar aberta)
 echo ============================================
 echo.

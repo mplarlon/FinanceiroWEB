@@ -13,6 +13,8 @@ export const INTENT_TYPES = [
   "clientes",
   "caixa",
   "vendas",
+  "financeiro_titulos",
+  "relatorios",
 ];
 const RANKING_TYPES = ["produtos", "vendedores", "clientes", "estoque_baixo"];
 const INTENT_FORMAT = {
@@ -22,6 +24,10 @@ const INTENT_FORMAT = {
   properties: {
     tipo: { type: "string", enum: [...INTENT_TYPES, "desconhecida"] },
     limite: { type: "integer", minimum: 1, maximum: 50 },
+    dominio: { type: "string", enum: ["pagar", "receber"] },
+    status: { type: "string", enum: ["aberto", "vencido", "quitado", "parcial"] },
+    pessoa: { type: "string" },
+    secao: { type: "string", enum: ["help", "executive", "stores", "goals", "margins", "inventory", "cashflow", "sellers", "retention", "suppliers", "alerts", "daily"] },
   },
 };
 
@@ -44,6 +50,16 @@ export function validateAiIntent(value) {
   const intent = { type: value.tipo, interpretador: "ollama" };
   if (RANKING_TYPES.includes(value.tipo))
     intent.limit = Math.max(1, Math.min(50, Number(value.limite) || 10));
+  if (value.tipo === "financeiro_titulos") {
+    intent.domain = ["pagar", "receber"].includes(value.dominio) ? value.dominio : null;
+    intent.status = ["aberto", "vencido", "quitado", "parcial"].includes(value.status)
+      ? value.status
+      : "aberto";
+    intent.person = String(value.pessoa || "").trim().slice(0, 80) || null;
+    intent.limit = Math.max(1, Math.min(50, Number(value.limite) || 50));
+  }
+  if (value.tipo === "relatorios")
+    intent.section = value.secao || "help";
   return intent;
 }
 
@@ -56,7 +72,7 @@ export async function interpretWithOllama(question, deterministicIntent) {
       {
         role: "system",
         content:
-          "Você é o classificador do Charlie, assistente de um ERP. Escolha somente uma intenção permitida. Nunca gere SQL, comandos, explicações ou ações. Use desconhecida quando a pergunta não for uma consulta operacional suportada. Retorne apenas o JSON do schema.",
+          "Você é o classificador do Charlie, assistente de gestão financeira de um ERP. Entenda sinônimos e linguagem cotidiana: dever, débito, compromisso e saída são pagar; cobrar, crédito e entrada são receber; em atraso e fora do prazo são vencido; liquidado e baixado são quitado. Para financeiro_titulos, classifique dominio como pagar ou receber, status e pessoa citada. Escolha somente uma intenção permitida. Nunca gere SQL, comandos, explicações ou ações. Use desconhecida quando a pergunta não for uma consulta operacional suportada. Retorne apenas o JSON do schema.",
       },
       { role: "user", content: String(question).slice(0, 500) },
     ],
@@ -90,7 +106,7 @@ export async function improveAnswerWithOllama(question, result) {
       {
         role: "system",
         content:
-          "Você é Charlie, assistente gerencial. Responda em português do Brasil, de forma clara e breve. Use somente fatos e números presentes no relatório fornecido. Não invente causas, registros ou ações e não mencione SQL. Retorne apenas o JSON solicitado.",
+          "Você é Charlie, assistente financeira empresarial. Responda em português do Brasil, de forma clara, breve e adequada a usuários leigos. Use somente fatos, datas e números presentes no relatório fornecido. Não invente causas, registros ou ações e não mencione SQL, tabelas ou campos. Retorne apenas o JSON solicitado.",
       },
       {
         role: "user",

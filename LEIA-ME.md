@@ -12,15 +12,15 @@ da instalacao, inicializacao ou execucao do sistema.
 4. Opcionalmente, execute `INSTALAR_SERVICO.bat` como Administrador para criar
    a tarefa `DashboardGerencialNode`, iniciada automaticamente com o Windows.
 
-O sistema atende em `http://localhost:506`. A configuracao do Firebird fica em
-`%ProgramData%\Dashboard\database_config.json` e tambem pode ser alterada pela
+O sistema atende em `http://localhost:505`. A configuracao do Firebird fica em
+`C:\administracao\Dashboard\start.ini` e tambem pode ser alterada pela
 tela/API de configuracao do banco.
 
 ## Operacao
 
 - `INICIAR_SERVICO.bat`, `PARAR_SERVICO.bat` e `STATUS_SERVICO.bat` controlam a tarefa Node.
 - `reiniciar_dashboard.bat` reinicia uma execucao manual.
-- Logs da inicializacao automatica: `%ProgramData%\Dashboard\logs\dashboard-node.log`.
+- Logs da inicializacao automatica: `C:\administracao\Dashboard\logs\dashboard-node.log`.
 - O modulo Credito Trabalhador foi removido da aplicacao ativa.
 
 ## Validacao tecnica

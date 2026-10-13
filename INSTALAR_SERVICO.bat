@@ -9,5 +9,5 @@ schtasks /Delete /TN "DashboardGerencialNode" /F >nul 2>&1
 schtasks /Create /TN "DashboardGerencialNode" /SC ONSTART /RU SYSTEM /RL HIGHEST /TR "\"%~dp0executar_dashboard_silencioso.bat\"" /F
 if errorlevel 1 (echo ERRO ao criar a tarefa de inicializacao. & pause & exit /b 1)
 schtasks /Run /TN "DashboardGerencialNode"
-echo Dashboard Node.js configurado para iniciar com o Windows na porta 506.
+echo Dashboard Node.js configurado para iniciar com o Windows na porta 505.
 pause
