@@ -236,7 +236,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
             ? Math.round((agreementTotal - value * (count - 1)) * 100) / 100
             : value,
         );
-        await api.post("/financeiro/operacoes/acordo", {
+        const result = await api.post("/financeiro/operacoes/acordo", {
           ...base,
           modelo_controle: selected[0].CONTROLE,
           modelo_empresa: selected[0].IDEMPRESA,
@@ -250,6 +250,8 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
           valores,
           historico: form.historico,
         });
+        onDone(result);
+        return;
       }
       onDone();
     } catch (e) {
@@ -698,7 +700,7 @@ export default function FinanceAccounts() {
               onChange={(e) => setFilter("data_fim", e.target.value)}
             />
           </label>
-          <button onClick={load}>{loading ? "Buscando..." : "Buscar"}</button>
+          <button onClick={() => load()} disabled={loading}>{loading ? "Atualizando..." : "Buscar / atualizar"}</button>
           <button className="secondary" onClick={clearFilters}>Limpar</button>
           <details className="finance-advanced">
             <summary>Filtros avançados</summary>
@@ -911,14 +913,34 @@ export default function FinanceAccounts() {
           type={type}
           options={options}
           onClose={() => setAction(null)}
-          onDone={async () => {
+          onDone={async (result = {}) => {
             setAction(null);
             setNotice(
               action === "baixar"
                 ? "Quitação gravada com sucesso."
                 : "Acordo criado com sucesso.",
             );
-            await load();
+            if (action === "acordo") {
+              const firstDue = String(result.vencimento_inicial || "").slice(0, 10);
+              const lastDue = String(result.vencimento_final || "").slice(0, 10);
+              const nextFilters = {
+                ...filters,
+                status: "aberto",
+                tipo_data: "vencimento",
+                data_inicio:
+                  firstDue && (!filters.data_inicio || firstDue < filters.data_inicio)
+                    ? firstDue
+                    : filters.data_inicio,
+                data_fim:
+                  lastDue && (!filters.data_fim || lastDue > filters.data_fim)
+                    ? lastDue
+                    : filters.data_fim,
+              };
+              setFilters(nextFilters);
+              await load(nextFilters);
+            } else {
+              await load();
+            }
           }}
         />
       )}
