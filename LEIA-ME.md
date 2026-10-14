@@ -1,5 +1,8 @@
 # Dashboard Gerencial
 
+> Documentação completa de arquitetura, reprodução, estado, aprendizados,
+> roadmap e validação: [`DOCUMENTACAO/README.md`](DOCUMENTACAO/README.md).
+
 Aplicacao de producao migrada integralmente para Node.js 20+, Express e React.
 O Flask/Python permanece apenas como fonte historica de consulta e nao participa
 da instalacao, inicializacao ou execucao do sistema.

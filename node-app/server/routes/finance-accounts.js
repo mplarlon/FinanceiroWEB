@@ -772,6 +772,8 @@ router.post("/operacoes/acordo", async (req, res) => {
           [id, ...refs[i], rows[i].ACORDO],
         );
       }
+      let firstDueDate = null;
+      let lastDueDate = null;
       for (let i = 0; i < values.length; i++) {
         const control = Number(
             (
@@ -782,6 +784,9 @@ router.post("/operacoes/acordo", async (req, res) => {
           ),
           due = new Date(`${start}T12:00:00`);
         due.setDate(due.getDate() + interval * i);
+        const dueDate = due.toISOString().slice(0, 10);
+        firstDueDate ||= dueDate;
+        lastDueDate = dueDate;
         const history =
             informedHistory ||
             `Acordo nº ${id}${boleto ? " - transformado em boleto" : ""}`,
@@ -823,12 +828,18 @@ router.post("/operacoes/acordo", async (req, res) => {
           [id, control, model[1]],
         );
       }
-      return id;
+      return {
+        id,
+        firstDueDate,
+        lastDueDate,
+      };
     });
     res.json({
       ok: true,
-      acordo: agreement,
-      mensagem: `Acordo nº ${agreement} criado com ${count} parcela(s).`,
+      acordo: agreement.id,
+      vencimento_inicial: agreement.firstDueDate,
+      vencimento_final: agreement.lastDueDate,
+      mensagem: `Acordo nº ${agreement.id} criado com ${count} parcela(s).`,
     });
   } catch (error) {
     res.status(error.status || 500).json({ ok: false, erro: error.message });

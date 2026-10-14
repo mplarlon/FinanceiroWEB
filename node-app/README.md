@@ -1,5 +1,8 @@
 # Dashboard Gerencial em Node.js e React
 
+A documentação consolidada para continuidade em outra máquina está em
+[`../DOCUMENTACAO/README.md`](../DOCUMENTACAO/README.md).
+
 Esta pasta contém a aplicação Node.js e React usada em produção. Os contratos
 `/api` permanecem compatíveis com os clientes existentes.
 
