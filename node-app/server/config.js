@@ -31,7 +31,16 @@ export function loadDatabaseConfig() {
   ensureDataDirs();
   const source = fs.existsSync(configFile) ? configFile : legacyConfigFile;
   if (!fs.existsSync(source)) return { ...defaults };
-  const loaded = JSON.parse(fs.readFileSync(source, "utf8"));
+  let loaded;
+  try {
+    loaded = JSON.parse(fs.readFileSync(source, "utf8"));
+  } catch (error) {
+    throw new Error(
+      `A configuração do banco em ${source} contém JSON inválido. ` +
+      `Em caminhos do Windows, use barras duplas (por exemplo, C:\\\\Administracao\\\\db\\\\MIAUTOMEC.FDB). ` +
+      `Detalhe: ${error.message}`,
+    );
+  }
   const config = { ...defaults, ...loaded };
   // Migrate the old portable configuration on first Node.js startup.  Keep
   // the original file untouched so rollback remains possible.
@@ -61,7 +70,7 @@ export function publicDatabaseConfig(config = loadDatabaseConfig()) {
   return {
     ...safe,
     has_password: Boolean(password),
-    password_masked: password ? `${password.slice(0, 2)}...${password.slice(-2)}` : "",
+    password_masked: password ? "********" : "",
     available_types: [{
       id: "firebird",
       label: "Firebird",

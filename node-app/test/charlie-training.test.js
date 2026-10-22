@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+const testDir = fs.mkdtempSync(path.join(os.tmpdir(), "charlie-training-"));
+process.env.DASHBOARD_DATA_DIR = testDir; process.env.CHARLIE_AI_ENABLED = "false";
+const training = await import("../server/lib/charlie-training.js");
+const manager = { id: 1, gerencial: true, sector: "Financeiro", profile: "Gestor" };
+const employee = { id: 2, gerencial: false, sector: "Financeiro", profile: "Operador" };
+test.after(() => fs.rmSync(testDir, { recursive: true, force: true }));
+test("identifica tela e componentes determinísticos", () => { const context = training.getScreenContext("financeiro", employee); assert.equal(context.module, "Financeiro"); assert.equal(context.controls[0].selector, "[data-charlie-control='page-title']"); assert.throws(() => training.getScreenContext("inexistente", employee), /não integrada/); });
+test("persiste, interrompe e retoma treinamento", () => { const started = training.startTraining("financeiro-consultar-titulos", employee); let updated = training.updateTraining(started.progress.id, { stepId: "abrir", difficulty: "Não encontrei o menu" }, employee); assert.deepEqual(updated.progress.completedSteps, ["abrir"]); updated = training.updateTraining(started.progress.id, { status: "interrompido" }, employee); assert.equal(updated.progress.status, "interrompido"); assert.equal(training.startTraining("financeiro-consultar-titulos", employee).progress.status, "em_andamento"); updated = training.updateTraining(started.progress.id, { stepId: "conferir" }, employee); assert.equal(updated.progress.status, "concluido"); });
+test("isola progresso por usuário", () => { const started = training.startTraining("administrativo-charlie", employee); assert.throws(() => training.updateTraining(started.progress.id, { stepId: "abrir" }, { ...employee, id: 99 }), /não encontrado/); });
+test("rascunho exige gestor, valida componente e publicação", () => { assert.throws(() => training.createTutorialDraft({ title: "Teste", screen: "charlie", steps: [] }, employee), /administradores/); assert.throws(() => training.createTutorialDraft({ title: "Teste", screen: "charlie", steps: [{ componentId: "inventado" }] }, manager), /Componente inválido/); const draft = training.createTutorialDraft({ title: "Usar o campo", logicalId: "charlie-campo", screen: "charlie", steps: [{ componentId: "charlie-composer" }] }, manager); assert.equal(training.listTraining(employee).some((x) => x.id === draft.id), false); training.publishTutorial(draft.id, manager); assert.equal(training.listTraining(employee).some((x) => x.id === draft.id), true); });
+test("explica mensagem real sem inventar causa", () => { assert.match(training.explainValidation({ screen: "charlie", componentId: "charlie-composer", message: "Pergunta obrigatória." }).explanation, /Pergunta obrigatória/); assert.match(training.explainValidation({ screen: "financeiro", message: "Falha X42." }).explanation, /análise adicional/); });

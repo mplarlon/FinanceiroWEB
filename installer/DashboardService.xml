@@ -1,0 +1,24 @@
+<service>
+  <id>SrvDashboard</id>
+  <name>Dashboard Gerencial</name>
+  <description>Servidor local do Dashboard Gerencial</description>
+  <executable>%BASE%\DashboardNode.exe</executable>
+  <arguments>&quot;%BASE%\node-app\server\dashboard.mjs&quot;</arguments>
+  <workingdirectory>%BASE%</workingdirectory>
+  <env name="DASHBOARD_DATA_DIR" value="%SystemDrive%\Administracao\Dashboard" />
+  <env name="DASHBOARD_PORT" value="805" />
+  <env name="CHARLIE_OLLAMA_URL" value="http://127.0.0.1:11434" />
+  <env name="CHARLIE_OLLAMA_MODEL" value="qwen3:8b" />
+  <env name="NO_PROXY" value="127.0.0.1,localhost,[::1]" />
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+  <onfailure action="restart" delay="5 sec" />
+  <onfailure action="restart" delay="15 sec" />
+  <resetfailure>1 hour</resetfailure>
+  <stoptimeout>15 sec</stoptimeout>
+  <logpath>%SystemDrive%\Administracao\Dashboard\logs</logpath>
+  <log mode="roll-by-size">
+    <sizeThreshold>10240</sizeThreshold>
+    <keepFiles>8</keepFiles>
+  </log>
+</service>

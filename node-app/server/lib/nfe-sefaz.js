@@ -4,7 +4,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { appRoot } from "../config.js";
+import { appRoot, dataDir } from "../config.js";
 import { withWriteTransaction } from "../db.js";
 import * as acbr from "./acbr-monitor.js";
 import { HttpError } from "./http-error.js";
@@ -30,7 +30,10 @@ function onlyDigits(value) {
 }
 
 function configPath() {
-  return process.env.DASHBOARD_NFE_CONFIG || path.resolve(appRoot, "..", "nfe_sefaz_config.json");
+  if (process.env.DASHBOARD_NFE_CONFIG) return process.env.DASHBOARD_NFE_CONFIG;
+  const installed = path.join(dataDir, "nfe_sefaz_config.json");
+  if (fs.existsSync(installed)) return installed;
+  return path.resolve(appRoot, "..", "nfe_sefaz_config.json");
 }
 
 export function loadConfig() {

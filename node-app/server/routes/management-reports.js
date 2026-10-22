@@ -33,6 +33,16 @@ function period(req) {
 }
 const salesWhere = (alias = "se", companyId = null) => `${alias}.DTSAIDA>=? AND ${alias}.DTSAIDA<? AND ${alias}.DTCANCELAMENTO IS NULL AND COALESCE(${alias}.STATUS,0) IN (1,3) AND (${alias}.STATUS_ORC IS NULL OR ${alias}.STATUS_ORC<>0)${companyId ? ` AND ${alias}.IDEMPRESA=?` : ""}`;
 const periodParams = (p, companyId) => companyId ? [p.start, p.end, companyId] : [p.start, p.end];
+// A conexão vai em UTF8. Cadastros antigos estão em NONE e um byte inválido
+// para UTF-8 aborta a consulta com "Malformed string". OCTETS lê o bruto e
+// NONE devolve ao driver, que decodifica em Windows-1252.
+const legacyText = (expression, size) =>
+  `CAST(CAST(${expression} AS VARCHAR(${size}) CHARACTER SET OCTETS) AS VARCHAR(${size}) CHARACTER SET NONE)`;
+const legacyName = (columns, fallback = "") => {
+  const parts = columns.map(([expression, size]) => legacyText(expression, size));
+  if (fallback) parts.push(`CAST('${fallback}' AS VARCHAR(${Math.max(fallback.length, 1)}) CHARACTER SET NONE)`);
+  return parts.length === 1 ? parts[0] : `COALESCE(${parts.join(",")})`;
+};
 const run = (factory) => async (req, res) => { try { res.json(await withDatabase(db => factory(db, req))); } catch (error) { res.status(500).json({ ok: false, erro: error.message }); } };
 
 async function storeRows(db, start, end, companyId = null) {
@@ -81,11 +91,12 @@ async function margins(db, req) {
   const measures = `SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,pr.VLCUSTOMEDIO,0)) CUSTO,SUM(COALESCE(sp.DESCONTO,0)) DESCONTO,SUM(COALESCE(sp.QTDPRODUTO,0)) QTD`;
   const where = `${salesWhere("se",companyId)} AND COALESCE(sp.STATUSSE,0)=0`;
   const make = async (select, joins, group) => (await query(db, `SELECT FIRST 100 ${select},${measures} ${from} ${joins} WHERE ${where} GROUP BY ${group} ORDER BY FATURAMENTO DESC`, params)).map(x => ({ ...x, LUCRO: num(x.FATURAMENTO) - num(x.CUSTO), MARGEM: num(x.FATURAMENTO) ? (num(x.FATURAMENTO) - num(x.CUSTO)) / num(x.FATURAMENTO) * 100 : 0 }));
-  const products = await make("sp.CDPRODUTO ID,COALESCE(pr.PRODUTO,sp.DESCRICAO) NOME", "", "sp.CDPRODUTO,pr.PRODUTO,sp.DESCRICAO");
-  const storesData = await make("se.IDEMPRESA ID,c.NOMEEMPRESA NOME", "LEFT JOIN CONFIGURACAO c ON c.IDEMPRESA=se.IDEMPRESA", "se.IDEMPRESA,c.NOMEEMPRESA");
-  const sellersData = await make("se.CDVENDEDOR ID,COALESCE(v.VENDEDOR,'Sem vendedor') NOME", "LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=se.CDVENDEDOR", "se.CDVENDEDOR,v.VENDEDOR");
-  const groups = await make("pr.CDGRUPO ID,COALESCE(g.GRUPOS,'Sem grupo') NOME", "LEFT JOIN GRUPOS g ON g.CDGRUPO=pr.CDGRUPO", "pr.CDGRUPO,g.GRUPOS");
-  const brands = await make("pr.CDFORNECEDOR ID,COALESCE(f.FORNECEDOR,f.FANTASIA,pr.MARCA,'Sem marca') NOME", "LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=pr.CDFORNECEDOR", "pr.CDFORNECEDOR,f.FORNECEDOR,f.FANTASIA,pr.MARCA");
+  const label = (columns, fallback) => `MAX(${legacyName(columns, fallback)}) NOME`;
+  const products = await make(`sp.CDPRODUTO ID,${label([["pr.PRODUTO", 70], ["sp.DESCRICAO", 150]])}`, "", "sp.CDPRODUTO");
+  const storesData = await make(`se.IDEMPRESA ID,${label([["c.NOMEEMPRESA", 60]])}`, "LEFT JOIN CONFIGURACAO c ON c.IDEMPRESA=se.IDEMPRESA", "se.IDEMPRESA");
+  const sellersData = await make(`se.CDVENDEDOR ID,${label([["v.VENDEDOR", 50]], "Sem vendedor")}`, "LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=se.CDVENDEDOR", "se.CDVENDEDOR");
+  const groups = await make(`pr.CDGRUPO ID,${label([["g.GRUPOS", 50]], "Sem grupo")}`, "LEFT JOIN GRUPOS g ON g.CDGRUPO=pr.CDGRUPO", "pr.CDGRUPO");
+  const brands = await make(`pr.CDFORNECEDOR ID,${label([["f.FORNECEDOR", 65], ["f.FANTASIA", 65], ["pr.MARCA", 60]], "Sem marca")}`, "LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=pr.CDFORNECEDOR", "pr.CDFORNECEDOR");
   return { ok: true, products, stores: storesData, sellers: sellersData, groups, brands, below_minimum: products.filter(x => x.MARGEM < settings().margin_minimum) };
 }
 

@@ -1,7 +1,14 @@
 import crypto from "node:crypto";
 import { query, withDatabase } from "./db.js";
 
-const keys = [Buffer.from([0xc4, 0x3a, 0x1b]), Buffer.from([0x4e])];
+// O ERP legado gravou senhas com mais de uma chave ao longo do tempo. A
+// primeira e a atual; as demais mantem compatibilidade com cadastros antigos
+// sem exigir que a senha seja redefinida no banco.
+const keys = [
+  Buffer.from([0xc4, 0x3a, 0x1b]),
+  Buffer.from([0x4e]),
+  Buffer.from([0xdc, 0x63, 0x33, 0x5f, 0x4b, 0x32, 0x7f, 0x85]),
+];
 const menuIds = Array.from({ length: 18 }, (_, index) => 9000 + index);
 
 function encoded(password, key) {
@@ -9,7 +16,7 @@ function encoded(password, key) {
   return Buffer.from(input.map((byte, index) => byte ^ key[index % key.length]));
 }
 
-function passwordMatches(password, stored) {
+export function passwordMatches(password, stored) {
   return keys.some(key => {
     const candidate = encoded(password, key);
     return candidate.length === stored.length && crypto.timingSafeEqual(candidate, stored);
@@ -22,14 +29,13 @@ export async function debugLogin(login, password = "") {
   return withDatabase(async db => {
     const row = (await query(db, `SELECT FIRST 1 IDUSUARIO,LOGIN,NOMECOMPLETO,SENHA,INATIVO
       FROM USUARIOS WHERE UPPER(TRIM(LOGIN))=UPPER(TRIM(?))`, [normalized]))[0];
-    const accepted_keys = keys.map(key => [...key].map(byte => byte.toString(16).toUpperCase().padStart(2,"0")).join(" "));
-    if (!row) return { ok:true, found:false, accepted_keys };
+    if (!row) return { ok:true, found:false };
     const stored = Buffer.isBuffer(row.SENHA) ? row.SENHA : Buffer.from(row.SENHA || "", "latin1");
-    let match = null;
+    let match = false;
     if (password) for (const key of keys) {
       const candidate = encoded(password, key);
       if (candidate.length === stored.length && crypto.timingSafeEqual(candidate, stored)) {
-        match = [...key].map(byte => byte.toString(16).toUpperCase().padStart(2,"0")).join(" "); break;
+        match = true; break;
       }
     }
     const placeholders = menuIds.map(() => "?").join(",");
@@ -39,8 +45,7 @@ export async function debugLogin(login, password = "") {
     return { ok:true,found:true,idusuario:Number(row.IDUSUARIO),login:String(row.LOGIN||"").trim(),
       nome:String(row.NOMECOMPLETO||"").trim(),inativo:Number(row.INATIVO||0),
       senha_cadastrada:Boolean(stored.length),senha_tamanho:stored.length,
-      senha_hex:[...stored].map(byte=>byte.toString(16).toUpperCase().padStart(2,"0")).join(" "),
-      senha_confere:Boolean(match),chave_confere:match,tem_permissao_dashboard:Boolean(permission.length),accepted_keys };
+      senha_confere:match,tem_permissao_dashboard:Boolean(permission.length) };
   });
 }
 
