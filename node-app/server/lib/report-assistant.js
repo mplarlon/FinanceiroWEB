@@ -39,6 +39,7 @@ function reportPeriod(question, now = new Date()) {
 
 export function detectReportIntent(question, now = new Date()) {
   const text = normalize(question);
+  const ruptureHorizon = /\brupturas?\b/.test(text) && /\b\d{1,3}\s+dias\b/.test(text);
   let section = null;
   if (/\b(relatorio|relatorios)\b/.test(text) && /\b(o que|quais|ajuda|olhar|olharia|consultar|perguntar|disponiveis)\b/.test(text)) section = "help";
   else if (/\b(alerta|alertas|atencao|prioridade|prioridades|preocupar|problemas?)\b/.test(text)) section = "alerts";
@@ -47,7 +48,7 @@ export function detectReportIntent(question, now = new Date()) {
   else if (/\b(fornecedor|fornecedores)\b/.test(text) && /\b(desempenho|atras\w*|dependencia|prazo|qualidade|rentabilidade|important|principais|mais compramos)\b/.test(text)) section = "suppliers";
   else if (/\b(vendedor|vendedores|equipe comercial)\b/.test(text)) section = "sellers";
   else if (/\b(margem|margens|rentabilidade|lucro por produto|baixa contribuicao)\b/.test(text)) section = "margins";
-  else if (/\b(estoque sem giro|capital parado|ruptura|rupturas|transferencia entre lojas|cobertura de estoque|estoque gerencial|reposicao|repor|preciso comprar|comprar agora)\b/.test(text)) section = "inventory";
+  else if (!ruptureHorizon && /\b(estoque sem giro|capital parado|ruptura|rupturas|transferencia entre lojas|cobertura de estoque|estoque gerencial|reposicao|repor|preciso comprar|comprar agora)\b/.test(text)) section = "inventory";
   else if (/\b(meta|metas|atingimento|realizado|projecao de fechamento)\b/.test(text)) section = "goals";
   else if (/\b(loja|lojas|filial|filiais)\b/.test(text) && /\b(compar|melhor|pior|resultado|faturamento|desempenho|vendeu|vendas|como estao)\b/.test(text)) section = "stores";
   else if (/\b(resumo diario|fotografia do dia|como foi o dia)\b/.test(text)) section = "daily";

@@ -73,7 +73,7 @@ export function parseFinancialDate(question, now = new Date()) {
     const monday = addDays(today, ((8 - today.getDay()) % 7) || 7);
     return { start: isoDate(monday), end: isoDate(addDays(monday, 6)), label: "na próxima semana" };
   }
-  if (/\b(?:este|neste|nesse)\s+mes\b/.test(text)) {
+  if (/\b(?:este|neste|nesse|deste)\s+mes\b/.test(text)) {
     const start = new Date(today.getFullYear(), today.getMonth(), 1);
     const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     return { start: isoDate(start), end: isoDate(end), label: "neste mês" };
@@ -81,6 +81,37 @@ export function parseFinancialDate(question, now = new Date()) {
   if (/\b(?:fim|final)\s+do\s+mes\b/.test(text)) {
     const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
     return { start: isoDate(today), end: isoDate(end), label: "até o fim do mês" };
+  }
+  if (/\bontem\b/.test(text)) {
+    const yesterday = addDays(today, -1);
+    return { start: isoDate(yesterday), end: isoDate(yesterday), label: "ontem" };
+  }
+  if (/\bmes passado\b/.test(text)) {
+    const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const end = new Date(today.getFullYear(), today.getMonth(), 0);
+    return { start: isoDate(start), end: isoDate(end), label: "no mês passado" };
+  }
+  if (/\bano passado\b/.test(text)) {
+    const year = today.getFullYear() - 1;
+    return { start: `${year}-01-01`, end: `${year}-12-31`, label: "no ano passado" };
+  }
+  if (/\b(?:este|neste|nesse)\s+ano\b/.test(text)) {
+    const year = today.getFullYear();
+    return { start: `${year}-01-01`, end: `${year}-12-31`, label: "neste ano" };
+  }
+  const months = {
+    janeiro: 1, fevereiro: 2, marco: 3, abril: 4, maio: 5, junho: 6,
+    julho: 7, agosto: 8, setembro: 9, outubro: 10, novembro: 11, dezembro: 12,
+  };
+  const monthName = Object.keys(months).find((name) => new RegExp(`\\b${name}\\b`).test(text));
+  if (monthName) {
+    const month = months[monthName];
+    const explicit = text.match(/\b(20\d{2})\b/);
+    let year = explicit ? Number(explicit[1]) : today.getFullYear();
+    if (!explicit && month - 1 > today.getMonth()) year -= 1;
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 0);
+    return { start: isoDate(start), end: isoDate(end), label: `em ${monthName}` };
   }
 
   const numeric = text.match(/\b(\d{1,2})[\/-](\d{1,2})(?:[\/-](\d{2,4}))?\b/);
@@ -245,7 +276,12 @@ export async function answerFinancialQuestion(db, intent) {
   if (intent.status === "quitado") where.push("t.STATUS=2");
   else {
     where.push("t.STATUS=1");
-    if (intent.status === "vencido") where.push("t.DTVENC<CURRENT_DATE");
+    if (intent.status === "vencido") {
+      where.push("t.DTVENC<CURRENT_DATE");
+      // Vales são adiantamentos internos e não devem compor as contas
+      // atrasadas apresentadas pelo Charlie.
+      if (!receive) where.push("COALESCE(t.STATUSVALE,0) NOT IN (1,2)");
+    }
     if (intent.status === "parcial") where.push(`${paidValue}>0`, `${paidValue}<${baseValue}`);
   }
   if (intent.date?.start) {

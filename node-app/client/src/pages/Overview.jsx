@@ -408,16 +408,24 @@ export default function Overview({ status, onNavigate }) {
             </div>
           </div>
           <div className="product-ranking">
-            {(sales.top_produtos || []).slice(0, 5).map((product, index) => (
-              <div key={product.CODIGO || index}>
-                <span className="rank">{index + 1}</span>
-                <span>
-                  <b>{product.PRODUTO || product.CODIGO}</b>
-                  <small>{number(product.QTD)} unidades</small>
-                </span>
-                <strong>{compactMoney(product.TOTAL)}</strong>
-              </div>
-            ))}
+            {(sales.top_produtos || []).slice(0, 5).map((product, index) => {
+              const code = String(product.CODIGO ?? "").trim();
+              const name = String(product.NOME || "").trim();
+              const title = name || product.PRODUTO || code;
+              return (
+                <div key={product.CODIGO || index}>
+                  <span className="rank">{index + 1}</span>
+                  <span>
+                    <b title={title}>{title}</b>
+                    <small>
+                      {name && code ? `${code} · ` : ""}
+                      {number(product.QTD)} unidades
+                    </small>
+                  </span>
+                  <strong>{compactMoney(product.TOTAL)}</strong>
+                </div>
+              );
+            })}
             {!sales.top_produtos?.length && (
               <div className="overview-empty">Sem produtos no período.</div>
             )}

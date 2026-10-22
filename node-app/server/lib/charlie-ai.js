@@ -1,3 +1,4 @@
+import { parseFinancialDate } from "./finance-assistant.js";
 import { ollamaChat } from "./ollama.js";
 
 export const INTENT_TYPES = [
@@ -15,8 +16,13 @@ export const INTENT_TYPES = [
   "vendas",
   "financeiro_titulos",
   "relatorios",
+  "compras_curva_abc",
+  "compras_sugestao",
+  "compras_cobertura",
+  "compras_oc_pendente",
+  "consulta_sql",
 ];
-const RANKING_TYPES = ["produtos", "vendedores", "clientes", "estoque_baixo"];
+const RANKING_TYPES = ["produtos", "vendedores", "clientes"];
 const INTENT_FORMAT = {
   type: "object",
   additionalProperties: false,
@@ -55,7 +61,8 @@ export function validateAiIntent(value) {
     intent.status = ["aberto", "vencido", "quitado", "parcial"].includes(value.status)
       ? value.status
       : "aberto";
-    intent.person = String(value.pessoa || "").trim().slice(0, 80) || null;
+    const person = String(value.pessoa || "").trim().slice(0, 80);
+    intent.person = /^(desconhecid[ao]|nenhum|null|nao informado)$/i.test(person) ? null : person || null;
     intent.limit = Math.max(1, Math.min(50, Number(value.limite) || 50));
   }
   if (value.tipo === "relatorios")
@@ -63,21 +70,76 @@ export function validateAiIntent(value) {
   return intent;
 }
 
+function coerceAiValue(value) {
+  if (!value || typeof value !== "object") return value;
+  if (value.tipo === "contas_pagar")
+    return { ...value, tipo: "financeiro_titulos", dominio: value.dominio || "pagar" };
+  if (value.tipo === "contas_receber")
+    return { ...value, tipo: "financeiro_titulos", dominio: value.dominio || "receber" };
+  return value;
+}
+
+function explicitTop(question, maximum = 50) {
+  const match = String(question || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .match(/\btop\s+(\d+)/);
+  return match ? Math.max(1, Math.min(maximum, Number(match[1]))) : null;
+}
+
+function finalizeLowStockIntent(intent, question) {
+  if (intent?.type !== "estoque_baixo") return intent;
+  const top = explicitTop(question, 5000);
+  const next = { ...intent };
+  if (top) next.limit = top;
+  else delete next.limit;
+  return next;
+}
+
+export function resolveInterpretedIntent(question, deterministicIntent, aiValue) {
+  if (deterministicIntent?.explainCalculation || deterministicIntent?.negativeTimeline)
+    return { ...deterministicIntent, interpretador: "contexto" };
+  const interpreted = validateAiIntent(coerceAiValue(aiValue));
+  if (interpreted?.type === "financeiro_titulos" && !interpreted.date)
+    interpreted.date = parseFinancialDate(question);
+  let intent = null;
+  if (!interpreted)
+    intent = deterministicIntent ? { ...deterministicIntent, interpretador: "regras_fallback" } : null;
+  else if (!deterministicIntent) intent = interpreted;
+  else if (interpreted.type === deterministicIntent.type) {
+    const merged = { ...deterministicIntent, ...interpreted, interpretador: "ollama" };
+    if (interpreted.type === "financeiro_titulos") {
+      merged.date = deterministicIntent.date || interpreted.date || null;
+      merged.person = interpreted.person || deterministicIntent.person || null;
+      merged.domain = interpreted.domain || deterministicIntent.domain || null;
+      merged.status = interpreted.status || deterministicIntent.status || "aberto";
+    }
+    intent = merged;
+  } else {
+    // Specialized financial and purchasing knowledge stays in charge when Ollama
+    // would send a known question to free-form SQL. A matching type still comes
+    // from Ollama, including contas a pagar/receber coerced to financeiro_titulos.
+    intent = { ...deterministicIntent, interpretador: "conhecimento_predefinido" };
+  }
+  return finalizeLowStockIntent(intent, question);
+}
+
 export async function interpretWithOllama(question, deterministicIntent) {
-  if (deterministicIntent)
-    return { ...deterministicIntent, interpretador: "regras" };
+  if (deterministicIntent?.explainCalculation || deterministicIntent?.negativeTimeline || deterministicIntent?.interpretador === "contexto")
+    return { ...deterministicIntent, interpretador: "contexto" };
   const content = await ollamaChat({
     format: INTENT_FORMAT,
     messages: [
       {
         role: "system",
         content:
-          "Você é o classificador do Charlie, assistente de gestão financeira de um ERP. Entenda sinônimos e linguagem cotidiana: dever, débito, compromisso e saída são pagar; cobrar, crédito e entrada são receber; em atraso e fora do prazo são vencido; liquidado e baixado são quitado. Para financeiro_titulos, classifique dominio como pagar ou receber, status e pessoa citada. Escolha somente uma intenção permitida. Nunca gere SQL, comandos, explicações ou ações. Use desconhecida quando a pergunta não for uma consulta operacional suportada. Retorne apenas o JSON do schema.",
+          "Você é o planejador do Charlie, assistente de gestão de um ERP. Classifique todas as perguntas. Quando a intenção sugerida já tiver o tipo certo, preserve esse tipo e apenas refine os campos. Perguntas de contas, títulos, vencimentos, pagamentos e recebimentos usam financeiro_titulos, com dominio pagar ou receber, status aberto, vencido, quitado ou parcial, e a pessoa citada. Compras usam compras_sugestao, compras_cobertura, compras_curva_abc ou compras_oc_pendente. Estoque baixo lista todos os produtos; não preencha limite. Limite só vale para ranking de produtos, vendedores ou clientes quando a pergunta pedir top N. Use consulta_sql para qualquer outra consulta de leitura ao banco. Nunca gere SQL nesta etapa, comandos, explicações ou ações. Use desconhecida apenas quando não for uma consulta de dados. Retorne somente JSON.",
       },
-      { role: "user", content: String(question).slice(0, 500) },
+      { role: "user", content: JSON.stringify({ pergunta: String(question).slice(0, 500), intencao_sugerida: deterministicIntent || null }) },
     ],
   });
-  return validateAiIntent(safeJson(content));
+  return resolveInterpretedIntent(question, deterministicIntent, safeJson(content));
 }
 
 const NARRATIVE_FORMAT = {

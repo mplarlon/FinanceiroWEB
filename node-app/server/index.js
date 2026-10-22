@@ -46,7 +46,13 @@ import boletoCaixaRoutes from "./routes/boleto-caixa.js";
 import reportsExtraRoutes from "./routes/reports-extra.js";
 import purchaseReplenishmentRoutes from "./routes/purchase-replenishment.js";
 import managementReportRoutes from "./routes/management-reports.js";
+import breakfastRoutes from "./routes/charlie-breakfast.js";
 import { startManagementScheduler } from "./management-scheduler.js";
+import { startCharlieMonitor } from "./charlie-monitor-scheduler.js";
+import { startCharlieAutomations } from "./charlie-automation-scheduler.js";
+import { startBreakfastScheduler } from "./charlie-breakfast-scheduler.js";
+import { ensureOllamaServer } from "./lib/ollama.js";
+import { adHocQueryEnabled, debugLoginEnabled, isPublicApiPath } from "./security-policy.js";
 
 const app = express();
 app.use(
@@ -60,20 +66,9 @@ app.use(
 app.use(cookieParser());
 app.use(sessionMiddleware);
 
-const publicPaths = new Set([
-  "/api/status",
-  "/api/branding",
-  "/api/auth/session",
-  "/api/auth/login",
-  "/api/auth/logout",
-  "/api/database/config",
-  "/api/database/test",
-  "/api/whatsapp/webhook",
-  "/api/auth/debug-login",
-]);
 app.use("/api", (req, res, next) => {
   const apiPath = new URL(req.originalUrl, "http://localhost").pathname;
-  if (publicPaths.has(apiPath)) return next();
+  if (isPublicApiPath(apiPath)) return next();
   if (!req.dashboardSession)
     return res.status(401).json({
       ok: false,
@@ -105,6 +100,10 @@ app.post("/api/auth/logout", (req, res) => {
   res.json({ ok: true, authenticated: false });
 });
 app.post("/api/auth/debug-login", async (req, res) => {
+  if (!debugLoginEnabled())
+    return res.status(404).json({ ok: false, erro: "Diagnóstico de login desativado." });
+  if (!req.dashboardSession?.user?.permissao_gerencial)
+    return res.status(403).json({ ok: false, erro: "Sem permissão para diagnóstico." });
   try {
     res.json(
       await debugLogin(req.body?.login, req.body?.senha || req.body?.password),
@@ -133,22 +132,16 @@ app.get("/api/status", async (_req, res) => {
     );
     res.json({
       ok: true,
-      banco: config.database,
       tipo_banco: "firebird",
-      nome_banco: config.name,
-      servidor: config.host,
-      porta: config.port,
-      total_tabelas: Number(rows[0]?.TOTAL || 0),
+      banco_disponivel: Number(rows[0]?.TOTAL || 0) >= 0,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    res.json({
+    res.status(503).json({
       ok: false,
-      erro: error.message,
-      banco: config.database,
-      servidor: config.host,
-      porta: config.port,
       tipo_banco: "firebird",
+      erro: "Banco de dados indisponível.",
+      timestamp: new Date().toISOString(),
     });
   }
 });
@@ -197,6 +190,10 @@ app.get("/api/schema", (_req, res) => {
   res.type("json").send(fs.readFileSync(schemaFile, "utf8"));
 });
 app.post("/api/query", async (req, res) => {
+  if (!adHocQueryEnabled())
+    return res.status(404).json({ ok: false, erro: "Consulta avulsa desativada." });
+  if (!req.dashboardSession?.user?.permissao_gerencial)
+    return res.status(403).json({ ok: false, erro: "Sem permissão para consulta avulsa." });
   const sql = String(req.body.sql || "").trim();
   if (!/^select\b/i.test(sql))
     return res
@@ -243,6 +240,7 @@ app.use("/api/boletos/caixa", boletoCaixaRoutes);
 app.use("/api", reportsExtraRoutes);
 app.use("/api/dashboard-compras", purchaseReplenishmentRoutes);
 app.use("/api/relatorios-gerenciais", managementReportRoutes);
+app.use("/api/cafe-manha", breakfastRoutes);
 
 app.get("/api/debug/rotas", (_req, res) => {
   const rotas = app.router.stack
@@ -264,12 +262,21 @@ app.get("/", (_req, res) => {
   res.sendFile(path.join(clientDist, "index.html"));
 });
 if (fs.existsSync(clientDist)) app.use(express.static(clientDist));
-app.get("*splat", (_req, res) =>
-  res.sendFile(path.join(clientDist, "index.html")),
-);
+app.get("*splat", (_req, res) => {
+  res.set({
+    "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+    Pragma: "no-cache",
+    Expires: "0",
+  });
+  res.sendFile(path.join(clientDist, "index.html"));
+});
 app.listen(port, "0.0.0.0", () =>
   console.log(`Dashboard Node iniciado em http://localhost:${port}`),
 );
 startManagementScheduler();
+startCharlieMonitor();
+startCharlieAutomations();
+startBreakfastScheduler();
+ensureOllamaServer().catch((error) => console.error(`[ollama] ${error.message}`));
 
 export default app;

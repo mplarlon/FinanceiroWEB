@@ -97,7 +97,7 @@ async function col(tx, coluna) {
   return (await testarColuna(tx, coluna)) ? coluna : "NULL";
 }
 
-async function titulosSql(tx, excluidos, clienteBusca) {
+async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
   excluidos = (excluidos || []).map(Number).filter(x => Number.isFinite(x));
   const params = [];
   let filtroCliente = "";
@@ -107,6 +107,11 @@ async function titulosSql(tx, excluidos, clienteBusca) {
       " OR cli.CLIENTE CONTAINING ?" +
       " OR cli.RAZAO CONTAINING ?)";
     params.push(clienteBusca, clienteBusca, clienteBusca);
+  }
+  let filtroEmpresa = "";
+  if (idempresa) {
+    filtroEmpresa = " AND cr.IDEMPRESA = ?";
+    params.push(idempresa);
   }
   let filtro = "";
   if (excluidos.length) {
@@ -129,7 +134,7 @@ async function titulosSql(tx, excluidos, clienteBusca) {
     : `   AND ABS(${valorTitulo}) > ABS(${valorPago}) + 0.009`;
   const filtroNf = (await testarColuna(tx, "ACORDO_NF")) ? "   AND COALESCE(cr.ACORDO_NF, 0) = 0" : "";
   const sql =
-    "SELECT cr.CONTROLE, cr.IDEMPRESA, cr.CDCLIENTE," +
+    "SELECT cr.CONTROLE, cr.IDEMPRESA, TRIM(cfg.NOMEEMPRESA) AS EMPRESA, cr.CDCLIENTE," +
     " cli.CLIENTE AS CLIENTE," +
     " cr.NRPEDIDO," +
     " CAST(cr.DTMOV AS DATE) AS DTMOV," +
@@ -153,6 +158,7 @@ async function titulosSql(tx, excluidos, clienteBusca) {
     "      THEN 1 ELSE 0 END AS IS_DESCONTO" +
     " FROM CTARECEBER cr" +
     " LEFT JOIN CLIENTE cli ON cli.CDCLIENTE = cr.CDCLIENTE" +
+    " LEFT JOIN CONFIGURACAO cfg ON cfg.IDEMPRESA = cr.IDEMPRESA" +
     " JOIN RECEBTO rec ON rec.CDRECEBTO = cr.CODPAGTO" +
     " WHERE cr.STATUS = 1" +
     "   AND cr.NRPEDIDO IS NOT NULL" +
@@ -160,19 +166,27 @@ async function titulosSql(tx, excluidos, clienteBusca) {
     "   AND cr.DTMOV >= ?" +
     "   AND cr.DTMOV < DATEADD(1 DAY TO CAST(? AS DATE))" +
     "   AND (UPPER(rec.RECEBTO) LIKE '%CARTEIRA%' OR UPPER(rec.RECEBTO) LIKE '%DEV%CART%' OR UPPER(rec.RECEBTO) LIKE '%DEV/CART%')" +
-    filtroNf + filtroCliente + filtro +
+    filtroNf + filtroCliente + filtroEmpresa + filtro +
     " ORDER BY CLIENTE, cr.CDCLIENTE, cr.NRPEDIDO, cr.CONTROLE";
   return { sql, params };
 }
 
-export async function carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca) {
+function empresaInformada(req) {
+  const raw = req.method === "POST" ? (req.body?.idempresa ?? req.query?.idempresa) : req.query?.idempresa;
+  if (raw === undefined || raw === null || String(raw).trim() === "") return null;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) throw new HttpError("Empresa invalida.", 400);
+  return Math.trunc(n);
+}
+
+export async function carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca, idempresa = null) {
   const inicio = toTimestamp(dataIni);
   const fim = toTimestamp(dataFim);
   if (!inicio || !fim) throw new HttpError("Data invalida.", 400);
   let rows = null;
   for (let tentativa = 0; tentativa < COLS_OPCIONAIS.length + 2; tentativa++) {
     try {
-      const { sql, params } = await titulosSql(tx, excluidos, clienteBusca);
+      const { sql, params } = await titulosSql(tx, excluidos, clienteBusca, idempresa);
       rows = await tx.query(sql, [inicio, fim, ...params]);
       break;
     } catch (error) {
@@ -190,7 +204,7 @@ export async function carregarPreview(tx, dataIni, dataFim, excluidos, clienteBu
     let grupo = grupos.get(key);
     if (!grupo) {
       grupo = {
-        IDEMPRESA: row.IDEMPRESA, CDCLIENTE: row.CDCLIENTE, CLIENTE: row.CLIENTE || "-",
+        IDEMPRESA: row.IDEMPRESA, EMPRESA: String(row.EMPRESA || "").trim(), CDCLIENTE: row.CDCLIENTE, CLIENTE: row.CLIENTE || "-",
         TOTAL: 0, DESCONTO: 0, QTDE_TITULOS: 0, PEDIDOS: [], TITULOS: [],
       };
       grupos.set(key, grupo);
@@ -227,10 +241,23 @@ router.get("/fechamento-carteira/preview", async (req, res) => {
     const { dataIni, dataFim } = periodo(req);
     const excluidos = [].concat(req.query.excluir_cliente || []);
     const clienteBusca = String(req.query.cliente || "").trim();
-    const { clientes, totais } = await withWriteTransaction(tx => carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca));
-    res.json({ ok: true, periodo: { data_inicio: dataIni, data_fim: dataFim }, clientes, totais });
+    const idempresa = empresaInformada(req);
+    const { clientes, totais } = await withWriteTransaction(tx => carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca, idempresa));
+    res.json({ ok: true, periodo: { data_inicio: dataIni, data_fim: dataFim }, idempresa, clientes, totais });
   } catch (error) {
     sendError(res, error, error instanceof HttpError ? error.status : 400);
+  }
+});
+
+router.get("/fechamento-carteira/empresas", async (_req, res) => {
+  try {
+    const empresas = await withDatabase(db => query(
+      db,
+      "SELECT IDEMPRESA, TRIM(NOMEEMPRESA) AS NOMEEMPRESA FROM CONFIGURACAO ORDER BY IDEMPRESA"
+    ));
+    res.json({ ok: true, empresas });
+  } catch (error) {
+    sendError(res, error, 500);
   }
 });
 
@@ -249,6 +276,7 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
     const { dataIni, dataFim } = periodo(req);
     const excluidos = body.excluir_clientes || [];
     const clienteBusca = strOrNone(body.cliente);
+    const idempresa = empresaInformada(req);
     const idusuario = intOrNone(body.idusuario) || 1;
     const cdrecebto = intOrNone(body.cdrecebto);
     const meioPagto = strOrNone(body.meio_pagto) || "01";
@@ -256,7 +284,7 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
     const bandeira = strOrNone(body.bandeira);
 
     const result = await withWriteTransaction(async tx => {
-      const { clientes } = await carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca);
+      const { clientes } = await carregarPreview(tx, dataIni, dataFim, excluidos, clienteBusca, idempresa);
       if (!clientes.length) throw new HttpError("Nenhum cliente encontrado para gerar nota fiscal.", 400);
 
       const nfCols = await tableColumns(tx, "NOTAFISCAL");

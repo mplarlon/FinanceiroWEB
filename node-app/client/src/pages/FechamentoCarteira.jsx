@@ -14,6 +14,8 @@ function StatusBadge({ status, motivo }) {
 export default function FechamentoCarteira() {
   const [dataInicio, setDataInicio] = useState(inicioMes());
   const [dataFim, setDataFim] = useState(hoje());
+  const [empresas, setEmpresas] = useState([]);
+  const [idempresa, setIdempresa] = useState("");
   const [clienteBusca, setClienteBusca] = useState("");
   const [excluidos, setExcluidos] = useState([]);
   const [preview, setPreview] = useState(null);
@@ -33,12 +35,19 @@ export default function FechamentoCarteira() {
     try {
       const data = await api.get("/financeiro/fechamento-carteira/preview", {
         data_inicio: dataInicio, data_fim: dataFim, cliente: clienteBusca,
+        idempresa: idempresa || undefined,
         excluir_cliente: excluidos.map(c => c.cdcliente)
       });
       setPreview(data);
     } catch (e) { setError(e.message); setPreview(null); }
     finally { setLoading(false); }
   }
+
+  useEffect(() => {
+    api.get("/financeiro/fechamento-carteira/empresas")
+      .then(data => setEmpresas(data.empresas || []))
+      .catch(() => setEmpresas([]));
+  }, []);
 
   useEffect(() => { buscarPreview(); }, [excluidos]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -64,6 +73,7 @@ export default function FechamentoCarteira() {
     try {
       const result = await api.post("/financeiro/fechamento-carteira/gerar", {
         data_inicio: dataInicio, data_fim: dataFim, cliente: clienteBusca,
+        idempresa: idempresa || null,
         excluir_clientes: excluidos.map(c => c.cdcliente),
         idusuario: 1, cdrecebto: gerarForm.cdrecebto || null,
         meio_pagto: gerarForm.meioPagto, dtvenc: gerarForm.dtvenc || null,
@@ -118,6 +128,14 @@ export default function FechamentoCarteira() {
       <section className="panel">
         <h2>Fechamento de carteira</h2>
         <div className="filtros">
+          <label>Empresa
+            <select className="filtro-empresa" value={idempresa} onChange={e => setIdempresa(e.target.value)}>
+              <option value="">Todas</option>
+              {empresas.map(empresa => (
+                <option key={empresa.IDEMPRESA} value={empresa.IDEMPRESA}>{empresa.NOMEEMPRESA}</option>
+              ))}
+            </select>
+          </label>
           <label>De <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} /></label>
           <label>Até <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} /></label>
           <label>Cliente <input type="text" placeholder="Nome ou código" value={clienteBusca} onChange={e => setClienteBusca(e.target.value)} /></label>
@@ -134,10 +152,11 @@ export default function FechamentoCarteira() {
         {preview && (
           <>
             <table className="tabela">
-              <thead><tr><th>Cliente</th><th>Pedidos</th><th>Títulos</th><th className="money-cell">Desconto</th><th className="money-cell">Total</th><th></th></tr></thead>
+              <thead><tr><th>Empresa</th><th>Cliente</th><th>Pedidos</th><th>Títulos</th><th className="money-cell">Desconto</th><th className="money-cell">Total</th><th></th></tr></thead>
               <tbody>
                 {preview.clientes.map(c => (
-                  <tr key={c.CDCLIENTE}>
+                  <tr key={`${c.IDEMPRESA}-${c.CDCLIENTE}`}>
+                    <td>{c.EMPRESA || c.IDEMPRESA}</td>
                     <td>{c.CLIENTE}</td>
                     <td>{c.PEDIDOS.length}</td>
                     <td>{c.QTDE_TITULOS}</td>
@@ -146,7 +165,7 @@ export default function FechamentoCarteira() {
                     <td><button className="link-btn" onClick={() => excluirCliente(c)}>Excluir</button></td>
                   </tr>
                 ))}
-                {!preview.clientes.length && <tr><td colSpan={6}>Nenhum título encontrado no período.</td></tr>}
+                {!preview.clientes.length && <tr><td colSpan={7}>Nenhum título encontrado no período.</td></tr>}
               </tbody>
             </table>
             <div className="totais-linha">

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api.js";
 import SearchableSelect from "../components/SearchableSelect.jsx";
+import { buildInstallments } from "../../../server/lib/account-parcels.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const monthStart = () => {
@@ -20,18 +21,35 @@ const displayDate = (value) => {
 const ref = (row) => `${row.CONTROLE}/${row.IDEMPRESA}`;
 const refs = (rows) =>
   rows.map((row) => ({ controle: row.CONTROLE, idempresa: row.IDEMPRESA }));
+const historyType = (tipo) =>
+  ({
+    1: "Inclusão",
+    2: "Alteração",
+    3: "Exclusão",
+    4: "Consulta",
+    5: "Impressão",
+    6: "Quitação",
+    7: "Cancelar quitação",
+  }[Number(tipo)] || `Tipo ${tipo}`);
+const displayDateTime = (value) => {
+  const raw = String(value || "").replace("T", " ");
+  if (!raw) return "—";
+  const [date, time] = raw.split(" ");
+  return `${displayDate(date)} ${String(time || "").slice(0, 5)}`.trim();
+};
 const statusClass = (status) =>
   String(status || "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replaceAll(" ", "-");
-const initialFilters = () => ({
+const initialFilters = (type = "receber") => ({
   status: "aberto",
   busca: "",
   data_inicio: monthStart(),
   data_fim: today(),
   tipo_data: "vencimento",
+  ...(type === "pagar" ? { vale: "sem_vales" } : {}),
 });
 
 function NewAccountModal({ type, options, onClose, onDone }) {
@@ -39,9 +57,12 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     idempresa: "",
     pessoa_id: "",
     documento: "",
-    parcela: 1,
     vencimento: today(),
     valor: "",
+    quantidade: 1,
+    intervalo: 30,
+    iguais: true,
+    dia_fixo: false,
     forma_pagamento: "",
     caixa: "",
     centro_custo: "",
@@ -51,10 +72,54 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     subsubsubconta: "",
     historico: "",
   });
+  const [parcelas, setParcelas] = useState([]);
+  const [scheduleError, setScheduleError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  const parcelTotal = parcelas.reduce((sum, row) => sum + Number(row.valor || 0), 0);
+  const remaining = Math.round((Number(form.valor || 0) - parcelTotal) * 100) / 100;
+  useEffect(() => {
+    const count = Math.max(1, Number(form.quantidade) || 1);
+    try {
+      const next = buildInstallments({
+        total: form.valor,
+        count,
+        firstDue: form.vencimento,
+        interval: form.dia_fixo ? 30 : Number(form.intervalo || 0),
+        fixedDay: Boolean(form.dia_fixo),
+      });
+      setScheduleError("");
+      setParcelas((current) => {
+        if (form.iguais || current.length !== next.length) return next;
+        return next.map((row, index) => ({ ...row, valor: current[index].valor }));
+      });
+    } catch (cause) {
+      setParcelas([]);
+      setScheduleError(cause.message);
+    }
+  }, [
+    form.valor,
+    form.quantidade,
+    form.vencimento,
+    form.intervalo,
+    form.iguais,
+    form.dia_fixo,
+  ]);
   const set = (name, value) =>
     setForm((current) => ({ ...current, [name]: value }));
+  async function generateDocument() {
+    setGenerating(true);
+    setError("");
+    try {
+      const result = await api.get("/financeiro/operacoes/proximo-documento", { tipo: type });
+      set("documento", result.documento || "");
+    } catch (cause) {
+      setError(cause.message);
+    } finally {
+      setGenerating(false);
+    }
+  }
   const setAccountLevel = (name, value) =>
     setForm((current) => {
       const next = { ...current, [name]: value };
@@ -83,9 +148,21 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     setBusy(true);
     setError("");
     try {
+      if (!parcelas.length) {
+        setError(scheduleError || "Informe as parcelas.");
+        setBusy(false);
+        return;
+      }
+      if (Math.abs(remaining) > 0.009) {
+        setError(`Resta incluir ${money(remaining)}.`);
+        setBusy(false);
+        return;
+      }
       const result = await api.post("/financeiro/operacoes/criar", {
         ...form,
         tipo: type,
+        intervalo: form.dia_fixo ? 30 : form.intervalo,
+        parcelas,
       });
       await onDone(result);
     } catch (e) {
@@ -110,11 +187,40 @@ function NewAccountModal({ type, options, onClose, onDone }) {
           <label>{type === "receber" ? "Cliente" : "Fornecedor"}<SearchableSelect value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} placeholder="Digite para buscar" required options={personOptions} /></label>
         </div>
         <div className="form-grid">
-          <label>Documento<input value={form.documento} maxLength="20" onChange={(e) => set("documento", e.target.value)} required /></label>
-          <label>Parcela<input type="number" min="1" max="999" value={form.parcela} onChange={(e) => set("parcela", e.target.value)} required /></label>
-          <label>Vencimento<input type="date" value={form.vencimento} onChange={(e) => set("vencimento", e.target.value)} required /></label>
-          <label>Valor<input type="number" min="0.01" step="0.01" value={form.valor} onChange={(e) => set("valor", e.target.value)} required /></label>
+          <label>Documento<span className="document-field"><input value={form.documento} maxLength={type === "receber" ? 15 : 20} onChange={(e) => set("documento", e.target.value)} required /><button type="button" className="secondary" disabled={generating} onClick={generateDocument}>{generating ? "Gerando..." : "Gerar número"}</button></span></label>
+          <label>Valor total<input type="number" min="0.01" step="0.01" value={form.valor} onChange={(e) => set("valor", e.target.value)} required /></label>
+          <label>Primeiro vencimento<input type="date" value={form.vencimento} onChange={(e) => set("vencimento", e.target.value)} required /></label>
+          <label>Parcelas<input type="number" min="1" max="120" value={form.quantidade} onChange={(e) => set("quantidade", e.target.value)} required /></label>
         </div>
+        <div className="form-grid">
+          <label>Intervalo (dias)<input type="number" min="0" max="999" value={form.dia_fixo ? 30 : form.intervalo} disabled={Number(form.quantidade) < 2 || form.dia_fixo} onChange={(e) => set("intervalo", e.target.value)} /></label>
+          <div className="parcel-options">
+            <label><input type="checkbox" checked={form.iguais} onChange={(e) => set("iguais", e.target.checked)} />Parcelas iguais</label>
+            <label><input type="checkbox" checked={form.dia_fixo} disabled={Number(form.quantidade) < 2} onChange={(e) => set("dia_fixo", e.target.checked)} />Manter o dia do vencimento</label>
+          </div>
+        </div>
+        <p className="muted">Parcelas iguais dividem o total e a última fica com os centavos. Sem essa opção, informe o valor de cada uma. O intervalo soma dias entre os vencimentos. Manter o dia usa 30 dias e repete o mesmo dia do mês.</p>
+        {parcelas.length > 0 && (
+          <div className="table-scroll">
+            <table className="tabela parcel-table">
+              <thead><tr><th>Parcela</th><th>Vencimento</th><th>Valor</th></tr></thead>
+              <tbody>
+                {parcelas.map((row, index) => (
+                  <tr key={row.parcela}>
+                    <td>{row.parcela}</td>
+                    <td>{form.iguais ? displayDate(row.vencimento) : <input type="date" value={row.vencimento} onChange={(e) => setParcelas((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, vencimento: e.target.value } : item))} required />}</td>
+                    <td>{form.iguais ? money(row.valor) : <input type="number" min="0.01" step="0.01" value={row.valor} onChange={(e) => setParcelas((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, valor: e.target.value } : item))} required />}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <div className="finance-calc">
+          <span>{parcelas.length} parcela(s)</span>
+          <strong>Resta: {money(remaining)}</strong>
+        </div>
+        {scheduleError && <div className="error">{scheduleError}</div>}
         <div className="form-grid">
           <label>Forma prevista<select value={form.forma_pagamento} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">Não informada</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
           <label>Caixa<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder="Não informado" options={[{ value: "", label: "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
@@ -133,7 +239,171 @@ function NewAccountModal({ type, options, onClose, onDone }) {
         {error && <div className="error">{error}</div>}
         <div className="modal-actions">
           <button type="button" className="secondary" onClick={onClose}>Cancelar</button>
-          <button type="submit" disabled={busy}>{busy ? "Salvando..." : `Criar conta a ${type}`}</button>
+          <button type="submit" disabled={busy}>{busy ? "Salvando..." : `Criar ${Math.max(parcelas.length, 1)} parcela(s)`}</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function AccountHistory({ rows }) {
+  return (
+    <div className="detail-order">
+      <h3>Histórico de alteração</h3>
+      <div className="table-scroll">
+        <table className="tabela">
+          <thead><tr><th>Data</th><th>Tipo</th><th>Usuário</th><th>Campos</th></tr></thead>
+          <tbody>
+            {(rows || []).map((row, index) => (
+              <tr key={`${row.DATA_HORA}-${index}`}>
+                <td>{displayDateTime(row.DATA_HORA)}</td>
+                <td>{historyType(row.TIPO)}</td>
+                <td>{row.USUARIO || "—"}</td>
+                <td>{row.MENSAGEM || "—"}</td>
+              </tr>
+            ))}
+            {!rows?.length && <tr><td colSpan="4">Nenhuma alteração gravada para esta conta.</td></tr>}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function EditAccountModal({ type, account, options, onClose, onDone }) {
+  const [form, setForm] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [busy, setBusy] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState("");
+  const set = (name, value) => setForm((current) => ({ ...current, [name]: value }));
+  const setAccountLevel = (name, value) =>
+    setForm((current) => {
+      const next = { ...current, [name]: value };
+      if (name === "conta") {
+        next.subconta = "";
+        next.subsubconta = "";
+        next.subsubsubconta = "";
+      } else if (name === "subconta") {
+        next.subsubconta = "";
+        next.subsubsubconta = "";
+      } else if (name === "subsubconta") next.subsubsubconta = "";
+      return next;
+    });
+  useEffect(() => {
+    api.get("/financeiro/operacoes/detalhe", {
+      tipo: type,
+      controle: account.CONTROLE,
+      empresa: account.IDEMPRESA,
+    }).then((result) => {
+      const title = result.titulo || {};
+      if (Number(title.STATUS) !== 1) setError("Somente conta em aberto pode ser alterada.");
+      setHistory(result.historico || []);
+      setForm({
+        pessoa_id: title.PESSOA_ID || "",
+        pessoa: title.PESSOA || "",
+        documento: title.NRDOC || "",
+        nota: title.NOTAFISCAL || "",
+        parcela: title.PARCELA || 1,
+        vencimento: String(title.DTVENC || "").slice(0, 10),
+        valor: title.VALOR ?? "",
+        historico: title.HISTORICO || "",
+        forma_pagamento: title.CODPAGTO || "",
+        caixa: title.CAIXA || "",
+        centro_custo: title.CCUSTO || "",
+        conta: title.CDCONTA || "",
+        subconta: title.CDSUBCONTA || "",
+        subsubconta: title.CDSUBSUBCONTA || "",
+        subsubsubconta: title.CDSUBSUBSUBCONTA || "",
+        aberto: Number(title.STATUS) === 1,
+      });
+    }).catch((cause) => setError(cause.message));
+  }, [type, account.CONTROLE, account.IDEMPRESA]);
+  const people = type === "receber" ? options.clientes : options.fornecedores;
+  const paymentOptions = type === "receber"
+    ? (options.formas || []).map((item) => ({ value: item.CDRECEBTO, label: item.RECEBTO }))
+    : (options.formas_pagar || []).map((item) => ({ value: item.CDPAGTO, label: item.PAGTO }));
+  const personOptions = (people || []).map((item) => ({
+    value: type === "receber" ? item.CDCLIENTE : item.CDFORNECEDOR,
+    label: type === "receber" ? item.CLIENTE : item.FORNECEDOR,
+  }));
+  async function generateDocument() {
+    setGenerating(true);
+    setError("");
+    try {
+      const result = await api.get("/financeiro/operacoes/proximo-documento", { tipo: type });
+      set("documento", result.documento || "");
+    } catch (cause) {
+      setError(cause.message);
+    } finally {
+      setGenerating(false);
+    }
+  }
+  async function submit(event) {
+    event.preventDefault();
+    if (!form?.aberto) return;
+    setBusy(true);
+    setError("");
+    try {
+      const result = await api.post("/financeiro/operacoes/alterar", {
+        ...form,
+        tipo: type,
+        controle: account.CONTROLE,
+        idempresa: account.IDEMPRESA,
+      });
+      await onDone(result);
+    } catch (cause) {
+      setError(cause.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <form className="modal finance-new-modal" onClick={(event) => event.stopPropagation()} onSubmit={submit}>
+        <div className="modal-title-row">
+          <div>
+            <small>ALTERAR LANÇAMENTO</small>
+            <h2>Conta a {type} {account.CONTROLE}</h2>
+          </div>
+          <button type="button" className="secondary" onClick={onClose}>Fechar</button>
+        </div>
+        <p>Somente conta em aberto pode ser alterada. Os campos modificados ficam no histórico do Automec.</p>
+        {!form && !error && <p>Carregando...</p>}
+        {form && (
+          <>
+            <div className="form-grid">
+              {type === "receber" ? (
+                <label>Cliente<input value={form.pessoa} disabled /></label>
+              ) : (
+                <label>Fornecedor<SearchableSelect value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} placeholder="Digite para buscar" required options={personOptions} /></label>
+              )}
+              <label>Documento<span className="document-field"><input value={form.documento} maxLength={type === "receber" ? 15 : 20} onChange={(event) => set("documento", event.target.value)} required /><button type="button" disabled={generating || !form.aberto} onClick={generateDocument}>{generating ? "Gerando..." : "Gerar número"}</button></span></label>
+              {type === "pagar" && <label>Nota fiscal<input value={form.nota} maxLength="20" onChange={(event) => set("nota", event.target.value)} /></label>}
+              <label>Parcela<input type="number" min="1" max="999" value={form.parcela} onChange={(event) => set("parcela", event.target.value)} required /></label>
+              <label>Vencimento<input type="date" value={form.vencimento} onChange={(event) => set("vencimento", event.target.value)} required /></label>
+              <label>Valor<input type="number" min="0.01" step="0.01" value={form.valor} onChange={(event) => set("valor", event.target.value)} required /></label>
+              <label>Forma prevista<select value={form.forma_pagamento} onChange={(event) => set("forma_pagamento", event.target.value)}><option value="">Não informada</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
+              <label>Caixa<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder="Não informado" options={[{ value: "", label: "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
+            </div>
+            <details className="finance-advanced">
+              <summary>Classificação contábil</summary>
+              <div className="form-grid">
+                <label>Centro de custo<select value={form.centro_custo} onChange={(event) => set("centro_custo", event.target.value)}><option value="">Não informado</option>{options.centros_custo?.map((item) => <option key={item.CCUSTO} value={item.CCUSTO}>{item.CENTROCUSTO}</option>)}</select></label>
+                <label>Conta de nível 1<select value={form.conta} onChange={(event) => setAccountLevel("conta", event.target.value)}><option value="">Não informada</option>{options.plano_contas?.contas?.map((item) => <option key={item.CDCONTA} value={item.CDCONTA}>{item.CONTA}</option>)}</select></label>
+                <label>Conta de nível 2<select value={form.subconta} onChange={(event) => setAccountLevel("subconta", event.target.value)}><option value="">Não informada</option>{options.plano_contas?.subcontas?.filter((item) => !form.conta || String(item.CDCONTA) === String(form.conta)).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}`} value={item.CDSUBCONTA}>{item.SUBCONTA}</option>)}</select></label>
+                <label>Conta de nível 3<select value={form.subsubconta} onChange={(event) => setAccountLevel("subsubconta", event.target.value)}><option value="">Não informada</option>{options.plano_contas?.subsubcontas?.filter((item) => (!form.conta || String(item.CDCONTA) === String(form.conta)) && (!form.subconta || String(item.CDSUBCONTA) === String(form.subconta))).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}-${item.CDSUBSUBCONTA}`} value={item.CDSUBSUBCONTA}>{item.SUBSUBCONTA}</option>)}</select></label>
+                <label>Conta de nível 4<select value={form.subsubsubconta} onChange={(event) => set("subsubsubconta", event.target.value)}><option value="">Não informada</option>{options.plano_contas?.subsubsubcontas?.filter((item) => (!form.conta || String(item.CDCONTA) === String(form.conta)) && (!form.subconta || String(item.CDSUBCONTA) === String(form.subconta)) && (!form.subsubconta || String(item.CDSUBSUBCONTA) === String(form.subsubconta))).map((item) => <option key={`${item.CDCONTA}-${item.CDSUBCONTA}-${item.CDSUBSUBCONTA}-${item.CDSUBSUBSUBCONTA}`} value={item.CDSUBSUBSUBCONTA}>{item.SUBSUBSUBCONTA}</option>)}</select></label>
+              </div>
+            </details>
+            <label>Histórico<textarea rows="3" maxLength="255" value={form.historico} onChange={(event) => set("historico", event.target.value)} /></label>
+            <AccountHistory rows={history} />
+          </>
+        )}
+        {error && <div className="error">{error}</div>}
+        <div className="modal-actions">
+          <button type="button" className="secondary" onClick={onClose}>Cancelar</button>
+          <button type="submit" disabled={busy || !form?.aberto}>{busy ? "Salvando..." : "Gravar alteração"}</button>
         </div>
       </form>
     </div>
@@ -167,7 +437,11 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
       String(item.CDBANCO) === String(form.banco) &&
       (!form.conta || item.NUMCONTA === form.conta),
   );
-  const payment = options.formas?.find(
+  const paymentForms = (options.formas || []).filter(
+    (item) =>
+      Number(type === "receber" ? item.SAIR_RECEBTO : item.SAIR_PAGTO) === -1,
+  );
+  const payment = paymentForms.find(
     (item) => String(item.CDRECEBTO) === String(form.forma_pagamento),
   );
   const titleRetention = selected.reduce(
@@ -214,8 +488,17 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
   }
   async function submit(event) {
     event.preventDefault();
-    setBusy(true);
     setError("");
+    if (action === "baixar") {
+      const formStatus = Number(
+        type === "receber" ? payment?.STATUS : payment?.STATUS_PAGTO,
+      );
+      if (formStatus === 3) {
+        setError("Forma de pagamento é uma devolução.");
+        return;
+      }
+    }
+    setBusy(true);
     try {
       const base = { tipo: type, contas: refs(selected) };
       if (action === "baixar")
@@ -249,6 +532,8 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
           acrescimo: Number(form.acrescimo),
           valores,
           historico: form.historico,
+          forma_pagamento: form.forma_pagamento,
+          caixa: form.caixa,
         });
         onDone(result);
         return;
@@ -272,6 +557,11 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
           {selected.length} título(s) · saldo original{" "}
           <strong>{money(original)}</strong>
         </p>
+        <p className="muted">
+          {action === "baixar"
+            ? "Obrigatórios: data e forma de pagamento. Caixa e conta bancária são opcionais."
+            : "Obrigatórios: primeiro vencimento, forma de pagamento e caixa."}
+        </p>
         <label>
           {action === "baixar" ? "Data da quitação" : "Primeiro vencimento"}
           <input
@@ -291,7 +581,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
                 required
               >
                 <option value="">Selecione</option>
-                {options.formas?.map((item) => (
+                {paymentForms.map((item) => (
                   <option key={item.CDRECEBTO} value={item.CDRECEBTO}>
                     {item.RECEBTO}
                   </option>
@@ -303,9 +593,8 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
               <select
                 value={form.caixa}
                 onChange={(e) => set("caixa", e.target.value)}
-                required
               >
-                <option value="">Selecione</option>
+                <option value="">Não informado</option>
                 {options.caixas?.map((item) => (
                   <option key={item.CDCAIXA} value={item.CDCAIXA}>
                     {item.CAIXA}
@@ -357,6 +646,36 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
           </>
         ) : (
           <>
+            <label>
+              Forma de pagamento
+              <select
+                value={form.forma_pagamento}
+                onChange={(e) => set("forma_pagamento", e.target.value)}
+                required
+              >
+                <option value="">Selecione</option>
+                {paymentForms.map((item) => (
+                  <option key={item.CDRECEBTO} value={item.CDRECEBTO}>
+                    {item.RECEBTO}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Caixa
+              <select
+                value={form.caixa}
+                onChange={(e) => set("caixa", e.target.value)}
+                required
+              >
+                <option value="">Selecione</option>
+                {options.caixas?.map((item) => (
+                  <option key={item.CDCAIXA} value={item.CDCAIXA}>
+                    {item.CAIXA}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div className="form-grid">
               <label>
                 Parcelas
@@ -366,6 +685,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
                   max="120"
                   value={form.quantidade}
                   onChange={(e) => set("quantidade", e.target.value)}
+                  required
                 />
               </label>
               <label>
@@ -452,6 +772,32 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
 
 function AccountDetailModal({ detail, loading, onClose }) {
   const title = detail?.titulo;
+  const [products, setProducts] = useState(null);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState("");
+  useEffect(() => {
+    setProducts(null);
+    setProductsError("");
+    setProductsLoading(false);
+  }, [detail?.tipo, title?.CONTROLE, title?.IDEMPRESA]);
+  async function showProducts() {
+    if (!title || productsLoading) return;
+    setProductsLoading(true);
+    setProductsError("");
+    try {
+      const result = await api.get("/financeiro/operacoes/detalhe", {
+        tipo: detail.tipo,
+        controle: title.CONTROLE,
+        empresa: title.IDEMPRESA,
+        produtos: 1,
+      });
+      setProducts(result.itens || []);
+    } catch (cause) {
+      setProductsError(cause.message);
+    } finally {
+      setProductsLoading(false);
+    }
+  }
   return (
     <div className="modal-overlay" onClick={onClose}>
       <section className="modal modal-wide account-detail" onClick={(event) => event.stopPropagation()}>
@@ -483,19 +829,27 @@ function AccountDetailModal({ detail, loading, onClose }) {
               <div className="detail-order">
                 <h3>Pedido {detail.pedido.NRPEDIDO}</h3>
                 <p>{detail.pedido.CLIENTE || title.PESSOA} · {displayDate(detail.pedido.DTSAIDA)}</p>
-                <div className="table-scroll">
-                  <table className="tabela">
-                    <thead><tr><th>Produto</th><th>Descrição</th><th>Qtd.</th><th className="money-cell">Unitário</th><th className="money-cell">Total</th></tr></thead>
-                    <tbody>
-                      {(detail.itens || []).map((item) => (
-                        <tr key={`${item.POSIC}-${item.CDPRODUTO}`}>
-                          <td>{item.CDPRODUTO}</td><td>{item.DESCRICAO}</td><td>{Number(item.QTDPRODUTO || 0).toLocaleString("pt-BR")} {item.UNID || ""}</td>
-                          <td className="money-cell">{money(item.VLUNIT)}</td><td className="money-cell">{money(item.TOTAL)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                {products === null ? (
+                  <button type="button" className="secondary" disabled={productsLoading} onClick={showProducts}>
+                    {productsLoading ? "Carregando produtos..." : "Mostrar produtos"}
+                  </button>
+                ) : (
+                  <div className="table-scroll">
+                    <table className="tabela">
+                      <thead><tr><th>Produto</th><th>Descrição</th><th>Qtd.</th><th className="money-cell">Unitário</th><th className="money-cell">Total</th></tr></thead>
+                      <tbody>
+                        {products.map((item) => (
+                          <tr key={`${item.POSIC}-${item.CDPRODUTO}`}>
+                            <td>{item.CDPRODUTO}</td><td>{item.DESCRICAO}</td><td>{Number(item.QTDPRODUTO || 0).toLocaleString("pt-BR")} {item.UNID || ""}</td>
+                            <td className="money-cell">{money(item.VLUNIT)}</td><td className="money-cell">{money(item.TOTAL)}</td>
+                          </tr>
+                        ))}
+                        {!products.length && <tr><td colSpan="5">Nenhum produto encontrado para este pedido.</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {productsError && <div className="error">{productsError}</div>}
                 <div className="detail-total"><span>Total do pedido</span><strong>{money(detail.pedido.VLTOTAL)}</strong></div>
               </div>
             )}
@@ -520,6 +874,7 @@ function AccountDetailModal({ detail, loading, onClose }) {
                 <div className="detail-total"><span>Total da nota</span><strong>{money(detail.entrada.VLTOTAL)}</strong></div>
               </div>
             )}
+            <AccountHistory rows={detail.historico} />
           </>
         )}
       </section>
@@ -541,18 +896,23 @@ export default function FinanceAccounts() {
     [notice, setNotice] = useState(""),
     [detail, setDetail] = useState(null),
     [detailLoading, setDetailLoading] = useState(false),
-    [creating, setCreating] = useState(false);
+    [creating, setCreating] = useState(false),
+    [editing, setEditing] = useState(null);
   const chosen = useMemo(
     () => rows.filter((row) => selected.has(ref(row))),
     [rows, selected],
   );
   async function load(filterOverride = filters) {
+    const applied =
+      type === "pagar" && !filterOverride.vale
+        ? { ...filterOverride, vale: "sem_vales" }
+        : filterOverride;
     setLoading(true);
     setError("");
     setSelected(new Set());
     try {
       const [accounts, agreementData] = await Promise.all([
-        api.get(`/financeiro/contas-${type}`, filterOverride),
+        api.get(`/financeiro/contas-${type}`, applied),
         api.get("/financeiro/operacoes/acordos", { tipo: type }),
       ]);
       setRows(accounts.dados || []);
@@ -565,7 +925,12 @@ export default function FinanceAccounts() {
     }
   }
   useEffect(() => {
-    load();
+    const next =
+      type === "pagar" && !filters.vale
+        ? { ...filters, vale: "sem_vales" }
+        : filters;
+    if (next !== filters) setFilters(next);
+    load(next);
   }, [type]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     api.get("/financeiro/operacoes/opcoes").then(setOptions).catch((e) => setError(e.message));
@@ -574,7 +939,7 @@ export default function FinanceAccounts() {
     setFilters((current) => ({ ...current, [name]: value }));
   }
   function clearFilters() {
-    setFilters(initialFilters());
+    setFilters(initialFilters(type));
   }
   function toggle(row) {
     const id = ref(row);
@@ -620,6 +985,7 @@ export default function FinanceAccounts() {
   const allOpen =
       chosen.length && chosen.every((row) => Number(row.STATUS) === 1),
     allPaid = chosen.length && chosen.every((row) => Number(row.STATUS) === 2),
+    oneOpen = chosen.length === 1 && Number(chosen[0].STATUS) === 1,
     samePerson = new Set(chosen.map((row) => row.PESSOA_ID)).size === 1,
     hasAgreement = chosen.length && chosen.every((row) => row.ACORDO);
   return (
@@ -744,7 +1110,7 @@ export default function FinanceAccounts() {
                 <label>Valor pago<input type="number" step="0.01" value={filters.valor_pago || ""} onChange={(e) => setFilter("valor_pago", e.target.value)} /></label>
                 <label>Com boleto<select value={filters.com_boleto || ""} onChange={(e) => setFilter("com_boleto", e.target.value)}><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
                 <label>DANFE<select value={filters.danfe || ""} onChange={(e) => setFilter("danfe", e.target.value)}><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
-                <label>Vales<select value={filters.vale || ""} onChange={(e) => setFilter("vale", e.target.value)}><option value="">Todos</option><option value="somente_vales">Somente vales</option><option value="vales_gerados">Vales gerados</option><option value="vales_funcionarios">Vales de funcionários</option><option value="sem_vales">Sem vales</option></select></label>
+                <label>Vales<select value={filters.vale || "sem_vales"} onChange={(e) => setFilter("vale", e.target.value)}><option value="sem_vales">Sem vales</option><option value="vale_emitido">Vale emitido</option><option value="vale_confirmado">Vale confirmado</option><option value="somente_vales">Somente vales</option><option value="vales_gerados">Vales gerados</option><option value="vales_funcionarios">Vales de funcionários</option><option value="todos">Todos</option></select></label>
                 <label>Emissão de<input type="date" value={filters.emissao_inicio || ""} onChange={(e) => setFilter("emissao_inicio", e.target.value)} /></label>
                 <label>Emissão até<input type="date" value={filters.emissao_fim || ""} onChange={(e) => setFilter("emissao_fim", e.target.value)} /></label>
                 <label className="check-filter"><input type="checkbox" checked={Boolean(filters.ocultar_provisao)} onChange={(e) => setFilter("ocultar_provisao", e.target.checked)} /> Ocultar provisão de ordem de compra</label>
@@ -780,6 +1146,9 @@ export default function FinanceAccounts() {
             )}
           </span>
           <div>
+            <button disabled={!oneOpen} onClick={() => setEditing(chosen[0])}>
+              Alterar
+            </button>
             <button
               disabled={!allOpen || !samePerson}
               onClick={() => setAction("baixar")}
@@ -944,6 +1313,19 @@ export default function FinanceAccounts() {
           }}
         />
       )}
+      {editing && (
+        <EditAccountModal
+          type={type}
+          account={editing}
+          options={options}
+          onClose={() => setEditing(null)}
+          onDone={async (result) => {
+            setEditing(null);
+            setNotice(result.mensagem);
+            await load();
+          }}
+        />
+      )}
       {creating && (
         <NewAccountModal
           type={type}
@@ -953,11 +1335,12 @@ export default function FinanceAccounts() {
             setCreating(false);
             setNotice(result.mensagem);
             const due = String(result.vencimento || "").slice(0, 10);
+            const lastDue = String(result.vencimento_final || result.vencimento || "").slice(0, 10);
             const nextFilters = due
               ? {
                   ...filters,
                   data_inicio: !filters.data_inicio || due < filters.data_inicio ? due : filters.data_inicio,
-                  data_fim: !filters.data_fim || due > filters.data_fim ? due : filters.data_fim,
+                  data_fim: !filters.data_fim || lastDue > filters.data_fim ? lastDue : filters.data_fim,
                 }
               : filters;
             setFilters(nextFilters);

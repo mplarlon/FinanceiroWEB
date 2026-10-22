@@ -215,8 +215,24 @@ async function getHeatmap(db, req) {
     ORDER BY DIA_SEMANA,HORA`, f.params);
 }
 
-// Série enxuta para a página inicial. Evita trazer descrições legadas com
-// bytes inválidos, que podem fazer o driver Firebird abortar todo o painel.
+// Cadastros antigos estão em NONE. Um byte inválido para o charset da conexão
+// aborta a consulta com "Malformed string" e derruba o painel inteiro.
+const legacyText = (expression, size) =>
+  `CAST(CAST(${expression} AS VARCHAR(${size}) CHARACTER SET OCTETS) AS VARCHAR(${size}) CHARACTER SET NONE)`;
+
+async function overviewProductNames(db, products) {
+  const codes = [...new Set(products
+    .map((item) => item.CODIGO)
+    .filter((code) => code !== null && code !== undefined && String(code).trim() !== ""))];
+  if (!codes.length) return new Map();
+  const rows = await query(db, `SELECT p.CDPRODUTO AS CODIGO,
+    NULLIF(TRIM(${legacyText("p.PRODUTO", 70)}), '') AS NOME
+    FROM PRODUTO p WHERE p.CDPRODUTO IN (${codes.map(() => "?").join(",")})`, codes);
+  return new Map(rows.map((row) => [String(row.CODIGO).trim(), String(row.NOME || "").trim()]));
+}
+
+// Quantidades e valores saem sem texto. O nome é lido depois, só dos códigos
+// do ranking, para um cadastro corrompido não derrubar o painel.
 async function getOverviewCharts(db, req) {
   const f = filters(req);
   const financial = receivablesFilters(req, f.start, f.end);
@@ -231,13 +247,24 @@ async function getOverviewCharts(db, req) {
     SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
     ${salesFrom} WHERE ${f.where}
     GROUP BY sp.CDPRODUTO ORDER BY TOTAL DESC`, f.params);
+  let names = new Map();
+  try {
+    names = await overviewProductNames(db, products);
+  } catch {
+    names = new Map();
+  }
   return {
     ok: true,
     diario,
-    top_produtos: products.map(item => ({
-      ...item,
-      PRODUTO: `Produto ${String(item.CODIGO || "").trim()}`,
-    })),
+    top_produtos: products.map(item => {
+      const code = String(item.CODIGO ?? "").trim();
+      const name = names.get(code) || "";
+      return {
+        ...item,
+        NOME: name,
+        PRODUTO: name || `Produto ${code}`,
+      };
+    }),
   };
 }
 

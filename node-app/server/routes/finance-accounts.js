@@ -1,5 +1,9 @@
+import fs from "node:fs";
+import path from "node:path";
 import express from "express";
+import { dataDir } from "../config.js";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
+import { buildInstallments } from "../lib/account-parcels.js";
 
 const router = express.Router();
 const asInt = (value) =>
@@ -37,6 +41,73 @@ export const agreementStatusSql = (type) =>
   type === "receber"
     ? "UPDATE CTARECEBER SET STATUS=6,ACORDO=?,DTCOB=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1"
     : "UPDATE CTAPAGAR SET STATUS=6,ACORDO=?,DTPAGTO=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1";
+
+export function settlementInput(body = {}) {
+  const date = String(body.data_pagamento || "").slice(0, 10);
+  const paymentDate = firebirdDate(date);
+  const payment = asInt(body.forma_pagamento);
+  if (!paymentDate)
+    throw Object.assign(new Error("Informe a data da quitacao."), { status: 400 });
+  if (!payment)
+    throw Object.assign(
+      new Error("E necessario informar a forma de pagamento."),
+      { status: 400 },
+    );
+  if (date > new Date().toISOString().slice(0, 10))
+    throw Object.assign(
+      new Error("A data da baixa nao pode ser posterior ao dia atual."),
+      { status: 400 },
+    );
+  return {
+    date,
+    paymentDate,
+    payment,
+    cash: asInt(body.caixa),
+    bank: asInt(body.banco),
+    account: text(body.conta),
+    agency: text(body.agencia),
+    discount: Math.round(Number(body.desconto || 0) * 100) / 100,
+    gross: Math.round(Number(body.valor_pagamento || 0) * 100) / 100,
+    net: Math.round(Number(body.valor_liquido || 0) * 100) / 100,
+    history: text(body.historico).slice(0, 255),
+  };
+}
+
+export function agreementInput(body = {}) {
+  const start = String(body.data_inicial || "").slice(0, 10);
+  const startDate = firebirdDate(start);
+  const payment = asInt(body.forma_pagamento);
+  const cash = asInt(body.caixa);
+  if (!startDate)
+    throw Object.assign(new Error("Informe o primeiro vencimento."), { status: 400 });
+  if (!payment)
+    throw Object.assign(
+      new Error("Forma de pagamento/recebimento deve ser preenchida."),
+      { status: 400 },
+    );
+  if (!cash)
+    throw Object.assign(new Error("Caixa deve ser preenchido."), { status: 400 });
+  return { start, startDate, payment, cash };
+}
+
+export function paymentFormAllowed(form, type, operation) {
+  if (!form)
+    throw Object.assign(new Error("Forma de pagamento nao encontrada."), { status: 400 });
+  const exitFlag = Number(type === "receber" ? form.SAIR_RECEBTO : form.SAIR_PAGTO);
+  if (exitFlag !== -1)
+    throw Object.assign(
+      new Error(
+        type === "receber"
+          ? "Esta forma de pagamento nao esta liberada para contas a receber."
+          : "Esta forma de pagamento nao esta liberada para contas a pagar.",
+      ),
+      { status: 400 },
+    );
+  const status = Number(type === "receber" ? form.STATUS : form.STATUS_PAGTO);
+  if (operation === "quitar" && status === 3)
+    throw Object.assign(new Error("Forma de pagamento e uma devolucao."), { status: 400 });
+  return form;
+}
 function financeInput(body = {}) {
   const type = String(body.tipo || "").toLowerCase();
   if (!["receber", "pagar"].includes(type))
@@ -56,6 +127,42 @@ function financeInput(body = {}) {
       status: 400,
     });
   return { type, refs, table: type === "receber" ? "CTARECEBER" : "CTAPAGAR" };
+}
+
+export function readMachineCode() {
+  const fromEnv = text(process.env.DASHBOARD_MAQUINA).replace(/\s/g, "");
+  if (fromEnv) return fromEnv;
+  const files = [
+    path.join(dataDir, "Start.ini"),
+    "C:\\Administracao\\Start.ini",
+    "D:\\Pontual\\Automec\\Start.ini",
+  ];
+  for (const file of files) {
+    if (!fs.existsSync(file)) continue;
+    const match = fs.readFileSync(file, "utf8").match(/^\s*Maquina\s*=\s*(.*)$/im);
+    if (match?.[1].trim()) return match[1].trim().replace(/\s/g, "");
+  }
+  return "";
+}
+
+export function automaticDocumentNumber({
+  type,
+  count = 0,
+  machine = "",
+  date = new Date(),
+}) {
+  const when = date instanceof Date ? date : firebirdDate(date);
+  if (!when) throw new Error("Data invalida para o documento.");
+  const stamp = [
+    String(when.getDate()).padStart(2, "0"),
+    String(when.getMonth() + 1).padStart(2, "0"),
+    String(when.getFullYear()),
+  ].join("");
+  const sequence = String(Math.max(0, Number(count) || 0) + 1);
+  const limit = type === "receber" ? 15 : 20;
+  const prefix = String(machine || "").replace(/\s/g, "");
+  const room = Math.max(sequence.length, limit - stamp.length);
+  return `${prefix.slice(0, Math.max(0, room - sequence.length))}${sequence}${stamp}`.slice(0, limit);
 }
 
 export function newAccountInput(body = {}) {
@@ -78,15 +185,55 @@ export function newAccountInput(body = {}) {
     throw Object.assign(new Error("Informe um valor maior que zero."), { status: 400 });
   if (!installment || installment > 999)
     throw Object.assign(new Error("Informe uma parcela valida."), { status: 400 });
-  const document = text(body.documento).slice(0, 20);
+  const document = text(body.documento).slice(0, type === "receber" ? 15 : 20);
   if (!document) throw Object.assign(new Error("Informe o documento."), { status: 400 });
+  const roundedAmount = Math.round(amount * 100) / 100;
+  const dueIso = text(body.vencimento).slice(0, 10);
+  const posted = Array.isArray(body.parcelas) ? body.parcelas : [];
+  const quantity = asInt(body.quantidade) || posted.length || 1;
+  const equal = !["false", "0", false, 0].includes(body.iguais);
+  const spacing = asInt(body.intervalo) ?? 0;
+  const fixedDay = [true, "true", 1, "1"].includes(body.dia_fixo);
+  let parcels;
+  try {
+    if (posted.length > 1 || quantity > 1) {
+      parcels = buildInstallments({
+        total: roundedAmount,
+        count: equal ? quantity : posted.length || quantity,
+        firstDue: dueIso,
+        interval: fixedDay ? 30 : spacing,
+        fixedDay,
+        custom: equal ? null : posted,
+      });
+    } else if (posted.length === 1) {
+      parcels = buildInstallments({
+        total: roundedAmount,
+        count: 1,
+        firstDue: posted[0].vencimento || dueIso,
+        custom: posted,
+      });
+      parcels[0].parcela = installment;
+    } else {
+      parcels = [
+        {
+          parcela: installment,
+          vencimento: dueIso,
+          valor: roundedAmount,
+          intervalo: 0,
+        },
+      ];
+    }
+  } catch (error) {
+    throw Object.assign(new Error(error.message), { status: 400 });
+  }
   return {
     type,
     company,
     person,
     dueDate,
-    amount: Math.round(amount * 100) / 100,
-    installment,
+    amount: roundedAmount,
+    installment: parcels[0].parcela,
+    parcels,
     document,
     history: text(body.historico).slice(0, 255),
     payment: asInt(body.forma_pagamento),
@@ -97,6 +244,89 @@ export function newAccountInput(body = {}) {
     thirdAccount: asInt(body.subsubconta),
     fourthAccount: asInt(body.subsubsubconta),
   };
+}
+
+function editDateKey(value) {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+  }
+  const key = text(value).slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : "";
+}
+
+function editValuesEqual(column, current, next) {
+  if (column === "DTVENC") return editDateKey(current) === next;
+  if (column === "VALOR")
+    return Math.round(Number(current || 0) * 100) === Math.round(Number(next || 0) * 100);
+  if (["PARCELA", "CODPAGTO", "TPPAGTO", "CAIXA", "CDCAIXA", "CCUSTO", "CDFORNECEDOR"].includes(column))
+    return (asInt(current) ?? null) === (asInt(next) ?? null);
+  return text(current) === text(next);
+}
+
+export function accountEditPlan(type, current = {}, body = {}) {
+  if (!["receber", "pagar"].includes(type))
+    throw Object.assign(new Error("Selecione contas a receber ou contas a pagar."), { status: 400 });
+  if (Number(current.STATUS) !== 1)
+    throw Object.assign(new Error("Somente conta em aberto pode ser alterada."), { status: 409 });
+  const receive = type === "receber";
+  const accountCode = (value, limit) => {
+    const code = text(value).slice(0, limit);
+    return code || null;
+  };
+  const next = {
+    NRDOC: text(body.documento).slice(0, receive ? 15 : 20),
+    PARCELA: asInt(body.parcela),
+    DTVENC: text(body.vencimento).slice(0, 10),
+    VALOR: Math.round(Number(body.valor) * 100) / 100,
+    HISTORICO: text(body.historico).slice(0, 255),
+    CODPAGTO: asInt(body.forma_pagamento),
+    [receive ? "CAIXA" : "CDCAIXA"]: asInt(body.caixa),
+    CCUSTO: asInt(body.centro_custo),
+    CDCONTA: accountCode(body.conta, 3),
+    CDSUBCONTA: accountCode(body.subconta, receive ? 3 : 5),
+    CDSUBSUBCONTA: accountCode(body.subsubconta, receive ? 3 : 5),
+    CDSUBSUBSUBCONTA: accountCode(body.subsubsubconta, receive ? 3 : 7),
+  };
+  if (!receive) {
+    next.NOTAFISCAL = text(body.nota).slice(0, 20);
+    next.CDFORNECEDOR = asInt(body.pessoa_id);
+  }
+  if (!next.NRDOC) throw Object.assign(new Error("Informe o documento."), { status: 400 });
+  if (!next.PARCELA || next.PARCELA > 999)
+    throw Object.assign(new Error("Informe uma parcela valida."), { status: 400 });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(next.DTVENC))
+    throw Object.assign(new Error("Informe um vencimento valido."), { status: 400 });
+  if (!Number.isFinite(next.VALOR) || next.VALOR <= 0)
+    throw Object.assign(new Error("Informe um valor maior que zero."), { status: 400 });
+  if (!receive && !next.CDFORNECEDOR)
+    throw Object.assign(new Error("Selecione o fornecedor."), { status: 400 });
+  const values = {};
+  const changes = [];
+  for (const [column, value] of Object.entries(next)) {
+    if (editValuesEqual(column, current[column], value)) continue;
+    changes.push(column);
+    values[column] = column === "DTVENC" ? firebirdDate(value) : value;
+  }
+  if (changes.includes("CODPAGTO") && !editValuesEqual("TPPAGTO", current.TPPAGTO, next.CODPAGTO)) {
+    changes.push("TPPAGTO");
+    values.TPPAGTO = next.CODPAGTO;
+  }
+  return {
+    changes,
+    values,
+    message: changes.length ? `${changes.join(";")};`.slice(0, 80) : "",
+  };
+}
+
+async function historyMenuItem(tx, type) {
+  const names = type === "receber"
+    ? ["TCadCtaReceberCGASPARList", "TCadCtaReceberList"]
+    : ["TCadContasPagarList"];
+  const row = await tx.singleton(
+    `SELECT FIRST 1 IDMENUITEM FROM SIS_MAINMENU WHERE CLASSNAME IN (${names.map(() => "?").join(",")})`,
+    names,
+  );
+  return Number(row?.IDMENUITEM || 0);
 }
 
 async function nextAccountControl(tx, table) {
@@ -236,12 +466,15 @@ export function buildAccountFilters(type, input = {}) {
   addInt("tipo_pagamento", "t.CODPAGTO");
   if (!receive) {
     const vale = text(input.vale).toLowerCase();
-    if (vale === "somente_vales") where.push("t.STATUSVALE IS NOT NULL");
+    if (vale === "somente_vales") where.push("t.STATUSVALE IN (1,2)");
+    else if (vale === "vale_emitido") where.push("t.STATUSVALE=1");
+    else if (vale === "vale_confirmado") where.push("t.STATUSVALE=2");
     else if (vale === "vales_gerados")
-      where.push("t.STATUSVALE IS NOT NULL AND t.EHFUNCIONARIO=0");
+      where.push("t.STATUSVALE IN (1,2) AND t.EHFUNCIONARIO=0");
     else if (vale === "vales_funcionarios")
-      where.push("t.STATUSVALE IS NOT NULL AND t.EHFUNCIONARIO=-1");
-    else if (vale === "sem_vales") where.push("t.STATUSVALE IS NULL");
+      where.push("t.STATUSVALE IN (1,2) AND t.EHFUNCIONARIO=-1");
+    else if (vale !== "todos")
+      where.push("COALESCE(t.STATUSVALE,0) NOT IN (1,2)");
   }
   if (text(input.categoria)) {
     where.push("t.CDCONTA=?");
@@ -454,6 +687,12 @@ const endpoint = (type) => async (req, res) => {
 };
 router.get("/contas-receber", endpoint("receber"));
 router.get("/contas-pagar", endpoint("pagar"));
+
+export function includeAccountProducts(tipo, query = {}) {
+  if (String(tipo || "").toLowerCase() !== "receber") return true;
+  return ["1", "true", "sim"].includes(String(query.produtos ?? "").trim().toLowerCase());
+}
+
 router.get("/operacoes/detalhe", async (req, res) => {
   try {
     const tipo = text(req.query.tipo).toLowerCase(),
@@ -467,14 +706,14 @@ router.get("/operacoes/detalhe", async (req, res) => {
         ? (
             await query(
               db,
-              `SELECT FIRST 1 t.CONTROLE,t.IDEMPRESA,t.NRPEDIDO,t.NRDOC,t.NRDOC2,t.PARCELA,t.CDCLIENTE AS PESSOA_ID,COALESCE(c.CLIENTE,c.RAZAO) AS PESSOA,t.DTVENC,t.DTMOV,t.DTCOB AS DATA_BAIXA,t.VALOR,t.DIVIDA,t.TOTALPG,t.VLPGLIQ,t.JUROS,t.DESCONTO,t.RETENCAO,t.STATUS,t.ORIGEM,t.HISTORICO,t.CAIXA,t.CDBANCO,t.AGENCIA,t.NUMCONTA,COALESCE(r.RECEBTO,'Não informada') AS FORMA_PAGAMENTO FROM CTARECEBER t LEFT JOIN CLIENTE c ON c.CDCLIENTE=t.CDCLIENTE LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
+              `SELECT FIRST 1 t.CONTROLE,t.IDEMPRESA,t.NRPEDIDO,t.NRDOC,t.NRDOC2,t.PARCELA,t.CDCLIENTE AS PESSOA_ID,COALESCE(c.CLIENTE,c.RAZAO) AS PESSOA,t.DTVENC,t.DTMOV,t.DTCOB AS DATA_BAIXA,t.VALOR,t.DIVIDA,t.TOTALPG,t.VLPGLIQ,t.JUROS,t.DESCONTO,t.RETENCAO,t.STATUS,t.ORIGEM,t.HISTORICO,t.CAIXA,t.CODPAGTO,t.TPPAGTO,t.CCUSTO,t.CDCONTA,t.CDSUBCONTA,t.CDSUBSUBCONTA,t.CDSUBSUBSUBCONTA,t.CDBANCO,t.AGENCIA,t.NUMCONTA,COALESCE(r.RECEBTO,'Não informada') AS FORMA_PAGAMENTO FROM CTARECEBER t LEFT JOIN CLIENTE c ON c.CDCLIENTE=t.CDCLIENTE LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
               [controle, empresa],
             )
           )[0]
         : (
             await query(
               db,
-              `SELECT FIRST 1 t.CONTROLE,t.IDEMPRESA,t.NOTAFISCAL,t.NRDOC,t.NRDOC2,t.CHAVE,t.PARCELA,t.CDFORNECEDOR AS PESSOA_ID,f.FORNECEDOR AS PESSOA,t.DTVENC,t.DTINCLUSAO AS DTMOV,t.DTPAGTO AS DATA_BAIXA,t.VALOR,t.TOTAL,t.VLPAGTO,t.JUROS,t.DESCONTO,t.RETENCAO,t.STATUS,t.ORIGEM,t.HISTORICO,t.CDCAIXA AS CAIXA,t.CDBANCO,t.AGENCIA,t.NUMCONTA,COALESCE(p.PAGTO,'Não informada') AS FORMA_PAGAMENTO FROM CTAPAGAR t LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=t.CDFORNECEDOR LEFT JOIN PAGTO p ON p.CDPAGTO=COALESCE(t.TPPAGTO,t.CODPAGTO) WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
+              `SELECT FIRST 1 t.CONTROLE,t.IDEMPRESA,t.NOTAFISCAL,t.NRDOC,t.NRDOC2,t.CHAVE,t.PARCELA,t.CDFORNECEDOR AS PESSOA_ID,f.FORNECEDOR AS PESSOA,t.DTVENC,t.DTINCLUSAO AS DTMOV,t.DTPAGTO AS DATA_BAIXA,t.VALOR,t.TOTAL,t.VLPAGTO,t.JUROS,t.DESCONTO,t.RETENCAO,t.STATUS,t.ORIGEM,t.HISTORICO,t.CDCAIXA AS CAIXA,t.CODPAGTO,t.TPPAGTO,t.CCUSTO,t.CDCONTA,t.CDSUBCONTA,t.CDSUBSUBCONTA,t.CDSUBSUBSUBCONTA,t.CDBANCO,t.AGENCIA,t.NUMCONTA,COALESCE(p.PAGTO,'Não informada') AS FORMA_PAGAMENTO FROM CTAPAGAR t LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=t.CDFORNECEDOR LEFT JOIN PAGTO p ON p.CDPAGTO=COALESCE(t.TPPAGTO,t.CODPAGTO) WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
               [controle, empresa],
             )
           )[0];
@@ -490,11 +729,12 @@ router.get("/operacoes/detalhe", async (req, res) => {
             [titulo.NRPEDIDO, empresa],
           )
         )[0] || null;
-        itens = await query(
-          db,
-          "SELECT sp.POSIC,sp.CDPRODUTO,sp.DESCRICAO,sp.UNID,sp.QTDPRODUTO,sp.VLUNIT,COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) AS TOTAL FROM SAIDAPRODUTO sp WHERE sp.NRPEDIDO=? AND sp.IDEMPRESA=? AND COALESCE(sp.STATUSSE,0)=0 ORDER BY sp.POSIC",
-          [titulo.NRPEDIDO, empresa],
-        );
+        if (includeAccountProducts(tipo, req.query))
+          itens = await query(
+            db,
+            "SELECT sp.POSIC,sp.CDPRODUTO,sp.DESCRICAO,sp.UNID,sp.QTDPRODUTO,sp.VLUNIT,COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) AS TOTAL FROM SAIDAPRODUTO sp WHERE sp.NRPEDIDO=? AND sp.IDEMPRESA=? AND COALESCE(sp.STATUSSE,0)=0 ORDER BY sp.POSIC",
+            [titulo.NRPEDIDO, empresa],
+          );
       } else if (!receber) {
         const invoice = text(titulo.NOTAFISCAL || titulo.NRDOC).replace(/-\d+$/, ""),
           document = text(titulo.NRDOC).replace(/-\d+$/, "");
@@ -512,7 +752,12 @@ router.get("/operacoes/detalhe", async (req, res) => {
             [entrada.IDENTRADA, entrada.IDEMPRESA],
           );
       }
-      return { ok: true, tipo, titulo, pedido, entrada, itens };
+      const historico = await query(
+        db,
+        "SELECT FIRST 40 sa.DATA_HORA,sa.TIPO,sa.MENSAGEM,COALESCE(u.NOMECOMPLETO,u.LOGIN) AS USUARIO FROM SIS_APPHISTORY sa LEFT JOIN USUARIOS u ON u.IDUSUARIO=sa.IDUSUARIO WHERE sa.CONTEXTO CONTAINING ? AND sa.CONTEXTO CONTAINING ? ORDER BY sa.DATA_HORA DESC",
+        [`CONTROLE=${controle};`, `IDEMPRESA=${empresa};`],
+      );
+      return { ok: true, tipo, titulo, pedido, entrada, itens, historico };
     });
     res.json(result);
   } catch (error) {
@@ -523,7 +768,7 @@ router.get("/operacoes/opcoes", async (_req, res) => {
   try {
     const result = await withDatabase(async (db) => {
       const walletRows = await query(db,"SELECT FIRST 1 CDRECEBTO,RECEBTO,CDGRUPO,CCUSTO FROM RECEBTO WHERE UPPER(TRIM(RECEBTO)) CONTAINING 'CARTEIRA' ORDER BY CASE WHEN UPPER(TRIM(RECEBTO))='CARTEIRA' THEN 0 ELSE 1 END,CDRECEBTO");
-      const formas = await query(db,"SELECT CDRECEBTO,RECEBTO,COALESCE(DESCONTO,0) AS TAXA_RETENCAO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY RECEBTO");
+      const formas = await query(db,"SELECT CDRECEBTO,RECEBTO,COALESCE(DESCONTO,0) AS TAXA_RETENCAO,COALESCE(STATUS,0) AS STATUS,COALESCE(STATUS_PAGTO,0) AS STATUS_PAGTO,COALESCE(SAIR_RECEBTO,0) AS SAIR_RECEBTO,COALESCE(SAIR_PAGTO,0) AS SAIR_PAGTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY RECEBTO");
       const formas_pagar = await query(db,"SELECT CDPAGTO,PAGTO,CDGRUPO FROM PAGTO WHERE COALESCE(INATIVO,0)=0 ORDER BY PAGTO");
       const bancos = await query(db,"SELECT CDBANCO,BANCO FROM BANCO ORDER BY BANCO");
       const contas_bancarias = await query(db,"SELECT cc.CDBANCO,b.BANCO,cc.AGENCIA,cc.NUMCONTA FROM CONTACORRENTE cc LEFT JOIN BANCO b ON b.CDBANCO=cc.CDBANCO ORDER BY b.BANCO,cc.AGENCIA,cc.NUMCONTA");
@@ -573,33 +818,118 @@ router.get("/operacoes/opcoes", async (_req, res) => {
   }
 });
 
+router.get("/operacoes/proximo-documento", async (req, res) => {
+  try {
+    const type = text(req.query.tipo).toLowerCase();
+    if (!["receber", "pagar"].includes(type))
+      throw Object.assign(new Error("Selecione contas a receber ou contas a pagar."), { status: 400 });
+    const documento = await withDatabase(async (db) => {
+      const table = type === "receber" ? "CTARECEBER" : "CTAPAGAR";
+      const column = type === "receber" ? "DTMOV" : "DTINCLUSAO";
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      const rows = await query(
+        db,
+        `SELECT COUNT(*) AS TOTAL FROM ${table} WHERE ${column}>=? AND ${column}<?`,
+        [start, end],
+      );
+      return automaticDocumentNumber({
+        type,
+        count: Number(rows[0]?.TOTAL ?? rows[0]?.total ?? 0),
+        machine: readMachineCode(),
+        date: start,
+      });
+    });
+    res.json({ ok: true, documento });
+  } catch (error) {
+    res.status(error.status || 500).json({ ok: false, erro: error.message });
+  }
+});
+
+router.post("/operacoes/alterar", async (req, res) => {
+  try {
+    const type = text(req.body?.tipo).toLowerCase();
+    const controle = asInt(req.body?.controle);
+    const empresa = asInt(req.body?.idempresa);
+    if (!["receber", "pagar"].includes(type) || controle === null || empresa === null)
+      throw Object.assign(new Error("Título inválido."), { status: 400 });
+    const user = Number(req.dashboardSession?.user?.idusuario || 0) || null;
+    const result = await withWriteTransaction(async (tx) => {
+      const table = type === "receber" ? "CTARECEBER" : "CTAPAGAR";
+      const cash = type === "receber" ? "t.CAIXA" : "t.CDCAIXA";
+      const current = await tx.singleton(
+        `SELECT FIRST 1 t.STATUS,t.NRDOC,t.PARCELA,t.DTVENC,t.VALOR,t.HISTORICO,t.CODPAGTO,t.TPPAGTO,${cash},t.CCUSTO,t.CDCONTA,t.CDSUBCONTA,t.CDSUBSUBCONTA,t.CDSUBSUBSUBCONTA${type === "pagar" ? ",t.NOTAFISCAL,t.CDFORNECEDOR" : ""} FROM ${table} t WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
+        [controle, empresa],
+      );
+      if (!current) throw Object.assign(new Error("Título não encontrado."), { status: 404 });
+      const plan = accountEditPlan(type, current, req.body || {});
+      if (!plan.changes.length)
+        return { ok: true, alterado: false, mensagem: "Nenhum dado foi alterado." };
+      const assignments = Object.keys(plan.values).map((column) => `${column}=?`);
+      assignments.push("SIST_ALT='LOCAL'");
+      await tx.execute(
+        `UPDATE ${table} SET ${assignments.join(",")} WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`,
+        [...Object.values(plan.values), controle, empresa],
+      );
+      const contexto = `CONTROLE=${controle};IDEMPRESA=${empresa};`.slice(0, 50);
+      await tx.execute(
+        "INSERT INTO SIS_APPHISTORY (IDMENUITEM,TIPO,CONTEXTO,MENSAGEM,IDUSUARIO,DATA_HORA,SIST_ALT) VALUES (?,?,?,?,?,CURRENT_TIMESTAMP,'LOCAL')",
+        [await historyMenuItem(tx, type), 2, contexto, plan.message, user],
+      );
+      return {
+        ok: true,
+        alterado: true,
+        mensagem: "Conta alterada. O histórico da alteração foi gravado.",
+        campos: plan.changes,
+      };
+    });
+    res.json(result);
+  } catch (error) {
+    res.status(error.status || 500).json({ ok: false, erro: error.message });
+  }
+});
+
 router.post("/operacoes/criar", async (req, res) => {
   try {
     let input = newAccountInput(req.body || {});
     const user = Number(req.dashboardSession?.user?.idusuario || 1);
     const result = await withWriteTransaction(async (tx) => {
       const table = input.type === "receber" ? "CTARECEBER" : "CTAPAGAR";
-      const control = await nextAccountControl(tx, table);
       input = completeAccountInput(input, await accountPaymentDefaults(tx, input));
-      if (input.type === "receber") {
-        await tx.execute(
-          "INSERT INTO CTARECEBER (CONTROLE,IDEMPRESA,NRDOC,PARCELA,CDCLIENTE,DTVENC,VALOR,INTERVALO,ORIGEM,DIVIDA,TOTALPG,DTCOB,CAIXA,CODPAGTO,DTMOV,TPPAGTO,STATUS,CDUSR,DTLOG,HORALOG,CDRECGRUPO,NRDOC2,ACORDO,DTALTER,SIST_ALT,CDCAIXAORIGEM,HISTORICO,VLPGLIQ,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,JUROS,DESCONTO,RETENCAO,AVISOS) VALUES (?,?,?,?,?,?,?,0,'LANCAMENTO MANUAL',?,0,NULL,?,?,CURRENT_TIMESTAMP,?,1,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,0,CURRENT_TIMESTAMP,'LOCAL',?,?,0,?,?,?,?,?,0,0,0,0)",
-          [control,input.company,input.document,input.installment,input.person,input.dueDate,input.amount,input.amount,input.cash,input.payment,input.payment,user,input.receiptGroup,input.document,input.cash,input.history,input.costCenter,input.account,input.subaccount,input.thirdAccount,input.fourthAccount],
-        );
-      } else {
-        await tx.execute(
-          "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,INTERVALO,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,NRDOC,NRDOC2,DTVENC,DTPAGTO,DTINCLUSAO,DTLOG,HORALOG,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS,DESCONTO,RETENCAO,ACORDO,COMBOLETO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,0,1,?,?,?,?,?,?,?,NULL,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,0,0,0,0,0,0,?,'LOCAL','LANCAMENTO MANUAL',?)",
-          [control,input.company,input.document,input.document.slice(0,10),input.person,input.installment,input.cash,input.costCenter,input.payment,input.payment,input.document,input.document,input.dueDate,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,input.amount,input.amount,user,input.dueDate],
-        );
+      const controls = [];
+      for (const parcel of input.parcels) {
+        const control = await nextAccountControl(tx, table);
+        const due = firebirdDate(parcel.vencimento);
+        controls.push(control);
+        if (input.type === "receber") {
+          await tx.execute(
+            "INSERT INTO CTARECEBER (CONTROLE,IDEMPRESA,NRDOC,PARCELA,CDCLIENTE,DTVENC,VALOR,INTERVALO,ORIGEM,DIVIDA,TOTALPG,DTCOB,CAIXA,CODPAGTO,DTMOV,TPPAGTO,STATUS,CDUSR,DTLOG,HORALOG,CDRECGRUPO,NRDOC2,ACORDO,DTALTER,SIST_ALT,CDCAIXAORIGEM,HISTORICO,VLPGLIQ,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,JUROS,DESCONTO,RETENCAO,AVISOS) VALUES (?,?,?,?,?,?,?,?,'LANCAMENTO MANUAL',?,0,NULL,?,?,CURRENT_TIMESTAMP,?,1,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,0,CURRENT_TIMESTAMP,'LOCAL',?,?,0,?,?,?,?,?,0,0,0,0)",
+            [control,input.company,input.document,parcel.parcela,input.person,due,parcel.valor,parcel.intervalo,input.amount,input.cash,input.payment,input.payment,user,input.receiptGroup,input.document,input.cash,input.history,input.costCenter,input.account,input.subaccount,input.thirdAccount,input.fourthAccount],
+          );
+        } else {
+          await tx.execute(
+            "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,INTERVALO,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,NRDOC,NRDOC2,DTVENC,DTPAGTO,DTINCLUSAO,DTLOG,HORALOG,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS,DESCONTO,RETENCAO,ACORDO,COMBOLETO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,?,1,?,?,?,?,?,?,?,NULL,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,0,0,0,0,0,0,?,'LOCAL','LANCAMENTO MANUAL',?)",
+            [control,input.company,input.document,input.document.slice(0,10),input.person,parcel.parcela,parcel.intervalo,input.cash,input.costCenter,input.payment,input.payment,input.document,input.document,due,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,parcel.valor,input.amount,user,due],
+          );
+        }
       }
       return {
-        controle: control,
+        controle: controls[0],
+        controles: controls,
+        parcelas: input.parcels.length,
         idempresa: input.company,
         tipo: input.type,
-        vencimento: input.dueDate.toISOString().slice(0, 10),
+        vencimento: input.parcels[0].vencimento,
+        vencimento_final: input.parcels.at(-1).vencimento,
       };
     });
-    res.status(201).json({ ok: true, mensagem: `Conta a ${result.tipo} criada com sucesso.`, ...result });
+    const created =
+      result.parcelas > 1
+        ? `Conta a ${result.tipo} criada com ${result.parcelas} parcelas.`
+        : `Conta a ${result.tipo} criada com sucesso.`;
+    res.status(201).json({ ok: true, mensagem: created, ...result });
   } catch (error) {
     res.status(error.status || 500).json({ ok: false, erro: error.message });
   }
@@ -639,8 +969,7 @@ router.post("/operacoes/acordo", async (req, res) => {
       model = [Number(body.modelo_controle), Number(body.modelo_empresa)],
       count = Number(body.quantidade || 0),
       interval = Number(body.intervalo || 0),
-      start = String(body.data_inicial || "").slice(0, 10),
-      startDate = firebirdDate(start),
+      { start, startDate, payment, cash } = agreementInput(body),
       interest = Math.round(Number(body.juros || 0) * 100) / 100,
       discount = Math.round(Number(body.desconto || 0) * 100) / 100,
       retention =
@@ -697,15 +1026,24 @@ router.post("/operacoes/acordo", async (req, res) => {
           ),
           { status: 400 },
         );
-      let form = await tx.singleton(
-        `SELECT t.CODPAGTO,COALESCE(r.CDGRUPO,t.CDRECGRUPO) AS CDGRUPO,COALESCE(r.CCUSTO,t.CCUSTO) AS CCUSTO FROM ${table} t LEFT JOIN RECEBTO r ON r.CDRECEBTO=t.CODPAGTO WHERE t.CONTROLE=? AND t.IDEMPRESA=?`,
-        model,
-      );
-      if (!form?.CODPAGTO)
+      if (
+        !(await tx.singleton(
+          "SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0",
+          [cash],
+        ))
+      )
         throw Object.assign(
-          new Error("A conta modelo nao possui forma prevista informada."),
+          new Error("Selecione um caixa ativo e cadastrado."),
           { status: 400 },
         );
+      let form = paymentFormAllowed(
+        await tx.singleton(
+          "SELECT CDRECEBTO AS CODPAGTO,CDGRUPO,CCUSTO,COALESCE(STATUS,0) AS STATUS,COALESCE(STATUS_PAGTO,0) AS STATUS_PAGTO,COALESCE(SAIR_RECEBTO,0) AS SAIR_RECEBTO,COALESCE(SAIR_PAGTO,0) AS SAIR_PAGTO FROM RECEBTO WHERE CDRECEBTO=? AND COALESCE(INATIVO,0)=0",
+          [payment],
+        ),
+        type,
+        "acordo",
+      );
       if (boleto) {
         if (type !== "receber")
           throw Object.assign(
@@ -801,6 +1139,7 @@ router.post("/operacoes/acordo", async (req, res) => {
             CODPAGTO: form.CODPAGTO,
             CDRECGRUPO: form.CDGRUPO,
             CCUSTO: form.CCUSTO,
+            ...(type === "receber" ? { CAIXA: cash } : { CDCAIXA: cash }),
             HISTORICO: history,
             DTALTER: new Date(),
           };
@@ -929,31 +1268,22 @@ router.post("/operacoes/baixar", async (req, res) => {
   try {
     const body = req.body || {},
       { type, refs, table } = financeInput(body),
-      date = String(body.data_pagamento || "").slice(0, 10),
-      paymentDate = firebirdDate(date),
-      payment = Number(body.forma_pagamento || 0),
-      bank = Number(body.banco || 0) || null,
-      cash = Number(body.caixa || 0),
-      account = String(body.conta || "").trim(),
-      agency = String(body.agencia || "").trim(),
-      discount = Math.round(Number(body.desconto || 0) * 100) / 100,
-      gross = Math.round(Number(body.valor_pagamento || 0) * 100) / 100,
-      net = Math.round(Number(body.valor_liquido || 0) * 100) / 100,
-      history = String(body.historico || "")
-        .trim()
-        .slice(0, 255);
-    if (!paymentDate || !payment || !cash)
-      throw Object.assign(
-        new Error("Informe data, forma de pagamento e caixa."),
-        { status: 400 },
-      );
-    if (date > new Date().toISOString().slice(0, 10))
-      throw Object.assign(
-        new Error("A data da baixa nao pode ser posterior ao dia atual."),
-        { status: 400 },
-      );
+      {
+        date,
+        paymentDate,
+        payment,
+        cash,
+        bank,
+        account,
+        agency,
+        discount,
+        gross,
+        net,
+        history,
+      } = settlementInput(body);
     const result = await withWriteTransaction(async (tx) => {
       if (
+        cash &&
         !(await tx.singleton(
           "SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0",
           [cash],
@@ -988,14 +1318,14 @@ router.post("/operacoes/baixar", async (req, res) => {
           ),
           { status: 400 },
         );
-      const form = await tx.singleton(
-        "SELECT COALESCE(DESCONTO,0) AS TAXA,COALESCE(TPRECEBTO,CDRECEBTO) AS TIPO,CDGRUPO,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA FROM RECEBTO WHERE CDRECEBTO=?",
-        [payment],
+      const form = paymentFormAllowed(
+        await tx.singleton(
+          "SELECT COALESCE(DESCONTO,0) AS TAXA,COALESCE(TPRECEBTO,CDRECEBTO) AS TIPO,CDGRUPO,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,COALESCE(STATUS,0) AS STATUS,COALESCE(STATUS_PAGTO,0) AS STATUS_PAGTO,COALESCE(SAIR_RECEBTO,0) AS SAIR_RECEBTO,COALESCE(SAIR_PAGTO,0) AS SAIR_PAGTO FROM RECEBTO WHERE CDRECEBTO=? AND COALESCE(INATIVO,0)=0",
+          [payment],
+        ),
+        type,
+        "quitar",
       );
-      if (!form)
-        throw Object.assign(new Error("Forma de pagamento nao encontrada."), {
-          status: 400,
-        });
       const original =
           Math.round(
             rows.reduce((sum, row) => sum + Number(row.VALOR || 0), 0) * 100,

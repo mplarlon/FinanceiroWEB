@@ -1,6 +1,6 @@
 # Documentação técnica e de continuidade
 
-Atualizada em 14/10/2026. Este diretório é o ponto de entrada para entender,
+Atualizada em 22/10/2026. Este diretório é o ponto de entrada para entender,
 instalar, validar, operar e continuar o Dashboard Gerencial sem depender do
 histórico da máquina em que ele foi desenvolvido.
 
@@ -13,6 +13,11 @@ histórico da máquina em que ele foi desenvolvido.
 5. [05-HISTORICO-E-APRENDIZADOS.md](05-HISTORICO-E-APRENDIZADOS.md) — decisões e alterações.
 6. [06-REQUISITOS-E-ROADMAP.md](06-REQUISITOS-E-ROADMAP.md) — rastreabilidade dos pedidos.
 7. [07-VALIDACAO-FUNCIONAL.md](07-VALIDACAO-FUNCIONAL.md) — roteiro de aceite.
+8. [CHARLIE_OPERACAO_PRODUCAO.md](CHARLIE_OPERACAO_PRODUCAO.md) — implantação gradual, operação, backup e reversão do Charlie.
+9. [CHARLIE_GUIA_USUARIO.md](CHARLIE_GUIA_USUARIO.md) — orientações para usuários do Charlie.
+10. [CHARLIE_ETAPA_20_RELATORIO.md](CHARLIE_ETAPA_20_RELATORIO.md) — auditoria final, evidências e pendências de liberação.
+11. [CHARLIE_MODO_DIRETOR_RELATORIO.md](CHARLIE_MODO_DIRETOR_RELATORIO.md) — camada executiva do Charlie, testes e limitações.
+12. [CHARLIE_CAFE_MANHA_ETAPA_1_DIAGNOSTICO.md](CHARLIE_CAFE_MANHA_ETAPA_1_DIAGNOSTICO.md) — diagnóstico do Charlie Daily: fontes, fórmulas e o que já existe.
 
 ## Documentos históricos ainda válidos
 

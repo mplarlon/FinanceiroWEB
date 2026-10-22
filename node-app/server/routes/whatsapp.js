@@ -189,6 +189,42 @@ async function sendText(config, recipient, body, phoneNumberId) {
   return payload;
 }
 
+async function sendTemplate(config, recipient, templateName, parameters = [], phoneNumberId, language = "pt_BR") {
+  if (!config.access_token || !(phoneNumberId || config.phone_number_id) || !templateName) {
+    throw new Error("Configuracao do WhatsApp incompleta.");
+  }
+  const template = {
+    name: templateName,
+    language: { code: language || "pt_BR" },
+  };
+  if (parameters.length) {
+    template.components = [{
+      type: "body",
+      parameters: parameters.map((text) => ({ type: "text", text: String(text ?? "").replace(/[\r\n]+/g, " ").slice(0, 900) })),
+    }];
+  }
+  const response = await fetch(
+    `https://graph.facebook.com/${config.api_version || "v20.0"}/${phoneNumberId || config.phone_number_id}/messages`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: recipient,
+        type: "template",
+        template,
+      }),
+      signal: AbortSignal.timeout(20_000),
+    },
+  );
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(`Erro WhatsApp API ${response.status}: ${JSON.stringify(payload)}`);
+  return payload;
+}
+
 router.post("/webhook", async (req, res) => {
   const config = loadConfig();
   if (
@@ -248,5 +284,5 @@ export function verifyWebhookSignature(
   );
 }
 
-export { loadConfig, publicConfig, saveConfig, sendText };
+export { loadConfig, publicConfig, saveConfig, sendText, sendTemplate };
 export default router;

@@ -12,6 +12,20 @@ function uri(config) {
   return `${config.host || "localhost"}/${Number(config.port || 3051)}:${config.database}`;
 }
 
+export function charlieDatabaseConfig(config = loadDatabaseConfig()) {
+  if (!process.env.CHARLIE_DB_USER) return config;
+  return {
+    ...config,
+    user: process.env.CHARLIE_DB_USER,
+    password: process.env.CHARLIE_DB_PASSWORD ?? config.password,
+    role: process.env.CHARLIE_DB_ROLE || config.role || "",
+  };
+}
+
+export function withReadOnlyDatabase(action, config = charlieDatabaseConfig()) {
+  return withDatabase(action, config);
+}
+
 export function attach(config = loadDatabaseConfig()) {
   return client.connect(uri(config), {
     username: config.user || "SYSDBA",
@@ -30,19 +44,39 @@ export async function withDatabase(action, config) {
   }
 }
 
-export async function query(db, sql, params = []) {
+export async function query(db, sql, params = [], options = {}) {
   const transaction = await db.startTransaction({ accessMode: "READ_ONLY" });
   let resultSet;
-  try {
+  let timer;
+  let settled = false;
+  const timeoutMs = Number(options.timeoutMs) || 0;
+  const pending = (async () => {
+    if (timeoutMs) {
+      try {
+        await db.execute(transaction, `SET STATEMENT TIMEOUT ${Math.max(1, Math.ceil(timeoutMs / 1000))}`);
+      } catch { /* o servidor pode não aceitar o comando dentro da transação */ }
+    }
     resultSet = await db.executeQuery(transaction, sql, params);
     const rows = await resultSet.fetchAsObject();
-    return rows.map(row => Object.fromEntries(
-      Object.entries(row).map(([key, value]) => [
-        key.trim(),
-        Buffer.isBuffer(value) ? value.toString("latin1").trim() : value
-      ])
-    ));
+    return rows.map(normalizeRow);
+  })();
+  try {
+    if (!timeoutMs) return await pending;
+    return await Promise.race([
+      pending.then((rows) => {
+        settled = true;
+        return rows;
+      }),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          settled = true;
+          reject(Object.assign(new Error("A consulta excedeu o tempo limite."), { status: 408 }));
+        }, timeoutMs);
+      }),
+    ]);
   } finally {
+    if (timer) clearTimeout(timer);
+    if (settled) pending.catch(() => {});
     if (resultSet?.isValid) await resultSet.close();
     if (transaction.isValid) await transaction.rollback();
   }

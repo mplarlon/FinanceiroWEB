@@ -1,0 +1,9 @@
+import fs from"node:fs";import path from"node:path";import crypto from"node:crypto";import{dataDir}from"../config.js";
+const file=()=>path.join(dataDir,"charlie-supply-drafts.json");
+function read(){try{return JSON.parse(fs.readFileSync(file(),"utf8"))}catch{return[]}}
+function write(items){fs.mkdirSync(dataDir,{recursive:true});const target=file(),tmp=`${target}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(items,null,2));fs.renameSync(tmp,target)}
+const scope=a=>`${a?.company||0}:${a?.branch||0}`;
+export function listSupplyDrafts(actor){return read().filter(x=>x.scope===scope(actor)&&Number(x.userId)===Number(actor?.id));}
+export function prepareSupplyDraft(input,actor){if(!Array.isArray(input?.items)||!input.items.length)throw Object.assign(new Error("A solicitação precisa conter produtos."),{status:400});const items=input.items.slice(0,500).map(x=>({productId:x.productId,product:String(x.product||"").slice(0,160),quantity:Math.max(0,Number(x.quantity)||0),supplierId:x.supplierId??null,estimatedUnitCost:x.estimatedUnitCost==null?null:Number(x.estimatedUnitCost)})).filter(x=>x.quantity>0);if(!items.length)throw Object.assign(new Error("Nenhuma quantidade válida foi informada."),{status:400});const draft={id:crypto.randomUUID(),scope:scope(actor),userId:actor.id,status:"prepared",createdAt:new Date().toISOString(),confirmedAt:null,items,totalEstimated:items.reduce((s,x)=>s+(x.estimatedUnitCost==null?0:x.quantity*x.estimatedUnitCost),0),limitations:input.limitations||[]};const all=read();all.push(draft);write(all.slice(-1000));return draft;}
+export function getSupplyDraft(id,actor){return listSupplyDrafts(actor).find(x=>x.id===id)||null;}
+export function markSupplyDraft(id,actor,patch){const all=read(),index=all.findIndex(x=>x.id===id&&x.scope===scope(actor)&&Number(x.userId)===Number(actor?.id));if(index<0)return null;all[index]={...all[index],...patch,updatedAt:new Date().toISOString()};write(all);return all[index];}

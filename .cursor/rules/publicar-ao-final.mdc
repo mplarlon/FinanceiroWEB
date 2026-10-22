@@ -1,0 +1,18 @@
+---
+description: Ao final de cada modificação no Dashboard, publicar no serviço em execução
+alwaysApply: true
+---
+
+# Publicar ao final
+
+Depois de alterar código deste repositório, publique no Dashboard que está no ar antes de encerrar a tarefa. Não deixe a correção só no fonte.
+
+O serviço `SrvDashboard` atende `http://localhost:805`. O processo usa `C:\Administracao\node-app\server\dashboard.mjs` e a interface em `C:\Administracao\node-app\dist`. Os dados ficam em `C:\Administracao\Dashboard` e não entram na cópia.
+
+1. Na pasta `node-app`, execute `npm test` e `npm run build`.
+2. Gere o servidor com `node scripts/bundle-server.js`, gravando em um arquivo temporário.
+3. Copie o `dashboard.mjs` anterior e a pasta `dist` anterior para `C:\Administracao\Dashboard\backups\release-AAAAMMDD-HHMM-assunto`.
+4. Substitua `C:\Administracao\node-app\server\dashboard.mjs` e `C:\Administracao\node-app\dist`.
+5. Reinicie o serviço `SrvDashboard` e confirme que a porta 805 responde.
+
+Sem o bundle, o servidor continua com a lógica antiga. Sem o build da interface, a tela continua antiga. O instalador `build_installer.ps1` só entra quando a entrega for um pacote para o cliente.

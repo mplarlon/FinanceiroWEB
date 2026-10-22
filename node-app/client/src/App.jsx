@@ -10,6 +10,7 @@ import Reconciliation from "./pages/Reconciliation.jsx";
 import ManagementDashboard from "./pages/ManagementDashboard.jsx";
 import ExecutiveReports from "./pages/ExecutiveReports.jsx";
 import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
+import CharlieTraining from "./components/CharlieTraining.jsx";
 
 const PAGES = [
   { id: "overview", label: "Visão geral", icon: "◫" },
@@ -37,14 +38,55 @@ const PAGES = [
 ];
 
 const MAIN_PAGES = PAGES.filter((item) => !item.group);
-const REPORT_PAGES = PAGES.filter((item) => item.group === "reports");
+
+function briefWhen(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "" : date.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+}
+
+function briefTone(alerts) {
+  if ((alerts || []).some((item) => item.gravidade === "critico")) return "critico";
+  if ((alerts || []).some((item) => item.gravidade === "atencao")) return "atencao";
+  return "informativo";
+}
+
+function CharlieBriefBar({ brief, onOpen, onLater }) {
+  const groups = (brief.grupos || []).filter((group) => group.alertas?.length);
+  const total = Number(brief.total || groups.reduce((sum, group) => sum + group.alertas.length, 0));
+  const when = briefWhen(brief.analiseEm);
+  return (
+    <section className="charlie-brief" aria-label="Resumo do Charlie">
+      <div className="charlie-brief-head">
+        <strong>{total === 1 ? "1 situação em aberto" : `${total} situações em aberto`}</strong>
+        {when ? <span>Análise de {when}</span> : null}
+      </div>
+      {groups.length > 0 && (
+        <ul className="charlie-brief-counts">
+          {groups.map((group) => (
+            <li key={group.categoria} className={briefTone(group.alertas)}>
+              <b>{group.alertas.length}</b>
+              <span>{group.rotulo}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className="charlie-brief-actions">
+        <button className="primary" type="button" onClick={onOpen}>Ver com o Charlie</button>
+        <button type="button" onClick={onLater}>Agora não</button>
+      </div>
+    </section>
+  );
+}
 
 export default function App() {
   const [session, setSession] = useState();
   const [status, setStatus] = useState();
   const [error, setError] = useState("");
-  const [page, setPage] = useState("overview");
-  const [reportsOpen, setReportsOpen] = useState(false);
+  const cafeToken = new URLSearchParams(window.location.search).get("cafe") || "";
+  const [page, setPage] = useState(() => cafeToken ? "charlie" : "overview");
+  const [charlieAlerts, setCharlieAlerts] = useState(0);
+  const [charlieBrief, setCharlieBrief] = useState(null);
+  const [alertLaunch, setAlertLaunch] = useState(0);
 
   useEffect(() => {
     const unauthorized = () => {
@@ -63,6 +105,24 @@ export default function App() {
     return () => window.removeEventListener("dashboard:unauthorized", unauthorized);
   }, []);
 
+  useEffect(() => {
+    if (!session?.authenticated) return undefined;
+    let active = true;
+    const load = () => {
+      api.get("/ia/alertas/contador").then((data) => { if (active) setCharlieAlerts(Number(data.total || 0)); }).catch(() => {});
+      api.get("/ia/alertas/resumo").then((data) => {
+        if (!active || !Number(data.total)) return;
+        try {
+          if (data.analiseEm && localStorage.getItem("charlie-resumo-visto") === data.analiseEm) return;
+        } catch { /* sem armazenamento local, o resumo continua visível */ }
+        setCharlieBrief(data);
+      }).catch(() => {});
+    };
+    load();
+    const timer = setInterval(load, 120000);
+    return () => { active = false; clearInterval(timer); };
+  }, [session?.authenticated]);
+
   async function login(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -77,6 +137,16 @@ export default function App() {
     } catch (e) {
       setError(e.message);
     }
+  }
+  function rememberBrief() {
+    if (!charlieBrief?.analiseEm) return;
+    try { localStorage.setItem("charlie-resumo-visto", charlieBrief.analiseEm); } catch { /* ignora */ }
+  }
+  function openAlerts() {
+    rememberBrief();
+    setCharlieBrief(null);
+    setPage("charlie");
+    setAlertLaunch((value) => value + 1);
   }
   async function logout() {
     try {
@@ -133,50 +203,28 @@ export default function App() {
           {MAIN_PAGES.map((p) => (
             <button
               key={p.id}
+              data-charlie-control={`nav-${p.id}`}
               className={p.id === page ? "active" : ""}
               onClick={() => setPage(p.id)}
             >
               <span className="nav-icon" aria-hidden="true">{p.icon}</span>
               {p.label}
+              {p.id === "charlie" && charlieAlerts > 0 ? <span className="nav-badge">{charlieAlerts}</span> : null}
             </button>
           ))}
-          <div className={`nav-group ${reportsOpen ? "open" : ""}`}>
-            <button
-              type="button"
-              className={REPORT_PAGES.some((item) => item.id === page) ? "group-active" : ""}
-              aria-expanded={reportsOpen}
-              aria-controls="reports-navigation"
-              onClick={() => setReportsOpen((open) => !open)}
-            >
-              <span className="nav-icon" aria-hidden="true">▧</span>
-              <span>Relatórios</span>
-              <span className="nav-chevron" aria-hidden="true">⌄</span>
-            </button>
-            {reportsOpen && (
-              <div className="nav-submenu" id="reports-navigation">
-                {REPORT_PAGES.map((p) => (
-                  <button
-                    type="button"
-                    key={p.id}
-                    className={p.id === page ? "active" : ""}
-                    onClick={() => setPage(p.id)}
-                  >
-                    <span className="nav-icon" aria-hidden="true">{p.icon}</span>
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
         </nav>
       </aside>
       <main className="content">
         <header>
           <div>
             <span className="page-eyebrow">PAINEL GERENCIAL</span>
-            <h1>{current.label}</h1>
+            <h1 data-charlie-control="page-title">{current.label}</h1>
           </div>
           <div className="header-actions">
+            <button type="button" className="header-alerts" onClick={openAlerts}>
+              Alertas
+              {charlieAlerts > 0 ? <span className="nav-badge">{charlieAlerts}</span> : null}
+            </button>
             <span className={`connection-pill ${status?.ok ? "online" : "offline"}`}>
               <i /> {status?.ok ? "Banco conectado" : "Banco indisponível"}
             </span>
@@ -186,8 +234,15 @@ export default function App() {
             </button>
           </div>
         </header>
+        {charlieBrief && (
+          <CharlieBriefBar
+            brief={charlieBrief}
+            onOpen={openAlerts}
+            onLater={() => { rememberBrief(); setCharlieBrief(null); }}
+          />
+        )}
         {page === "overview" && <Overview status={status} onNavigate={setPage} />}
-        {page === "charlie" && <Charlie />}
+        {page === "charlie" && <Charlie alertLaunch={alertLaunch} dailyToken={cafeToken} />}
         {page === "financeiro" && <FinanceAccounts />}
         {page === "caixa" && <ManagementDashboard type="cash" />}
         {page === "conciliacao" && <Reconciliation />}
@@ -198,6 +253,7 @@ export default function App() {
         {page === "clientes" && <ManagementDashboard type="customers" />}
         {page === "fiscal" && <FiscalNfe />}
         {current.executive && <ExecutiveReports type={current.executive} />}
+        <CharlieTraining page={page} pageLabel={current.label} onNavigate={setPage} />
       </main>
     </div>
   );
