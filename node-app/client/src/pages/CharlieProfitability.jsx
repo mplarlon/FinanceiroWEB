@@ -36,16 +36,16 @@ export default function CharlieProfitability({ open, onClose, onInvestigate }) {
   const indicators = data?.indicators || {};
   const maxProduct = Math.max(1, ...products.map((item) => item[1]));
   return (
-    <div className="charlie-overlay" role="dialog" aria-modal="true" aria-label="Análise de Rentabilidade e Perdas">
-      <section className="charlie-profitability panel">
+    <div className="charlie-modal-backdrop" role="presentation">
+      <section className="charlie-modal charlie-profitability" role="dialog" aria-modal="true" aria-label="Análise de Rentabilidade e Perdas">
         <header className="charlie-profitability-header">
           <div><h2>Análise de Rentabilidade e Perdas</h2><p>Regras determinísticas, valores rastreáveis e categorias sem dupla contagem.</p></div>
           <button type="button" onClick={onClose}>Fechar</button>
         </header>
         <form className="profitability-filters" onSubmit={(event) => { event.preventDefault(); load(); }}>
-          <label>Vendas <select value={days} onChange={(e) => setDays(e.target.value)}><option value="7">7 dias</option><option value="30">30 dias</option><option value="90">90 dias</option><option value="180">180 dias</option><option value="365">365 dias</option></select></label>
-          <label>Estoque parado <select value={idleDays} onChange={(e) => setIdleDays(e.target.value)}><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="180">180 dias</option><option value="365">365 dias</option></select></label>
-          <label>Margem mínima <input type="number" min="-100" max="100" value={minimumMargin} onChange={(e) => setMinimumMargin(e.target.value)} />%</label>
+          <label><span>Vendas</span><select value={days} onChange={(e) => setDays(e.target.value)}><option value="7">7 dias</option><option value="30">30 dias</option><option value="90">90 dias</option><option value="180">180 dias</option><option value="365">365 dias</option></select></label>
+          <label><span>Estoque parado</span><select value={idleDays} onChange={(e) => setIdleDays(e.target.value)}><option value="30">30 dias</option><option value="60">60 dias</option><option value="90">90 dias</option><option value="180">180 dias</option><option value="365">365 dias</option></select></label>
+          <label><span>Margem mínima</span><span className="profitability-margin"><input type="number" min="-100" max="100" value={minimumMargin} onChange={(e) => setMinimumMargin(e.target.value)} /><span>%</span></span></label>
           <button className="primary" disabled={loading}>{loading ? "Analisando..." : "Atualizar análise"}</button>
         </form>
         {error ? <div className="error">{error}</div> : null}
@@ -57,13 +57,13 @@ export default function CharlieProfitability({ open, onClose, onInvestigate }) {
             <article className="critical"><small>Ocorrências críticas · {days} dias</small><strong>{indicators.criticalOccurrences || 0}</strong><span>requerem revisão</span></article>
           </div>
           {products.length ? <section className="profitability-chart"><h3>Principais produtos por contribuição negativa</h3>{products.map(([name, value]) => <div className="profitability-bar" key={name}><span>{name}</span><i style={{ width: `${Math.max(2, value / maxProduct * 100)}%` }} /><b>{money(value)}</b></div>)}</section> : null}
-          <section className="profitability-list"><h3>Ocorrências</h3>
-            {(data.occurrences || []).length ? <div className="table-wrap"><table><thead><tr><th>Categoria</th><th>Venda/data</th><th>Produto</th><th>Cliente / vendedor</th><th>Receita líquida</th><th>Contribuição</th><th>Margem</th><th /></tr></thead><tbody>
-              {data.occurrences.map((item) => <tr key={item.id}><td><span className={`impact-tag ${item.type}`}>{typeLabel[item.type]}</span></td><td>#{item.sale}<small>{date(item.date)}</small></td><td>{item.product}<small>Qtd. {item.quantity}</small></td><td>{item.customer}<small>{item.seller}</small></td><td>{money(item.netRevenue)}</td><td className={item.contributionMargin < 0 ? "negative-value" : ""}>{money(item.contributionMargin)}</td><td>{pct(item.marginPercent)}</td><td><button type="button" onClick={async () => { const result = await api.get(`/ia/rentabilidade/ocorrencias/${encodeURIComponent(item.id)}`, { dias: days, margemMinima: minimumMargin }); setSelected(result); }}>Investigar com Charlie</button></td></tr>)}
-            </tbody></table></div> : <p>Nenhuma ocorrência acima dos critérios no período.</p>}
+          <section className="profitability-list"><h3>Estoque parado — {data.idleStock?.length || 0} produto(s)</h3>
+            {(data.idleStock || []).length ? <div className="table-scroll"><table className="tabela"><thead><tr><th>Produto</th><th>Quantidade</th><th>Custo de avaliação</th><th>Capital estimado</th><th>Última venda</th></tr></thead><tbody>{data.idleStock.map((item) => <tr key={item.CDPRODUTO}><td>{item.PRODUTO}</td><td>{Number(item.QUANTIDADE || 0).toLocaleString("pt-BR")}</td><td>{money(item.CUSTO_AVALIACAO)}</td><td>{money(item.CAPITAL_IMOBILIZADO)}</td><td>{date(item.ULTIMA_VENDA)}</td></tr>)}</tbody></table></div> : <p>Nenhum produto encontrado ou estrutura de filial indisponível.</p>}
           </section>
-          <section className="profitability-list"><h3>Estoque parado — capital imobilizado estimado</h3>
-            {(data.idleStock || []).length ? <div className="table-wrap"><table><thead><tr><th>Produto</th><th>Quantidade</th><th>Custo de avaliação</th><th>Capital estimado</th><th>Última venda</th></tr></thead><tbody>{data.idleStock.map((item) => <tr key={item.CDPRODUTO}><td>{item.PRODUTO}</td><td>{Number(item.QUANTIDADE || 0).toLocaleString("pt-BR")}</td><td>{money(item.CUSTO_AVALIACAO)}</td><td>{money(item.CAPITAL_IMOBILIZADO)}</td><td>{date(item.ULTIMA_VENDA)}</td></tr>)}</tbody></table></div> : <p>Nenhum produto encontrado ou estrutura de filial indisponível.</p>}
+          <section className="profitability-list"><h3>Ocorrências de venda — {data.occurrences?.length || 0}</h3>
+            {(data.occurrences || []).length ? <div className="table-scroll"><table className="tabela"><thead><tr><th>Categoria</th><th>Venda/data</th><th>Produto</th><th>Cliente / vendedor</th><th>Receita líquida</th><th>Contribuição</th><th>Margem</th><th /></tr></thead><tbody>
+              {data.occurrences.map((item) => <tr key={item.id}><td><span className={`impact-tag ${item.type}`}>{typeLabel[item.type]}</span></td><td>#{item.sale}<small>{date(item.date)}</small></td><td>{item.product}<small>Qtd. {item.quantity}</small></td><td>{item.customer}<small>{item.seller}</small></td><td>{money(item.netRevenue)}</td><td className={item.contributionMargin < 0 ? "negative-value" : ""}>{money(item.contributionMargin)}</td><td>{pct(item.marginPercent)}</td><td><button type="button" onClick={async () => { const result = await api.get(`/ia/rentabilidade/ocorrencias/${encodeURIComponent(item.id)}`, { dias: days, margemMinima: minimumMargin }); setSelected(result); }}>Investigar com Charlie</button></td></tr>)}
+            </tbody></table></div> : <p>Nenhuma venda com resultado negativo ou margem abaixo do limite neste período.</p>}
           </section>
           <details className="profitability-limitations"><summary>Critérios e limitações</summary><ul>{data.limitations.map((item) => <li key={item}>{item}</li>)}</ul></details>
         </> : null}

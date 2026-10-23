@@ -470,6 +470,7 @@ export default function ManagementDashboard({ type }) {
           caixa: cashFilter.caixa || options.caixas?.[0]?.CDCAIXA || "",
         };
         setCashFilter(selected);
+        setData((current) => ({ ...current, options }));
         const [result, closingData, transferData] =
           selected.empresa && selected.caixa
             ? await Promise.all([

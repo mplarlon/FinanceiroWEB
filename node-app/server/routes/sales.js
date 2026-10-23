@@ -1,5 +1,6 @@
 import express from "express";
 import { query, withDatabase } from "../db.js";
+import { saleItemCost } from "../lib/sale-cost.js";
 
 const router = express.Router();
 const cache = new Map();
@@ -112,10 +113,11 @@ async function getOptions(db) {
 
 async function getSummary(db, req) {
   const f = filters(req);
+  const custoItem = await saleItemCost(db, "sp", "p");
   const financial = receivablesFilters(req, f.start, f.end);
   const orderTotals = `SELECT se.NRPEDIDO,se.IDEMPRESA,
     COALESCE(se.VLTOTAL,se.SUBTOTAL,0) AS FATURAMENTO,
-    SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,p.VLCUSTOMEDIO,0)) AS CUSTO
+    SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) AS CUSTO
     ${salesFrom} WHERE ${f.where}
     GROUP BY se.NRPEDIDO,se.IDEMPRESA,se.VLTOTAL,se.SUBTOTAL`;
   const costs = (await query(db, `SELECT SUM(x.CUSTO) AS CUSTO FROM (${orderTotals}) x`, f.params))[0] || {};
@@ -159,6 +161,7 @@ async function getSummary(db, req) {
 
 async function getCharts(db, req, includeHeatmap = false) {
   const f = filters(req);
+  const custoItem = await saleItemCost(db, "sp", "p");
   const limit = numberArg(req, "limite", 15, 5, 50);
   // O driver nativo do Firebird não suporta consultas concorrentes na mesma
   // conexão. Execute cada série em sequência para manter a conexão válida.
@@ -166,7 +169,7 @@ async function getCharts(db, req, includeHeatmap = false) {
       COUNT(DISTINCT se.NRPEDIDO) AS QTD_VENDAS,
       SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS FATURAMENTO,
       SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) -
-      SUM(COALESCE(sp.QTDPRODUTO, 0) * COALESCE(sp.VLCUSTOREAL, sp.VLCUSTO, p.VLCUSTOMEDIO, 0)) AS LUCRO_BRUTO
+      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO_BRUTO
       ${salesFrom} WHERE ${f.where} GROUP BY CAST(se.DTSAIDA AS DATE) ORDER BY DIA`, f.params);
   const por_loja = await query(db, `SELECT FIRST ${limit} se.IDEMPRESA AS ID,
       c.NOMEEMPRESA AS NOME,
@@ -187,7 +190,7 @@ async function getCharts(db, req, includeHeatmap = false) {
       SUM(COALESCE(sp.QTDPRODUTO, 0)) AS QTD,
       SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL,
       SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) -
-      SUM(COALESCE(sp.QTDPRODUTO, 0) * COALESCE(sp.VLCUSTOREAL, sp.VLCUSTO, p.VLCUSTOMEDIO, 0)) AS LUCRO
+      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO
       ${salesFrom} LEFT JOIN GRUPOS g ON g.CDGRUPO=p.CDGRUPO
       LEFT JOIN FORNECEDOR fr ON fr.CDFORNECEDOR=p.CDFORNECEDOR WHERE ${f.where}
       GROUP BY sp.CDPRODUTO,p.PRODUTO,sp.DESCRICAO,g.GRUPOS,fr.FORNECEDOR,fr.FANTASIA,

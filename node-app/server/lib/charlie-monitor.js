@@ -1,4 +1,5 @@
 import { query } from "../db.js";
+import { saleItemCost } from "./sale-cost.js";
 import { getCatalog } from "./charlie-metadata.js";
 import { getOllamaStatus, ollamaChat } from "./ollama.js";
 import { validAiSummary } from "./charlie-ai.js";
@@ -177,6 +178,7 @@ async function collectCaixa(db, settings) {
 }
 
 async function collectVendas(db, settings) {
+  const custoItem = await saleItemCost(db, "sp", "pr");
   const lim = settings.limites;
   const periodo = days(lim.periodoDias, 30);
   const p = periods(periodo);
@@ -217,7 +219,7 @@ async function collectVendas(db, settings) {
   const margem = await read(db, `
     SELECT FIRST 80 sp.CDPRODUTO ID, COALESCE(pr.PRODUTO,sp.DESCRICAO) NOME,
       COALESCE(SUM(${VENDA_VALOR}),0) FATURAMENTO,
-      COALESCE(SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,pr.VLCUSTOMEDIO,0)),0) CUSTO
+      COALESCE(SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}),0) CUSTO
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO pr ON pr.CDPRODUTO=sp.CDPRODUTO
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${VENDA_OK}
@@ -410,7 +412,7 @@ export async function collectMonitorFacts(db, settings = readMonitorSettings(), 
     }
   }
   const vendasOk = hasColumns(catalog, "SAIDAESTOQUE", ["NRPEDIDO", "IDEMPRESA", "DTSAIDA", "DTCANCELAMENTO", "STATUS", "STATUS_ORC", "CDVENDEDOR", "CDCLIENTE"])
-    && hasColumns(catalog, "SAIDAPRODUTO", ["NRPEDIDO", "IDEMPRESA", "CDPRODUTO", "TOTAL", "SUBTOTAL", "QTDPRODUTO", "VLUNIT", "STATUSSE", "DESCONTO", "VLCUSTO", "VLCUSTOREAL"])
+    && hasColumns(catalog, "SAIDAPRODUTO", ["NRPEDIDO", "IDEMPRESA", "CDPRODUTO", "TOTAL", "SUBTOTAL", "QTDPRODUTO", "VLUNIT", "STATUSSE", "DESCONTO", "VLCUSTO"])
     && hasColumns(catalog, "PRODUTO", ["CDPRODUTO", "PRODUTO", "VLCUSTOMEDIO"]);
   if (enabled(settings, GROUPS.vendas).length && !vendasOk)
     lacunas.push(gap("vendas", "SAIDAESTOQUE, SAIDAPRODUTO ou PRODUTO não têm as colunas usadas pelos relatórios de venda. O monitoramento comercial ficou pendente de validação."));

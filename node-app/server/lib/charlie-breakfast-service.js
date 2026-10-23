@@ -1,4 +1,5 @@
 import { query, withReadOnlyDatabase } from "../db.js";
+import { saleItemCost } from "./sale-cost.js";
 import { readJsonConfig } from "./json-config.js";
 import { ollamaChat } from "./ollama.js";
 import {
@@ -56,10 +57,11 @@ async function inOrder(steps) {
 }
 
 async function salesBySeller(db, range, companyId) {
+  const custoItem = await saleItemCost(db, "sp", "p");
   const data = await optional(db, `SELECT se.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
     COUNT(DISTINCT se.NRPEDIDO) PEDIDOS,
     SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,
-    SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,p.VLCUSTOMEDIO,0)) CUSTO
+    SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) CUSTO
     FROM SAIDAESTOQUE se
     JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO p ON p.CDPRODUTO=sp.CDPRODUTO

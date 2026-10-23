@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { analyzeBehavioralEvents, authorizedContext, buildBehavioralBaselines, classifyBehavioralRisk, codigoENome, comparableGroup, correlateEventSequences, dedupeBehavioralAlerts, detectBurst, explainBehavior, presentBehavioralAlert, robustBehavioralScore } from "../server/lib/charlie-behavioral-risk-engine.js";
+import { analyzeBehavioralEvents, authorizedContext, buildBehavioralBaselines, classifyBehavioralRisk, codigoENome, comparableGroup, correlateEventSequences, dedupeBehavioralAlerts, detectBurst, explainBehavior, presentBehavioralAlert, presentBehavioralAnalysis, robustBehavioralScore } from "../server/lib/charlie-behavioral-risk-engine.js";
 import { planAutomation } from "../server/lib/charlie-automation-plan.js";
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), "charlie-behavior-"));
@@ -130,6 +130,9 @@ test("frequência de preço explica a operação sem jargão estatístico", () =
   }));
   const analysis = analyzeBehavioralEvents([...historical, ...burst]).analyses.find((item) => item.eventIds.includes("p4"));
   assert.equal(analysis.title, "Várias alterações de preço em seguida");
+  assert.equal(analysis.itens.length, 5);
+  assert.match(analysis.itens[0].objeto, /Produto 10, tabela 1, UN/);
+  assert.match(analysis.itens[0].mudanca, /R\$ 100,00 → R\$ 110,00 \(10%\)/);
   assert.match(analysis.explanation, /5 alterações de preço em 4 minutos, feitas por Maria/);
   assert.match(analysis.explanation, /cerca de 10%/);
   assert.match(analysis.explanation, /quantidade seguida/);
@@ -157,9 +160,12 @@ test("a mesma gravação de preço repetida vira um único aviso compreensível"
   }));
   const criteria = { anomaly: { evaluable: true, value: 10, anomalous: false, samples: 8 }, burst: { detected: true, count: 5, windowMinutes: 30 } };
   const text = explainBehavior({ events, criteria, baseline: { median: 10, samples: 8 } });
-  assert.equal(text.title, "A mesma alteração de preço foi registrada várias vezes");
+  assert.match(text.title, /Produto 1, tabela 70, UN: R\$ 10,00 → R\$ 11,00 \(10%\)/);
+  assert.match(text.itens[0].objeto, /Produto 1, tabela 70, UN/);
+  assert.match(text.problema, /5 vezes em 4 minutos, pelo usuário 7/);
   assert.match(text.explanation, /produto 1, tabela 70, UN passou de R\$ 10,00 para R\$ 11,00 \(10%\)/);
   const named = explainBehavior({ events: events.map((item) => ({ ...item, productName: "Parafuso sextavado" })), criteria, baseline: { median: 10, samples: 8 } });
+  assert.match(named.title, /Produto 1 - Parafuso sextavado, tabela 70, UN: R\$ 10,00 → R\$ 11,00 \(10%\)/);
   assert.match(named.explanation, /produto 1 - Parafuso sextavado, tabela 70, UN/);
   assert.match(named.registros[0].NOME, /Produto 1 - Parafuso sextavado, tabela 70, UN/);
   assert.equal(codigoENome(19062, "OFICINA LESTE"), "19062 - OFICINA LESTE");
@@ -167,6 +173,10 @@ test("a mesma gravação de preço repetida vira um único aviso compreensível"
   assert.match(text.explanation, /5 vezes em 4 minutos, pelo usuário 7/);
   assert.match(text.explanation, /confirmação já registrada no Charlie/);
   assert.equal(text.registros.length, 1);
+  const shown = presentBehavioralAnalysis({ id: "antigo", title: "antigo", explanation: "antigo", eventIds: events.map((item) => item.id), criteria, baseline: { median: 10, samples: 8 } }, events);
+  assert.match(shown.title, /Produto 1, tabela 70, UN/);
+  assert.equal(shown.itens.length, 1);
+  assert.equal(presentBehavioralAnalysis({ title: "antigo", eventIds: ["ausente"], criteria, baseline: {} }, events).title, "antigo");
   const alerts = events.map((event, index) => ({ id: index + 1, situacao: "novo", evidencias: { auditCategory: "riscos_comportamentais", events: events.slice(0, index + 1) } }));
   assert.deepEqual(dedupeBehavioralAlerts(alerts).map((item) => item.id), [5]);
 });

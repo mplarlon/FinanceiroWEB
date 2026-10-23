@@ -1,19 +1,66 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  accountPaymentNumber,
   agreementInput,
+  agreementRealizationHistory,
   agreementStatusSql,
+  agreementUndoHistory,
   buildAccountFilters,
+  calendarDate,
+  cashMovementSubject,
   completeAccountInput,
   firebirdDate,
   financeStatusLabel,
   accountEditPlan,
   automaticDocumentNumber,
+  manualPayableInsert,
+  manualReceivableInsert,
   newAccountInput,
+  overdueDays,
   paymentFormAllowed,
+  paymentFormSettlesPayable,
+  manualReceivablePlan,
+  creditHistory,
+  accountLaunchValue,
   settlementInput,
   includeAccountProducts,
+  personSearch,
 } from "../server/routes/finance-accounts.js";
+
+function insertShape(sql) {
+  const columns = sql.slice(sql.indexOf("(") + 1, sql.indexOf(")")).split(",").filter(Boolean);
+  const valuesRaw = sql.slice(sql.lastIndexOf("(") + 1, sql.lastIndexOf(")"));
+  const values = [];
+  let current = "";
+  let quote = false;
+  for (const ch of valuesRaw) {
+    if (ch === "'") quote = !quote;
+    else if (ch === "," && !quote) {
+      values.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  if (current.trim()) values.push(current.trim());
+  return {
+    columns: columns.length,
+    values: values.length,
+    placeholders: values.filter((item) => item === "?").length,
+  };
+}
+
+test("lancamento manual envia um valor para cada coluna", () => {
+  for (const sql of [manualReceivableInsert, manualPayableInsert]) {
+    const shape = insertShape(sql);
+    assert.equal(shape.columns, shape.values);
+    assert.equal(shape.placeholders, 26);
+  }
+  assert.equal(manualPayableInsert.includes("VLPAGTO"), true);
+  assert.match(manualPayableInsert, /HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS/);
+  assert.match(manualPayableInsert, /\?,\?,\?,\?,0,0,0,0,0,\?/);
+});
 
 test("numero automatico segue maquina, sequencia do dia e data", () => {
   assert.equal(
@@ -287,6 +334,15 @@ test("acordo preserva a data operacional usada pelo Automec", () => {
   assert.match(agreementStatusSql("receber"), /STATUS=6/);
 });
 
+test("realizacao e cancelamento do acordo gravam o texto do historico", () => {
+  assert.equal(
+    agreementRealizationHistory(136, "22/10/2026"),
+    "Acordo nº 136 realizado em: 22/10/2026",
+  );
+  assert.equal(agreementUndoHistory("22/10/2026"), "Acordo desfeito em: 22/10/2026");
+  assert.equal(agreementRealizationHistory(136, "22/10/2026").length <= 80, true);
+});
+
 test("status financeiros seguem as constantes do Automec", () => {
   assert.equal(financeStatusLabel(1, "2026-10-01", "2026-10-05"), "Vencido");
   assert.equal(financeStatusLabel(1, "2026-10-05", "2026-10-05"), "Aberto");
@@ -329,6 +385,58 @@ test("contas a receber não traz produtos até o usuário pedir", () => {
   assert.equal(includeAccountProducts("pagar", {}), true);
 });
 
+test("data civil evita NaN no valor pago quando o vencimento chega como Date", () => {
+  const due = new Date(2026, 9, 1, 0, 0, 0);
+  assert.equal(calendarDate(due), "2026-10-01");
+  assert.equal(overdueDays(due, "2026-10-20"), 19);
+  assert.equal(overdueDays(due, "2026-09-15"), 0);
+  assert.equal(Number.isFinite(overdueDays(due, "2026-10-20")), true);
+});
+
+test("parcela em aberto nao recebe numero de pagamento e forma quitada liquida", () => {
+  assert.equal(accountPaymentNumber(""), null);
+  assert.equal(accountPaymentNumber("  4581  "), "4581");
+  assert.equal(newAccountInput({
+    tipo: "pagar", idempresa: 1, pessoa_id: 2, documento: "NF1",
+    vencimento: "2026-10-31", valor: 10,
+  }).paymentNumber, null);
+  assert.equal(paymentFormSettlesPayable({ STATUS: 2, STATUS_PAGTO: 1 }), true);
+  assert.equal(paymentFormSettlesPayable({ STATUS: 1, STATUS_PAGTO: 2 }), true);
+  assert.equal(paymentFormSettlesPayable({ STATUS: 1, STATUS_PAGTO: 1 }), false);
+  assert.deepEqual(manualReceivablePlan({ STATUS: 1 }), { status: 1, settled: false, credit: false });
+  assert.deepEqual(manualReceivablePlan({ STATUS: 2 }), { status: 2, settled: true, credit: false });
+  assert.deepEqual(manualReceivablePlan({ STATUS: 2 }, true), { status: 3, settled: false, credit: true });
+  assert.equal(creditHistory("devolução do cliente", true), "Crédito devolução do cliente");
+  assert.equal(creditHistory("Crédito já informado", true), "Crédito já informado");
+  assert.equal(
+    newAccountInput({
+      tipo: "receber", idempresa: 1, pessoa_id: 2, documento: "CR1",
+      vencimento: "2026-10-31", valor: 10, gerar_credito: true,
+    }).credit,
+    true,
+  );
+  assert.equal(accountLaunchValue(10, "receber", true), 10);
+  assert.equal(accountLaunchValue(10, "pagar", false), 10);
+  assert.equal(accountLaunchValue(10.126, "pagar", true), -10.13);
+  const payableCredit = newAccountInput({
+    tipo: "pagar", idempresa: 1, pessoa_id: 2, documento: "NF1",
+    vencimento: "2026-10-31", valor: 10, quantidade: 2, gerar_credito: true,
+    forma_pagamento: 4, caixa: 8, numero_pagamento: "99", historico: "devolução",
+  });
+  assert.equal(payableCredit.credit, true);
+  assert.equal(payableCredit.amount, -10);
+  assert.deepEqual(payableCredit.parcels.map((parcel) => parcel.valor), [-5, -5]);
+  assert.equal(payableCredit.payment, null);
+  assert.equal(payableCredit.cash, null);
+  assert.equal(payableCredit.paymentNumber, null);
+  assert.equal(payableCredit.history, "Crédito devolução");
+  assert.equal(completeAccountInput(payableCredit, { CCUSTO: 3 }).cash, null);
+  assert.equal(
+    cashMovementSubject("Fornecedor Alfa", "BAIXA DA CONTA Nº", "NF1"),
+    "Fornecedor Alfa BAIXA DA CONTA Nº NF1",
+  );
+});
+
 test("filtros avancados do Automec sao parametrizados", () => {
   const receber = buildAccountFilters("receber", {
     banco: "2", caixa: "3", vendedor: "4", pedido: "99",
@@ -346,4 +454,19 @@ test("filtros avancados do Automec sao parametrizados", () => {
   assert.ok(pagar.where.includes("t.CDDOCUMENTO=?"));
   assert.ok(pagar.where.includes("t.COMBOLETO=-1"));
   assert.ok(pagar.params.some((item) => item instanceof Date));
+});
+
+test("busca de pessoa encontra pelo nome sem travar o parametro em texto vazio", () => {
+  const cliente = personSearch("receber", " carol ");
+  assert.deepEqual(cliente.params, ["CAROL", "CAROL", "CAROL", "CAROL", "CAROL"]);
+  assert.equal(cliente.sql.includes("?=''"), false);
+  assert.match(cliente.sql, /CLIENTE CONTAINING \?/);
+  assert.match(cliente.sql, /RAZAO CONTAINING \?/);
+  assert.equal((cliente.sql.match(/\?/g) || []).length, cliente.params.length);
+
+  const fornecedor = personSearch("pagar", "silva");
+  assert.match(fornecedor.sql, /FORNECEDOR CONTAINING \?/);
+  assert.match(fornecedor.sql, /FANTASIA CONTAINING \?/);
+  assert.equal(fornecedor.params[0], "SILVA");
+  assert.throws(() => personSearch("outro", "a"), /invalido/);
 });

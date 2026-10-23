@@ -8,11 +8,25 @@ const monthStart = () => {
   const value = new Date();
   return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-01`;
 };
-const money = (value) =>
-  Number(value || 0).toLocaleString("pt-BR", {
+const money = (value) => {
+  const number = Number(value);
+  return (Number.isFinite(number) ? number : 0).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+};
+const civilDate = (value) => {
+  if (value instanceof Date && !Number.isNaN(value.getTime()))
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+  const key = String(value || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : "";
+};
+const lateDays = (due, paidOn) => {
+  const dueKey = civilDate(due);
+  const paidKey = civilDate(paidOn);
+  if (!dueKey || !paidKey) return 0;
+  return Math.max(0, Math.floor((new Date(`${paidKey}T12:00:00`) - new Date(`${dueKey}T12:00:00`)) / 86400000));
+};
 const displayDate = (value) => {
   const normalized = String(value || "").slice(0, 10);
   if (!normalized || normalized <= "1899-12-30") return "—";
@@ -21,16 +35,22 @@ const displayDate = (value) => {
 const ref = (row) => `${row.CONTROLE}/${row.IDEMPRESA}`;
 const refs = (rows) =>
   rows.map((row) => ({ controle: row.CONTROLE, idempresa: row.IDEMPRESA }));
-const historyType = (tipo) =>
-  ({
-    1: "Inclusão",
-    2: "Alteração",
-    3: "Exclusão",
-    4: "Consulta",
-    5: "Impressão",
-    6: "Quitação",
-    7: "Cancelar quitação",
-  }[Number(tipo)] || `Tipo ${tipo}`);
+const historyType = (tipo, mensagem = "") => {
+  const text = String(mensagem || "");
+  if (/^Acordo nº \d+ realizado em:/.test(text)) return "Acordo";
+  if (/^Acordo desfeito em:/.test(text)) return "Desfazer acordo";
+  return (
+    {
+      1: "Inclusão",
+      2: "Alteração",
+      3: "Exclusão",
+      4: "Consulta",
+      5: "Impressão",
+      6: "Quitação",
+      7: "Cancelar quitação",
+    }[Number(tipo)] || `Tipo ${tipo}`
+  );
+};
 const displayDateTime = (value) => {
   const raw = String(value || "").replace("T", " ");
   if (!raw) return "—";
@@ -49,8 +69,59 @@ const initialFilters = (type = "receber") => ({
   data_inicio: monthStart(),
   data_fim: today(),
   tipo_data: "vencimento",
-  ...(type === "pagar" ? { vale: "sem_vales" } : {}),
+  ...(type === "pagar" ? { vale: "todos" } : {}),
 });
+function PersonField({ type, value, onChange, placeholder = "Digite para buscar", allowEmpty = false, initialLabel = "" }) {
+  const [options, setOptions] = useState([]);
+  const [query, setQuery] = useState("");
+  const [known, setKnown] = useState(initialLabel);
+  useEffect(() => {
+    if (initialLabel) setKnown(initialLabel);
+  }, [initialLabel]);
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      api.get("/financeiro/operacoes/pessoas", { tipo: type, q: query })
+        .then((result) => setOptions((result.pessoas || []).map((item) => ({
+          value: item.ID,
+          label: item.NOME,
+        }))))
+        .catch(() => setOptions([]));
+    }, 200);
+    return () => clearTimeout(handle);
+  }, [type, query]);
+  const pinned = value && known && !options.some((item) => String(item.value) === String(value))
+    ? [{ value, label: known }]
+    : [];
+  const choices = [
+    ...(allowEmpty ? [{ value: "", label: "Todos" }] : []),
+    ...pinned,
+    ...options,
+  ];
+  return (
+    <SearchableSelect
+      remote
+      value={value}
+      onQuery={(next) => {
+        const current = choices.find((item) => String(item.value) === String(value ?? ""));
+        setQuery(!next || next === current?.label ? "" : next);
+      }}
+      onChange={onChange}
+      options={choices}
+      placeholder={placeholder}
+    />
+  );
+}
+
+const paymentChoices = (type, options) =>
+  (options.formas || [])
+    .filter((item) => Number(type === "receber" ? item.SAIR_RECEBTO : item.SAIR_PAGTO) === -1)
+    .map((item) => ({
+      value: item.CDRECEBTO,
+      label: item.RECEBTO,
+      settled: type === "receber"
+        ? Number(item.STATUS) === 2
+        : Number(item.STATUS) === 2 || Number(item.STATUS_PAGTO) === 2,
+    }));
 
 function NewAccountModal({ type, options, onClose, onDone }) {
   const [form, setForm] = useState({
@@ -64,6 +135,7 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     iguais: true,
     dia_fixo: false,
     forma_pagamento: "",
+    gerar_credito: false,
     caixa: "",
     centro_custo: "",
     conta: "",
@@ -71,6 +143,7 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     subsubconta: "",
     subsubsubconta: "",
     historico: "",
+    numero_pagamento: "",
   });
   const [parcelas, setParcelas] = useState([]);
   const [scheduleError, setScheduleError] = useState("");
@@ -135,14 +208,9 @@ function NewAccountModal({ type, options, onClose, onDone }) {
       }
       return next;
     });
-  const people = type === "receber" ? options.clientes : options.fornecedores;
-  const paymentOptions = type === "receber"
-    ? (options.formas || []).map((item) => ({ ...item, value: item.CDRECEBTO, label: item.RECEBTO }))
-    : (options.formas_pagar || []).map((item) => ({ ...item, value: item.CDPAGTO, label: item.PAGTO }));
-  const personOptions = (people || []).map((item) => ({
-    value: type === "receber" ? item.CDCLIENTE : item.CDFORNECEDOR,
-    label: type === "receber" ? item.CLIENTE : item.FORNECEDOR,
-  }));
+  const paymentOptions = paymentChoices(type, options);
+  const selectedPayment = paymentOptions.find((item) => String(item.value) === String(form.forma_pagamento));
+  const willSettle = Boolean(selectedPayment?.settled) && !form.gerar_credito;
   async function submit(event) {
     event.preventDefault();
     setBusy(true);
@@ -155,6 +223,11 @@ function NewAccountModal({ type, options, onClose, onDone }) {
       }
       if (Math.abs(remaining) > 0.009) {
         setError(`Resta incluir ${money(remaining)}.`);
+        setBusy(false);
+        return;
+      }
+      if (willSettle && !form.caixa) {
+        setError("Forma de pagamento quitada exige um caixa.");
         setBusy(false);
         return;
       }
@@ -172,7 +245,7 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     }
   }
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <form className="modal finance-new-modal" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <div className="modal-title-row">
           <div>
@@ -181,13 +254,38 @@ function NewAccountModal({ type, options, onClose, onDone }) {
           </div>
           <button type="button" className="secondary" onClick={onClose}>Fechar</button>
         </div>
-        <p>O título será criado em aberto. Nenhum valor será movimentado no caixa até a quitação.</p>
+        <label className="credit-option">
+          <input
+            type="checkbox"
+            checked={form.gerar_credito}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setForm((current) => ({
+                ...current,
+                gerar_credito: checked,
+                forma_pagamento: checked ? "" : current.forma_pagamento,
+                caixa: checked ? "" : current.caixa,
+                numero_pagamento: checked ? "" : current.numero_pagamento,
+              }));
+            }}
+          />
+          <span>
+            Crédito?
+            <small>
+              {type === "pagar"
+                ? "Gerar crédito do fornecedor. O valor fica negativo, sem quitação e sem lançar no caixa."
+                : "Gerar crédito para o cliente. A parcela fica como devolução, sem quitação e sem lançar no caixa."}
+            </small>
+          </span>
+        </label>
+        <p>{form.gerar_credito ? (type === "pagar" ? "Será gerado um crédito do fornecedor, com valor negativo, sem quitação e sem lançar no caixa." : "Será gerado um crédito (devolução) para o cliente, sem forma de quitação e sem lançar no caixa.") : willSettle ? "A forma escolhida é quitada. A parcela será gravada como paga, com valor pago e lançamento no caixa." : type === "receber" ? "A parcela fica em aberto. A forma escolhida é só a previsão; a quitação permanece vazia." : "O título fica em aberto e o nº pagamento permanece vazio até a quitação."}</p>
         <div className="form-grid">
           <label>Empresa<SearchableSelect value={form.idempresa} onChange={(value) => set("idempresa", value)} placeholder="Digite para buscar" required options={(options.empresas || []).map((item) => ({ value: item.IDEMPRESA, label: item.NOMEEMPRESA }))} /></label>
-          <label>{type === "receber" ? "Cliente" : "Fornecedor"}<SearchableSelect value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} placeholder="Digite para buscar" required options={personOptions} /></label>
+          <label>{type === "receber" ? "Cliente" : "Fornecedor"}<PersonField type={type} value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} /></label>
         </div>
         <div className="form-grid">
           <label>Documento<span className="document-field"><input value={form.documento} maxLength={type === "receber" ? 15 : 20} onChange={(e) => set("documento", e.target.value)} required /><button type="button" className="secondary" disabled={generating} onClick={generateDocument}>{generating ? "Gerando..." : "Gerar número"}</button></span></label>
+          {type === "pagar" && <label>Nº pagamento<input value={form.numero_pagamento} maxLength="20" disabled={form.gerar_credito} onChange={(e) => set("numero_pagamento", e.target.value)} placeholder={form.gerar_credito ? "Não usado no crédito" : "Em aberto, deixe vazio"} /></label>}
           <label>Valor total<input type="number" min="0.01" step="0.01" value={form.valor} onChange={(e) => set("valor", e.target.value)} required /></label>
           <label>Primeiro vencimento<input type="date" value={form.vencimento} onChange={(e) => set("vencimento", e.target.value)} required /></label>
           <label>Parcelas<input type="number" min="1" max="120" value={form.quantidade} onChange={(e) => set("quantidade", e.target.value)} required /></label>
@@ -222,8 +320,8 @@ function NewAccountModal({ type, options, onClose, onDone }) {
         </div>
         {scheduleError && <div className="error">{scheduleError}</div>}
         <div className="form-grid">
-          <label>Forma prevista<select value={form.forma_pagamento} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">Não informada</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-          <label>Caixa<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder="Não informado" options={[{ value: "", label: "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
+          <label>Forma prevista<select value={form.forma_pagamento} disabled={form.gerar_credito} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">{form.gerar_credito ? "Não usada no crédito" : "Não informada"}</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}{item.settled ? " (quitado)" : ""}</option>)}</select></label>
+          <label>Caixa{willSettle ? " *" : ""}<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder={willSettle ? "Obrigatório" : "Não informado"} disabled={form.gerar_credito} options={[{ value: "", label: willSettle ? "Selecione" : "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
         </div>
         <details className="finance-advanced">
           <summary>Classificação contábil</summary>
@@ -257,7 +355,7 @@ function AccountHistory({ rows }) {
             {(rows || []).map((row, index) => (
               <tr key={`${row.DATA_HORA}-${index}`}>
                 <td>{displayDateTime(row.DATA_HORA)}</td>
-                <td>{historyType(row.TIPO)}</td>
+                <td>{historyType(row.TIPO, row.MENSAGEM)}</td>
                 <td>{row.USUARIO || "—"}</td>
                 <td>{row.MENSAGEM || "—"}</td>
               </tr>
@@ -319,14 +417,7 @@ function EditAccountModal({ type, account, options, onClose, onDone }) {
       });
     }).catch((cause) => setError(cause.message));
   }, [type, account.CONTROLE, account.IDEMPRESA]);
-  const people = type === "receber" ? options.clientes : options.fornecedores;
-  const paymentOptions = type === "receber"
-    ? (options.formas || []).map((item) => ({ value: item.CDRECEBTO, label: item.RECEBTO }))
-    : (options.formas_pagar || []).map((item) => ({ value: item.CDPAGTO, label: item.PAGTO }));
-  const personOptions = (people || []).map((item) => ({
-    value: type === "receber" ? item.CDCLIENTE : item.CDFORNECEDOR,
-    label: type === "receber" ? item.CLIENTE : item.FORNECEDOR,
-  }));
+  const paymentOptions = paymentChoices(type, options);
   async function generateDocument() {
     setGenerating(true);
     setError("");
@@ -359,7 +450,7 @@ function EditAccountModal({ type, account, options, onClose, onDone }) {
     }
   }
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <form className="modal finance-new-modal" onClick={(event) => event.stopPropagation()} onSubmit={submit}>
         <div className="modal-title-row">
           <div>
@@ -376,7 +467,7 @@ function EditAccountModal({ type, account, options, onClose, onDone }) {
               {type === "receber" ? (
                 <label>Cliente<input value={form.pessoa} disabled /></label>
               ) : (
-                <label>Fornecedor<SearchableSelect value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} placeholder="Digite para buscar" required options={personOptions} /></label>
+                <label>Fornecedor<PersonField type="pagar" value={form.pessoa_id} initialLabel={form.pessoa} onChange={(value) => set("pessoa_id", value)} /></label>
               )}
               <label>Documento<span className="document-field"><input value={form.documento} maxLength={type === "receber" ? 15 : 20} onChange={(event) => set("documento", event.target.value)} required /><button type="button" disabled={generating || !form.aberto} onClick={generateDocument}>{generating ? "Gerando..." : "Gerar número"}</button></span></label>
               {type === "pagar" && <label>Nota fiscal<input value={form.nota} maxLength="20" onChange={(event) => set("nota", event.target.value)} /></label>}
@@ -418,7 +509,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
   const [form, setForm] = useState({
     data_pagamento: today(),
     forma_pagamento: "",
-    caixa: "",
+    caixa: new Set(selected.map((row) => String(row.CAIXA || ""))).size === 1 ? (selected[0].CAIXA || "") : "",
     banco: "",
     agencia: "",
     conta: "",
@@ -458,16 +549,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
         (item) => Number(item.IDEMPRESA) === Number(row.IDEMPRESA),
       )?.TXJUROS || 0,
     );
-    const days = row.VENCIMENTO
-      ? Math.max(
-          0,
-          Math.floor(
-            (new Date(`${form.data_pagamento}T12:00:00`) -
-              new Date(`${String(row.VENCIMENTO).slice(0, 10)}T12:00:00`)) /
-              86400000,
-          ),
-        )
-      : 0;
+    const days = lateDays(row.VENCIMENTO, form.data_pagamento);
     return sum + (Number(row.VALOR || 0) * rate * days) / 100;
   }, 0);
   const gross =
@@ -495,6 +577,14 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
       );
       if (formStatus === 3) {
         setError("Forma de pagamento é uma devolução.");
+        return;
+      }
+      if (!form.caixa) {
+        setError("Selecione um caixa.");
+        return;
+      }
+      if (!Number.isFinite(gross) || !Number.isFinite(net)) {
+        setError("Não foi possível calcular o valor do pagamento.");
         return;
       }
     }
@@ -530,7 +620,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
           desconto: Number(form.desconto),
           retencao: Number(form.retencao),
           acrescimo: Number(form.acrescimo),
-          valores,
+          valores: values,
           historico: form.historico,
           forma_pagamento: form.forma_pagamento,
           caixa: form.caixa,
@@ -546,7 +636,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
     }
   }
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <form
         className="modal"
         onClick={(e) => e.stopPropagation()}
@@ -559,7 +649,7 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
         </p>
         <p className="muted">
           {action === "baixar"
-            ? "Obrigatórios: data e forma de pagamento. Caixa e conta bancária são opcionais."
+            ? "Obrigatórios: data, forma de pagamento e caixa. A conta bancária fica vazia no dinheiro."
             : "Obrigatórios: primeiro vencimento, forma de pagamento e caixa."}
         </p>
         <label>
@@ -605,23 +695,23 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
             <label>
               Conta bancária
               <select
-                value={`${form.banco}|${form.conta}`}
+                value={`${form.banco}|${form.conta}|${form.agencia}`}
                 onChange={(e) => {
                   const [bank, accountNumber, agency] =
                     e.target.value.split("|");
                   setForm((current) => ({
                     ...current,
-                    banco: bank,
-                    conta: accountNumber,
-                    agencia: agency,
+                    banco: bank || "",
+                    conta: accountNumber || "",
+                    agencia: agency || "",
                   }));
                 }}
               >
-                <option value="|">Sem movimento bancário</option>
+                <option value="||">Sem movimento bancário</option>
                 {options.contas_bancarias?.map((item, index) => (
                   <option
-                    key={`${item.CDBANCO}-${item.NUMCONTA}-${index}`}
-                    value={`${item.CDBANCO}|${item.NUMCONTA}|${item.AGENCIA}`}
+                    key={`${item.CDBANCO}-${item.AGENCIA}-${item.NUMCONTA}-${index}`}
+                    value={`${item.CDBANCO ?? ""}|${item.NUMCONTA ?? ""}|${item.AGENCIA ?? ""}`}
                   >
                     {item.BANCO} · {item.AGENCIA}/{item.NUMCONTA}
                   </option>
@@ -799,7 +889,7 @@ function AccountDetailModal({ detail, loading, onClose }) {
     }
   }
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <section className="modal modal-wide account-detail" onClick={(event) => event.stopPropagation()}>
         <div className="detail-heading">
           <div>
@@ -817,7 +907,8 @@ function AccountDetailModal({ detail, loading, onClose }) {
               <div><small>Parcela</small><strong>{title.PARCELA ?? "—"}</strong></div>
               <div><small>Vencimento</small><strong>{displayDate(title.DTVENC)}</strong></div>
               <div><small>Quitação</small><strong>{displayDate(title.DATA_BAIXA)}</strong></div>
-              <div><small>Forma de pagamento</small><strong>{title.FORMA_PAGAMENTO || "—"}</strong></div>
+              <div><small>Forma prevista</small><strong>{title.FORMA_PREVISTA || title.FORMA_PAGAMENTO || "—"}</strong></div>
+              <div><small>Forma de quitação</small><strong>{title.FORMA_QUITACAO || "—"}</strong></div>
               <div><small>Valor</small><strong className="money-cell">{money(title.VALOR ?? title.TOTAL ?? title.DIVIDA)}</strong></div>
               <div><small>Valor pago</small><strong className="money-cell">{money(title.TOTALPG ?? title.VLPAGTO ?? title.VLPGLIQ)}</strong></div>
               <div><small>Juros</small><strong className="money-cell">{money(title.JUROS)}</strong></div>
@@ -905,7 +996,7 @@ export default function FinanceAccounts() {
   async function load(filterOverride = filters) {
     const applied =
       type === "pagar" && !filterOverride.vale
-        ? { ...filterOverride, vale: "sem_vales" }
+        ? { ...filterOverride, vale: "todos" }
         : filterOverride;
     setLoading(true);
     setError("");
@@ -927,7 +1018,7 @@ export default function FinanceAccounts() {
   useEffect(() => {
     const next =
       type === "pagar" && !filters.vale
-        ? { ...filters, vale: "sem_vales" }
+        ? { ...filters, vale: "todos" }
         : filters;
     if (next !== filters) setFilters(next);
     load(next);
@@ -1066,13 +1157,19 @@ export default function FinanceAccounts() {
               onChange={(e) => setFilter("data_fim", e.target.value)}
             />
           </label>
+          <label className="filtro-pessoa">
+            Empresa
+            <SearchableSelect value={filters.loja || ""} onChange={(value) => setFilter("loja", value)} placeholder="Todas" options={[{ value: "", label: "Todas" }, ...(options.empresas || []).map((x) => ({ value: x.IDEMPRESA, label: x.NOMEEMPRESA }))]} />
+          </label>
+          <label className="filtro-pessoa">
+            {type === "receber" ? "Cliente" : "Fornecedor"}
+            <PersonField type={type} allowEmpty value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite o nome" />
+          </label>
           <button onClick={() => load()} disabled={loading}>{loading ? "Atualizando..." : "Buscar / atualizar"}</button>
           <button className="secondary" onClick={clearFilters}>Limpar</button>
           <details className="finance-advanced">
             <summary>Filtros avançados</summary>
             <div className="advanced-filter-grid">
-              <label>Empresa<SearchableSelect value={filters.loja || ""} onChange={(value) => setFilter("loja", value)} placeholder="Todas" options={[{ value: "", label: "Todas" }, ...(options.empresas || []).map((x) => ({ value: x.IDEMPRESA, label: x.NOMEEMPRESA }))]} /></label>
-              <label>{type === "receber" ? "Cliente" : "Fornecedor"}<SearchableSelect value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite o nome" options={[{ value: "", label: "Todos" }, ...((type === "receber" ? options.clientes : options.fornecedores) || []).map((x) => ({ value: type === "receber" ? x.CDCLIENTE : x.CDFORNECEDOR, label: type === "receber" ? x.CLIENTE : x.FORNECEDOR }))]} /></label>
               <label>Banco<SearchableSelect value={filters.banco || ""} onChange={(value) => setFilter("banco", value)} placeholder="Todos" options={[{ value: "", label: "Todos" }, ...(options.bancos || []).map((x) => ({ value: x.CDBANCO, label: x.BANCO }))]} /></label>
               <label>Caixa<SearchableSelect value={filters.caixa || ""} onChange={(value) => setFilter("caixa", value)} placeholder="Todos" options={[{ value: "", label: "Todos" }, ...(options.caixas || []).map((x) => ({ value: x.CDCAIXA, label: x.CAIXA }))]} /></label>
               <label>Grupo de recebimento<select value={filters.grupo_recebto || ""} onChange={(e) => setFilter("grupo_recebto", e.target.value)}><option value="">Todos</option>{options.grupos_recebimento?.map((x) => <option key={x.CDGRUPO} value={x.CDGRUPO}>{x.GRUPO}</option>)}</select></label>
@@ -1110,7 +1207,7 @@ export default function FinanceAccounts() {
                 <label>Valor pago<input type="number" step="0.01" value={filters.valor_pago || ""} onChange={(e) => setFilter("valor_pago", e.target.value)} /></label>
                 <label>Com boleto<select value={filters.com_boleto || ""} onChange={(e) => setFilter("com_boleto", e.target.value)}><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
                 <label>DANFE<select value={filters.danfe || ""} onChange={(e) => setFilter("danfe", e.target.value)}><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
-                <label>Vales<select value={filters.vale || "sem_vales"} onChange={(e) => setFilter("vale", e.target.value)}><option value="sem_vales">Sem vales</option><option value="vale_emitido">Vale emitido</option><option value="vale_confirmado">Vale confirmado</option><option value="somente_vales">Somente vales</option><option value="vales_gerados">Vales gerados</option><option value="vales_funcionarios">Vales de funcionários</option><option value="todos">Todos</option></select></label>
+                <label>Vales<select value={filters.vale || "todos"} onChange={(e) => setFilter("vale", e.target.value)}><option value="todos">Todos</option><option value="sem_vales">Sem vales</option><option value="vale_emitido">Vale emitido</option><option value="vale_confirmado">Vale confirmado</option><option value="somente_vales">Somente vales</option><option value="vales_gerados">Vales gerados</option><option value="vales_funcionarios">Vales de funcionários</option></select></label>
                 <label>Emissão de<input type="date" value={filters.emissao_inicio || ""} onChange={(e) => setFilter("emissao_inicio", e.target.value)} /></label>
                 <label>Emissão até<input type="date" value={filters.emissao_fim || ""} onChange={(e) => setFilter("emissao_fim", e.target.value)} /></label>
                 <label className="check-filter"><input type="checkbox" checked={Boolean(filters.ocultar_provisao)} onChange={(e) => setFilter("ocultar_provisao", e.target.checked)} /> Ocultar provisão de ordem de compra</label>
@@ -1146,6 +1243,16 @@ export default function FinanceAccounts() {
             )}
           </span>
           <div>
+            <button
+              type="button"
+              disabled={!rows.length}
+              onClick={() => {
+                const every = rows.every((row) => selected.has(ref(row)));
+                setSelected(every ? new Set() : new Set(rows.map(ref)));
+              }}
+            >
+              {rows.length && rows.every((row) => selected.has(ref(row))) ? "Limpar seleção" : "Selecionar todas"}
+            </button>
             <button disabled={!oneOpen} onClick={() => setEditing(chosen[0])}>
               Alterar
             </button>
@@ -1189,7 +1296,14 @@ export default function FinanceAccounts() {
           <table className="tabela">
             <thead>
               <tr>
-                <th></th>
+                <th>
+                  <input
+                    type="checkbox"
+                    aria-label="Selecionar todas as parcelas"
+                    checked={rows.length > 0 && rows.every((row) => selected.has(ref(row)))}
+                    onChange={(event) => setSelected(event.target.checked ? new Set(rows.map(ref)) : new Set())}
+                  />
+                </th>
                 <th>Status</th>
                 <th>Vencimento</th>
                 <th>Cliente</th>

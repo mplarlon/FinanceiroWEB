@@ -45,6 +45,12 @@ export function appendAuditEvent(input = {}) {
   return event;
 }
 
+export function findAuditEvents(ids = []) {
+  const wanted = new Set(ids.filter(Boolean));
+  if (!wanted.size) return [];
+  return readJsonConfig(EVENTS, { events: [] }).events.filter((event) => wanted.has(event.id));
+}
+
 export function listAuditEvents(actor = {}, filters = {}) {
   const state = readJsonConfig(EVENTS, { events: [] });
   return state.events.filter((event) => (!actor.company || Number(event.company) === Number(actor.company)) && (!actor.branch || Number(event.branch) === Number(actor.branch)) && (!filters.type || event.type === filters.type) && (!filters.entity || event.entity === String(filters.entity).toUpperCase())).slice(-Math.max(1, Math.min(500, Number(filters.limit) || 100))).reverse();

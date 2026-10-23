@@ -4,6 +4,7 @@ import {
   IMPACT_TYPES,
   allocateAmount,
   calculateProfitability,
+  idleProducts,
   investigateOccurrence,
   robustAnomaly,
 } from "../server/lib/charlie-profitability.js";
@@ -58,6 +59,18 @@ test("anomalia robusta exige histórico e detecta desvio auditável", () => {
   const result = robustAnomaly([9, 10, 10, 11, 12, 10], 40);
   assert.equal(result.anomalous, true);
   assert.equal(result.method, "z_score_modificado_mad");
+});
+
+test("estoque parado devolve todos os produtos sem venda no período", () => {
+  const candidates = Array.from({ length: 140 }, (_, index) => ({
+    CDPRODUTO: index + 1,
+    PRODUTO: `Produto ${index + 1}`,
+    CAPITAL_IMOBILIZADO: 140 - index,
+  }));
+  const idle = idleProducts(candidates, [2, 5, 9]);
+  assert.equal(idle.length, 137);
+  assert.equal(idle.some((item) => item.CDPRODUTO === 2), false);
+  assert.equal(idle[0].ULTIMA_VENDA, null);
 });
 
 test("investigação expõe composição, fontes e ressalva contábil", () => {

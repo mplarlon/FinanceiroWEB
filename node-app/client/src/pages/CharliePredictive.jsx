@@ -5,22 +5,106 @@ const money = (value) => Number(value || 0).toLocaleString("pt-BR", { style: "cu
 const date = (value) => value ? new Date(`${String(value).slice(0, 10)}T12:00:00`).toLocaleDateString("pt-BR") : "—";
 const quality = (value) => ({ adequada: "Adequada", limitada: "Limitada", insuficiente: "Insuficiente" }[value] || value || "—");
 
-function LineChart({ history = [], forecast = [] }) {
-  const points = useMemo(() => [...history.slice(-60).map((x) => ({ value: x.value, kind: "history" })), ...forecast.map((x) => ({ value: x.central, lower: x.lower, upper: x.upper, kind: "forecast" }))], [history, forecast]);
-  if (points.length < 2) return null;
-  const maximum = Math.max(1, ...points.flatMap((point) => [point.value, point.upper || 0]));
-  const xy = (items, field = "value", offset = 0) => items.map((point, index) => `${((index + offset) / (points.length - 1)) * 100},${100 - Number(point[field] || 0) / maximum * 90}`).join(" ");
-  const historical = points.filter((point) => point.kind === "history");
-  const predicted = points.filter((point) => point.kind === "forecast");
-  const offset = Math.max(0, historical.length - 1);
+function weekStart(iso) {
+  const [year, month, day] = String(iso).slice(0, 10).split("-").map(Number);
+  if (!year || !month || !day) return null;
+  const date = new Date(Date.UTC(year, month - 1, day));
+  const weekday = date.getUTCDay();
+  date.setUTCDate(date.getUTCDate() + (weekday === 0 ? -6 : 1 - weekday));
+  return date.toISOString().slice(0, 10);
+}
+
+function shortDate(iso) {
+  const [, month, day] = String(iso).slice(0, 10).split("-");
+  return `${day}/${month}`;
+}
+
+function compactMoney(value) {
+  const amount = Number(value) || 0;
+  const abs = Math.abs(amount);
+  if (abs >= 1000000) return `R$ ${(amount / 1000000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+  if (abs >= 1000) return `R$ ${(amount / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+  return amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+}
+
+const weekRate = (sum, days) => days ? sum / days * 7 : 0;
+
+function weeklyBuckets(history, forecast) {
+  const historyDays = Math.min(84, Math.max(56, forecast.length));
+  const buckets = new Map();
+  const bucketFor = (iso) => {
+    const key = weekStart(iso);
+    if (!key) return null;
+    if (!buckets.has(key)) buckets.set(key, { key, history: 0, historyDays: 0, central: 0, lower: 0, upper: 0, forecastDays: 0 });
+    return buckets.get(key);
+  };
+  for (const point of history.slice(-historyDays)) {
+    const bucket = bucketFor(point.date);
+    if (!bucket) continue;
+    bucket.history += Number(point.value) || 0;
+    bucket.historyDays += 1;
+  }
+  for (const point of forecast) {
+    const bucket = bucketFor(point.date);
+    if (!bucket) continue;
+    bucket.central += Number(point.central) || 0;
+    bucket.lower += Number(point.lower) || 0;
+    bucket.upper += Number(point.upper) || 0;
+    bucket.forecastDays += 1;
+  }
+  return [...buckets.values()].sort((a, b) => a.key.localeCompare(b.key)).map((week) => ({
+    ...week,
+    historyRate: weekRate(week.history, week.historyDays),
+    centralRate: weekRate(week.central, week.forecastDays),
+    lowerRate: weekRate(week.lower, week.forecastDays),
+    upperRate: weekRate(week.upper, week.forecastDays),
+  }));
+}
+
+function ForecastChart({ history = [], forecast = [] }) {
+  const weeks = useMemo(() => weeklyBuckets(history, forecast), [history, forecast]);
+  if (weeks.length < 2) return null;
+  const maximum = Math.max(1, ...weeks.flatMap((week) => [week.historyRate, week.upperRate, week.centralRate]));
+  const width = 760;
+  const height = 286;
+  const pad = { top: 18, right: 16, bottom: 36, left: 78 };
+  const innerW = width - pad.left - pad.right;
+  const innerH = height - pad.top - pad.bottom;
+  const slot = innerW / weeks.length;
+  const barW = Math.min(26, slot * 0.42);
+  const y = (value) => pad.top + innerH - (Number(value) || 0) / maximum * innerH;
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map((ratio) => maximum * ratio);
+  const firstForecast = weeks.findIndex((week) => week.forecastDays > 0);
+  const labelStep = Math.max(1, Math.ceil(46 / slot));
   return <div className="predictive-chart">
-    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Histórico e previsão">
-      <polyline className="history" points={xy(historical)} />
-      <polyline className="upper" points={xy(predicted, "upper", offset)} />
-      <polyline className="forecast" points={xy(predicted, "value", offset)} />
-      <polyline className="lower" points={xy(predicted, "lower", offset)} />
+    <p className="predictive-chart-caption">Ritmo semanal do faturamento. A coluna é o realizado levado a 7 dias; a faixa é o intervalo da previsão e o traço azul é a estimativa. Passe o mouse para ver a soma dos dias.</p>
+    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Faturamento semanal e faixa de previsão">
+      {ticks.map((value) => <g key={value}>
+        <line className="grid" x1={pad.left} x2={width - pad.right} y1={y(value)} y2={y(value)} />
+        <text x={pad.left - 8} y={y(value)} textAnchor="end" dominantBaseline="middle">{compactMoney(value)}</text>
+      </g>)}
+      {firstForecast > 0 && <line className="today" x1={pad.left + firstForecast * slot} x2={pad.left + firstForecast * slot} y1={pad.top} y2={pad.top + innerH} />}
+      {weeks.map((week, index) => {
+        const center = pad.left + index * slot + slot / 2;
+        const dual = week.historyDays > 0 && week.forecastDays > 0;
+        const historyX = dual ? center - barW - 2 : center - barW / 2;
+        const forecastX = dual ? center + 2 : center - barW / 2;
+        const partial = week.historyDays > 0 && week.historyDays < 7;
+        return <g key={week.key}>
+          {week.historyDays > 0 && <rect className={partial ? "history-bar partial" : "history-bar"} x={historyX} y={y(week.historyRate)} width={barW} height={Math.max(0, y(0) - y(week.historyRate))} rx="3">
+            <title>{`Semana de ${shortDate(week.key)}: ${money(week.history)} em ${week.historyDays} dia(s). Ritmo de ${money(week.historyRate)} na semana.`}</title>
+          </rect>}
+          {week.forecastDays > 0 && <>
+            <rect className="forecast-band" x={forecastX} y={y(week.upperRate)} width={barW} height={Math.max(2, y(week.lowerRate) - y(week.upperRate))} rx="3">
+              <title>{`Semana de ${shortDate(week.key)}: estimativa ${money(week.centralRate)}, entre ${money(week.lowerRate)} e ${money(week.upperRate)} no ritmo de 7 dias.`}</title>
+            </rect>
+            <line className="forecast-mark" x1={forecastX - 2} x2={forecastX + barW + 2} y1={y(week.centralRate)} y2={y(week.centralRate)} />
+          </>}
+          {(index % labelStep === 0 || index === weeks.length - 1) && <text className="axis" x={center} y={height - 12} textAnchor="middle">{shortDate(week.key)}</text>}
+        </g>;
+      })}
     </svg>
-    <div className="predictive-legend"><span className="history">Histórico</span><span className="forecast">Previsão central</span><span className="upper">Otimista</span><span className="lower">Conservador</span></div>
+    <div className="predictive-legend"><span className="history">Realizado</span><span className="forecast">Estimativa da semana</span><span className="band">Faixa provável</span></div>
   </div>;
 }
 
@@ -58,7 +142,7 @@ export default function CharliePredictive({ open, onClose }) {
     {error && <div className="error">{error}</div>}
     {tab === "revenue" && data && <>
       <div className="predictive-kpis"><article><span>Estimativa central</span><strong>{money(data.total)}</strong></article><article><span>Faixa provável</span><strong>{money(data.interval?.lower)} – {money(data.interval?.upper)}</strong></article><article><span>Modelo</span><strong>{data.model || "Não selecionado"}</strong></article><article><span>Qualidade</span><strong>{quality(data.quality?.status)}</strong></article></div>
-      {data.ok ? <LineChart history={data.history} forecast={data.forecasts} /> : <p>{data.message}</p>}
+      {data.ok ? <ForecastChart history={data.history} forecast={data.forecasts} /> : <p>{data.message}</p>}
       <p className="predictive-disclaimer">{data.disclaimer}</p><Assumptions items={data.assumptions} />
     </>}
     {tab === "cash" && data?.scenarios && <>
