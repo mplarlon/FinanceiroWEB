@@ -1,6 +1,7 @@
 import express from "express";
 import { query, withDatabase } from "../db.js";
 import { readJsonConfig, writeJsonConfig } from "../lib/json-config.js";
+import { saleItemCost } from "../lib/sale-cost.js";
 
 const router = express.Router();
 const SETTINGS_FILE = "management_reports.json";
@@ -46,9 +47,10 @@ const legacyName = (columns, fallback = "") => {
 const run = (factory) => async (req, res) => { try { res.json(await withDatabase(db => factory(db, req))); } catch (error) { res.status(500).json({ ok: false, erro: error.message }); } };
 
 async function storeRows(db, start, end, companyId = null) {
+  const custoItem = await saleItemCost(db, "sp", "p");
   return query(db, `SELECT se.IDEMPRESA ID,c.NOMEEMPRESA NOME,
     COUNT(DISTINCT se.NRPEDIDO) PEDIDOS,SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,
-    SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,p.VLCUSTOMEDIO,0)) CUSTO,
+    SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) CUSTO,
     SUM(COALESCE(se.DESCONTO,0)) DESCONTOS
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO p ON p.CDPRODUTO=sp.CDPRODUTO LEFT JOIN CONFIGURACAO c ON c.IDEMPRESA=se.IDEMPRESA
@@ -88,7 +90,8 @@ async function goals(db,req){
 
 async function margins(db, req) {
   const p = period(req), companyId=company(req), params = periodParams(p,companyId), from = `FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA LEFT JOIN PRODUTO pr ON pr.CDPRODUTO=sp.CDPRODUTO`;
-  const measures = `SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,pr.VLCUSTOMEDIO,0)) CUSTO,SUM(COALESCE(sp.DESCONTO,0)) DESCONTO,SUM(COALESCE(sp.QTDPRODUTO,0)) QTD`;
+  const custoItem = await saleItemCost(db, "sp", "pr");
+  const measures = `SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) CUSTO,SUM(COALESCE(sp.DESCONTO,0)) DESCONTO,SUM(COALESCE(sp.QTDPRODUTO,0)) QTD`;
   const where = `${salesWhere("se",companyId)} AND COALESCE(sp.STATUSSE,0)=0`;
   const make = async (select, joins, group) => (await query(db, `SELECT FIRST 100 ${select},${measures} ${from} ${joins} WHERE ${where} GROUP BY ${group} ORDER BY FATURAMENTO DESC`, params)).map(x => ({ ...x, LUCRO: num(x.FATURAMENTO) - num(x.CUSTO), MARGEM: num(x.FATURAMENTO) ? (num(x.FATURAMENTO) - num(x.CUSTO)) / num(x.FATURAMENTO) * 100 : 0 }));
   const label = (columns, fallback) => `MAX(${legacyName(columns, fallback)}) NOME`;
@@ -148,9 +151,10 @@ async function cashflow(db) {
 }
 
 async function sellers(db, req) {
-  const p = period(req), companyId=company(req), rows = await query(db, `SELECT se.CDVENDEDOR ID,COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
+  const p = period(req), companyId=company(req), custoItem = await saleItemCost(db, "sp", "pr");
+  const rows = await query(db, `SELECT se.CDVENDEDOR ID,COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
     COUNT(DISTINCT se.NRPEDIDO) PEDIDOS,SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,
-    SUM(COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,pr.VLCUSTOMEDIO,0)) CUSTO,
+    SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) CUSTO,
     SUM(COALESCE(sp.DESCONTO,0))+SUM(COALESCE(se.DESCONTO,0)) DESCONTOS,SUM(COALESCE(se.VLCOMISSVEND,se.VLCOMISSAO,0)) COMISSAO,
     COUNT(DISTINCT se.CDCLIENTE) CLIENTES
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
@@ -176,7 +180,8 @@ async function retention(db, req) {
 }
 
 async function suppliers(db, req) {
-  const p=period(req),companyId=company(req), rows=await query(db,`SELECT ee.CDFORNECEDOR ID,COALESCE(f.FORNECEDOR,f.FANTASIA,'Sem fornecedor') NOME,
+  const p=period(req),companyId=company(req), custoItem = await saleItemCost(db, "sp", "pr");
+  const rows=await query(db,`SELECT ee.CDFORNECEDOR ID,COALESCE(f.FORNECEDOR,f.FANTASIA,'Sem fornecedor') NOME,
     COUNT(DISTINCT ee.IDENTRADA) ENTRADAS,SUM(COALESCE(ep.QTDE,0)) QTD,SUM(COALESCE(ep.VLTOT,ep.QTDE*ep.VLUNIT,0)) TOTAL,
     AVG(COALESCE(f.PRAZOENTREGA,0)) PRAZO_PROMETIDO,AVG(CASE WHEN ee.DTNTFISCAL IS NOT NULL THEN DATEDIFF(DAY,CAST(ee.DTNTFISCAL AS DATE),CAST(ee.DTENTRADA AS DATE)) ELSE NULL END) PRAZO_REAL,
     AVG(CASE WHEN COALESCE(ep.CUSTOMED_ANTERIOR,0)>0 THEN (COALESCE(ep.VLCUSTO,ep.VLUNIT,0)-ep.CUSTOMED_ANTERIOR)/ep.CUSTOMED_ANTERIOR*100 ELSE NULL END) VARIACAO_CUSTO,
@@ -185,7 +190,7 @@ async function suppliers(db, req) {
     LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=ee.CDFORNECEDOR WHERE ee.DTENTRADA>=? AND ee.DTENTRADA<? AND ee.DTCANCELAMENTO IS NULL${companyId?" AND ee.IDEMPRESA=?":""}
     GROUP BY ee.CDFORNECEDOR,f.FORNECEDOR,f.FANTASIA ORDER BY TOTAL DESC`,periodParams(p,companyId));
   const profit=await query(db,`SELECT pr.CDFORNECEDOR ID,SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,
-    SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)-sp.QTDPRODUTO*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,pr.VLCUSTOMEDIO,0)) LUCRO
+    SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)-sp.QTDPRODUTO*${custoItem}) LUCRO
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA JOIN PRODUTO pr ON pr.CDPRODUTO=sp.CDPRODUTO
     WHERE ${salesWhere("se",companyId)} AND COALESCE(sp.STATUSSE,0)=0 GROUP BY pr.CDFORNECEDOR`,periodParams(p,companyId)),profitMap=new Map(profit.map(x=>[String(x.ID),x])),total=rows.reduce((s,x)=>s+num(x.TOTAL),0);
   return {ok:true,rows:rows.map(x=>{const pr=profitMap.get(String(x.ID))||{};return {...x,ATRASO_DIAS:Math.max(0,num(x.PRAZO_REAL)-num(x.PRAZO_PROMETIDO)),NO_PRAZO:num(x.PRAZO_REAL)<=num(x.PRAZO_PROMETIDO),PARTICIPACAO:total?num(x.TOTAL)/total*100:0,FATURAMENTO:num(pr.FATURAMENTO),LUCRO:num(pr.LUCRO),MARGEM:num(pr.FATURAMENTO)?num(pr.LUCRO)/num(pr.FATURAMENTO)*100:0,DEPENDENCIA:total?num(x.TOTAL)/total*100:0};})};

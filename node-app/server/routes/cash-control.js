@@ -2,6 +2,21 @@ import express from "express";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
 
 const router = express.Router();
+// A conexão vai em UTF8. Cadastros antigos estão em NONE e um acento, misturado
+// com literal da conexão em COALESCE ou UPPER, aborta a leitura com "Malformed string".
+const legacyText = (expression, size) =>
+  `CAST(CAST(${expression} AS VARCHAR(${size}) CHARACTER SET OCTETS) AS VARCHAR(${size}) CHARACTER SET NONE)`;
+const legacyLiteral = (value) => {
+  const text = String(value).replaceAll("'", "''");
+  return `CAST('${text}' AS VARCHAR(${Math.max(text.length, 1)}) CHARACTER SET NONE)`;
+};
+const legacyValue = (...parts) => {
+  const sql = parts.map((part) =>
+    Array.isArray(part) ? legacyText(part[0], part[1]) : legacyLiteral(part),
+  );
+  return sql.length === 1 ? sql[0] : `COALESCE(${sql.join(",")})`;
+};
+const moneyFormOrder = `ORDER BY CASE WHEN UPPER(${legacyValue(["RECEBTO", 50], "")}) CONTAINING ${legacyLiteral("DINHEIRO")} THEN 0 ELSE 1 END,CDRECEBTO`;
 const integer = (value) =>
   /^\d+$/.test(String(value ?? "")) ? Number(value) : null;
 const bounded = (value, fallback, max) =>
@@ -164,11 +179,11 @@ router.get(
       ),
       caixas = await query(
         db,
-        "SELECT CDCAIXA,COALESCE(CAIXA,'Caixa sem nome') AS CAIXA FROM TPCAIXA WHERE COALESCE(INATIVO,0)=0 ORDER BY CDCAIXA",
+        `SELECT CDCAIXA,${legacyValue(["CAIXA", 50], "Caixa sem nome")} AS CAIXA FROM TPCAIXA WHERE COALESCE(INATIVO,0)=0 ORDER BY CDCAIXA`,
       ),
       formas = await query(
         db,
-        "SELECT CDRECEBTO,COALESCE(RECEBTO,'Forma sem nome') AS FORMA FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY RECEBTO,CDRECEBTO",
+        `SELECT CDRECEBTO,${legacyValue(["RECEBTO", 50], "Forma sem nome")} AS FORMA FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY 2,CDRECEBTO`,
       );
     return { ok: true, empresas, caixas, formas };
   }),
@@ -209,7 +224,7 @@ router.get(
       ok: true,
       fechamentos: await query(
         db,
-        `SELECT FIRST ${limit} f.*,cfg.NOMEEMPRESA AS EMPRESA,tc.CAIXA,COALESCE(u.NOMECOMPLETO,u.LOGIN) AS USUARIO FROM DASH_CAIXA_FECHAMENTO f LEFT JOIN CONFIGURACAO cfg ON cfg.IDEMPRESA=f.IDEMPRESA LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=f.CDCAIXA LEFT JOIN USUARIOS u ON u.IDUSUARIO=f.USUARIO_ID ${clause} ORDER BY f.DATA_CAIXA DESC,f.FECHADO_EM DESC`,
+        `SELECT FIRST ${limit} f.*,${legacyValue(["cfg.NOMEEMPRESA", 60])} AS EMPRESA,${legacyValue(["tc.CAIXA", 50])} AS CAIXA,${legacyValue(["u.NOMECOMPLETO", 50], ["u.LOGIN", 15])} AS USUARIO FROM DASH_CAIXA_FECHAMENTO f LEFT JOIN CONFIGURACAO cfg ON cfg.IDEMPRESA=f.IDEMPRESA LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=f.CDCAIXA LEFT JOIN USUARIOS u ON u.IDUSUARIO=f.USUARIO_ID ${clause} ORDER BY f.DATA_CAIXA DESC,f.FECHADO_EM DESC`,
         params,
       ),
     };
@@ -238,7 +253,7 @@ router.get(
       ok: true,
       transferencias: await query(
         db,
-        `SELECT FIRST ${limit} t.*,cfg.NOMEEMPRESA AS EMPRESA,co.CAIXA AS CAIXA_ORIGEM,cd.CAIXA AS CAIXA_DESTINO_NOME,COALESCE(u.NOMECOMPLETO,u.LOGIN) AS USUARIO FROM DASH_CAIXA_TRANSFERENCIA t LEFT JOIN CONFIGURACAO cfg ON cfg.IDEMPRESA=t.IDEMPRESA LEFT JOIN TPCAIXA co ON co.CDCAIXA=t.CAIXA_ANTERIOR LEFT JOIN TPCAIXA cd ON cd.CDCAIXA=t.CAIXA_DESTINO LEFT JOIN USUARIOS u ON u.IDUSUARIO=t.USUARIO_ID ${clause} ORDER BY t.TRANSFERIDO_EM DESC,t.IDTRANSFERENCIA DESC`,
+        `SELECT FIRST ${limit} t.*,${legacyValue(["cfg.NOMEEMPRESA", 60])} AS EMPRESA,${legacyValue(["co.CAIXA", 50])} AS CAIXA_ORIGEM,${legacyValue(["cd.CAIXA", 50])} AS CAIXA_DESTINO_NOME,${legacyValue(["u.NOMECOMPLETO", 50], ["u.LOGIN", 15])} AS USUARIO FROM DASH_CAIXA_TRANSFERENCIA t LEFT JOIN CONFIGURACAO cfg ON cfg.IDEMPRESA=t.IDEMPRESA LEFT JOIN TPCAIXA co ON co.CDCAIXA=t.CAIXA_ANTERIOR LEFT JOIN TPCAIXA cd ON cd.CDCAIXA=t.CAIXA_DESTINO LEFT JOIN USUARIOS u ON u.IDUSUARIO=t.USUARIO_ID ${clause} ORDER BY t.TRANSFERIDO_EM DESC,t.IDTRANSFERENCIA DESC`,
         params,
       ),
     };
@@ -268,21 +283,25 @@ function unionParts(args) {
   }
   const search = String(args.busca || "").trim();
   if (search) {
-    const term = `%${search.toUpperCase()}%`;
+    const needle = legacyLiteral(search.toUpperCase().slice(0, 60));
     rec.where.push(
-      "(UPPER(COALESCE(c.NRDOC,'')) LIKE ? OR UPPER(COALESCE(c.HISTORICO,'')) LIKE ? OR UPPER(COALESCE(cl.CLIENTE,cl.RAZAO,'')) LIKE ?)",
+      `(UPPER(${legacyValue(["c.NRDOC", 15], "")}) CONTAINING ${needle} OR UPPER(${legacyValue(["c.HISTORICO", 255], "")}) CONTAINING ${needle} OR UPPER(${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], "")}) CONTAINING ${needle})`,
     );
-    rec.params.push(term, term, term);
-    mov.where.push("UPPER(COALESCE(m.ASSUNTO,'')) LIKE ?");
-    mov.params.push(term);
+    mov.where.push(
+      `UPPER(${legacyValue(["m.ASSUNTO", 100], "")}) CONTAINING ${needle}`,
+    );
   }
   if (["1", "true", "on"].includes(String(args.nao_carteiras)))
-    rec.where.push("UPPER(COALESCE(r.RECEBTO,'')) NOT CONTAINING 'CARTEIRA'");
+    rec.where.push(
+      `UPPER(${legacyValue(["r.RECEBTO", 50], "")}) NOT CONTAINING ${legacyLiteral("CARTEIRA")}`,
+    );
   if (["1", "true", "on"].includes(String(args.nao_vales)))
-    rec.where.push("UPPER(COALESCE(r.RECEBTO,'')) NOT CONTAINING 'VALE'");
+    rec.where.push(
+      `UPPER(${legacyValue(["r.RECEBTO", 50], "")}) NOT CONTAINING ${legacyLiteral("VALE")}`,
+    );
   if (origin === "" || origin === "recebimento") {
     parts.push(
-      `SELECT c.DTCOB AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(c.HORALOG,c.DTCOB)) AS HORA,c.IDEMPRESA,c.CAIXA AS CDCAIXA,tc.CAIXA AS CAIXA,c.CDCAIXAORIGEM,tco.CAIXA AS CAIXA_ORIGEM,'RECEBIMENTO' AS ORIGEM,r.RECEBTO AS FORMA,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,cl.CLIENTE AS DESCRICAO,c.NRDOC AS DOCUMENTO,c.PARCELA,c.CONTROLE AS IDMOVIMENTO FROM CTARECEBERCAIXA c LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=c.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=c.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(c.TPPAGTO,c.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE ${rec.where.join(" AND ") || "1=1"}`,
+      `SELECT c.DTCOB AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(c.HORALOG,c.DTCOB)) AS HORA,c.IDEMPRESA,c.CAIXA AS CDCAIXA,${legacyValue(["tc.CAIXA", 50])} AS CAIXA,c.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50])} AS CAIXA_ORIGEM,'RECEBIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50])} AS FORMA,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100])} AS DESCRICAO,${legacyValue(["c.NRDOC", 15])} AS DOCUMENTO,c.PARCELA,c.CONTROLE AS IDMOVIMENTO FROM CTARECEBERCAIXA c LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=c.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=c.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(c.TPPAGTO,c.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE ${rec.where.join(" AND ") || "1=1"}`,
     );
     params.push(...rec.params);
   }
@@ -291,7 +310,7 @@ function unionParts(args) {
     !["1", "true", "on"].includes(String(args.nao_saidas_entradas))
   ) {
     parts.push(
-      `SELECT m.DT_MOV AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(m.HORALOG,m.DT_MOV)) AS HORA,m.IDEMPRESA,m.CDCAIXA,COALESCE(tc.CAIXA,'Sem caixa') AS CAIXA,m.CDCAIXAORIGEM,COALESCE(tco.CAIXA,'Nao informada') AS CAIXA_ORIGEM,'MOVIMENTO' AS ORIGEM,COALESCE(r.RECEBTO,'Movimento avulso') AS FORMA,COALESCE(m.VALOR,0) AS VALOR,COALESCE(m.ASSUNTO,'Movimento sem historico') AS DESCRICAO,CAST(m.IDMOVCAIXA AS VARCHAR(20)) AS DOCUMENTO,NULL AS PARCELA,m.IDMOVCAIXA AS IDMOVIMENTO FROM MOV_PAGTO m LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=m.CDCAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=m.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=m.CDRECEBTO WHERE ${mov.where.join(" AND ") || "1=1"}`,
+      `SELECT m.DT_MOV AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(m.HORALOG,m.DT_MOV)) AS HORA,m.IDEMPRESA,m.CDCAIXA,${legacyValue(["tc.CAIXA", 50], "Sem caixa")} AS CAIXA,m.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'MOVIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "Movimento avulso")} AS FORMA,COALESCE(m.VALOR,0) AS VALOR,${legacyValue(["m.ASSUNTO", 100], "Movimento sem historico")} AS DESCRICAO,CAST(m.IDMOVCAIXA AS VARCHAR(20)) AS DOCUMENTO,NULL AS PARCELA,m.IDMOVCAIXA AS IDMOVIMENTO FROM MOV_PAGTO m LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=m.CDCAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=m.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=m.CDRECEBTO WHERE ${mov.where.join(" AND ") || "1=1"}`,
     );
     params.push(...mov.params);
   }
@@ -351,7 +370,7 @@ router.get(
       }
       pendingRows = await query(
         db,
-        `SELECT FIRST ${limit} COALESCE(t.DTMOV,t.DTLOG) AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(t.HORALOG,t.DTMOV,t.DTLOG)) AS HORA,t.IDEMPRESA,COALESCE(t.CAIXA,t.CDCAIXAORIGEM) AS CDCAIXA,COALESCE(tc.CAIXA,tco.CAIXA,'Sem caixa') AS CAIXA,t.CDCAIXAORIGEM,COALESCE(tco.CAIXA,'Nao informada') AS CAIXA_ORIGEM,'PENDENTE' AS ORIGEM,COALESCE(r.RECEBTO,'A receber') AS FORMA,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,COALESCE(cl.CLIENTE,cl.RAZAO,'Cliente nao informado') AS DESCRICAO,t.NRDOC AS DOCUMENTO,t.PARCELA,t.CONTROLE AS IDMOVIMENTO,'Pendente' AS STATUS_MOVIMENTO FROM CTARECEBER t LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=t.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=t.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE ${pending.where.join(" AND ") || "1=1"} ORDER BY COALESCE(t.DTMOV,t.DTLOG) DESC,t.CONTROLE DESC`,
+        `SELECT FIRST ${limit} COALESCE(t.DTMOV,t.DTLOG) AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(t.HORALOG,t.DTMOV,t.DTLOG)) AS HORA,t.IDEMPRESA,COALESCE(t.CAIXA,t.CDCAIXAORIGEM) AS CDCAIXA,${legacyValue(["tc.CAIXA", 50], ["tco.CAIXA", 50], "Sem caixa")} AS CAIXA,t.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'PENDENTE' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "A receber")} AS FORMA,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], "Cliente nao informado")} AS DESCRICAO,${legacyValue(["t.NRDOC", 15])} AS DOCUMENTO,t.PARCELA,t.CONTROLE AS IDMOVIMENTO,'Pendente' AS STATUS_MOVIMENTO FROM CTARECEBER t LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=t.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=t.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE ${pending.where.join(" AND ") || "1=1"} ORDER BY COALESCE(t.DTMOV,t.DTLOG) DESC,t.CONTROLE DESC`,
         pending.params,
       );
       movimentos.push(...pendingRows);
@@ -567,7 +586,7 @@ router.post("/controle-caixa/abrir", async (req, res) => {
         throw Object.assign(new Error("Este caixa ja esta aberto nesta data."), { status: 409 });
       let movement = null;
       if (initial > 0) {
-        const payment = await tx.singleton("SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY CASE WHEN UPPER(COALESCE(RECEBTO,'')) CONTAINING 'DINHEIRO' THEN 0 ELSE 1 END,CDRECEBTO");
+        const payment = await tx.singleton(`SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`);
         if (!payment) throw Object.assign(new Error("Nenhuma forma de pagamento ativa foi encontrada."), { status: 400 });
         const inserted = await tx.query("INSERT INTO MOV_PAGTO (IDEMPRESA,CDCAIXA,ASSUNTO,VALOR,DT_MOV,SIST_ALT,CDRECEBTO,HORALOG,CDCAIXAORIGEM) VALUES (?,?,?,?,?,'LOCAL',?,CURRENT_TIMESTAMP,?) RETURNING IDMOVCAIXA", [company,cash,"ABERTURA DE CAIXA",initial,date,payment.CDRECEBTO,cash]);
         movement = Number(inserted[0]?.IDMOVCAIXA);
@@ -632,7 +651,7 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
         });
       await ensureCashOpen(tx, company, date, [cash]);
       const payment = await tx.singleton(
-        "SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY CASE WHEN UPPER(COALESCE(RECEBTO,'')) CONTAINING 'DINHEIRO' THEN 0 ELSE 1 END,CDRECEBTO",
+        `SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`,
       );
       if (!payment)
         throw Object.assign(
@@ -745,16 +764,16 @@ router.post("/controle-caixa/mover", async (req, res) => {
       const row =
         origin === "RECEBIMENTO"
           ? await tx.singleton(
-              "SELECT c.CAIXA AS CAIXA,CAST(c.DTCOB AS DATE) AS DATA_MOVIMENTO,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,COALESCE(cl.CLIENTE,cl.RAZAO,c.HISTORICO,c.NRDOC,'Recebimento') AS DESCRICAO FROM CTARECEBERCAIXA c LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE c.CONTROLE=? AND c.IDEMPRESA=? AND COALESCE(c.CANCELADO,0)=0",
+              `SELECT c.CAIXA AS CAIXA,CAST(c.DTCOB AS DATE) AS DATA_MOVIMENTO,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["c.HISTORICO", 255], ["c.NRDOC", 15], "Recebimento")} AS DESCRICAO FROM CTARECEBERCAIXA c LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE c.CONTROLE=? AND c.IDEMPRESA=? AND COALESCE(c.CANCELADO,0)=0`,
               [movement, company],
             )
           : origin === "MOVIMENTO"
             ? await tx.singleton(
-              "SELECT CDCAIXA AS CAIXA,CAST(DT_MOV AS DATE) AS DATA_MOVIMENTO,COALESCE(VALOR,0) AS VALOR,COALESCE(ASSUNTO,'Movimento avulso') AS DESCRICAO FROM MOV_PAGTO WHERE IDMOVCAIXA=? AND IDEMPRESA=?",
+              `SELECT CDCAIXA AS CAIXA,CAST(DT_MOV AS DATE) AS DATA_MOVIMENTO,COALESCE(VALOR,0) AS VALOR,${legacyValue(["ASSUNTO", 100], "Movimento avulso")} AS DESCRICAO FROM MOV_PAGTO WHERE IDMOVCAIXA=? AND IDEMPRESA=?`,
               [movement, company],
             )
             : await tx.singleton(
-              "SELECT t.CAIXA AS CAIXA,CAST(COALESCE(t.DTMOV,t.DTLOG,CURRENT_DATE) AS DATE) AS DATA_MOVIMENTO,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,COALESCE(cl.CLIENTE,cl.RAZAO,t.HISTORICO,t.NRDOC,'Parcela pendente') AS DESCRICAO FROM CTARECEBER t LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE t.CONTROLE=? AND t.IDEMPRESA=? AND t.STATUS=1",
+              `SELECT t.CAIXA AS CAIXA,CAST(COALESCE(t.DTMOV,t.DTLOG,CURRENT_DATE) AS DATE) AS DATA_MOVIMENTO,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["t.HISTORICO", 255], ["t.NRDOC", 15], "Parcela pendente")} AS DESCRICAO FROM CTARECEBER t LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE t.CONTROLE=? AND t.IDEMPRESA=? AND t.STATUS=1`,
               [movement, company],
             );
       if (!row)
@@ -837,7 +856,7 @@ router.post("/controle-caixa/transferir-valor", async (req, res) => {
       await ensureCashOpen(tx, company, date, [origin, destination]);
       const selectedPayment = payment
         ? await tx.singleton("SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE CDRECEBTO=? AND COALESCE(INATIVO,0)=0", [payment])
-        : await tx.singleton("SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ORDER BY CASE WHEN UPPER(COALESCE(RECEBTO,'')) CONTAINING 'DINHEIRO' THEN 0 ELSE 1 END,CDRECEBTO");
+        : await tx.singleton(`SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`);
       if (!selectedPayment) throw Object.assign(new Error("Selecione uma forma de pagamento ativa."), { status: 400 });
       const description = `TRANSFERENCIA CAIXA ${origin} PARA ${destination}${note ? ` - ${note}` : ""}`.slice(0, 100);
       const insert = async (cash, value) => {

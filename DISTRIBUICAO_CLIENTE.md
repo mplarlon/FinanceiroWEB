@@ -3,7 +3,7 @@
 Execute na máquina de desenvolvimento:
 
 ```powershell
-.\build_installer.ps1 -Version 2.4.4
+.\build_installer.ps1 -Version 2.4.5
 ```
 
 O resultado fica em `output\installer`. O pacote leva o executável congelado, o

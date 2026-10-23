@@ -1,5 +1,5 @@
 param(
-    [string]$Version = "2.4.4",
+    [string]$Version = "2.4.5",
     [switch]$WithOllama,
     [switch]$WithoutOllama
 )

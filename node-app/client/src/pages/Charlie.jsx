@@ -470,6 +470,7 @@ export default function Charlie({ alertLaunch = 0, dailyToken = "" }) {
     [taskCount, setTaskCount] = useState(0),
     [notice, setNotice] = useState(null);
   const endRef = useRef(null),
+    threadRef = useRef(null),
     inputRef = useRef(null),
     historyRef = useRef(null);
   const fresh = !activeId && messages.every((message) => message.role !== "user");
@@ -539,8 +540,12 @@ export default function Charlie({ alertLaunch = 0, dailyToken = "" }) {
     return () => clearTimeout(timer);
   }, [notice]);
   useEffect(() => {
+    if (fresh) {
+      if (threadRef.current) threadRef.current.scrollTop = 0;
+      return;
+    }
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, busy]);
+  }, [messages, busy, fresh]);
   function newConversation() {
     closeHistory();
     setActiveId(null);
@@ -859,16 +864,9 @@ export default function Charlie({ alertLaunch = 0, dailyToken = "" }) {
         <CafeManha open={dailyOpen} token={dailyToken} onClose={() => setDailyOpen(false)} />
         <CharlieConfig open={configOpen} onClose={() => setConfigOpen(false)} />
         {notice ? <button type="button" className={`charlie-notice ${notice.status}`} onClick={() => { setTasksOpen(true); setNotice(null); }}>{notice.text}<span>Ver tarefa</span></button> : null}
-        <div className={`charlie-thread${fresh ? " is-fresh" : ""}`}>
+        <div className={`charlie-thread${fresh ? " is-fresh" : ""}`} ref={threadRef}>
           {fresh ? (
             <div className="charlie-fresh">
-              <div className="charlie-fresh-intro">
-                <CharlieMark />
-                <div>
-                  <h3>Como posso ajudar?</h3>
-                  <p>{greeting.text}</p>
-                </div>
-              </div>
               <div className="charlie-starter-groups">
                 {starterGroups.map((group) => (
                   <section key={group.title} className="charlie-starter-group">
@@ -943,7 +941,7 @@ export default function Charlie({ alertLaunch = 0, dailyToken = "" }) {
               <i />
             </article>
           )}
-          <div ref={endRef} />
+          {fresh ? null : <div ref={endRef} />}
         </div>
         {error && <div className="error">{error}</div>}
         <div className="charlie-composer">

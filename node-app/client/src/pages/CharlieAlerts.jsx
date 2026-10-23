@@ -279,10 +279,12 @@ export default function CharlieAlerts({ onClose, onInvestigate, onAction }) {
           <time>{when(alert.atualizadoEm || alert.criadoEm)}</time>
         </header>
         <div className="charlie-alert-title">
-          <h4>{alert.titulo}</h4>
-          {metric ? <b>{metric}</b> : null}
+          <h4>{alert.itens?.length === 1 ? alert.itens[0].objeto : alert.titulo}</h4>
+          {alert.itens?.length === 1 && alert.itens[0].mudanca ? <b>{alert.itens[0].mudanca}</b> : metric ? <b>{metric}</b> : null}
         </div>
-        <p>{alert.descricao}</p>
+        {alert.itens?.length > 1 ? <ul className="risk-facts">{alert.itens.map((item, index) => <li key={`${item.objeto}-${index}`}><b>{item.objeto}</b><span>{item.mudanca}</span></li>)}</ul> : null}
+        {alert.problema ? <p className="risk-problem">{alert.problema}</p> : null}
+        {alert.contexto ? <p>{alert.contexto}</p> : <p>{alert.descricao}</p>}
         {alert.recomendacao && <p className="charlie-alert-recommendation"><strong>O que conferir: </strong>{alert.recomendacao}</p>}
         {alert.reincidencias > 0 && <small>Reincidências: {alert.reincidencias}</small>}
         {alert.registros?.length > 0 && (

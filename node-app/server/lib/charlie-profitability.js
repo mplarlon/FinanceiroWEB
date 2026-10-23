@@ -1,4 +1,5 @@
 import { query } from "../db.js";
+import { saleItemCost } from "./sale-cost.js";
 
 const n = (value) => {
   const parsed = Number(value);
@@ -85,6 +86,13 @@ function scope(actor = {}) {
   return Number.isInteger(company) && company > 0 ? company : null;
 }
 
+export function idleProducts(candidates, soldIds) {
+  const sold = soldIds instanceof Set ? soldIds : new Set((soldIds || []).map((id) => String(id)));
+  return (candidates || [])
+    .filter((row) => !sold.has(String(row.CDPRODUTO)))
+    .map((row) => ({ ...row, ULTIMA_VENDA: null }));
+}
+
 export async function profitabilityDashboard(db, actor = {}, options = {}) {
   const days = Math.min(365, Math.max(1, Number(options.days) || 30));
   const idleDays = Math.min(730, Math.max(7, Number(options.idleDays) || 90));
@@ -92,15 +100,16 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
   const company = scope(actor);
   const companySql = company ? " AND se.IDEMPRESA=?" : "";
   const params = company ? [-days, company] : [-days];
+  const custoItem = await saleItemCost(db, "sp", null);
   const rows = await query(db, `
-    SELECT FIRST 500 se.NRPEDIDO VENDA, se.IDEMPRESA, se.DTSAIDA DATA, se.CDCLIENTE,
+    SELECT se.NRPEDIDO VENDA, se.IDEMPRESA, se.DTSAIDA DATA, se.CDCLIENTE,
       COALESCE(c.CLIENTE,c.RAZAO,'Cliente') CLIENTE, se.CDVENDEDOR,
       COALESCE(v.VENDEDOR,'Sem vendedor') VENDEDOR, sp.CDPRODUTO,
       COALESCE(p.PRODUTO,sp.DESCRICAO,'Produto') PRODUTO, sp.QTDPRODUTO QUANTIDADE,
       COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) RECEITA,
       COALESCE(sp.DESCONTO,0) DESCONTO,
-      COALESCE(sp.QTDPRODUTO,0)*COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,0) CUSTO,
-      CASE WHEN COALESCE(sp.VLCUSTOREAL,sp.VLCUSTO,0)>0 THEN 1 ELSE 0 END CUSTO_HISTORICO,
+      COALESCE(sp.QTDPRODUTO,0)*${custoItem} CUSTO,
+      CASE WHEN ${custoItem}>0 THEN 1 ELSE 0 END CUSTO_HISTORICO,
       COALESCE(sp.VLICMS,0)+COALESCE(sp.VLST,0) TRIBUTOS,
       COALESCE(sp.VLCOMISSAO,0) COMISSAO,
       COALESCE(se.FRETE,0) FRETE_COBRADO,
@@ -113,7 +122,7 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
     WHERE se.DTSAIDA>=DATEADD(? DAY TO CURRENT_DATE)${companySql}
       AND se.DTCANCELAMENTO IS NULL AND COALESCE(se.STATUS,0) IN (1,3)
       AND (se.STATUS_ORC IS NULL OR se.STATUS_ORC<>0) AND COALESCE(sp.STATUSSE,0)=0
-    ORDER BY se.DTSAIDA DESC`, params, { timeoutMs: 30000 });
+    ORDER BY se.DTSAIDA DESC`, params, { timeoutMs: 60000 });
 
   const grouped = new Map();
   for (const row of rows) {
@@ -150,29 +159,22 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
   let idleStock = [];
   try {
     const candidates = await query(db, `
-      SELECT FIRST 500 m.CDPRODUTO, p.PRODUTO, SUM(m.QTDEATUAL) QUANTIDADE,
+      SELECT m.CDPRODUTO, p.PRODUTO, SUM(m.QTDEATUAL) QUANTIDADE,
         COALESCE(p.VLCUSTOMEDIO,0) CUSTO_AVALIACAO,
         SUM(m.QTDEATUAL)*COALESCE(p.VLCUSTOMEDIO,0) CAPITAL_IMOBILIZADO
       FROM MOVIMENTO m JOIN PRODUTO p ON p.CDPRODUTO=m.CDPRODUTO
       WHERE COALESCE(p.INATIVO,0)=0${idleCompany}
       GROUP BY m.CDPRODUTO,p.PRODUTO,p.VLCUSTOMEDIO
       HAVING SUM(m.QTDEATUAL)>0
-      ORDER BY 5 DESC`, company ? [company] : [], { timeoutMs: 10000 });
-    if (candidates.length) {
-      const ids = candidates.map((row) => row.CDPRODUTO);
-      const marks = ids.map(() => "?").join(",");
-      const saleScope = company ? " AND se.IDEMPRESA=?" : "";
-      const lastSales = await query(db, `SELECT sp.CDPRODUTO, MAX(se.DTSAIDA) ULTIMA_VENDA
-        FROM SAIDAPRODUTO sp JOIN SAIDAESTOQUE se
-          ON se.NRPEDIDO=sp.NRPEDIDO AND se.IDEMPRESA=sp.IDEMPRESA
-        WHERE sp.CDPRODUTO IN (${marks}) AND se.DTCANCELAMENTO IS NULL
-          AND se.DTSAIDA>=DATEADD(? DAY TO CURRENT_DATE)${saleScope}
-        GROUP BY sp.CDPRODUTO`, company ? [...ids, -idleDays, company] : [...ids, -idleDays], { timeoutMs: 10000 });
-      const lastByProduct = new Map(lastSales.map((row) => [String(row.CDPRODUTO), row.ULTIMA_VENDA]));
-      idleStock = candidates.map((row) => ({ ...row, ULTIMA_VENDA: lastByProduct.get(String(row.CDPRODUTO)) || null }))
-        .filter((row) => !row.ULTIMA_VENDA)
-        .slice(0, 100);
-    }
+      ORDER BY 5 DESC`, company ? [company] : [], { timeoutMs: 45000 });
+    const saleScope = company ? " AND se.IDEMPRESA=?" : "";
+    const sold = candidates.length ? await query(db, `SELECT DISTINCT sp.CDPRODUTO
+      FROM SAIDAPRODUTO sp JOIN SAIDAESTOQUE se
+        ON se.NRPEDIDO=sp.NRPEDIDO AND se.IDEMPRESA=sp.IDEMPRESA
+      WHERE se.DTCANCELAMENTO IS NULL
+        AND se.DTSAIDA>=DATEADD(? DAY TO CURRENT_DATE)${saleScope}`,
+      company ? [-idleDays, company] : [-idleDays], { timeoutMs: 45000 }) : [];
+    idleStock = idleProducts(candidates, sold.map((row) => row.CDPRODUTO));
   } catch { idleStock = []; }
 
   const negative = occurrences.filter((item) => item.type === IMPACT_TYPES.VERIFIED_LOSS);

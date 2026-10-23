@@ -8,10 +8,13 @@ const normalize = (value) => String(value ?? "")
 export default function SearchableSelect({
   value,
   onChange,
+  onQuery,
   options = [],
   placeholder = "Selecione",
   emptyLabel = "Nenhuma opção encontrada",
   disabled = false,
+  remote = false,
+  maxVisible = 40,
 }) {
   const rootRef = useRef(null);
   const selected = options.find((option) => String(option.value) === String(value ?? ""));
@@ -24,10 +27,14 @@ export default function SearchableSelect({
   }, [selected?.label, open]);
 
   const filtered = useMemo(() => {
+    const source = options.filter((option) => option.label || option.value === "");
+    if (remote) return source.slice(0, maxVisible);
     const term = normalize(query);
-    if (!term || selected?.label === query) return options;
-    return options.filter((option) => normalize(option.label).includes(term));
-  }, [options, query, selected?.label]);
+    const matches = !term || selected?.label === query
+      ? source
+      : source.filter((option) => normalize(option.label).includes(term));
+    return matches.slice(0, maxVisible);
+  }, [options, query, selected?.label, remote, maxVisible]);
 
   function choose(option) {
     onChange(option?.value ?? "");
@@ -66,11 +73,13 @@ export default function SearchableSelect({
         onFocus={() => {
           setOpen(true);
           setActive(0);
+          onQuery?.(query);
         }}
         onChange={(event) => {
           setQuery(event.target.value);
           setOpen(true);
           setActive(0);
+          onQuery?.(event.target.value);
           if (!event.target.value) onChange("");
         }}
         onKeyDown={handleKeyDown}

@@ -58,9 +58,9 @@ import { investigateOccurrence, profitabilityDashboard } from "../lib/charlie-pr
 import { cashFlowForecast, customerInactivityForecast, financialSimulation, priceSimulation, revenueForecast, stockRiskForecast } from "../lib/charlie-predictive-service.js";
 import { listPredictions, savePrediction, updatePredictionActual } from "../lib/charlie-prediction-store.js";
 import { auditEngineStatus, runAuditCycle } from "../lib/charlie-audit-service.js";
-import { listAuditEvents, listInvestigations, readAuditSettings, saveAuditSettings, saveInvestigation, verifyAuditChain } from "../lib/charlie-audit-store.js";
+import { findAuditEvents, listAuditEvents, listInvestigations, readAuditSettings, saveAuditSettings, saveInvestigation, verifyAuditChain } from "../lib/charlie-audit-store.js";
 import { runBehavioralRiskAnalysis } from "../lib/charlie-behavioral-risk-service.js";
-import { dedupeBehavioralAlerts, presentBehavioralAlert } from "../lib/charlie-behavioral-risk-engine.js";
+import { dedupeBehavioralAlerts, presentBehavioralAlert, presentBehavioralAnalysis } from "../lib/charlie-behavioral-risk-engine.js";
 import { withAlertNames } from "../lib/charlie-labels.js";
 import { listBehavioralAnalyses, readBehavioralState, saveBehavioralFeedback, saveBehavioralSettings } from "../lib/charlie-behavioral-risk-store.js";
 import { createTutorialDraft, explainValidation, getScreenContext, listTraining, publishTutorial, startTraining, updateTraining } from "../lib/charlie-training.js";
@@ -617,12 +617,20 @@ router.get("/auditoria", (req, res) => {
   if (!manager(req, res)) return;
   res.json({ ok: true, eventos: listCharlieAudit(Number(req.query.limite) || 50) });
 });
-router.get("/auditoria-central", (req, res) => {
+router.get("/auditoria-central", async (req, res) => {
   if (!manager(req, res)) return;
   const actor = taskActor(req);
-  const alerts = visibleMonitorAlerts(actor.id, { categoria: "auditoria", situacao: req.query.situacao });
-  const investigations = listInvestigations(actor);
-  res.json({ ok: true, alerts, investigations, events: listAuditEvents(actor, req.query), risks: listBehavioralAnalyses(actor, req.query), riskState: readBehavioralState(), status: auditEngineStatus(), integrity: verifyAuditChain(), settings: readAuditSettings() });
+  try {
+    const named = await alertsWithNames(visibleMonitorAlerts(actor.id, { categoria: "auditoria", situacao: req.query.situacao }));
+    const alerts = named.map((alert) => presentBehavioralAlert(alert));
+    const investigations = listInvestigations(actor);
+    const risks = listBehavioralAnalyses(actor, req.query);
+    const riskEvents = findAuditEvents(risks.flatMap((risk) => risk.eventIds || []));
+    const presented = risks.map((item) => presentBehavioralAnalysis(item, riskEvents));
+    res.json({ ok: true, alerts, investigations, events: listAuditEvents(actor, req.query), risks: presented, riskState: readBehavioralState(), status: auditEngineStatus(), integrity: verifyAuditChain(), settings: readAuditSettings() });
+  } catch (error) {
+    res.status(500).json({ ok: false, erro: error.message });
+  }
 });
 router.post("/auditoria-central/executar", async (req, res) => {
   if (!manager(req, res)) return;

@@ -217,6 +217,31 @@ function priceSentence(event) {
   if (from && to) return `O preço do ${where || "item"} passou de ${from} para ${to}${percent != null ? ` (${formatPct(percent)})` : ""}`;
   return `O preço do ${where || "item"} foi alterado`;
 }
+function factOf(event = {}) {
+  if (event.type === "price_change") {
+    const { product, tabela, unidade } = priceParts(event);
+    const objeto = [product ? `Produto ${product}` : "Preço", tabela ? `tabela ${tabela}` : "", unidade].filter(Boolean).join(", ");
+    const from = money(event.previous?.price), to = money(event.next?.price);
+    const percent = pricePercent(event);
+    const mudanca = from && to ? `${from} → ${to}${percent != null ? ` (${formatPct(percent)})` : ""}` : "preço alterado";
+    return { objeto, mudanca };
+  }
+  if (event.type === "discount") {
+    const applied = n(event.next?.discountPercent);
+    return { objeto: event.recordId ? `Registro ${event.recordId}` : "Desconto", mudanca: applied ? `desconto de ${formatPct(applied)}` : "desconto" };
+  }
+  if (event.type === "stock_movement") {
+    const name = event.productName || event.next?.productName || "";
+    const code = String(event.recordId || "").split(":")[0];
+    const qty = event.next?.quantity;
+    return { objeto: name ? `Produto ${codigoENome(code, name)}` : (event.recordId ? `Registro ${event.recordId}` : "Estoque"), mudanca: qty != null && qty !== "" ? `quantidade ${qty}` : "movimentação" };
+  }
+  if (event.type === "cancellation" || event.type === "financial_reversal" || event.type === "sale" || event.type === "sale_order") {
+    const amount = money(event.next?.amount ?? event.next?.value);
+    return { objeto: event.recordId ? `Registro ${event.recordId}` : operation(event.type).one, mudanca: amount || operation(event.type).one };
+  }
+  return { objeto: event.recordId ? `Registro ${event.recordId}` : (event.entity || operation(event.type).one), mudanca: operation(event.type).one };
+}
 function changeKey(event) {
   if (event.type === "price_change") return `price:${event.recordId}|${event.previous?.price}|${event.next?.price}`;
   return `${event.type}:${event.recordId}|${event.occurredAt}`;
@@ -269,29 +294,34 @@ export function explainBehavior({ events = [], criteria = {}, baseline = null } 
   const knownSequence = sequence?.definitionId ? SEQUENCE_TEXT[sequence.definitionId] : null;
   const groups = groupEvents(ordered);
   const repeatedPrice = type === "price_change" && groups.length === 1 && ordered.length > 1;
+  const itens = groups.slice(0, 8).map((group) => factOf(group[0]));
+  const concrete = itens.length === 1 ? `${itens[0].objeto}: ${itens[0].mudanca}` : "";
   const parts = [];
   let title = "Operação para conferir";
+  let problema = "";
   if (repeatedPrice) {
-    title = "A mesma alteração de preço foi registrada várias vezes";
-    parts.push(`${priceSentence(ordered[0])}. Essa mesma alteração foi registrada ${ordered.length} vezes ${durationPhrase(ordered)}${byPhrase(ordered)}.`);
+    title = concrete || "A mesma alteração de preço foi registrada várias vezes";
+    problema = `Essa mesma alteração foi registrada ${ordered.length} vezes ${durationPhrase(ordered)}${byPhrase(ordered)}.`;
     if (anomaly.anomalous) parts.push(`Esse percentual ficou acima do habitual, que fica em torno de ${formatPct(baseline?.median)} nas ${anomaly.samples} alterações parecidas.`);
     else if (anomaly.evaluable) parts.push(`O percentual está na mesma faixa das ${anomaly.samples} alterações parecidas. O aviso é pela repetição.`);
     else parts.push("O aviso é pela repetição. Ainda há pouco histórico parecido para comparar o percentual.");
   } else if (knownSequence) {
     title = knownSequence.title;
-    parts.push(knownSequence.text(sequence.maximumMinutes || 0));
+    problema = knownSequence.text(sequence.maximumMinutes || 0);
   } else if (burst.detected) {
     title = type === "price_change" ? "Várias alterações de preço em seguida" : `Várias ${op.many} em seguida`;
-    parts.push(`Houve ${burst.count} ${op.many} ${durationPhrase(ordered)}${peoplePhrase(ordered, true)}.`);
+    problema = `Houve ${burst.count} ${op.many} ${durationPhrase(ordered)}${peoplePhrase(ordered, true)}.`;
     if (anomaly.anomalous) parts.push(`O tamanho ficou em ${formatPct(anomaly.value)}. Nas ${anomaly.samples} operações parecidas, o habitual fica em torno de ${formatPct(baseline?.median)}.`);
     else if (anomaly.evaluable) parts.push(`O tamanho de cada uma ficou em cerca de ${formatPct(anomaly.value)}, na mesma faixa das ${anomaly.samples} operações parecidas. O aviso é pela quantidade seguida.`);
     else parts.push("O aviso é pela quantidade seguida. Ainda há pouco histórico parecido para comparar o tamanho.");
   } else if (anomaly.anomalous) {
-    title = type === "price_change" ? "Alteração de preço fora do habitual" : `${op.one.charAt(0).toUpperCase()}${op.one.slice(1)} fora do habitual`;
-    parts.push(`Esta ${op.one} ficou em ${formatPct(anomaly.value)}${peoplePhrase(ordered, false)}. Nas ${anomaly.samples} operações parecidas, o habitual fica em torno de ${formatPct(baseline?.median)}.`);
+    title = concrete || (type === "price_change" ? "Alteração de preço fora do habitual" : `${op.one.charAt(0).toUpperCase()}${op.one.slice(1)} fora do habitual`);
+    problema = `Esta ${op.one} ficou em ${formatPct(anomaly.value)}${peoplePhrase(ordered, false)}.`;
+    parts.push(`Nas ${anomaly.samples} operações parecidas, o habitual fica em torno de ${formatPct(baseline?.median)}.`);
   } else if (!anomaly.evaluable) {
-    title = `${op.one.charAt(0).toUpperCase()}${op.one.slice(1)} para conferir`;
-    parts.push(`Esta ${op.one} foi destacada por um sinal objetivo${peoplePhrase(ordered, false)}. Ainda há pouco histórico parecido para comparar o tamanho.`);
+    title = concrete || `${op.one.charAt(0).toUpperCase()}${op.one.slice(1)} para conferir`;
+    problema = `Esta ${op.one} foi destacada por um sinal objetivo${peoplePhrase(ordered, false)}.`;
+    parts.push("Ainda há pouco histórico parecido para comparar o tamanho.");
   }
   const authorization = authorizationPhrase(ordered);
   if (authorization) parts.push(repeatedPrice && authorization.startsWith("Elas") ? "Isso saiu de uma confirmação já registrada no Charlie." : authorization);
@@ -299,6 +329,8 @@ export function explainBehavior({ events = [], criteria = {}, baseline = null } 
   if (anomaly.unusualHour && knownProfile) parts.push("O horário também foge do que esse perfil costuma operar.");
   if (groups.length > 8) parts.push(`A lista mostra 8 de ${groups.length}.`);
   parts.push("Isso pede conferência e não prova fraude.");
+  const contexto = parts.join(" ");
+  const lead = repeatedPrice ? `${priceSentence(ordered[0])}. ${problema}` : problema;
   const recommendation = knownSequence?.title === SEQUENCE_TEXT["price-sale-restore"].title
     ? "Confira o preço usado na venda do meio e as duas alterações do mesmo item."
     : sequence?.definitionId === "bank-payment"
@@ -317,7 +349,8 @@ export function explainBehavior({ events = [], criteria = {}, baseline = null } 
                 ? "Confira quem fez essas operações e se havia autorização para o conjunto."
                 : "Confira a autorização e se o valor novo está de acordo com a rotina da empresa.";
   return {
-    title, subject: op.subject, explanation: parts.join(" "), recommendation,
+    title, subject: op.subject, problema, contexto, itens,
+    explanation: [lead, contexto].filter(Boolean).join(" "), recommendation,
     registros: groups.slice(0, 8).map(recordRow),
   };
 }
@@ -326,7 +359,16 @@ export function presentBehavioralAlert(alert = {}) {
   const evidence = alert.evidencias;
   if (evidence?.auditCategory !== "riscos_comportamentais") return alert;
   const text = explainBehavior({ events: evidence.events || [], criteria: evidence.criteria || {}, baseline: evidence.baseline || null });
-  return { ...alert, titulo: text.title, descricao: text.explanation, recomendacao: text.recommendation, assunto: text.subject, registros: text.registros.length ? text.registros : alert.registros };
+  return { ...alert, titulo: text.title, descricao: text.explanation, recomendacao: text.recommendation, assunto: text.subject, registros: text.registros.length ? text.registros : alert.registros, itens: text.itens, problema: text.problema, contexto: text.contexto };
+}
+
+export function presentBehavioralAnalysis(analysis = {}, events = []) {
+  const ids = analysis.eventIds || [];
+  if (!ids.length) return analysis;
+  const byId = new Map(events.map((event) => [event.id, event]));
+  if (!ids.every((id) => byId.has(id))) return analysis;
+  const text = explainBehavior({ events: ids.map((id) => byId.get(id)), criteria: analysis.criteria || {}, baseline: analysis.baseline || null });
+  return { ...analysis, title: text.title, subject: text.subject, explanation: text.explanation, recommendation: text.recommendation, registros: text.registros, itens: text.itens, problema: text.problema, contexto: text.contexto };
 }
 
 export function analyzeBehavioralEvents(events = [], options = {}) {
@@ -357,6 +399,7 @@ export function analyzeBehavioralEvents(events = [], options = {}) {
       category: event.type, risk, eventIds, period: { from: baseline?.from, to: event.occurredAt },
       criteria, baseline, model: "charlie_behavioral_risk", modelVersion: "1.0.0",
       explanation: text.explanation, recommendation: text.recommendation, registros: text.registros,
+      itens: text.itens, problema: text.problema, contexto: text.contexto,
       disclaimer: "A classificação indica prioridade de investigação, não prova nem probabilidade de fraude.",
     });
   }
