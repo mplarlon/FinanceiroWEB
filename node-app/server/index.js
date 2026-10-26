@@ -47,12 +47,16 @@ import reportsExtraRoutes from "./routes/reports-extra.js";
 import purchaseReplenishmentRoutes from "./routes/purchase-replenishment.js";
 import managementReportRoutes from "./routes/management-reports.js";
 import breakfastRoutes from "./routes/charlie-breakfast.js";
+import charlieLeadsRoutes from "./routes/charlie-leads.js";
+import trayRoutes, { startTrayScheduler } from "./routes/tray.js";
 import { startManagementScheduler } from "./management-scheduler.js";
 import { startCharlieMonitor } from "./charlie-monitor-scheduler.js";
 import { startCharlieAutomations } from "./charlie-automation-scheduler.js";
 import { startBreakfastScheduler } from "./charlie-breakfast-scheduler.js";
+import { startCharlieLeads } from "./charlie-leads-scheduler.js";
 import { ensureOllamaServer } from "./lib/ollama.js";
 import { adHocQueryEnabled, debugLoginEnabled, isPublicApiPath } from "./security-policy.js";
+import { beginCriticalOperation } from "./lib/update-readiness.js";
 
 const app = express();
 app.use(
@@ -76,6 +80,14 @@ app.use("/api", (req, res, next) => {
       erro: "Login necessario.",
     });
   req.dashboardSession.lastActionAt = Date.now();
+  next();
+});
+app.use("/api", (req, res, next) => {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return next();
+  const operation = beginCriticalOperation(`http:${req.method}`, { path: new URL(req.originalUrl, "http://localhost").pathname });
+  let finished = false;
+  const finish = () => { if (!finished) { finished = true; operation.finish(); } };
+  res.once("finish", finish); res.once("close", finish);
   next();
 });
 
@@ -241,6 +253,8 @@ app.use("/api", reportsExtraRoutes);
 app.use("/api/dashboard-compras", purchaseReplenishmentRoutes);
 app.use("/api/relatorios-gerenciais", managementReportRoutes);
 app.use("/api/cafe-manha", breakfastRoutes);
+app.use("/api", charlieLeadsRoutes);
+app.use("/api/tray", trayRoutes);
 
 app.get("/api/debug/rotas", (_req, res) => {
   const rotas = app.router.stack
@@ -261,7 +275,13 @@ app.get("/", (_req, res) => {
   });
   res.sendFile(path.join(clientDist, "index.html"));
 });
-if (fs.existsSync(clientDist)) app.use(express.static(clientDist));
+if (fs.existsSync(clientDist)) app.use(express.static(clientDist, {
+  immutable: true,
+  maxAge: "1y",
+  setHeaders: (res, filePath) => {
+    if (path.basename(filePath) === "version.json") res.set("Cache-Control", "no-store");
+  },
+}));
 app.get("*splat", (_req, res) => {
   res.set({
     "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
@@ -277,6 +297,8 @@ startManagementScheduler();
 startCharlieMonitor();
 startCharlieAutomations();
 startBreakfastScheduler();
+startCharlieLeads();
+startTrayScheduler();
 ensureOllamaServer().catch((error) => console.error(`[ollama] ${error.message}`));
 
 export default app;

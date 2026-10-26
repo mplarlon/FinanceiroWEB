@@ -1,0 +1,14 @@
+.git
+**/node_modules
+**/dist
+build
+output
+outputs
+tmp
+logs
+certificados
+certificados_ct
+deploy/update-center/.env
+deploy/update-center/secrets
+*.log
+*.pem

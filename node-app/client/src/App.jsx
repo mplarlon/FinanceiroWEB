@@ -11,6 +11,8 @@ import ManagementDashboard from "./pages/ManagementDashboard.jsx";
 import ExecutiveReports from "./pages/ExecutiveReports.jsx";
 import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
 import CharlieTraining from "./components/CharlieTraining.jsx";
+import TrayIntegration from "./pages/TrayIntegration.jsx";
+import UpdateAvailable from "./components/UpdateAvailable.jsx";
 
 const PAGES = [
   { id: "overview", label: "Visão geral", icon: "◫" },
@@ -21,6 +23,7 @@ const PAGES = [
   { id: "dre", label: "DRE completo", icon: "▥" },
   { id: "fechamento", label: "Fechamento carteira", icon: "✓" },
   { id: "fiscal", label: "Fiscal", icon: "≡" },
+  { id: "tray", label: "Charlie • E-Commerce", icon: "↗" },
   { id: "compras", label: "Compras", icon: "▣", group: "reports" },
   { id: "clientes", label: "Clientes", icon: "◎", group: "reports" },
   { id: "estoque", label: "Estoque", icon: "▦", group: "reports" },
@@ -193,6 +196,7 @@ export default function App() {
   return (
     <div className="layout">
       <GlobalTableSorting />
+      <UpdateAvailable />
       <aside>
         <div className="brand">
           <span className="brand-dot">P</span>
@@ -252,6 +256,7 @@ export default function App() {
         {page === "compras" && <BusinessDashboard type="purchases" />}
         {page === "clientes" && <ManagementDashboard type="customers" />}
         {page === "fiscal" && <FiscalNfe />}
+        {page === "tray" && <TrayIntegration />}
         {current.executive && <ExecutiveReports type={current.executive} />}
         <CharlieTraining page={page} pageLabel={current.label} onNavigate={setPage} />
       </main>

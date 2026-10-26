@@ -1,6 +1,6 @@
 {
   "name": "dashboard-gerencial",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,6 +8,11 @@
     "dev:server": "node --watch server/index.js",
     "dev:client": "vite --config client/vite.config.js",
     "build": "vite build --config client/vite.config.js",
+    "build:update-center": "vite build --config update-system/center/vite.config.js",
+    "start:update-center": "node update-system/center/server.js",
+    "start:updater": "node update-system/agent/agent.js",
+    "update:keys": "node scripts/generate-update-keys.js",
+    "update:publish": "node scripts/publish-update.js",
     "migration:inventory": "node scripts/route-inventory.js",
     "migration:audit": "npm run migration:inventory && node scripts/express-route-audit.js",
     "start": "node server/index.js",
@@ -32,7 +37,7 @@
     "prettier": "^3.9.9",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "vite": "^7.0.0"
+    "vite": "^7.3.7"
   },
   "engines": {
     "node": ">=20"
