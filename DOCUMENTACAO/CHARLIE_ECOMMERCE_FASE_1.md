@@ -23,7 +23,7 @@ Foram adicionados paginação (50 registros, conforme o máximo documentado), re
 - Endpoint `GET /api/tray/intelligence/dashboard` com filtros por período, marketplace, produto, cliente e status.
 - Dashboard Charlie E-Commerce Intelligence com faturamento, pedidos, ticket médio, cancelamentos, pendências, canais e produtos.
 - Indicadores sem dados suficientes são retornados como indisponíveis; não há números fictícios.
-- O acesso adicional à área Tray exige `DASHBOARD_TRAY_PASSWORD`; não existe senha padrão incorporada ao código.
+- O acesso adicional à área Tray usa `DASHBOARD_TRAY_PASSWORD` quando configurada; sem ela, somente a sessão gerencial autenticada pode liberar a área. Não existe senha padrão incorporada ao código.
 
 ## Banco de dados
 

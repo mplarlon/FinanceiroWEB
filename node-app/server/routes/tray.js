@@ -28,13 +28,17 @@ const STATE_FILE = "tray_sync_state.json";
 const SECRET_FIELDS = ["access_token", "refresh_token", "consumer_secret", "webhook_secret"];
 const EDITABLE_FIELDS = ["api_address", "store_host", "store_id", "consumer_key", "auto_sync", "sync_interval_minutes", ...SECRET_FIELDS];
 
-router.get("/acesso", (req, res) =>
-  res.json({ ok: true, liberado: Boolean(req.dashboardSession?.trayUnlocked) }),
-);
+router.get("/acesso", (req, res) => {
+  const managerFallback = !process.env.DASHBOARD_TRAY_PASSWORD && req.dashboardSession?.user?.permissao_gerencial;
+  if (managerFallback) req.dashboardSession.trayUnlocked = true;
+  res.json({ ok: true, liberado: Boolean(req.dashboardSession?.trayUnlocked) });
+});
 
 router.post("/acesso", (req, res) => {
-  if (!process.env.DASHBOARD_TRAY_PASSWORD)
-    return res.status(503).json({ ok: false, erro: "Configure DASHBOARD_TRAY_PASSWORD no servidor antes de liberar o e-commerce." });
+  if (!process.env.DASHBOARD_TRAY_PASSWORD && req.dashboardSession?.user?.permissao_gerencial) {
+    req.dashboardSession.trayUnlocked = true;
+    return res.json({ ok: true, liberado: true });
+  }
   if (!trayPasswordMatches(req.body?.senha))
     return res.status(401).json({ ok: false, erro: "Senha do e-commerce inválida." });
   req.dashboardSession.trayUnlocked = true;
