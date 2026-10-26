@@ -10,6 +10,11 @@ node-app/dist/
 output/
 outputs/
 tmp/
+update-center-data/
+update-keys/
+*.pem
+.env
+!.env.example
 
 # Bundled third-party runtimes
 Firebird-5.0.4/

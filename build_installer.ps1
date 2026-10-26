@@ -42,10 +42,15 @@ function Copy-PackageRuntime([string]$name, [string[]]$paths) {
 
 Push-Location $nodeApp
 try {
+    $previousBuildVersion = $env:ERP_BUILD_VERSION
+    $env:ERP_BUILD_VERSION = $Version
     npm run build
     npm test
     npm run migration:audit
-} finally { Pop-Location }
+} finally {
+    $env:ERP_BUILD_VERSION = $previousBuildVersion
+    Pop-Location
+}
 
 if (Test-Path $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
 New-Item -ItemType Directory -Force $serverDir, $modulesDir, $installerOutput | Out-Null
@@ -110,6 +115,8 @@ if ($LASTEXITCODE -ne 0) { throw "Falha ao gerar o instalador." }
 $suffix = if ($includeOllama) { "-Com-Ollama-ACBr" } else { "" }
 $installer = Join-Path $installerOutput "DashboardCliente-Setup-$Version$suffix.exe"
 if (!(Test-Path $installer)) { throw "Instalador nao foi criado: $installer" }
+& (Join-Path $root "scripts\Sign-Artifact.ps1") -Path $installer
+if ($LASTEXITCODE -ne 0) { throw "Falha na assinatura do instalador." }
 
 $forbidden = Get-ChildItem $stage -Recurse -File | Where-Object {
     $_.Extension -in ".jsx", ".tsx", ".ts", ".map" -or

@@ -7,6 +7,8 @@ export const PUBLIC_API_PATHS = new Set([
   "/api/auth/login",
   "/api/auth/logout",
   "/api/whatsapp/webhook",
+  "/api/modulo_removido/webhook",
+  "/api/integracoes/casa-dos-dados/webhook",
 ]);
 
 export function isPublicApiPath(pathname) {
