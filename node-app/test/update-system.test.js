@@ -5,8 +5,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { UpdateEngine } from "../update-system/agent/engine.js";
-import { activeBlockers, localAddresses, UpdateAgent, withinUpdateWindow } from "../update-system/agent/agent.js";
+import { movePath, UpdateEngine } from "../update-system/agent/engine.js";
+import { activeBlockers, localAddresses, readCompanyFromDatabase, resolveCompanyName, UpdateAgent, withinUpdateWindow } from "../update-system/agent/agent.js";
+import { syncUpdaterAgent } from "../server/lib/sync-updater-agent.js";
 import { UpdateStore } from "../update-system/center/store.js";
 import { createUpdateCenter } from "../update-system/center/server.js";
 import { answerUpdateQuestion } from "../server/lib/update-center-client.js";
@@ -50,6 +51,16 @@ test("assinatura individual vincula metodo, rota, nonce, data e corpo", () => {
   const signature = signRequest(input, identity.privateKey);
   assert.equal(verifyRequest(input, signature, identity.publicKey), true);
   assert.equal(verifyRequest({ ...input, pathname: "/api/v1/events" }, signature, identity.publicKey), false);
+});
+
+test("chave compartilhada registra cada instalacao sem queimar o segredo", () => {
+  const store = new UpdateStore(temporary(), { enrollmentKey: "shared-key-value-1234567890" });
+  const first = generateInstallationIdentity(); const second = generateInstallationIdentity();
+  const franklin = store.enroll("shared-key-value-1234567890", { installationId: first.installationId, publicKey: first.publicKey, version: "1.0.0", platform: "win32", architecture: "x64", companyName: "Franklin" });
+  const outro = store.enroll("shared-key-value-1234567890", { installationId: second.installationId, publicKey: second.publicKey, version: "1.0.0", platform: "win32", architecture: "x64", companyName: "Outro cliente" });
+  assert.equal(franklin.companyName, "Franklin"); assert.equal(outro.companyName, "Outro cliente"); assert.equal(franklin.group, "pilot");
+  assert.throws(() => store.enroll("", { installationId: "vazio", publicKey: "x", version: "1.0.0", platform: "win32", architecture: "x64" }), /invalido|expirado/);
+  assert.throws(() => store.enroll("shared-key-value-1234567890", { installationId: first.installationId, publicKey: first.publicKey, version: "1.0.0", platform: "win32", architecture: "x64" }), /ja registrada/);
 });
 
 test("central registra instalacao uma vez e permite revogacao isolada", () => {
@@ -124,13 +135,45 @@ test("API central separa leitura e administracao, autentica instalacao e bloquei
   const tokenResponse = await fetch(`${base}/api/admin/enrollment-tokens`, { method: "POST", headers: { authorization: "Bearer test-admin-token", "content-type": "application/json" }, body: JSON.stringify({ clientId: "c1", companyName: "Empresa A", group: "pilot" }) });
   const enrollmentToken = (await tokenResponse.json()).token; const identity = generateInstallationIdentity();
   const enrolled = await fetch(`${base}/api/v1/enroll`, { method: "POST", headers: { authorization: `Bearer ${enrollmentToken}`, "content-type": "application/json" }, body: JSON.stringify({ installationId: identity.installationId, publicKey: identity.publicKey, version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0" }) }); assert.equal(enrolled.status, 201);
-  const body = Buffer.from(JSON.stringify({ version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0", companyName: "Boca do Mato", hostname: "CAIXA-01", addresses: ["192.168.0.15", "nao-e-ip"] })); const timestamp = Date.now(); const nonce = "single-use-nonce"; const signature = signRequest({ method: "POST", pathname: "/api/v1/check", timestamp, nonce, body }, identity.privateKey); const headers = { "content-type": "application/json", "x-installation-id": identity.installationId, "x-update-timestamp": String(timestamp), "x-update-nonce": nonce, "x-update-signature": signature };
+  const body = Buffer.from(JSON.stringify({ version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0", companyName: "Boca do Mato", hostname: "CAIXA-01", addresses: ["192.168.0.15", "nao-e-ip"], installPath: "C:\\Administracao" })); const timestamp = Date.now(); const nonce = "single-use-nonce"; const signature = signRequest({ method: "POST", pathname: "/api/v1/check", timestamp, nonce, body }, identity.privateKey); const headers = { "content-type": "application/json", "x-installation-id": identity.installationId, "x-update-timestamp": String(timestamp), "x-update-nonce": nonce, "x-update-signature": signature };
   const checked = await fetch(`${base}/api/v1/check`, { method: "POST", headers, body }); assert.equal(checked.status, 200); assert.equal((await checked.json()).update, null);
-  const saved = store.state.installations[identity.installationId]; assert.equal(saved.companyName, "Boca do Mato"); assert.equal(saved.hostname, "CAIXA-01"); assert.deepEqual(saved.addresses, ["192.168.0.15"]); assert.equal(saved.remoteAddress, "127.0.0.1");
+  const saved = store.state.installations[identity.installationId]; assert.equal(saved.companyName, "Boca do Mato"); assert.equal(saved.hostname, "CAIXA-01"); assert.deepEqual(saved.addresses, ["192.168.0.15"]); assert.equal(saved.installPath, "C:\\Administracao"); assert.equal(saved.remoteAddress, "127.0.0.1");
   const replayed = await fetch(`${base}/api/v1/check`, { method: "POST", headers, body }); assert.equal(replayed.status, 409); assert.ok(store.state.installations[identity.installationId].lastSeenAt);
   const packageBytes = Buffer.from("signed-package"); const releaseManifest = manifest(packageBytes); const uploaded = await fetch(`${base}/api/admin/releases/2.5.0/package`, { method: "POST", headers: { authorization: "Bearer test-admin-token", "content-type": "application/octet-stream", "x-update-manifest": Buffer.from(JSON.stringify(releaseManifest)).toString("base64url"), "x-update-signature": signManifest(releaseManifest, releasePair.privateKey) }, body: packageBytes }); assert.equal(uploaded.status, 201);
   store.authorize({ version: "2.5.0", percentage: 100, actor: "test" }); const previousUrl = process.env.UPDATE_CENTER_URL; const previousToken = process.env.UPDATE_CENTER_READ_TOKEN; process.env.UPDATE_CENTER_URL = base; process.env.UPDATE_CENTER_READ_TOKEN = "read-only-token";
   try { const answer = await answerUpdateQuestion("Charlie, quais clientes estão desatualizados?"); assert.equal(answer.intencao.type, "atualizacoes_consulta"); assert.match(answer.resposta, /instalação/); } finally { if (previousUrl === undefined) delete process.env.UPDATE_CENTER_URL; else process.env.UPDATE_CENTER_URL = previousUrl; if (previousToken === undefined) delete process.env.UPDATE_CENTER_READ_TOKEN; else process.env.UPDATE_CENTER_READ_TOKEN = previousToken; }
+});
+
+test("agente registra de novo quando a central nao reconhece a instalacao", async (context) => {
+  const root = temporary(); const shared = "shared-key-value-1234567890";
+  const { app, store } = createUpdateCenter({ dataDir: path.join(root, "center"), adminToken: "admin-token", enrollmentKey: shared, uiDir: path.join(root, "missing") });
+  const server = app.listen(0, "127.0.0.1"); context.after(() => server.close()); await new Promise((resolve) => server.once("listening", resolve));
+  const centerUrl = `http://127.0.0.1:${server.address().port}`;
+  const enrollmentToken = store.createEnrollmentToken({ clientId: "antigo", companyName: "Antigo", group: "pilot" });
+  const agent = new UpdateAgent({ centerUrl, enrollmentToken, companyName: "Franklin", installRoot: path.join(root, "install"), dataDir: path.join(root, "data"), currentVersion: "1.0.0", engine: { recoverInterrupted: async () => {} } });
+  await agent.initialize(); const forgotten = agent.identity.installationId;
+  delete store.state.installations[forgotten]; store.save();
+  agent.config.enrollmentToken = shared;
+  const result = await agent.checkOnce();
+  assert.deepEqual(result, { updated: false });
+  assert.notEqual(agent.identity.installationId, forgotten);
+  assert.equal(store.state.installations[agent.identity.installationId].companyName, "Franklin");
+});
+
+test("agente troca o token gasto pelo proximo da reserva", async (context) => {
+  const root = temporary();
+  const { app, store } = createUpdateCenter({ dataDir: path.join(root, "center"), adminToken: "admin-token", uiDir: path.join(root, "missing") });
+  const server = app.listen(0, "127.0.0.1"); context.after(() => server.close()); await new Promise((resolve) => server.once("listening", resolve));
+  const centerUrl = `http://127.0.0.1:${server.address().port}`;
+  const spent = store.createEnrollmentToken({ clientId: "gasto", companyName: "Gasto", group: "pilot" });
+  const reserve = store.createEnrollmentToken({ clientId: "reserva", companyName: "Reserva", group: "pilot" });
+  const burned = generateInstallationIdentity();
+  store.enroll(spent, { installationId: burned.installationId, publicKey: burned.publicKey, version: "1.0.0", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0" });
+  const installRoot = path.join(root, "install"); fs.mkdirSync(path.join(installRoot, "Updater"), { recursive: true });
+  fs.writeFileSync(path.join(installRoot, "Updater", "enrollment-pool.json"), JSON.stringify({ tokens: [reserve] }));
+  const agent = new UpdateAgent({ centerUrl, enrollmentToken: spent, companyName: "Franklin", installRoot, dataDir: path.join(root, "data"), currentVersion: "1.0.0", engine: { recoverInterrupted: async () => {} } });
+  await agent.initialize();
+  assert.equal(store.state.installations[agent.identity.installationId].companyName, "Franklin");
 });
 
 test("agente sem token fica instalado e nao grava identidade", async () => {
@@ -149,6 +192,86 @@ test("fluxo integrado publica, autoriza, baixa, ativa e confirma a atualizacao",
   const enrollmentToken = store.createEnrollmentToken({ clientId: "client", companyName: "Piloto", group: "pilot" }); const publicKeyFile = path.join(root, "release-public.pem"); fs.writeFileSync(publicKeyFile, releasePair.publicKey.export({ type: "spki", format: "pem" })); const engine = new UpdateEngine({ installRoot, dataDir, publicKey: releasePair.publicKey, serviceController: { stop: async () => {}, start: async () => {} }, healthCheck: async () => true });
   const agent = new UpdateAgent({ centerUrl, enrollmentToken, companyName: "Piloto", installRoot, dataDir, releasePublicKey: publicKeyFile, currentVersion: "2.4.5", channel: "stable", updateWindow: "00:00-23:59", maxPackageBytes: 10_000_000, engine }); await agent.initialize(); store.authorize({ version: "2.5.0", installationId: agent.identity.installationId, actor: "test" });
   const result = await agent.checkOnce(); assert.deepEqual(result, { updated: true, version: "2.5.0" }); assert.equal(fs.readFileSync(path.join(live, "server", "dashboard.mjs"), "utf8"), "new-backend"); assert.equal(store.state.installations[agent.identity.installationId].version, "2.5.0"); assert.ok(store.state.events.some((item) => item.type === "installed"));
+});
+
+test("pasta em outro disco e copiada quando o rename cruza unidades", () => {
+  const root = temporary(); const source = path.join(root, "origem"); const destination = path.join(root, "destino", "backup");
+  fs.mkdirSync(source, { recursive: true }); fs.writeFileSync(path.join(source, "old.txt"), "old");
+  const fake = { mkdirSync: fs.mkdirSync.bind(fs), cpSync: fs.cpSync.bind(fs), rmSync: fs.rmSync.bind(fs), renameSync() { const error = new Error("cross-device"); error.code = "EXDEV"; throw error; } };
+  movePath(source, destination, fake);
+  assert.equal(fs.readFileSync(path.join(destination, "old.txt"), "utf8"), "old");
+  assert.equal(fs.existsSync(source), false);
+});
+
+test("nome da empresa sai do banco quando o instalador nao informou", async () => {
+  const root = temporary(); const config = { installRoot: path.join(root, "install"), dataDir: path.join(root, "data"), companyName: "" };
+  assert.equal(await readCompanyFromDatabase(config), "");
+  assert.equal(await resolveCompanyName(config), os.hostname());
+  assert.equal(await resolveCompanyName({ ...config, companyName: "Boca do Mato" }), "Boca do Mato");
+});
+
+test("dashboard troca o agente somente depois que a atualizacao ja terminou", () => {
+  const root = temporary(); const serverDir = path.join(root, "node-app", "server"); const bundled = path.join(root, "node-app", "updater", "agent.mjs"); const live = path.join(root, "Updater", "agent.mjs");
+  fs.mkdirSync(path.dirname(bundled), { recursive: true }); fs.mkdirSync(path.dirname(live), { recursive: true });
+  fs.writeFileSync(bundled, "novo"); fs.writeFileSync(live, "antigo");
+  let scheduled = null;
+  assert.equal(syncUpdaterAgent(serverDir, { delayMs: 180000, schedule: (callback, delay) => { scheduled = { callback, delay }; } }), true);
+  assert.equal(scheduled.delay, 180000); assert.equal(fs.readFileSync(live, "utf8"), "antigo");
+  scheduled.callback();
+  assert.equal(fs.readFileSync(live, "utf8"), "novo");
+  assert.equal(syncUpdaterAgent(serverDir, { schedule: () => { throw new Error("nao deveria agendar"); } }), false);
+});
+
+test("auditoria fica em portugues e na maquina de cada acontecimento", async (context) => {
+  const root = temporary();
+  const { app, store } = createUpdateCenter({ dataDir: root, adminToken: "test-admin-token", releasePublicKey: keys().publicKey, uiDir: path.join(root, "missing") });
+  const server = app.listen(0, "127.0.0.1"); context.after(() => server.close()); await new Promise((resolve) => server.once("listening", resolve));
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const boca = generateInstallationIdentity();
+  const caixa = generateInstallationIdentity();
+  const headers = { authorization: "Bearer test-admin-token", "content-type": "application/json" };
+  store.enroll(store.createEnrollmentToken({ clientId: "boca", companyName: "Boca do Mato", group: "pilot" }), { installationId: boca.installationId, publicKey: boca.publicKey, version: "1.0.2", platform: "win32", architecture: "x64", agentVersion: "1.0.0", companyName: "Boca do Mato", hostname: "CAIXA-01" });
+  store.enroll(store.createEnrollmentToken({ clientId: "outro", companyName: "Outro cliente", group: "pilot" }), { installationId: caixa.installationId, publicKey: caixa.publicKey, version: "1.0.0", platform: "win32", architecture: "x64", agentVersion: "1.0.0", companyName: "Outro cliente", hostname: "" });
+  store.release(manifest(Buffer.from("pacote"), { version: "1.0.3" }), "assinatura", path.join(root, "pacote.tar.gz"));
+  store.event(boca.installationId, { type: "download_started", version: "1.0.3", detail: "" });
+  store.event(boca.installationId, { type: "failed", version: "1.0.3", detail: "Agente precisa ser atualizado antes deste pacote." });
+  store.event(caixa.installationId, { type: "rollback", version: "1.0.2", detail: "Atualizacao revertida: EXDEV: cross-device link not permitted, rename 'D:\\app' -> 'C:\\backup'" });
+  const antiga = store.authorize({ version: "1.0.3", installationId: boca.installationId, actor: "admin" });
+  store.event("__admin__", { type: "authorization_created", version: "1.0.3", detail: `admin:${antiga.id}` });
+  store.event("__admin__", { type: "installation_revoked", detail: `admin:${caixa.installationId}` });
+  store.event("__admin__", { type: "release_status_changed", version: "1.0.2", detail: "admin:blocked" });
+  const fleet = await fetch(`${base}/api/admin/authorizations`, { method: "POST", headers, body: JSON.stringify({ version: "1.0.3", percentage: 100 }) });
+  assert.equal(fleet.status, 201);
+  const response = await fetch(`${base}/api/admin/events`, { headers });
+  assert.equal(response.status, 200);
+  const { events } = await response.json();
+  const download = events.find((item) => item.type === "download_started");
+  assert.equal(download.label, "Download iniciado");
+  assert.equal(download.companyName, "Boca do Mato");
+  assert.equal(download.hostname, "CAIXA-01");
+  assert.equal(download.machineId, boca.installationId);
+  assert.equal(download.resumo, "O pacote começou a ser baixado nesta máquina.");
+  const failed = events.find((item) => item.type === "failed");
+  assert.equal(failed.machineId, boca.installationId);
+  assert.match(failed.resumo, /atualizador desta máquina/);
+  const rollback = events.find((item) => item.type === "rollback");
+  assert.equal(rollback.companyName, "Outro cliente");
+  assert.equal(rollback.machineId, caixa.installationId);
+  assert.match(rollback.resumo, /outro disco/);
+  const liberacao = events.find((item) => item.type === "authorization_created" && item.detail.startsWith("admin:"));
+  assert.equal(liberacao.machineId, boca.installationId);
+  assert.equal(liberacao.label, "Liberação");
+  assert.match(liberacao.resumo, /esta máquina/);
+  const revogacao = events.find((item) => item.type === "installation_revoked");
+  assert.equal(revogacao.machineId, caixa.installationId);
+  assert.match(revogacao.resumo, /deixou de receber/);
+  const status = events.find((item) => item.type === "release_status_changed");
+  assert.equal(status.companyName, "Central");
+  assert.equal(status.machineId, "");
+  assert.match(status.resumo, /bloqueada/);
+  const lote = events.find((item) => item.type === "authorization_created" && item.detail.startsWith("lote:"));
+  assert.equal(lote.companyName, "Central");
+  assert.match(lote.resumo, /todas as máquinas/);
 });
 
 function execTar(args) { const result = spawnSync("tar.exe", args, { windowsHide: true }); if (result.status !== 0) throw new Error(result.stderr.toString()); }

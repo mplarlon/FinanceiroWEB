@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 import { atomicWriteJson, compareSemver, readJson, safeChild, sha256, verifyManifest } from "../shared.js";
 
 const execFile = promisify(execFileCallback);
+const AGENT_ENGINE_VERSION = "1.0.1";
 
 export class UpdateEngine {
   constructor(options) {
@@ -30,7 +31,7 @@ export class UpdateEngine {
     if (!verifyManifest(manifest, signature, this.publicKey)) throw new Error("Assinatura do manifesto invalida.");
     if (compareSemver(manifest.version, currentVersion) <= 0) throw new Error("A versao oferecida nao e superior a instalada.");
     if (![].concat(manifest.platform).includes(process.platform) || ![].concat(manifest.architecture).includes(process.arch)) throw new Error("Versao incompativel com esta plataforma.");
-    if (compareSemver(manifest.minimumAgentVersion || "0.0.0", process.env.ERP_UPDATER_VERSION || "1.0.0") > 0) throw new Error("Agente precisa ser atualizado antes deste pacote.");
+    if (compareSemver(manifest.minimumAgentVersion || "0.0.0", process.env.ERP_UPDATER_VERSION || AGENT_ENGINE_VERSION) > 0) throw new Error("Agente precisa ser atualizado antes deste pacote.");
     if (!manifest.package?.sha256 || !Number.isSafeInteger(Number(manifest.package.size))) throw new Error("Manifesto nao informa integridade do pacote.");
     const databaseStrategy = manifest.database?.strategy || "none";
     if (!new Set(["none", "additive-compatible"]).has(databaseStrategy)) throw new Error("Atualizacao exige estrategia de banco nao automatizavel. Use procedimento manual homologado.");
@@ -58,8 +59,8 @@ export class UpdateEngine {
     atomicWriteJson(this.journalFile, { state: "prepared", from: currentVersion, to: manifest.version, live, backup, staging, startedAt: new Date().toISOString() });
     try {
       await this.serviceController.stop();
-      fs.renameSync(live, backup);
-      fs.renameSync(prepared, live);
+      movePath(live, backup);
+      movePath(prepared, live);
       atomicWriteJson(this.journalFile, { ...readJson(this.journalFile, {}), state: "activated" });
       await this.serviceController.start();
       await this.healthCheck(manifest);
@@ -78,7 +79,7 @@ export class UpdateEngine {
     try { await this.serviceController.stop(); } catch { /* tenta recuperar mesmo assim */ }
     if (fs.existsSync(transaction.backup)) {
       if (fs.existsSync(transaction.live)) fs.rmSync(transaction.live, { recursive: true, force: true });
-      fs.renameSync(transaction.backup, transaction.live);
+      movePath(transaction.backup, transaction.live);
     }
     try { await this.serviceController.start(); } catch { /* registrado no journal */ }
     atomicWriteJson(this.journalFile, { ...transaction, state: "rolled_back", rolledBackAt: new Date().toISOString(), error: String(transaction.error?.message || transaction.error || "falha") });
@@ -135,6 +136,17 @@ async function extractTarGz(archive, destination) {
   }
   if (verbose.stdout.split(/\r?\n/).some((line) => /^[lh]/.test(line))) throw new Error("Pacote contem link nao permitido.");
   await execFile("tar.exe", ["-xzf", archive, "-C", destination], { windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
+}
+
+export function movePath(source, destination, fsImpl = fs) {
+  fsImpl.mkdirSync(path.dirname(destination), { recursive: true });
+  try {
+    fsImpl.renameSync(source, destination);
+  } catch (error) {
+    if (error?.code !== "EXDEV") throw error;
+    fsImpl.cpSync(source, destination, { recursive: true, force: true });
+    fsImpl.rmSync(source, { recursive: true, force: true });
+  }
 }
 
 function windowsService(installRoot) {

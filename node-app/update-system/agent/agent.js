@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import { UpdateEngine, downloadPackage } from "./engine.js";
@@ -18,12 +19,43 @@ export class UpdateAgent {
     this.engine = config.engine || new UpdateEngine({ installRoot: config.installRoot, dataDir: config.dataDir, publicKey: fs.readFileSync(config.releasePublicKey, "utf8"), healthUrl: config.healthUrl, retention: config.retention, maxPackageBytes: config.maxPackageBytes });
   }
 
+  enrollmentCandidates() {
+    const found = [];
+    const add = (value) => {
+      const token = String(value || "").trim();
+      if (token && !found.includes(token)) found.push(token);
+    };
+    add(this.config.enrollmentToken);
+    for (const token of this.config.enrollmentPool || []) add(token);
+    const poolFile = this.config.enrollmentPoolFile || path.join(this.config.installRoot, "Updater", "enrollment-pool.json");
+    if (fs.existsSync(poolFile)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(poolFile, "utf8"));
+        for (const token of [].concat(parsed.tokens || parsed)) add(token);
+      } catch { /* reserva ilegivel nao impede o token principal */ }
+    }
+    return found;
+  }
+
   async initialize() {
     fs.mkdirSync(this.stateDir, { recursive: true });
     if (!this.identity) {
-      if (!this.config.enrollmentToken) return false;
+      const tokens = this.enrollmentCandidates();
+      if (!tokens.length) return false;
       const identity = generateInstallationIdentity();
-      await this.request("/api/v1/enroll", { companyName: this.config.companyName, installationId: identity.installationId, publicKey: identity.publicKey, ...this.metadata() }, { enrollment: true });
+      let lastError = null;
+      for (const token of tokens) {
+        this.config.enrollmentToken = token;
+        try {
+          await this.request("/api/v1/enroll", { companyName: this.config.companyName, installationId: identity.installationId, publicKey: identity.publicKey, ...this.metadata() }, { enrollment: true });
+          lastError = null;
+          break;
+        } catch (error) {
+          lastError = error;
+          if (!/invalido ou expirado|HTTP 401/.test(String(error.message || ""))) throw error;
+        }
+      }
+      if (lastError) throw lastError;
       this.identity = identity;
       atomicWriteJson(this.identityFile, this.identity);
     }
@@ -31,9 +63,9 @@ export class UpdateAgent {
     return true;
   }
 
-  metadata() { return { version: this.state.version, platform: process.platform, architecture: process.arch, nodeVersion: process.version, agentVersion: AGENT_VERSION, channel: this.config.channel || "stable", companyName: this.config.companyName || "", hostname: os.hostname(), addresses: localAddresses() }; }
+  metadata() { return { version: this.state.version, platform: process.platform, architecture: process.arch, nodeVersion: process.version, agentVersion: AGENT_VERSION, channel: this.config.channel || "stable", companyName: this.config.companyName || "", hostname: os.hostname(), addresses: localAddresses(), installPath: path.resolve(this.config.installRoot || "") }; }
 
-  async checkOnce() {
+  async checkOnce(options = {}) {
     try {
       const result = await this.request("/api/v1/check", { ...this.metadata(), status: "online" });
       if (!result.update) return { updated: false };
@@ -57,6 +89,11 @@ export class UpdateAgent {
         throw error;
       }
     } catch (error) {
+      if (!options.retried && this.config.enrollmentToken && /Instalacao (desconhecida|nao autorizada)/.test(String(error.message || ""))) {
+        this.identity = null;
+        fs.rmSync(this.identityFile, { force: true });
+        if (await this.initialize()) return this.checkOnce({ retried: true });
+      }
       this.state.lastError = String(error.message).slice(0, 1000); this.state.lastCheckAt = new Date().toISOString(); atomicWriteJson(this.stateFile, this.state);
       throw error;
     }
@@ -90,7 +127,7 @@ export function loadAgentConfig(environment = process.env) {
   if (parsedCenter.protocol !== "https:" && !["localhost", "127.0.0.1", "::1"].includes(parsedCenter.hostname)) throw new Error("ERP_UPDATE_CENTER_URL deve usar HTTPS.");
   return {
     centerUrl, enrollmentToken: environment.ERP_UPDATE_ENROLLMENT_TOKEN,
-    companyName: environment.ERP_UPDATE_COMPANY_NAME || os.hostname(), installRoot: environment.ERP_INSTALL_ROOT || "C:\\Program Files\\Dashboard",
+    companyName: String(environment.ERP_UPDATE_COMPANY_NAME || "").trim(), installRoot: environment.ERP_INSTALL_ROOT || "C:\\Program Files\\Dashboard",
     dataDir: environment.DASHBOARD_DATA_DIR || "C:\\Administracao\\Dashboard", releasePublicKey: required(environment.ERP_UPDATE_PUBLIC_KEY_FILE),
     currentVersion: environment.ERP_CURRENT_VERSION || "2.4.5", healthUrl: environment.ERP_HEALTH_URL || "http://127.0.0.1:805/api/status",
     channel: environment.ERP_UPDATE_CHANNEL || "stable", intervalMs: Number(environment.ERP_UPDATE_INTERVAL_MS || 5 * 60_000), timeoutMs: Number(environment.ERP_UPDATE_TIMEOUT_MS || 30_000),
@@ -100,6 +137,56 @@ export function loadAgentConfig(environment = process.env) {
 }
 
 function required(value) { if (!value) throw new Error("Configuracao obrigatoria ausente."); return value; }
+
+export async function readCompanyFromDatabase(config) {
+  try {
+    return await Promise.race([
+      queryCompanyName(config),
+      new Promise((resolve) => setTimeout(() => resolve(""), 15000)),
+    ]);
+  } catch {
+    return "";
+  }
+}
+
+async function queryCompanyName(config) {
+  const iniPath = path.join(config.dataDir, "start.ini");
+  if (!fs.existsSync(iniPath)) return "";
+  const settings = JSON.parse(fs.readFileSync(iniPath, "utf8"));
+  const host = String(settings.host || "").trim();
+  const database = String(settings.database || "").trim();
+  if (!host || !database) return "";
+  const packageJson = path.join(config.installRoot, "node-app", "node_modules", "node-firebird-driver-native", "package.json");
+  if (!fs.existsSync(packageJson)) return "";
+  const driverName = ["node", "firebird", "driver", "native"].join("-");
+  const driver = createRequire(packageJson)(driverName);
+  const fbclient = path.join(config.installRoot, "Firebird-5.0.4", "fbclient.dll");
+  const library = fs.existsSync(fbclient) ? fbclient : driver.getDefaultLibraryFilename();
+  const client = driver.createNativeClient(library);
+  const db = await client.connect(`${host}/${Number(settings.port) || 3050}:${database}`, {
+    username: String(settings.user || "SYSDBA"),
+    password: String(settings.password || ""),
+    charSetForNONE: "windows-1252",
+  });
+  try {
+    const tx = await db.startTransaction({ accessMode: "READ_ONLY" });
+    const result = await db.executeQuery(tx, "SELECT FIRST 1 TRIM(NOMEEMPRESA) AS NOME FROM CONFIGURACAO WHERE NOMEEMPRESA IS NOT NULL AND TRIM(NOMEEMPRESA) <> '' ORDER BY IDEMPRESA");
+    const rows = await result.fetchAsObject();
+    await result.close();
+    await tx.commit();
+    const value = rows[0]?.NOME;
+    const text = Buffer.isBuffer(value) ? value.toString("latin1").trim() : String(value || "").trim();
+    return text.slice(0, 160);
+  } finally {
+    await db.disconnect();
+  }
+}
+
+export async function resolveCompanyName(config) {
+  const configured = String(config.companyName || "").trim();
+  if (configured) return configured;
+  return (await readCompanyFromDatabase(config)) || os.hostname();
+}
 
 export function localAddresses(interfaces = os.networkInterfaces()) {
   const found = [];
@@ -141,9 +228,19 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.met
   let ready = false;
   let failures = 0;
   let announcedWait = false;
+  let companyAttempts = 0;
   const loop = async () => {
     try {
-      if (!ready) {
+      if (!config.companyFromDatabase && !String(process.env.ERP_UPDATE_COMPANY_NAME || "").trim() && companyAttempts < 3) {
+        companyAttempts += 1;
+        const name = await readCompanyFromDatabase(config);
+        if (name) {
+          config.companyName = name;
+          config.companyFromDatabase = true;
+        }
+      }
+      if (!config.companyName) config.companyName = os.hostname();
+      if (!ready || !agent.identity) {
         ready = await agent.initialize();
         if (!ready && !announcedWait) {
           console.error("[updater] servico instalado. Aguardando token de registro.");

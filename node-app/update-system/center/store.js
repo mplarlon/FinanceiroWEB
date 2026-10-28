@@ -6,12 +6,13 @@ import { atomicWriteJson, compareSemver, readJson } from "../shared.js";
 const EMPTY = { installations: {}, releases: {}, authorizations: [], events: [], enrollmentTokens: {}, suspended: false };
 
 export class UpdateStore {
-  constructor(dataDir) {
+  constructor(dataDir, options = {}) {
     this.dataDir = path.resolve(dataDir);
     this.file = path.join(this.dataDir, "center.json");
     this.packagesDir = path.join(this.dataDir, "packages");
     fs.mkdirSync(this.packagesDir, { recursive: true });
     this.state = readJson(this.file, EMPTY);
+    this.enrollmentKey = String(options.enrollmentKey ?? process.env.UPDATE_CENTER_ENROLLMENT_KEY ?? "");
   }
 
   save() { atomicWriteJson(this.file, this.state); }
@@ -25,7 +26,15 @@ export class UpdateStore {
   }
 
   enroll(token, installation) {
-    const digest = crypto.createHash("sha256").update(String(token || "")).digest("hex");
+    const supplied = String(token || "");
+    if (sameSecret(supplied, this.enrollmentKey)) {
+      if (this.state.installations[installation.installationId]) throw Object.assign(new Error("Instalacao ja registrada."), { status: 409 });
+      const companyName = String(installation.companyName || installation.hostname || "").slice(0, 160);
+      this.state.installations[installation.installationId] = { ...installation, clientId: installation.installationId, group: "pilot", companyName, status: "registered", enrolledAt: new Date().toISOString(), revokedAt: null };
+      this.save();
+      return this.state.installations[installation.installationId];
+    }
+    const digest = crypto.createHash("sha256").update(supplied).digest("hex");
     const grant = this.state.enrollmentTokens[digest];
     if (!grant || grant.usedAt || grant.expiresAt < Date.now()) throw Object.assign(new Error("Token de registro invalido ou expirado."), { status: 401 });
     if (this.state.installations[installation.installationId]) throw Object.assign(new Error("Instalacao ja registrada."), { status: 409 });
@@ -86,6 +95,13 @@ export class UpdateStore {
     this.save();
     return event;
   }
+}
+
+function sameSecret(left, right) {
+  const a = Buffer.from(String(left || ""));
+  const b = Buffer.from(String(right || ""));
+  if (!a.length || a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
 }
 
 function rolloutIncludes(id, percentage) {

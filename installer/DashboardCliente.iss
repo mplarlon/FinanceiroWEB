@@ -337,7 +337,7 @@ begin
 
   UpdaterPage := CreateCustomPage(DatabasePage.ID,
     'Atualização automática',
-    'O nome da empresa é lido do cadastro no banco. Se o campo continuar vazio, ele é gravado ao concluir a instalação. O token de registro é opcional.');
+    'O nome da empresa é lido do cadastro no banco. Ao terminar, o computador se registra na central. Preencha o token somente se a Pontual informar um.');
   UpdaterPage.OnActivate := @AtivarPaginaAtualizador;
   CompanyEdit := AddLabeledEdit(UpdaterPage, 'Nome da empresa:', 0, LabelWidth, False);
   TokenEdit := AddLabeledEdit(UpdaterPage, 'Token de registro:', ScaleY(28), LabelWidth, False);

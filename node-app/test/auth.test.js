@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { passwordMatches } from "../server/auth.js";
+import { passwordMatches, userCanEnterDashboard } from "../server/auth.js";
 
 test("aceita a codificacao atual do ERP", () => {
   assert.equal(
@@ -18,6 +18,12 @@ test("aceita a codificacao legada de oito bytes", () => {
     ),
     true,
   );
+});
+
+test("permissao do Automec libera o Dashboard", () => {
+  assert.equal(userCanEnterDashboard({ inactive: 0, hasAutomecPermission: true }), true);
+  assert.equal(userCanEnterDashboard({ inactive: 0, hasAutomecPermission: false }), false);
+  assert.equal(userCanEnterDashboard({ inactive: 1, hasAutomecPermission: true }), false);
 });
 
 test("nao aceita senha incorreta com o mesmo tamanho", () => {

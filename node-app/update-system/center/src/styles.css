@@ -374,7 +374,25 @@ td.empty {
 .badge.installation_revoked { background: #fde8e8; color: #b42318; }
 .badge.outdated,
 .badge.draft,
+.badge.deferred_critical_operation,
 .badge.distribution_suspension { background: #fff3cd; color: #8a6400; }
+.badge.download_started,
+.badge.release_status_changed { background: #e7f0fb; color: #1d4f91; }
+.audit-machine + .audit-machine { margin-top: 6px; border-top: 1px solid var(--pontual-line); }
+.audit-machine h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 16px 0 0;
+  color: var(--pontual-graphite);
+  font-size: 16px;
+}
+.audit-machine h3 small { display: inline; font-weight: 600; }
+.tabela td.quando,
+.tabela td.versao { white-space: nowrap; }
+.tabela td.resumo { min-width: 240px; }
+.tabela td.caminho { max-width: 320px; word-break: break-all; }
+.empty-note { color: #8d8783; margin: 8px 0 18px; }
 .error {
   color: #b42318;
   background: #fff0ee;
