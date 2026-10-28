@@ -21,10 +21,15 @@ const STATUS_LABEL = {
   outdated: "Desatualizada",
   current: "Atualizada",
   installed: "Instalada",
+  download_started: "Download iniciado",
+  deferred_critical_operation: "Adiada",
   authorization_created: "Liberação",
-  release_status_changed: "Status",
+  release_status_changed: "Status da versão",
   distribution_suspension: "Suspensão",
   installation_revoked: "Revogação",
+  release_deleted: "Versão excluída",
+  unknown: "Desconhecido",
+  registered: "Registrada",
 };
 
 const api = async (path, token, options = {}) => {
@@ -46,6 +51,46 @@ function machinesOf(installations) {
     Number(Boolean(b.outdated)) - Number(Boolean(a.outdated))
     || String(a.companyName || "").localeCompare(String(b.companyName || ""), "pt-BR")
     || String(a.hostname || "").localeCompare(String(b.hostname || ""), "pt-BR"));
+}
+
+function machineCode(item) {
+  return item?.hostname ? "" : String(item?.installationId || "").slice(0, 8);
+}
+
+function ipsOf(item) {
+  const local = [].concat(item?.addresses || []).filter(Boolean);
+  if (local.length) return local.join(", ");
+  return item?.remoteAddress || "";
+}
+
+function auditGroups(events, installations) {
+  const machines = machinesOf(installations);
+  const known = new Map(machines.map((item) => [item.installationId, item]));
+  const decorated = events.map((event) => {
+    const machineId = event.machineId || (known.has(event.installationId) ? event.installationId : "");
+    const machine = known.get(machineId);
+    return {
+      ...event,
+      machineId,
+      label: event.label || STATUS_LABEL[event.type] || "Acontecimento",
+      resumo: event.resumo || event.detail || "—",
+      companyName: event.companyName || machine?.companyName || (machineId ? "Sem empresa" : "Central"),
+      hostname: event.hostname || machine?.hostname || "",
+    };
+  });
+  const groups = machines.map((machine) => ({
+    id: machine.installationId,
+    companyName: machine.companyName || "Sem empresa",
+    hostname: machine.hostname || "Aguardando",
+    code: machineCode(machine),
+    ip: ipsOf(machine),
+    installPath: machine.installPath || "",
+    events: decorated.filter((event) => event.machineId === machine.installationId),
+  })).filter((group) => group.events.length);
+  const placed = new Set(groups.flatMap((group) => group.events.map((event) => event.id)));
+  const rest = decorated.filter((event) => !placed.has(event.id));
+  if (rest.length) groups.push({ id: "central", companyName: "Central", hostname: "Ações da central", code: "", events: rest });
+  return groups;
 }
 
 function App() {
@@ -209,15 +254,16 @@ function App() {
           <div className="table-scroll">
             <table className="tabela">
               <thead>
-                <tr><th>Empresa</th><th>Máquina</th><th>IP na rede</th><th>Versão</th><th>Atualização</th><th>Status</th><th>Última comunicação</th><th>Ação</th></tr>
+                <tr><th>Empresa</th><th>Máquina</th><th>IP</th><th>Pasta do Dashboard</th><th>Versão</th><th>Atualização</th><th>Status</th><th>Última comunicação</th><th>Ação</th></tr>
               </thead>
               <tbody>
-                {installations.length === 0 && <tr><td colSpan={8} className="empty">Nenhuma máquina registrada.</td></tr>}
+                {installations.length === 0 && <tr><td colSpan={9} className="empty">Nenhuma máquina registrada.</td></tr>}
                 {machinesOf(installations).map((item) => (
                   <tr key={item.installationId} className={item.outdated ? "outdated" : ""}>
                     <td>{item.companyName || "Sem empresa"}<small>{item.group}</small></td>
-                    <td>{item.hostname || "Aguardando"}</td>
-                    <td>{(item.addresses || []).join(", ") || "Aguardando"}</td>
+                    <td>{item.hostname || "Aguardando"}{machineCode(item) && <small>{machineCode(item)}</small>}</td>
+                    <td>{ipsOf(item) || "Aguardando"}</td>
+                    <td className="caminho">{item.installPath || "Aguardando"}</td>
                     <td>{item.version}</td>
                     <td><Badge value={item.revokedAt ? "revoked" : item.outdated ? "outdated" : "current"} /></td>
                     <td><Badge value={item.revokedAt ? "revoked" : item.status} /></td>
@@ -233,25 +279,29 @@ function App() {
         </section>
         <section id="auditoria" className="panel">
           <h2>Auditoria recente</h2>
-          <div className="table-scroll">
-            <table className="tabela">
-              <thead>
-                <tr><th>Quando</th><th>Instalação</th><th>Evento</th><th>Versão</th><th>Detalhe</th></tr>
-              </thead>
-              <tbody>
-                {events.length === 0 && <tr><td colSpan={5} className="empty">Nenhum evento recente.</td></tr>}
-                {events.slice(0, 50).map((item) => (
-                  <tr key={item.id}>
-                    <td>{when(item.receivedAt)}</td>
-                    <td>{item.installationId}</td>
-                    <td><Badge value={item.type} /></td>
-                    <td>{item.version || "—"}</td>
-                    <td>{item.detail || "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {events.length === 0 && <p className="empty-note">Nenhum acontecimento recente.</p>}
+          {auditGroups(events, installations).map((group) => (
+            <div key={group.id} className="audit-machine">
+              <h3>{group.companyName}<small>{[group.hostname, group.code, group.ip, group.installPath].filter(Boolean).join(" · ")}</small></h3>
+              <div className="table-scroll">
+                <table className="tabela">
+                  <thead>
+                    <tr><th>Quando</th><th>Acontecimento</th><th>Versão</th><th>Detalhe</th></tr>
+                  </thead>
+                  <tbody>
+                    {group.events.map((item) => (
+                      <tr key={item.id}>
+                        <td className="quando">{when(item.receivedAt)}</td>
+                        <td><Badge value={item.type} label={item.label} /></td>
+                        <td className="versao">{item.version || "—"}</td>
+                        <td className="resumo">{item.resumo || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </section>
       </main>
     </div>

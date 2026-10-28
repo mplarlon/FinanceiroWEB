@@ -2,11 +2,13 @@ param(
     [string]$Version = "1.0.2",
     [switch]$WithOllama,
     [switch]$WithoutOllama,
-    [string]$UpdatePublicKeyFile = "D:\Segredos\erp-update\release-public.pem"
+    [string]$UpdatePublicKeyFile = "D:\Segredos\erp-update\release-public.pem",
+    [string]$EnrollmentKeyFile = "D:\Segredos\erp-update\enrollment.key"
 )
 
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
+. (Join-Path $root "installer\Set-UpdaterEnrollmentKey.ps1")
 $nodeApp = Join-Path $root "node-app"
 $stage = Join-Path $root "build\cliente-sem-fontes"
 $runtime = Join-Path $stage "runtime"
@@ -85,8 +87,15 @@ if ($LASTEXITCODE -ne 0) { throw "Falha ao consolidar o atualizador." }
 Copy-Item (Get-Command node.exe).Source (Join-Path $updaterDir "UpdaterNode.exe") -Force
 Copy-Item $winSwCache (Join-Path $updaterDir "UpdaterService.exe") -Force
 Copy-Item (Join-Path $root "installer\UpdaterService.xml") (Join-Path $updaterDir "UpdaterService.xml") -Force
+Set-UpdaterEnrollmentKey (Join-Path $updaterDir "UpdaterService.xml") $EnrollmentKeyFile
+& node (Join-Path $nodeApp "scripts\create-enrollment-pool.js") (Join-Path $root "output\update-center-nuvem\admin.token") (Join-Path $updaterDir "enrollment-pool.json") 30
+if ($LASTEXITCODE -ne 0) { throw "Falha ao reservar os registros da central." }
 Copy-Item -LiteralPath $UpdatePublicKeyFile (Join-Path $updaterDir "release-public.pem") -Force
 Copy-Item (Join-Path $root "installer\InstallUpdater.ps1") (Join-Path $updaterDir "InstallUpdater.ps1") -Force
+Copy-Item (Join-Path $root "installer\query-company.js") (Join-Path $updaterDir "query-company.js") -Force
+$agentPayload = Join-Path $appDir "updater"
+New-Item -ItemType Directory -Force $agentPayload | Out-Null
+Copy-Item (Join-Path $updaterDir "agent.mjs") (Join-Path $agentPayload "agent.mjs") -Force
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterNode.exe")
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterService.exe")
 Copy-PackageRuntime "node-firebird-native-api" @("package.json", "dist\lib\index.js", "dist\lib\cloop-gen.js", "build\Release\addon.node")

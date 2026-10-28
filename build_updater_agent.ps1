@@ -1,9 +1,11 @@
 param(
     [Parameter(Mandatory=$true)][string]$PublicKeyFile,
-    [string]$OutputDir = "$PSScriptRoot\output\updater-agent"
+    [string]$OutputDir = "$PSScriptRoot\output\updater-agent",
+    [string]$EnrollmentKeyFile = "D:\Segredos\erp-update\enrollment.key"
 )
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot
+. (Join-Path $root "installer\Set-UpdaterEnrollmentKey.ps1")
 $nodeApp = Join-Path $root "node-app"
 $winSw = Join-Path $root "build\tools\winsw-2.12.0\WinSW.NET461.exe"
 if (!(Test-Path -LiteralPath $PublicKeyFile)) { throw "Chave publica nao encontrada: $PublicKeyFile" }
@@ -14,6 +16,7 @@ try { node scripts/bundle-updater.js (Join-Path $OutputDir "agent.mjs") } finall
 Copy-Item (Get-Command node.exe).Source (Join-Path $OutputDir "UpdaterNode.exe") -Force
 Copy-Item $winSw (Join-Path $OutputDir "UpdaterService.exe") -Force
 Copy-Item (Join-Path $root "installer\UpdaterService.xml") (Join-Path $OutputDir "UpdaterService.xml") -Force
+Set-UpdaterEnrollmentKey (Join-Path $OutputDir "UpdaterService.xml") $EnrollmentKeyFile
 Copy-Item -LiteralPath $PublicKeyFile (Join-Path $OutputDir "release-public.pem") -Force
 Copy-Item (Join-Path $root "installer\InstallUpdater.ps1") $OutputDir -Force
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $OutputDir "UpdaterNode.exe")

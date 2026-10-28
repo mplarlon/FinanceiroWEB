@@ -82,6 +82,7 @@ import { ensureOllamaServer } from "./lib/ollama.js";
 import { adHocQueryEnabled, debugLoginEnabled, isPublicApiPath } from "./security-policy.js";
 import { exigirPrazo } from "./lib/prazo-acesso.js";
 import { beginCriticalOperation } from "./lib/update-readiness.js";
+import { syncUpdaterAgent } from "./lib/sync-updater-agent.js";
 
 const app = express();
 app.use(
@@ -360,6 +361,7 @@ startCharlieLeads();
 startTrayScheduler();
 startReconciliationIntelligence();
 startOpenFinance();
+syncUpdaterAgent();
 ensureOllamaServer().catch((error) => console.error(`[ollama] ${error.message}`));
 
 export default app;

@@ -11,6 +11,11 @@ const keys = [
   Buffer.from([0xdc, 0x63, 0x33, 0x5f, 0x4b, 0x32, 0x7f, 0x85]),
 ];
 const menuIds = Array.from({ length: 18 }, (_, index) => 9000 + index);
+const automecAppId = 1;
+
+export function userCanEnterDashboard({ inactive = 0, hasAutomecPermission = false } = {}) {
+  return Number(inactive || 0) !== 1 && Boolean(hasAutomecPermission);
+}
 
 function encoded(password, key) {
   const input = Buffer.from(password || "", "latin1");
@@ -39,14 +44,14 @@ export async function debugLogin(login, password = "") {
         match = true; break;
       }
     }
-    const placeholders = menuIds.map(() => "?").join(",");
     const permission = await query(db, `SELECT FIRST 1 1 AS OK FROM SIS_OPERACAOUSUARIO
-      WHERE IDUSUARIO=? AND IDOPERACAO=900 AND APPID=1 AND IDMENUITEM IN (${placeholders})`,
-      [row.IDUSUARIO,...menuIds]);
+      WHERE IDUSUARIO=? AND APPID=?`, [row.IDUSUARIO, automecAppId]);
+    const hasAutomecPermission = Boolean(permission.length);
     return { ok:true,found:true,idusuario:Number(row.IDUSUARIO),login:String(row.LOGIN||"").trim(),
       nome:String(row.NOMECOMPLETO||"").trim(),inativo:Number(row.INATIVO||0),
       senha_cadastrada:Boolean(stored.length),senha_tamanho:stored.length,
-      senha_confere:match,tem_permissao_dashboard:Boolean(permission.length) };
+      senha_confere:match,tem_permissao_automec:hasAutomecPermission,
+      tem_permissao_dashboard:userCanEnterDashboard({ inactive:row.INATIVO, hasAutomecPermission }) };
   });
 }
 
@@ -61,13 +66,12 @@ export async function authenticate(login, password) {
     if (!row || Number(row.INATIVO || 0) === 1) throw new Error("Usuario ou senha invalido.");
     const stored = Buffer.isBuffer(row.SENHA) ? row.SENHA : Buffer.from(row.SENHA || "", "latin1");
     if (!passwordMatches(password, stored)) throw new Error("Usuario ou senha invalido.");
-    const placeholders = menuIds.map(() => "?").join(",");
     const permission = await query(db, `
       SELECT FIRST 1 1 AS OK FROM SIS_OPERACAOUSUARIO
-      WHERE IDUSUARIO = ? AND IDOPERACAO = 900 AND APPID = 1
-      AND IDMENUITEM IN (${placeholders})
-    `, [row.IDUSUARIO, ...menuIds]);
-    if (!permission.length) throw new Error("Usuario sem permissao para acessar o Dashboard.");
+      WHERE IDUSUARIO = ? AND APPID = ?
+    `, [row.IDUSUARIO, automecAppId]);
+    if (!userCanEnterDashboard({ inactive: row.INATIVO, hasAutomecPermission: permission.length }))
+      throw new Error("Usuario sem permissao para acessar o Dashboard.");
     return {
       idusuario: Number(row.IDUSUARIO),
       login: String(row.LOGIN || "").trim(),

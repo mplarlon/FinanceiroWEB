@@ -13,7 +13,7 @@ export function createUpdateCenter(options = {}) {
   const metricsToken = options.metricsToken ?? process.env.UPDATE_CENTER_METRICS_TOKEN;
   const releasePublicKeyFile = options.releasePublicKeyFile || process.env.UPDATE_SIGNING_PUBLIC_KEY_FILE;
   const releasePublicKey = options.releasePublicKey || (releasePublicKeyFile ? fs.readFileSync(releasePublicKeyFile, "utf8") : null);
-  const store = options.store || new UpdateStore(dataDir);
+  const store = options.store || new UpdateStore(dataDir, { enrollmentKey: options.enrollmentKey ?? process.env.UPDATE_CENTER_ENROLLMENT_KEY });
   const app = express();
   const nonces = new Map();
   app.disable("x-powered-by");
@@ -43,7 +43,7 @@ export function createUpdateCenter(options = {}) {
         installationId: String(body.installationId), publicKey: String(body.publicKey),
         version: assertSemver(body.version), platform: String(body.platform), architecture: String(body.architecture),
         nodeVersion: String(body.nodeVersion || ""), agentVersion: assertSemver(body.agentVersion, "agentVersion"), channel: String(body.channel || "stable"),
-        companyName: text(body.companyName, 160), hostname: text(body.hostname, 120), addresses: addressesOf(body.addresses), remoteAddress: seenAddress(req),
+        companyName: text(body.companyName, 160), hostname: text(body.hostname, 120), addresses: addressesOf(body.addresses), installPath: installPathOf(body.installPath), remoteAddress: seenAddress(req),
       });
       res.status(201).json({ ok: true, installation: publicInstallation(installation) });
     } catch (error) { next(error); }
@@ -61,6 +61,7 @@ export function createUpdateCenter(options = {}) {
       if (input.hostname) patch.hostname = text(input.hostname, 120);
       if (input.companyName) patch.companyName = text(input.companyName, 160);
       if (Array.isArray(input.addresses)) patch.addresses = addressesOf(input.addresses);
+      if (input.installPath) patch.installPath = installPathOf(input.installPath);
       const installation = store.heartbeat(req.installation.installationId, patch);
       const release = store.eligible(installation);
       res.json({ ok: true, update: release ? { manifest: release.manifest, signature: release.signature, downloadUrl: `/api/v1/packages/${encodeURIComponent(release.manifest.version)}` } : null, suspended: store.state.suspended });
@@ -98,7 +99,7 @@ export function createUpdateCenter(options = {}) {
   app.get("/api/admin/events", (req, res) => {
     let events = store.state.events;
     for (const key of ["installationId", "version", "type"]) if (req.query[key]) events = events.filter((item) => item[key] === req.query[key]);
-    res.json({ ok: true, events: events.slice(-500).reverse() });
+    res.json({ ok: true, events: events.slice(-500).reverse().map((event) => presentAuditEvent(store, event)) });
   });
   app.post("/api/admin/enrollment-tokens", express.json({ limit: "16kb" }), (req, res, next) => { try { res.status(201).json({ ok: true, token: store.createEnrollmentToken(req.body) }); } catch (error) { next(error); } });
   app.post("/api/admin/releases/:version/package", express.raw({ type: "application/octet-stream", limit: process.env.UPDATE_CENTER_MAX_PACKAGE || "500mb" }), (req, res, next) => {
@@ -113,16 +114,149 @@ export function createUpdateCenter(options = {}) {
       res.status(201).json({ ok: true, release: store.release(manifest, signature, filename) });
     } catch (error) { next(error); }
   });
-  app.post("/api/admin/authorizations", express.json({ limit: "16kb" }), (req, res, next) => { try { const authorization = store.authorize({ ...req.body, actor: req.adminActor }); store.event("__admin__", { type: "authorization_created", version: authorization.version, detail: `${req.adminActor}:${authorization.id}` }); res.status(201).json({ ok: true, authorization }); } catch (error) { next(error); } });
-  app.patch("/api/admin/releases/:version", express.json({ limit: "8kb" }), (req, res, next) => { try { const release = store.state.releases[req.params.version]; if (!release) throw Object.assign(new Error("Versao inexistente."), { status: 404 }); if (!["draft", "published", "blocked"].includes(req.body.status)) throw Object.assign(new Error("Status invalido."), { status: 400 }); release.status = req.body.status; store.save(); store.event("__admin__", { type: "release_status_changed", version: req.params.version, detail: `${req.adminActor}:${req.body.status}` }); res.json({ ok: true, release: { ...release, packagePath: undefined } }); } catch (error) { next(error); } });
-  app.delete("/api/admin/releases/:version", (req, res, next) => { try { store.removeRelease(assertSemver(req.params.version)); store.event("__admin__", { type: "release_deleted", version: req.params.version, detail: req.adminActor }); res.json({ ok: true }); } catch (error) { next(error); } });
-  app.post("/api/admin/suspension", express.json({ limit: "8kb" }), (req, res) => { store.state.suspended = Boolean(req.body.suspended); store.save(); store.event("__admin__", { type: "distribution_suspension", detail: `${req.adminActor}:${store.state.suspended}` }); res.json({ ok: true, suspended: store.state.suspended }); });
-  app.post("/api/admin/installations/:id/revoke", (req, res, next) => { try { const item = store.state.installations[req.params.id]; if (!item) throw Object.assign(new Error("Instalacao inexistente."), { status: 404 }); item.revokedAt = new Date().toISOString(); store.save(); store.event("__admin__", { type: "installation_revoked", detail: `${req.adminActor}:${req.params.id}` }); res.json({ ok: true }); } catch (error) { next(error); } });
+  app.post("/api/admin/authorizations", express.json({ limit: "16kb" }), (req, res, next) => { try { const authorization = store.authorize({ ...req.body, actor: req.adminActor }); const detail = authorization.installationId ? "maquina" : authorization.group ? `grupo:${authorization.group}` : `lote:${authorization.percentage}`; store.event(authorization.installationId || "__admin__", { type: "authorization_created", version: authorization.version, detail }); res.status(201).json({ ok: true, authorization }); } catch (error) { next(error); } });
+  app.patch("/api/admin/releases/:version", express.json({ limit: "8kb" }), (req, res, next) => { try { const release = store.state.releases[req.params.version]; if (!release) throw Object.assign(new Error("Versao inexistente."), { status: 404 }); if (!["draft", "published", "blocked"].includes(req.body.status)) throw Object.assign(new Error("Status invalido."), { status: 400 }); release.status = req.body.status; store.save(); store.event("__admin__", { type: "release_status_changed", version: req.params.version, detail: req.body.status }); res.json({ ok: true, release: { ...release, packagePath: undefined } }); } catch (error) { next(error); } });
+  app.delete("/api/admin/releases/:version", (req, res, next) => { try { store.removeRelease(assertSemver(req.params.version)); store.event("__admin__", { type: "release_deleted", version: req.params.version, detail: "excluida" }); res.json({ ok: true }); } catch (error) { next(error); } });
+  app.post("/api/admin/suspension", express.json({ limit: "8kb" }), (req, res) => { store.state.suspended = Boolean(req.body.suspended); store.save(); store.event("__admin__", { type: "distribution_suspension", detail: store.state.suspended ? "suspensa" : "retomada" }); res.json({ ok: true, suspended: store.state.suspended }); });
+  app.post("/api/admin/installations/:id/revoke", (req, res, next) => { try { const item = store.state.installations[req.params.id]; if (!item) throw Object.assign(new Error("Instalacao inexistente."), { status: 404 }); item.revokedAt = new Date().toISOString(); store.save(); store.event(req.params.id, { type: "installation_revoked", detail: "revogada" }); res.json({ ok: true }); } catch (error) { next(error); } });
 
   const uiDir = options.uiDir || path.join(import.meta.dirname, "dist");
   if (fs.existsSync(uiDir)) app.use(express.static(uiDir));
   app.use((error, _req, res, _next) => res.status(error.status || 500).json({ ok: false, error: error.message }));
   return { app, store };
+}
+
+const AUDIT_LABEL = {
+  blocked: "Bloqueada",
+  published: "Publicada",
+  draft: "Rascunho",
+  online: "Online",
+  offline: "Offline",
+  failed: "Falha",
+  rollback: "Revertida",
+  revoked: "Revogada",
+  outdated: "Desatualizada",
+  current: "Atualizada",
+  installed: "Instalada",
+  download_started: "Download iniciado",
+  deferred_critical_operation: "Adiada",
+  authorization_created: "Liberação",
+  release_status_changed: "Status da versão",
+  distribution_suspension: "Suspensão",
+  installation_revoked: "Revogação",
+  release_deleted: "Versão excluída",
+  unknown: "Desconhecido",
+  registered: "Registrada",
+};
+
+export function presentAuditEvent(store, event) {
+  const scope = auditScope(store, event);
+  const installation = scope.installation || null;
+  return {
+    ...event,
+    machineId: installation?.installationId || "",
+    label: AUDIT_LABEL[event.type] || "Acontecimento",
+    resumo: auditSummary(event, scope),
+    companyName: installation ? (installation.companyName || "Sem empresa") : "Central",
+    hostname: installation?.hostname || "",
+    addresses: installation?.addresses || [],
+    group: installation?.group || "",
+    nota: installation ? "" : (scope.nota || ""),
+  };
+}
+
+function auditScope(store, event) {
+  const direct = event.installationId && event.installationId !== "__admin__" ? store.state.installations[event.installationId] : null;
+  if (event.type === "installation_revoked") {
+    const id = String(event.detail || "").split(":").pop();
+    return { installation: direct || store.state.installations[id] || null };
+  }
+  if (event.type !== "authorization_created") return { installation: direct || null };
+  if (direct) return { installation: direct };
+  const detail = String(event.detail || "");
+  const group = /^grupo:(.+)$/.exec(detail);
+  if (group) return { nota: `Grupo ${groupName(group[1])}` };
+  const lote = /^lote:(\d+(?:\.\d+)?)$/.exec(detail);
+  if (lote) {
+    const percentage = Number(lote[1]);
+    return { nota: percentage >= 100 ? "Todas as máquinas" : `${percentage}% das máquinas` };
+  }
+  const referenced = detail.split(":").pop();
+  const authorization = (store.state.authorizations || []).find((item) => item.id === referenced);
+  if (authorization?.installationId && store.state.installations[authorization.installationId]) return { installation: store.state.installations[authorization.installationId] };
+  if (authorization?.group) return { nota: `Grupo ${groupName(authorization.group)}` };
+  if (authorization) {
+    const percentage = Number(authorization.percentage);
+    return { nota: percentage >= 100 ? "Todas as máquinas" : `${percentage}% das máquinas` };
+  }
+  return { nota: "Todas as máquinas" };
+}
+
+function auditSummary(event, scope) {
+  const detail = String(event.detail || "").trim();
+  switch (event.type) {
+    case "download_started":
+      return "O pacote começou a ser baixado nesta máquina.";
+    case "installed":
+      return event.previousVersion ? `A versão ${event.version} substituiu a ${event.previousVersion}.` : "A atualização foi concluída nesta máquina.";
+    case "failed":
+      return translateFailure(detail) || "A atualização falhou nesta máquina.";
+    case "rollback":
+      return translateFailure(detail) || "A atualização foi desfeita e a versão anterior voltou.";
+    case "deferred_critical_operation":
+      return "A atualização foi adiada porque a máquina estava no meio de uma operação.";
+    case "authorization_created":
+      if (scope.installation) return "A versão foi liberada para esta máquina.";
+      if (scope.nota?.startsWith("Grupo ")) return `A versão foi liberada para o grupo ${scope.nota.slice(6)}.`;
+      if (scope.nota) return `A versão foi liberada para ${scope.nota.charAt(0).toLowerCase()}${scope.nota.slice(1)}.`;
+      return "A versão foi liberada.";
+    case "release_status_changed": {
+      const label = AUDIT_LABEL[detail.split(":").pop()];
+      return label ? `O status da versão passou para ${label.toLowerCase()}.` : "O status da versão foi alterado.";
+    }
+    case "distribution_suspension": {
+      const flag = detail.split(":").pop();
+      return flag === "true" || flag === "suspensa" ? "A distribuição de atualizações foi suspensa." : "A distribuição de atualizações foi retomada.";
+    }
+    case "installation_revoked":
+      return "Esta máquina deixou de receber atualizações.";
+    case "release_deleted":
+      return "A versão foi excluída da central.";
+    default:
+      return translateFailure(detail) || "—";
+  }
+}
+
+function translateFailure(detail) {
+  const text = String(detail || "").trim();
+  if (!text) return "";
+  if (/EXDEV|cross-device link not permitted/i.test(text)) return "A atualização foi desfeita porque a pasta do sistema está em outro disco e a troca direta não foi permitida.";
+  const known = [
+    [/Agente precisa ser atualizado antes deste pacote\.?/i, "O atualizador desta máquina precisa ser atualizado antes deste pacote."],
+    [/Assinatura do manifesto invalida/i, "A assinatura do pacote não confere."],
+    [/nao e superior a instalada/i, "A versão oferecida não é mais nova do que a instalada."],
+    [/incompativel com esta plataforma/i, "Esta versão não serve para o sistema desta máquina."],
+    [/Manifesto nao informa integridade/i, "O pacote não informa a verificação de integridade."],
+    [/estrategia de banco nao automatizavel/i, "Esta atualização exige um procedimento manual de banco."],
+    [/Rollback destrutivo automatico/i, "Não é permitido desfazer o banco automaticamente."],
+    [/Pacote excede o limite/i, "O pacote é maior que o limite configurado."],
+    [/Hash ou tamanho do pacote invalido/i, "O pacote chegou incompleto ou alterado."],
+    [/Download recusado \(HTTP (\d+)\)/i, "O download foi recusado (HTTP $1)."],
+    [/Timeout no download/i, "O download demorou demais e foi interrompido."],
+    [/Pacote vazio ou com arquivos demais/i, "O pacote está vazio ou tem arquivos demais."],
+    [/caminho inseguro/i, "O pacote contém um caminho não permitido."],
+    [/link nao permitido/i, "O pacote contém um atalho não permitido."],
+    [/Health check HTTP (\d+)/i, "O sistema não respondeu depois da atualização (HTTP $1)."],
+    [/Health check falhou/i, "O sistema não respondeu depois da atualização."],
+    [/Pacote incompleto: (.+)/i, "O pacote não contém $1."],
+    [/Atualizacao revertida: (.+)/i, "A atualização foi desfeita: $1"],
+  ];
+  for (const [pattern, message] of known) if (pattern.test(text)) return text.replace(pattern, message).replace(/\.{2,}/g, ".");
+  return text;
+}
+
+function groupName(group) {
+  return { pilot: "Pilotos", production: "Produção" }[group] || String(group || "geral");
 }
 
 function admin(token) {
@@ -183,6 +317,12 @@ function cleanAddress(value) {
 }
 
 function addressesOf(value) { return [...new Set((Array.isArray(value) ? value : []).map(cleanAddress).filter(Boolean))].slice(0, 8); }
+
+function installPathOf(value) {
+  const raw = text(value, 240);
+  if (!/^(?:[A-Za-z]:[\\/]|\\\\|\/)/.test(raw)) return "";
+  return raw;
+}
 
 function seenAddress(req) {
   const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
