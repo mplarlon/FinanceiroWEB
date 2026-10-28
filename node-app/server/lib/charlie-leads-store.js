@@ -180,6 +180,26 @@ export function configPublica(estado = loadState()) {
     ultimaConsulta: estado.ultimaConsulta,
     ultimaSincronizacao: estado.ultimaSincronizacao,
     erros: estado.erros.slice(-20).reverse(),
+    fila: resumoFila(estado),
+  };
+}
+
+function resumoFila(estado) {
+  const contagem = {};
+  for (const item of estado.fila || []) {
+    const chave = item.situacaoFila || "pendente";
+    contagem[chave] = (contagem[chave] || 0) + 1;
+  }
+  return {
+    contagem,
+    recentes: (estado.fila || []).slice(-20).reverse().map((item) => ({
+      id: item.id,
+      em: item.em,
+      cnpj: item.cnpj,
+      razaoSocial: item.razaoSocial || null,
+      situacao: item.situacao || null,
+      situacaoFila: item.situacaoFila || "pendente",
+    })),
   };
 }
 

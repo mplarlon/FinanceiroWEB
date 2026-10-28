@@ -58,11 +58,13 @@ const greeting = {
   at: Date.now(),
 };
 const format = (value, column) => {
-  if (["TOTAL_RECEBIDO", "SALDO", "VALOR_ORIGINAL", "VALOR_BAIXADO", "TOTAL", "VALOR_ESTOQUE", "CUSTO_MEDIO", "CUSTO_ESTIMADO"].includes(column))
-    return Number(value || 0).toLocaleString("pt-BR", {
+  if (["TOTAL_RECEBIDO", "SALDO", "VALOR_ORIGINAL", "VALOR_BAIXADO", "TOTAL", "PERIODO_ATUAL", "PERIODO_ANTERIOR", "VALOR_ESTOQUE", "CUSTO_MEDIO", "CUSTO_ESTIMADO"].includes(column)) {
+    if (value == null || value === "" || !Number.isFinite(Number(value))) return "não informado";
+    return Number(value).toLocaleString("pt-BR", {
       style: "currency",
       currency: "BRL",
     });
+  }
   if (column === "QUANDO" && value) {
     const date = new Date(value);
     if (!Number.isNaN(date.getTime())) return date.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
@@ -94,6 +96,8 @@ const moneyColumns = new Set([
   "VALOR_ORIGINAL",
   "VALOR_BAIXADO",
   "TOTAL",
+  "PERIODO_ATUAL",
+  "PERIODO_ANTERIOR",
   "VALOR_ESTOQUE",
   "CUSTO_MEDIO",
   "CUSTO_ESTIMADO",
@@ -368,7 +372,7 @@ function Evidence({ rows, columns, title }) {
       });
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        if (response.status === 401)
+        if (response.status === 401 && data.auth_required)
           window.dispatchEvent(new CustomEvent("dashboard:unauthorized"));
         throw new Error(data.erro || "Não foi possível exportar a planilha.");
       }
@@ -674,7 +678,7 @@ export default function Charlie({ alertLaunch = 0, dailyToken = "" }) {
         body: JSON.stringify(path === "confirmar" ? { confirmar: true } : {}),
       });
       const data = await response.json().catch(() => ({}));
-      if (response.status === 401) window.dispatchEvent(new CustomEvent("dashboard:unauthorized"));
+      if (response.status === 401 && data.auth_required) window.dispatchEvent(new CustomEvent("dashboard:unauthorized"));
       appendTaskResult(data, data.erro || fallback);
       if (!response.ok && data.erro) setError(data.erro);
       loadThreads();

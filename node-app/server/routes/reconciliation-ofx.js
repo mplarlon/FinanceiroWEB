@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
+import { separarJaImportados } from "../lib/reconciliation-intelligence.js";
 
 const router = express.Router(),
   upload = multer({
@@ -91,48 +92,105 @@ function decode(buffer) {
   return buffer.toString("latin1");
 }
 const digits = (value) => String(value || "").replace(/\D/g, "");
+const brDate = (value) =>
+  value ? String(value).slice(0, 10).split("-").reverse().join("/") : "";
+function piece(value) {
+  const [base, check] = String(value || "").trim().split("-");
+  return {
+    key: digits(base).replace(/^0+/, ""),
+    check: check ? digits(check) : "",
+  };
+}
+function samePiece(left, right) {
+  const a = piece(left),
+    b = piece(right);
+  if (!a.key || !b.key) return false;
+  if (a.key === b.key) return !a.check || !b.check || a.check === b.check;
+  return a.key + a.check === b.key || b.key + b.check === a.key;
+}
+const sameBank = (fileBank, selectedBank) => {
+  const file = digits(fileBank).replace(/^0+/, ""),
+    selected = digits(selectedBank).replace(/^0+/, "");
+  return !file || !selected || file === selected;
+};
+export function divergenciasDoExtrato(ofx, form) {
+  const [start, end] = period(form, true),
+    messages = [],
+    agency = String(form.agencia || "").trim(),
+    account = String(form.numconta || "").trim(),
+    bank = String(form.cdbanco || "").trim();
+  if (!bank || !agency || !account)
+    messages.push("Selecione a conta bancária antes de conferir o arquivo.");
+  else if (!ofx.agencia || !ofx.conta)
+    messages.push("O arquivo OFX não informa agência e conta.");
+  else {
+    if (!sameBank(ofx.bankid, bank))
+      messages.push(
+        `O arquivo OFX é do banco ${digits(ofx.bankid)}, diferente do banco selecionado ${bank}.`,
+      );
+    if (!samePiece(agency, ofx.agencia) || !samePiece(account, ofx.conta))
+      messages.push(
+        `O arquivo OFX é da conta ${ofx.agencia}/${ofx.conta}, diferente da conta selecionada ${agency}/${account}.`,
+      );
+  }
+  const dates = ofx.itens
+      .map((item) => item.data)
+      .filter(Boolean)
+      .sort(),
+    fileStart = ofx.dt_inicial || dates[0] || null,
+    fileEnd = ofx.dt_final || dates.at(-1) || null;
+  if (!fileStart || !fileEnd)
+    messages.push("O arquivo OFX não informa o período do extrato.");
+  else if (fileStart !== start || fileEnd !== end)
+    messages.push(
+      `O arquivo OFX é do período ${brDate(fileStart)} a ${brDate(fileEnd)}, diferente do período informado ${brDate(start)} a ${brDate(end)}.`,
+    );
+  else if (
+    ofx.itens.some((item) => !item.data || item.data < start || item.data > end)
+  )
+    messages.push(
+      "O arquivo OFX tem lançamento fora do período informado.",
+    );
+  return messages;
+}
 const dbDate = (value) =>
   value instanceof Date
     ? value
     : new Date(`${String(value).slice(0, 10)}T12:00:00`);
-const accountMatches = (a, b) => {
-  a = digits(a);
-  b = digits(b);
-  return Boolean(a && b && (a === b || a.endsWith(b) || b.endsWith(a)));
-};
 const rowsOf = (db, sql, params = []) =>
   db.query ? db.query(sql, params) : query(db, sql, params);
 async function inferBank(db, ofx, form) {
-  const selected = Number(form.cdbanco || ofx.bankid || 0) || null,
-    agency = String(form.agencia || ofx.agencia || "").trim(),
-    account = String(form.numconta || ofx.conta || "").trim();
-  let rows = [];
-  if (account || selected)
-    rows = await rowsOf(
-      db,
-      `SELECT cc.CDBANCO,cc.AGENCIA,cc.NUMCONTA,b.BANCO FROM CONTACORRENTE cc LEFT JOIN BANCO b ON b.CDBANCO=cc.CDBANCO ${selected ? "WHERE cc.CDBANCO=?" : ""} ORDER BY cc.CDBANCO,cc.AGENCIA,cc.NUMCONTA`,
-      selected ? [selected] : [],
+  const selected = Number(form.cdbanco || 0),
+    agency = String(form.agencia || "").trim(),
+    account = String(form.numconta || "").trim();
+  if (!selected || !agency || !account)
+    throw Object.assign(
+      new Error("Selecione a conta bancária antes de importar o extrato."),
+      { status: 400 },
     );
-  let row =
-    rows.find((item) => accountMatches(account, item.NUMCONTA)) || rows[0];
+  const rows = await rowsOf(
+    db,
+    `SELECT CDBANCO,AGENCIA,NUMCONTA,BANCO FROM (
+      SELECT cc.CDBANCO,cc.AGENCIA,cc.NUMCONTA,b.BANCO FROM CONTACORRENTE cc LEFT JOIN BANCO b ON b.CDBANCO=cc.CDBANCO
+      UNION SELECT b.CDBANCO,b.AGENCIA,b.NUMCONTA,b.BANCO FROM BANCO b
+    ) contas WHERE CDBANCO=?`,
+    [selected],
+  );
+  const row = rows.find(
+    (item) =>
+      samePiece(agency, item.AGENCIA) && samePiece(account, item.NUMCONTA),
+  );
   if (!row)
-    row = (
-      await rowsOf(
-        db,
-        selected
-          ? "SELECT FIRST 1 CDBANCO,AGENCIA,NUMCONTA,BANCO FROM BANCO WHERE CDBANCO=?"
-          : "SELECT FIRST 1 CDBANCO,AGENCIA,NUMCONTA,BANCO FROM BANCO ORDER BY CDBANCO",
-        selected ? [selected] : [],
-      )
-    )[0];
-  return row
-    ? {
-        cdbanco: Number(row.CDBANCO),
-        agencia: agency || row.AGENCIA,
-        numconta: account || row.NUMCONTA,
-        nome: row.BANCO,
-      }
-    : null;
+    throw Object.assign(
+      new Error("A conta selecionada não foi encontrada no cadastro."),
+      { status: 400 },
+    );
+  return {
+    cdbanco: Number(row.CDBANCO),
+    agencia: String(row.AGENCIA || "").trim(),
+    numconta: String(row.NUMCONTA || "").trim(),
+    nome: row.BANCO,
+  };
 }
 function period(form, required = false) {
   const start = String(form.data_ini || form.dt_inicial || "").slice(0, 10),
@@ -217,7 +275,10 @@ router.post("/ofx/preview", upload.single("arquivo"), async (req, res) => {
         .status(400)
         .json({ ok: false, erro: "Envie o arquivo OFX no campo arquivo" });
     const ofx = parseOfx(decode(req.file.buffer)),
-      [start, end] = period(req.body),
+      divergencias = divergenciasDoExtrato(ofx, req.body);
+    if (divergencias.length)
+      throw Object.assign(new Error(divergencias.join(" ")), { status: 409 });
+    const [start, end] = period(req.body, true),
       result = await withDatabase(async (db) => {
         const bank = await inferBank(db, ofx, req.body),
           filtered = ofx.itens.filter(
@@ -257,7 +318,10 @@ router.post("/ofx/importar", upload.single("arquivo"), async (req, res) => {
         .status(400)
         .json({ ok: false, erro: "Envie o arquivo OFX no campo arquivo" });
     const ofx = parseOfx(decode(req.file.buffer)),
-      [start, end] = period(req.body, true),
+      divergencias = divergenciasDoExtrato(ofx, req.body);
+    if (divergencias.length)
+      throw Object.assign(new Error(divergencias.join(" ")), { status: 409 });
+    const [start, end] = period(req.body, true),
       result = await withWriteTransaction(async (tx) => {
         const adapter = { query: (sql, params) => tx.query(sql, params) },
           bank = await inferBank(adapter, ofx, req.body);
@@ -344,9 +408,20 @@ router.post("/ofx/importar", upload.single("arquivo"), async (req, res) => {
             ).ID,
           ),
           inserted = 0;
-        for (const item of ofx.itens.filter(
-          (item) => item.data && item.data >= start && item.data <= end,
-        )) {
+        const conhecidos = (
+          await tx.query(
+            `SELECT TRIM(i.NUMDOC) AS NUMDOC FROM EXTRATO_ITEM i
+             JOIN EXTRATO e ON e.CONTROLE=i.EXTRATO
+             JOIN CONCILIACAO c ON c.CONTROLE=e.CONCILIACAO
+             WHERE c.CDBANCO=? AND TRIM(COALESCE(c.NUMCONTA, e.NUMCONTA))=TRIM(?) AND i.NUMDOC IS NOT NULL`,
+            [bank.cdbanco, bank.numconta],
+          )
+        ).map((row) => row.NUMDOC);
+        const separados = separarJaImportados(
+          ofx.itens.filter((item) => item.data && item.data >= start && item.data <= end),
+          conhecidos,
+        );
+        for (const item of separados.novos) {
           await tx.execute(
             "INSERT INTO EXTRATO_ITEM (CONTROLE,EXTRATO,DTLANCAMENTO,VALOR,DESCRICAO,TPLANCAMENTO,NUMDOC,STATUS,STATUS_EXT,SIST_ALT) VALUES (?,?,?,?,?,?,?,0,1,'LOCAL')",
             [
@@ -365,6 +440,7 @@ router.post("/ofx/importar", upload.single("arquivo"), async (req, res) => {
           conciliacao: conc,
           extrato: ext,
           inseridos: inserted,
+          duplicados_ignorados: separados.duplicados.length,
           associados: 0,
           erros_associacao: 0,
           banco: bank,

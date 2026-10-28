@@ -85,12 +85,12 @@ async function generator(tx, candidates) {
 async function syncGenerator(tx, name, target) {
   if (!name || !target) return;
   const current = Number(
-    (await tx.singleton(`SELECT GEN_ID(${name},0) AS VALUE FROM RDB$DATABASE`))
-      .VALUE || 0,
+    (await tx.singleton(`SELECT GEN_ID(${name},0) AS PROXIMO FROM RDB$DATABASE`))
+      .PROXIMO || 0,
   );
   if (current < target)
     await tx.singleton(
-      `SELECT GEN_ID(${name},${target - current}) AS VALUE FROM RDB$DATABASE`,
+      `SELECT GEN_ID(${name},${target - current}) AS PROXIMO FROM RDB$DATABASE`,
     );
 }
 async function insertAvailable(tx, table, data, columns) {
@@ -465,5 +465,5 @@ router.post("/sugestao/rascunhos/:id/cancelar", async (req, res) => {
   }
 });
 
-export { ensureSchema, int, num };
+export { approve, ensureSchema, int, num };
 export default router;

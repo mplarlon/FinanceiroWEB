@@ -58,6 +58,27 @@ function dataIso(valor) {
   return /^\d{4}-\d{2}-\d{2}$/.test(texto) ? texto : "";
 }
 
+function digitosExatos(valor, tamanho, quantidade = 30) {
+  return [...new Set(lista(valor).map((item) => String(item).replace(/\D/g, "")).filter((item) => item.length === tamanho))].slice(0, quantidade);
+}
+
+function regime(entrada, prefixo) {
+  const optante = entrada[`${prefixo}Optante`] === true;
+  const excluir = entrada[`${prefixo}Excluir`] === true;
+  const inicio = dataIso(entrada[`${prefixo}ExclusaoInicio`]);
+  const fim = dataIso(entrada[`${prefixo}ExclusaoFim`]);
+  const objeto = {};
+  if (optante && !excluir) objeto.optante = true;
+  if (excluir && !optante) objeto.excluir_optante = true;
+  if (inicio || fim) objeto.data_exclusao = { ...(inicio ? { inicio } : {}), ...(fim ? { fim } : {}) };
+  return Object.keys(objeto).length ? objeto : null;
+}
+
+export function pesquisaCompleta(body) {
+  const mais = body?.mais_filtros || {};
+  return Boolean(mais.com_telefone || mais.com_email || mais.somente_fixo || mais.somente_celular || body?.ddd || body?.telefone);
+}
+
 export function buildPesquisaBody(entrada = {}) {
   const body = {};
   const erros = [];
@@ -73,12 +94,47 @@ export function buildPesquisaBody(entrada = {}) {
   const situacao = [...new Set(lista(entrada.situacao || entrada.situacao_cadastral).map((item) => textoLimpo(item, 20).toUpperCase()).filter((item) => SITUACOES.has(item)))];
   if (situacao.length) body.situacao_cadastral = situacao;
   if (entrada.matrizFilial === "MATRIZ" || entrada.matrizFilial === "FILIAL") body.matriz_filial = entrada.matrizFilial;
+  const natureza = [...new Set(lista(entrada.naturezaJuridica || entrada.codigo_natureza_juridica).map((item) => String(item).replace(/\D/g, "")).filter((item) => item.length >= 3 && item.length <= 5))].slice(0, 30);
+  if (natureza.length) body.codigo_natureza_juridica = natureza;
+  const cnpjsInformados = lista(entrada.cnpj).filter((item) => String(item).trim());
+  if (cnpjsInformados.length) {
+    const cnpjs = [...new Set(cnpjsInformados.map(normalizeCnpj).filter((item) => validarCnpj(item)))].slice(0, 50);
+    if (cnpjs.length) body.cnpj = cnpjs;
+    else erros.push("Nenhum CNPJ informado é válido.");
+  }
+  const raiz = digitosExatos(entrada.cnpjRaiz || entrada.cnpj_raiz, 8);
+  if (raiz.length) body.cnpj_raiz = raiz;
+  const cep = digitosExatos(entrada.cep, 8);
+  if (cep.length) body.cep = cep;
+  const numero = [...new Set(lista(entrada.enderecoNumero || entrada.endereco_numero).map((item) => textoLimpo(item, 20)).filter(Boolean))].slice(0, 20);
+  if (numero.length) body.endereco_numero = numero;
+  const bairro = [...new Set(lista(entrada.bairro).map((item) => semAcento(item)).filter(Boolean))].slice(0, 20);
+  if (bairro.length) body.bairro = bairro;
+  const ddd = digitosExatos(entrada.ddd, 2);
+  if (ddd.length) body.ddd = ddd;
+  const telefone = [...new Set(lista(entrada.telefone).map((item) => String(item).replace(/\D/g, "")).filter((item) => item.length >= 8 && item.length <= 11))].slice(0, 20);
+  if (telefone.length) body.telefone = telefone;
+  const mei = regime(entrada, "mei");
+  if (entrada.meiOptante === true && entrada.meiExcluir === true) erros.push("Escolha somente optante do MEI ou excluir optante.");
+  else if (mei) body.mei = mei;
+  const simples = regime(entrada, "simples");
+  if (entrada.simplesOptante === true && entrada.simplesExcluir === true) erros.push("Escolha somente optante do Simples ou excluir optante.");
+  else if (simples) body.simples = simples;
   const mais = {};
   if (entrada.comTelefone === true) mais.com_telefone = true;
   if (entrada.comEmail === true) mais.com_email = true;
   if (entrada.somenteMatriz === true) mais.somente_matriz = true;
   if (entrada.somenteFilial === true) mais.somente_filial = true;
+  if (entrada.somenteFixo === true && entrada.somenteCelular === true) erros.push("Escolha somente telefone fixo ou somente celular.");
+  else {
+    if (entrada.somenteFixo === true) mais.somente_fixo = true;
+    if (entrada.somenteCelular === true) mais.somente_celular = true;
+  }
+  if (entrada.excluirVisualizadas === true) mais.excluir_empresas_visualizadas = true;
+  if (entrada.excluirEmailContabil === true) mais.excluir_email_contab = true;
   if (Object.keys(mais).length) body.mais_filtros = mais;
+  const excluir = [...new Set(lista(entrada.excluirCnpj || entrada.excluir?.cnpj).map(normalizeCnpj).filter((item) => validarCnpj(item)))].slice(0, 50);
+  if (excluir.length) body.excluir = { cnpj: excluir };
   const portes = [...new Set(lista(entrada.porte).map((item) => textoLimpo(item, 2)).filter((item) => PORTES.has(item)))];
   if (portes.length) body.porte_empresa = { codigos: portes };
   const minimo = inteiro(entrada.capitalMinimo, 0, 999999999999);

@@ -7,6 +7,7 @@ import BusinessDashboard from "./pages/BusinessDashboard.jsx";
 import FinanceAccounts from "./pages/FinanceAccounts.jsx";
 import Charlie from "./pages/Charlie.jsx";
 import Reconciliation from "./pages/Reconciliation.jsx";
+import OpenFinance from "./pages/OpenFinance.jsx";
 import ManagementDashboard from "./pages/ManagementDashboard.jsx";
 import ExecutiveReports from "./pages/ExecutiveReports.jsx";
 import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
@@ -20,10 +21,11 @@ const PAGES = [
   { id: "financeiro", label: "Contas pagar/receber", icon: "$" },
   { id: "caixa", label: "Controle de caixa", icon: "▤" },
   { id: "conciliacao", label: "Conciliação", icon: "⇄" },
+  { id: "open-finance", label: "Open Finance", icon: "⬡" },
   { id: "dre", label: "DRE completo", icon: "▥" },
   { id: "fechamento", label: "Fechamento carteira", icon: "✓" },
   { id: "fiscal", label: "Fiscal", icon: "≡" },
-  { id: "tray", label: "Charlie • E-Commerce", icon: "↗" },
+  { id: "tray", label: "Ecommerce", icon: "↗" },
   { id: "compras", label: "Compras", icon: "▣", group: "reports" },
   { id: "clientes", label: "Clientes", icon: "◎", group: "reports" },
   { id: "estoque", label: "Estoque", icon: "▦", group: "reports" },
@@ -90,11 +92,12 @@ export default function App() {
   const [charlieAlerts, setCharlieAlerts] = useState(0);
   const [charlieBrief, setCharlieBrief] = useState(null);
   const [alertLaunch, setAlertLaunch] = useState(0);
+  const [ecommerceUnlocked, setEcommerceUnlocked] = useState(false);
 
   useEffect(() => {
-    const unauthorized = () => {
+    const unauthorized = (event) => {
       setSession({ ok: true, authenticated: false });
-      setError("Sua sessão expirou. Entre novamente.");
+      setError(event.detail || "Sua sessão expirou. Entre novamente.");
     };
     window.addEventListener("dashboard:unauthorized", unauthorized);
     api
@@ -150,6 +153,18 @@ export default function App() {
     setCharlieBrief(null);
     setPage("charlie");
     setAlertLaunch((value) => value + 1);
+  }
+  function goToPage(id) {
+    if (id === "tray" && !ecommerceUnlocked) {
+      const senha = window.prompt("Senha para abrir o Ecommerce");
+      if (senha === null) return;
+      if (senha.trim() !== "2907") {
+        window.alert("Senha incorreta.");
+        return;
+      }
+      setEcommerceUnlocked(true);
+    }
+    setPage(id);
   }
   async function logout() {
     try {
@@ -209,7 +224,7 @@ export default function App() {
               key={p.id}
               data-charlie-control={`nav-${p.id}`}
               className={p.id === page ? "active" : ""}
-              onClick={() => setPage(p.id)}
+              onClick={() => goToPage(p.id)}
             >
               <span className="nav-icon" aria-hidden="true">{p.icon}</span>
               {p.label}
@@ -245,11 +260,12 @@ export default function App() {
             onLater={() => { rememberBrief(); setCharlieBrief(null); }}
           />
         )}
-        {page === "overview" && <Overview status={status} onNavigate={setPage} />}
+        {page === "overview" && <Overview status={status} onNavigate={goToPage} />}
         {page === "charlie" && <Charlie alertLaunch={alertLaunch} dailyToken={cafeToken} />}
         {page === "financeiro" && <FinanceAccounts />}
         {page === "caixa" && <ManagementDashboard type="cash" />}
         {page === "conciliacao" && <Reconciliation />}
+        {page === "open-finance" && <OpenFinance />}
         {page === "dre" && <ManagementDashboard type="dre" />}
         {page === "fechamento" && <FechamentoCarteira />}
         {page === "estoque" && <ManagementDashboard type="stock" />}
@@ -258,7 +274,7 @@ export default function App() {
         {page === "fiscal" && <FiscalNfe />}
         {page === "tray" && <TrayIntegration />}
         {current.executive && <ExecutiveReports type={current.executive} />}
-        <CharlieTraining page={page} pageLabel={current.label} onNavigate={setPage} />
+        <CharlieTraining page={page} pageLabel={current.label} onNavigate={goToPage} />
       </main>
     </div>
   );

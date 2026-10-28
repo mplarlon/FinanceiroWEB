@@ -1,5 +1,6 @@
 import { query } from "../db.js";
 import { assessCustomerInactivity, forecastSeries, forecastStock, projectCashFlow, simulateFinancialScenario, simulatePriceScenario } from "./charlie-predictive-engine.js";
+import { ITEM_SEM_SQL, ITEM_VALOR_SQL, VALOR_AUSENTE, valorLido } from "./charlie-sale-value.js";
 
 const CACHE_TTL = Math.max(30000, Number(process.env.CHARLIE_PREDICTIVE_CACHE_MS) || 300000);
 const cache = new Map();
@@ -30,13 +31,16 @@ export async function revenueForecast(db, actor, options = {}) {
   const company = scope(actor);
   const rows = await cached(`revenue:${actor?.company}:${actor?.branch}:${historyDays}`, () => query(db, `
     SELECT CAST(se.DTSAIDA AS DATE) DATA,
-      COALESCE(SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)),0) VALOR
+      SUM(${ITEM_VALOR_SQL}) VALOR, SUM(${ITEM_SEM_SQL}) SEM
     FROM SAIDAESTOQUE se
     JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     WHERE se.DTSAIDA>=DATEADD(? DAY TO CURRENT_DATE)
       AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0
       AND COALESCE(se.STATUS,0) IN (1,3)${company.sql}
     GROUP BY CAST(se.DTSAIDA AS DATE) ORDER BY 1`, [-historyDays, ...company.params], timeout));
+  if (rows.some((row) => Number(row.SEM) > 0)) {
+    return { ok: false, horizon, quality: { status: "insuficiente", records: rows.length, reasons: [VALOR_AUSENTE] }, message: VALOR_AUSENTE, forecasts: [] };
+  }
   return forecastSeries(rows, { dateField: "DATA", valueField: "VALOR", horizon, minimumRecords: 28 });
 }
 
@@ -90,13 +94,13 @@ export async function customerInactivityForecast(db, actor, options = {}) {
   const company = scope(actor);
   const rows = await query(db, `SELECT FIRST 500 se.CDCLIENTE, COALESCE(c.CLIENTE,se.CLIENTE,'Cliente') CLIENTE,
       MAX(se.DTSAIDA) ULTIMA_COMPRA, COUNT(DISTINCT CAST(se.DTSAIDA AS DATE)) DIAS_COMPRA,
-      COALESCE(SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)),0) VALOR
+      SUM(${ITEM_VALOR_SQL}) VALOR, SUM(${ITEM_SEM_SQL}) SEM
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN CLIENTE c ON c.CDCLIENTE=se.CDCLIENTE
     WHERE se.DTSAIDA>=DATEADD(? DAY TO CURRENT_DATE) AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0${company.sql}
     GROUP BY se.CDCLIENTE,c.CLIENTE,se.CLIENTE HAVING COUNT(DISTINCT CAST(se.DTSAIDA AS DATE))>=2
     ORDER BY 5 DESC`, [-historyDays, ...company.params], timeout);
-  const customers = rows.map((row) => ({ customerId: row.CDCLIENTE, customer: row.CLIENTE, lastPurchase: row.ULTIMA_COMPRA, value: n(row.VALOR), intervals: Array(Math.max(0, n(row.DIAS_COMPRA) - 1)).fill(historyDays / Math.max(1, n(row.DIAS_COMPRA) - 1)) }));
+  const customers = rows.map((row) => ({ customerId: row.CDCLIENTE, customer: row.CLIENTE, lastPurchase: row.ULTIMA_COMPRA, value: valorLido(row.VALOR, row.SEM), intervals: Array(Math.max(0, n(row.DIAS_COMPRA) - 1)).fill(historyDays / Math.max(1, n(row.DIAS_COMPRA) - 1)) }));
   return { generatedAt: new Date().toISOString(), customers: assessCustomerInactivity(customers).slice(0, 100), quality: { status: rows.length >= 10 ? "adequada" : rows.length ? "limitada" : "insuficiente", records: rows.length }, assumptions: ["A classificação compara o tempo desde a última compra ao intervalo histórico médio.", "Não é exibida probabilidade numérica porque o modelo não foi calibrado como classificador probabilístico."] };
 }
 

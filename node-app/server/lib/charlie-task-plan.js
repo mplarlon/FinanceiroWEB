@@ -1,5 +1,6 @@
 import { ollamaChat } from "./ollama.js";
 import { enabledActionIds, getAction, validateActionParams } from "./charlie-task-catalog.js";
+import { interpretarPedido } from "./charlie-leads-nl.js";
 
 const NUMBER_WORDS = [
   ["noventa", "90"],
@@ -248,6 +249,19 @@ function collectionPlan(text, preference) {
 function freshPlan(text, preference) {
   const denied = blockedPlan(text);
   if (denied) return denied;
+  const leads = interpretarPedido(text);
+  if (leads && getAction(leads.acao)) {
+    const criterios = leads.criterios || {};
+    return execute(leads.acao, {
+      uf: [].concat(criterios.uf || [])[0],
+      municipio: [].concat(criterios.municipio || [])[0],
+      cnae: [].concat(criterios.cnae || [])[0],
+      limite: criterios.limite,
+      pagina: criterios.pagina,
+      ultimosDias: criterios.ultimosDias,
+      quantidade: criterios.quantidade,
+    });
+  }
   const price = pricePlan(text, preference);
   if (price) return price;
   if (/\b(abaixo do estoque minimo|estoque minimo)\b/.test(text)) {

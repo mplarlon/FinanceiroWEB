@@ -64,7 +64,7 @@ const round = (value, digits = 2) => {
   const factor = 10 ** digits;
   return Math.round(Number(value) * factor) / factor;
 };
-export const money = (value) => n(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+export const money = (value) => value == null || !Number.isFinite(Number(value)) ? "não informado" : Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 export const percent = (value) => value == null ? "Dado indisponível para esta análise." : `${n(value).toLocaleString("pt-BR", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}%`;
 const brDate = (iso) => {
   if (!iso) return "Dado indisponível para esta análise.";
@@ -178,7 +178,7 @@ export function businessDaysInclusive(startIso, endIso) {
 }
 
 export function variation(current, previous) {
-  if (!(n(previous) > 0)) return { percentual: null, texto: "sem base comparável" };
+  if (current == null || previous == null || !(n(previous) > 0)) return { percentual: null, texto: "sem base comparável" };
   const percentual = round(((n(current) - n(previous)) / n(previous)) * 100, 1);
   const direction = percentual >= 0 ? "aumento" : "queda";
   return { percentual, texto: `${direction} de ${Math.abs(percentual).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%` };
@@ -205,16 +205,24 @@ export function rankSellers(rows, companyId = null) {
       convertidos: 0,
       valorAberto: 0,
     };
-    item.faturamento += n(row.revenue ?? row.FATURAMENTO);
+    const bruto = row.revenue != null ? row.revenue : row.FATURAMENTO;
+    if (bruto == null) item.semValor = true;
+    else item.faturamento += n(bruto);
     item.pedidos += n(row.orders ?? row.PEDIDOS);
     item.custo += n(row.cost ?? row.CUSTO);
     map.set(id, item);
   }
-  const list = [...map.values()].filter((item) => item.pedidos > 0 || item.faturamento > 0);
-  list.sort((a, b) => b.faturamento - a.faturamento || a.nome.localeCompare(b.nome, "pt-BR"));
+  for (const item of map.values()) if (item.semValor) item.faturamento = null;
+  const list = [...map.values()].filter((item) => item.pedidos > 0 || item.faturamento != null);
+  list.sort((a, b) => (a.faturamento == null) - (b.faturamento == null) || (b.faturamento ?? 0) - (a.faturamento ?? 0) || a.nome.localeCompare(b.nome, "pt-BR"));
   let last = null;
   let position = 0;
   list.forEach((item, index) => {
+    if (item.faturamento == null) {
+      item.posicao = null;
+      item.ticket = null;
+      return;
+    }
     if (last == null || item.faturamento < last - 0.004) {
       position = index + 1;
       last = item.faturamento;
@@ -224,8 +232,9 @@ export function rankSellers(rows, companyId = null) {
     item.faturamento = round(item.faturamento);
     item.custo = round(item.custo);
   });
-  const lowestValue = list.length ? list[list.length - 1].faturamento : null;
-  const menores = list.filter((item) => item.faturamento === lowestValue);
+  const comValor = list.filter((item) => item.faturamento != null);
+  const lowestValue = comValor.length ? comValor[comValor.length - 1].faturamento : null;
+  const menores = comValor.filter((item) => item.faturamento === lowestValue);
   return { ranking: list, menor: menores.length === 1 ? menores[0] : menores.length ? { empate: true, vendedores: menores } : null };
 }
 
@@ -235,7 +244,8 @@ export function attachQuotes(ranking, quotesBySeller = []) {
     const quote = map.get(Number(seller.id));
     if (!quote) continue;
     seller.orcamentos = n(quote.count ?? quote.QTD);
-    seller.valorOrcamentos = round(n(quote.value ?? quote.TOTAL));
+    const bruto = quote.value != null ? quote.value : quote.TOTAL;
+    seller.valorOrcamentos = bruto == null ? null : round(n(bruto));
     seller.convertidos = n(quote.converted ?? quote.CONVERTIDOS);
     seller.valorAberto = round(n(quote.openValue ?? quote.ABERTO));
     seller.taxaConversao = seller.orcamentos ? round((seller.convertidos / seller.orcamentos) * 100, 1) : null;
@@ -245,20 +255,33 @@ export function attachQuotes(ranking, quotesBySeller = []) {
 
 function quoteBucket(rows) {
   const bucket = { novos: 0, valor: 0, convertidos: 0, valorConvertido: 0, remessa: 0, valorRemessa: 0, cancelados: 0 };
+  let valorIncompleto = false;
+  let convertidoIncompleto = false;
   for (const row of rows || []) {
     const status = Number(row.status ?? row.STATUS);
     const count = n(row.count ?? row.QTD);
-    const value = n(row.value ?? row.TOTAL);
+    const bruto = row.value != null ? row.value : row.TOTAL;
+    const value = bruto == null ? null : n(bruto);
     if (status === 2) { bucket.cancelados += count; continue; }
-    if (status >= 3) { bucket.remessa += count; bucket.valorRemessa += value; continue; }
+    if (status >= 3) {
+      bucket.remessa += count;
+      if (value == null) bucket.valorRemessa = null;
+      else if (bucket.valorRemessa != null) bucket.valorRemessa += value;
+      continue;
+    }
     if (status === 0 || status === 1) {
       bucket.novos += count;
-      bucket.valor += value;
+      if (value == null) valorIncompleto = true;
+      else bucket.valor += value;
     }
-    if (status === 1) { bucket.convertidos += count; bucket.valorConvertido += value; }
+    if (status === 1) {
+      bucket.convertidos += count;
+      if (value == null) convertidoIncompleto = true;
+      else bucket.valorConvertido += value;
+    }
   }
-  bucket.valor = round(bucket.valor);
-  bucket.valorConvertido = round(bucket.valorConvertido);
+  bucket.valor = valorIncompleto ? null : round(bucket.valor);
+  bucket.valorConvertido = convertidoIncompleto ? null : round(bucket.valorConvertido);
   bucket.taxa = bucket.novos ? round((bucket.convertidos / bucket.novos) * 100, 1) : null;
   return bucket;
 }
@@ -270,7 +293,10 @@ export function mondayOf(iso) {
 
 export function assessWindow(goal, realized, label = "período") {
   if (!(n(goal) > 0)) {
-    return { meta: null, realizado: round(n(realized)), atingimento: null, faltam: null, ritmoSuficiente: null, periodo: label, texto: "Meta não cadastrada." };
+    return { meta: null, realizado: realized == null ? null : round(n(realized)), atingimento: null, faltam: null, ritmoSuficiente: null, periodo: label, texto: "Meta não cadastrada." };
+  }
+  if (realized == null) {
+    return { meta: round(n(goal)), realizado: null, atingimento: null, faltam: null, ritmoSuficiente: null, periodo: label, texto: "Há venda sem valor. O realizado não foi somado." };
   }
   const faltam = round(Math.max(0, n(goal) - n(realized)));
   const enough = n(realized) + 0.009 >= n(goal);
@@ -396,7 +422,10 @@ export function whatsappTemplateParameters(report) {
 
 export function assessGoal(goal, realized, referenceIso, origin = null) {
   if (!(n(goal) > 0)) {
-    return { meta: null, realizado: round(n(realized)), atingimento: null, faltam: null, diasUteisRestantes: null, ritmoNecessario: null, projecao: null, ritmoSuficiente: null, origem: null, texto: "Meta não cadastrada." };
+    return { meta: null, realizado: realized == null ? null : round(n(realized)), atingimento: null, faltam: null, diasUteisRestantes: null, ritmoNecessario: null, projecao: null, ritmoSuficiente: null, origem: null, texto: "Meta não cadastrada." };
+  }
+  if (realized == null) {
+    return { meta: round(n(goal)), realizado: null, atingimento: null, faltam: null, diasUteisRestantes: null, ritmoNecessario: null, projecao: null, ritmoSuficiente: null, origem: origin, texto: "Há venda sem valor. O realizado não foi somado." };
   }
   const bounds = monthBounds(referenceIso);
   const decorridos = businessDaysInclusive(bounds.start, referenceIso);
@@ -427,7 +456,8 @@ export function assessGoal(goal, realized, referenceIso, origin = null) {
 
 export function prioritizeQuote(quote, settings, referenceIso) {
   const limites = { ...DEFAULT_SETTINGS.limites, ...settings?.limites };
-  const value = n(quote.value ?? quote.VLTOTAL);
+  const bruto = quote.value != null ? quote.value : quote.VLTOTAL;
+  const value = bruto == null ? null : n(bruto);
   const emitted = isoDay(quote.date || quote.DTORC);
   const ageDays = emitted
     ? Math.max(0, Math.floor((Date.parse(`${referenceIso}T12:00:00Z`) - Date.parse(`${emitted}T12:00:00Z`)) / 86400000))
@@ -468,7 +498,7 @@ export function prioritizeQuote(quote, settings, referenceIso) {
     cliente: quote.customer || quote.CLIENTE || "Cliente",
     vendedor: quote.seller || quote.VENDEDOR || "Sem vendedor",
     vendedorId: Number(quote.sellerId ?? quote.CDVENDEDOR ?? 0),
-    valor: round(value),
+    valor: value == null ? null : round(value),
     emissao: emitted,
     ultimoContato: null,
     ultimoContatoTexto: "Dado indisponível para esta análise.",
@@ -624,8 +654,16 @@ export function nextRetry(attempts, now = new Date()) {
   return new Date(now.getTime() + wait).toISOString();
 }
 
+function valorVenda(row) {
+  if (row?.revenue != null) return Number(row.revenue);
+  if (row?.FATURAMENTO != null) return Number(row.FATURAMENTO);
+  return null;
+}
+
 function sumSales(rows, companyId) {
-  return round((rows || []).filter((row) => sameCompany(row, companyId)).reduce((sum, row) => sum + n(row.revenue ?? row.FATURAMENTO), 0));
+  const lista = (rows || []).filter((row) => sameCompany(row, companyId));
+  if (lista.some((row) => valorVenda(row) == null)) return null;
+  return round(lista.reduce((sum, row) => sum + valorVenda(row), 0));
 }
 
 function knownNumbers(report) {
@@ -689,7 +727,7 @@ export function composeBreakfast(input = {}) {
       : { taxa: null, periodo: null, texto: "Sem orçamento." };
   const openList = (input.openQuotes || []).filter((row) => sameCompany(row, companyId)).map((row) => prioritizeQuote(row, settings, reference));
   const openCount = input.openTotal?.count != null ? n(input.openTotal.count) : openList.length;
-  const openValue = input.openTotal?.value != null ? round(n(input.openTotal.value)) : round(openList.reduce((sum, item) => sum + n(item.valor), 0));
+  const openValue = input.openTotal ? (input.openTotal.value == null ? null : round(n(input.openTotal.value))) : round(openList.reduce((sum, item) => sum + n(item.valor), 0));
   const priorityCount = openList.filter((item) => item.prioridade === "alta").length;
   const strategic = openList.filter((item) => item.classe === "estrategica").length;
   const pickedGoal = monthlyGoalFrom(settings, input.legacyGoals, companyId, input.legacyGoal);
@@ -770,7 +808,7 @@ export function composeBreakfast(input = {}) {
         vendedor: row.seller || row.NOME,
         vendedorId: Number(row.sellerId ?? row.ID ?? 0),
         quantidade: n(row.count ?? row.QTD),
-        valor: round(n(row.value ?? row.TOTAL)),
+        valor: row.value == null && row.TOTAL == null ? null : round(n(row.value ?? row.TOTAL)),
       })),
     },
     estoque: {
@@ -857,8 +895,8 @@ export function renderMessage(report) {
 
   const full = report.formato !== "resumido";
   const show = (key) => full && report.indicadores?.[key] !== false;
-  const medals = (report.ranking || []).filter((item) => item.posicao <= 3).slice(0, 3);
-  const monthMedals = (report.rankingMes || []).filter((item) => item.posicao <= 3).slice(0, 3);
+  const medals = (report.ranking || []).filter((item) => item.posicao != null && item.posicao <= 3).slice(0, 3);
+  const monthMedals = (report.rankingMes || []).filter((item) => item.posicao != null && item.posicao <= 3).slice(0, 3);
   if (show("ranking")) {
     if (medals.length) {
       lines.push("", sellerBits(medals));
@@ -874,6 +912,8 @@ export function renderMessage(report) {
       }
     } else if (monthMedals.length) {
       lines.push("", `Nenhuma venda em ${brDate(report.referencia)}. Ranking do mês: ${sellerBits(monthMedals)}`);
+    } else if ((report.ranking || []).some((item) => item.pedidos > 0)) {
+      lines.push("", `Há venda sem valor em ${brDate(report.referencia)}. O ranking não foi montado.`);
     } else {
       lines.push("", `Nenhuma venda em ${brDate(report.referencia)}.`);
     }

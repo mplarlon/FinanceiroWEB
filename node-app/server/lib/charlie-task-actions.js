@@ -3,11 +3,18 @@ import { findFinancialDuplicates } from "./charlie-audit-engine.js";
 import { runBehavioralRiskAnalysis } from "./charlie-behavioral-risk-service.js";
 import { listBehavioralAnalyses } from "./charlie-behavioral-risk-store.js";
 import { valueDashboard } from "./charlie-value-intelligence.js";
+import { LEAD_RUNNERS } from "./charlie-leads-tools.js";
+import { ITEM_SEM_SQL, ITEM_VALOR_SQL, VALOR_AUSENTE, somaLida, valorLido } from "./charlie-sale-value.js";
 
+const SOMA_ITEM = `SUM(${ITEM_VALOR_SQL}) AS TOTAL, SUM(${ITEM_SEM_SQL}) AS SEM`;
 const money = (value) =>
-  Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  value == null || !Number.isFinite(Number(value))
+    ? "não informado"
+    : Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
+const totalDaLinha = (row) => valorLido(row.TOTAL, row.SEM);
+const comAviso = (texto, total) => total == null ? `${texto} ${VALOR_AUSENTE}` : texto;
 
 function integer(value, fallback) {
   const number = Number(value);
@@ -259,7 +266,7 @@ export async function rankingClientes(deps, params) {
        COALESCE(v.VENDEDOR, 'Sem vendedor') AS VENDEDOR,
        COALESCE(c.CLIENTE, se.CLIENTE) AS CLIENTE,
        COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS,
-       SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+       ${SOMA_ITEM}
      FROM SAIDAESTOQUE se
      JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
      LEFT JOIN CLIENTE c ON c.CDCLIENTE=se.CDCLIENTE
@@ -272,13 +279,13 @@ export async function rankingClientes(deps, params) {
     VENDEDOR: displayName(row.VENDEDOR),
     CLIENTE: displayName(row.CLIENTE),
     PEDIDOS: Number(row.PEDIDOS || 0),
-    TOTAL: roundMoney(row.TOTAL),
+    TOTAL: totalDaLinha(row),
   }));
   return {
     linhas,
     quantidade: linhas.length,
     resumo: linhas.length
-      ? `Organizei ${linhas.length} cliente(s) por vendedor. Cancelamentos e itens cancelados ficaram de fora.`
+      ? comAviso(`Organizei ${linhas.length} cliente(s) por vendedor. Cancelamentos e itens cancelados ficaram de fora.`, linhas.some((row) => row.TOTAL == null) ? null : 0)
       : "Não encontrei vendas válidas nesse período.",
     etapas: [{ nome: "Consulta de vendas", situacao: "concluida", quantidade: linhas.length }],
   };
@@ -289,7 +296,7 @@ export async function faturamentoVendedor(deps, params) {
   const rows = await deps.query(
     `SELECT FIRST ${limit + 1} COALESCE(v.VENDEDOR, 'Sem vendedor') AS VENDEDOR,
             COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS,
-            SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+            ${SOMA_ITEM}
      FROM SAIDAESTOQUE se
      JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
      LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=se.CDVENDEDOR
@@ -302,9 +309,9 @@ export async function faturamentoVendedor(deps, params) {
   const linhas = rows.slice(0, limit).map((row) => ({
     VENDEDOR: displayName(row.VENDEDOR),
     PEDIDOS: Number(row.PEDIDOS || 0),
-    TOTAL: roundMoney(row.TOTAL),
+    TOTAL: totalDaLinha(row),
   }));
-  const total = roundMoney(linhas.reduce((sum, row) => sum + row.TOTAL, 0));
+  const total = somaLida(linhas);
   const periodo = periodLabel(params, `Últimos ${integer(params.meses, 6)} meses`);
   return reportResult({
     linhas,
@@ -314,7 +321,7 @@ export async function faturamentoVendedor(deps, params) {
     totais: { TOTAL: total, PEDIDOS: linhas.reduce((sum, row) => sum + row.PEDIDOS, 0) },
     etapa: "Consulta de faturamento",
     resumo: linhas.length
-      ? `Faturamento de ${periodo.toLowerCase()}: ${money(total)} em ${linhas.length} vendedor(es).`
+      ? comAviso(`Faturamento de ${periodo.toLowerCase()}: ${money(total)} em ${linhas.length} vendedor(es).`, total)
       : `Não encontrei faturamento em ${periodo.toLowerCase()}.`,
   });
 }
@@ -322,7 +329,7 @@ export async function faturamentoVendedor(deps, params) {
 export async function faturamentoMensal(deps, params) {
   const rows = await deps.query(
     `SELECT EXTRACT(YEAR FROM se.DTSAIDA) AS ANO, EXTRACT(MONTH FROM se.DTSAIDA) AS MES,
-            SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL,
+            ${SOMA_ITEM},
             COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS
      FROM SAIDAESTOQUE se
      JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
@@ -333,9 +340,9 @@ export async function faturamentoMensal(deps, params) {
   );
   let anterior = null;
   const linhas = rows.map((row) => {
-    const total = roundMoney(row.TOTAL);
-    const variacao = anterior ? roundMoney(((total - anterior) / anterior) * 100) : null;
-    anterior = total;
+    const total = totalDaLinha(row);
+    const variacao = total == null || !(anterior > 0) ? null : roundMoney(((total - anterior) / anterior) * 100);
+    anterior = total == null ? null : total;
     return {
       ANO: Number(row.ANO),
       MES: Number(row.MES),
@@ -344,14 +351,14 @@ export async function faturamentoMensal(deps, params) {
       VARIACAO: variacao,
     };
   });
-  const total = roundMoney(linhas.reduce((sum, row) => sum + row.TOTAL, 0));
+  const total = somaLida(linhas);
   return reportResult({
     linhas,
     periodo: periodLabel(params, `Últimos ${integer(params.meses, 6)} meses`),
     totais: { TOTAL: total },
     etapa: "Comparação mensal",
     resumo: linhas.length
-      ? `Comparei ${linhas.length} mês(es) de faturamento, somando ${money(total)}.`
+      ? comAviso(`Comparei ${linhas.length} mês(es) de faturamento, somando ${money(total)}.`, total)
       : "Não encontrei faturamento no período.",
   });
 }
@@ -700,7 +707,7 @@ export async function faturamentoPeriodo(deps, params) {
     daily
       ? `SELECT CAST(se.DTSAIDA AS DATE) AS DATA,
                 COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS,
-                SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+                ${SOMA_ITEM}
          FROM SAIDAESTOQUE se
          JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
          WHERE se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0
@@ -709,7 +716,7 @@ export async function faturamentoPeriodo(deps, params) {
          ORDER BY 1`
       : `SELECT EXTRACT(YEAR FROM se.DTSAIDA) AS ANO, EXTRACT(MONTH FROM se.DTSAIDA) AS MES,
                 COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS,
-                SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+                ${SOMA_ITEM}
          FROM SAIDAESTOQUE se
          JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
          WHERE se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0
@@ -718,16 +725,16 @@ export async function faturamentoPeriodo(deps, params) {
          ORDER BY 1, 2`,
   );
   const linhas = rows.map((row) => daily
-    ? { DATA: row.DATA, PEDIDOS: Number(row.PEDIDOS || 0), TOTAL: roundMoney(row.TOTAL) }
-    : { ANO: Number(row.ANO), MES: Number(row.MES), PEDIDOS: Number(row.PEDIDOS || 0), TOTAL: roundMoney(row.TOTAL) });
-  const total = roundMoney(linhas.reduce((sum, row) => sum + row.TOTAL, 0));
+    ? { DATA: row.DATA, PEDIDOS: Number(row.PEDIDOS || 0), TOTAL: totalDaLinha(row) }
+    : { ANO: Number(row.ANO), MES: Number(row.MES), PEDIDOS: Number(row.PEDIDOS || 0), TOTAL: totalDaLinha(row) });
+  const total = somaLida(linhas);
   return reportResult({
     linhas,
     periodo,
     totais: { TOTAL: total, PEDIDOS: linhas.reduce((sum, row) => sum + row.PEDIDOS, 0) },
     etapa: "Faturamento do período",
     resumo: linhas.length
-      ? `Faturamento de ${periodo.toLowerCase()}: ${money(total)}.`
+      ? comAviso(`Faturamento de ${periodo.toLowerCase()}: ${money(total)}.`, total)
       : `Não encontrei faturamento em ${periodo.toLowerCase()}.`,
   });
 }
@@ -738,7 +745,7 @@ export async function faturamentoCliente(deps, params) {
     `SELECT FIRST ${limit + 1}
        COALESCE(c.CLIENTE, se.CLIENTE) AS CLIENTE,
        COUNT(DISTINCT se.NRPEDIDO) AS PEDIDOS,
-       SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+       ${SOMA_ITEM}
      FROM SAIDAESTOQUE se
      JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
      LEFT JOIN CLIENTE c ON c.CDCLIENTE=se.CDCLIENTE
@@ -750,9 +757,9 @@ export async function faturamentoCliente(deps, params) {
   const linhas = rows.slice(0, limit).map((row) => ({
     CLIENTE: displayName(row.CLIENTE),
     PEDIDOS: Number(row.PEDIDOS || 0),
-    TOTAL: roundMoney(row.TOTAL),
+    TOTAL: totalDaLinha(row),
   }));
-  const total = roundMoney(linhas.reduce((sum, row) => sum + row.TOTAL, 0));
+  const total = somaLida(linhas);
   const periodo = periodLabel(params);
   return reportResult({
     linhas,
@@ -762,7 +769,7 @@ export async function faturamentoCliente(deps, params) {
     totais: { TOTAL: total, PEDIDOS: linhas.reduce((sum, row) => sum + row.PEDIDOS, 0) },
     etapa: "Faturamento por cliente",
     resumo: linhas.length
-      ? `Faturamento de ${String(periodo).toLowerCase()} em ${linhas.length} cliente(s): ${money(total)}.`
+      ? comAviso(`Faturamento de ${String(periodo).toLowerCase()} em ${linhas.length} cliente(s): ${money(total)}.`, total)
       : "Não encontrei vendas válidas nesse período.",
   });
 }
@@ -775,7 +782,7 @@ export async function produtosVendidos(deps, params) {
        sp.CDPRODUTO AS CODIGO,
        COALESCE(p.PRODUTO, sp.CDPRODUTO) AS DESCRICAO,
        SUM(COALESCE(sp.QTDPRODUTO,0)) AS QUANTIDADE,
-       SUM(COALESCE(sp.SUBTOTAL, sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+       ${SOMA_ITEM}
      FROM SAIDAPRODUTO sp
      JOIN SAIDAESTOQUE se ON se.NRPEDIDO=sp.NRPEDIDO AND se.IDEMPRESA=sp.IDEMPRESA
      LEFT JOIN PRODUTO p ON p.CDPRODUTO=sp.CDPRODUTO
@@ -788,9 +795,9 @@ export async function produtosVendidos(deps, params) {
     CODIGO: row.CODIGO,
     DESCRICAO: displayName(row.DESCRICAO),
     QUANTIDADE: Number(row.QUANTIDADE || 0),
-    TOTAL: roundMoney(row.TOTAL),
+    TOTAL: totalDaLinha(row),
   }));
-  const total = roundMoney(linhas.reduce((sum, row) => sum + row.TOTAL, 0));
+  const total = somaLida(linhas);
   const titulo = params.ordem === "menos" ? "menos vendidos" : "mais vendidos";
   return reportResult({
     linhas,
@@ -800,7 +807,7 @@ export async function produtosVendidos(deps, params) {
     totais: { TOTAL: total, QUANTIDADE: linhas.reduce((sum, row) => sum + row.QUANTIDADE, 0) },
     etapa: "Ranking de produtos",
     resumo: linhas.length
-      ? `Listei ${linhas.length} produto(s) ${titulo}, somando ${money(total)}.`
+      ? comAviso(`Listei ${linhas.length} produto(s) ${titulo}, somando ${money(total)}.`, total)
       : "Não encontrei vendas válidas nesse período.",
   });
 }
@@ -1091,11 +1098,12 @@ export async function reducaoCompras(deps, params) {
     `SELECT FIRST ${limite + 1}
        c.CDCLIENTE AS CODIGO, c.CLIENTE AS CLIENTE,
        COALESCE(v.VENDEDOR, 'Sem vendedor') AS VENDEDOR,
-       SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE)
-                THEN COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) ELSE 0 END) AS PERIODO_ATUAL,
+       SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE) THEN ${ITEM_VALOR_SQL} END) AS PERIODO_ATUAL,
+       SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE) THEN ${ITEM_SEM_SQL} ELSE 0 END) AS SEM_ATUAL,
        SUM(CASE WHEN se.DTSAIDA<DATEADD(-${meses} MONTH TO CURRENT_DATE)
-                 AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE)
-                THEN COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) ELSE 0 END) AS PERIODO_ANTERIOR
+                 AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE) THEN ${ITEM_VALOR_SQL} END) AS PERIODO_ANTERIOR,
+       SUM(CASE WHEN se.DTSAIDA<DATEADD(-${meses} MONTH TO CURRENT_DATE)
+                 AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE) THEN ${ITEM_SEM_SQL} ELSE 0 END) AS SEM_ANTERIOR
      FROM CLIENTE c
      JOIN SAIDAESTOQUE se ON se.CDCLIENTE=c.CDCLIENTE
      JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
@@ -1104,18 +1112,20 @@ export async function reducaoCompras(deps, params) {
        AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE)
      GROUP BY c.CDCLIENTE,c.CLIENTE,v.VENDEDOR
      HAVING SUM(CASE WHEN se.DTSAIDA<DATEADD(-${meses} MONTH TO CURRENT_DATE)
-                      THEN COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) ELSE 0 END)>0
-        AND SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE)
-                      THEN COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) ELSE 0 END)
+                      AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE) THEN ${ITEM_SEM_SQL} ELSE 0 END)=0
+        AND SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE) THEN ${ITEM_SEM_SQL} ELSE 0 END)=0
+        AND SUM(CASE WHEN se.DTSAIDA<DATEADD(-${meses} MONTH TO CURRENT_DATE)
+                      AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE) THEN ${ITEM_VALOR_SQL} END)>0
+        AND SUM(CASE WHEN se.DTSAIDA>=DATEADD(-${meses} MONTH TO CURRENT_DATE) THEN ${ITEM_VALOR_SQL} END)
             <= SUM(CASE WHEN se.DTSAIDA<DATEADD(-${meses} MONTH TO CURRENT_DATE)
-                         THEN COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) ELSE 0 END) * ?
+                         AND se.DTSAIDA>=DATEADD(-${meses * 2} MONTH TO CURRENT_DATE) THEN ${ITEM_VALOR_SQL} END) * ?
      ORDER BY 3, 5 DESC`,
     [1 - percentual / 100],
   );
   const extra = rows.length > limite;
   const linhas = rows.slice(0, limite).map((row) => {
-    const anterior = roundMoney(row.PERIODO_ANTERIOR);
-    const atual = roundMoney(row.PERIODO_ATUAL);
+    const anterior = valorLido(row.PERIODO_ANTERIOR, row.SEM_ANTERIOR);
+    const atual = valorLido(row.PERIODO_ATUAL, row.SEM_ATUAL);
     return {
       CODIGO: row.CODIGO,
       CLIENTE: displayName(row.CLIENTE),
@@ -1174,11 +1184,14 @@ export async function resultadosCharlie(deps, params) {
 
 export async function preverFaturamento(deps, params) {
   const rows = await deps.query(`SELECT CAST(se.DTSAIDA AS DATE) DATA,
-    COALESCE(SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)),0) VALOR
+    SUM(${ITEM_VALOR_SQL}) VALOR, SUM(${ITEM_SEM_SQL}) SEM
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     WHERE se.DTSAIDA>=DATEADD(-365 DAY TO CURRENT_DATE) AND se.DTCANCELAMENTO IS NULL
       AND COALESCE(sp.STATUSSE,0)=0 AND COALESCE(se.STATUS,0) IN (1,3)
     GROUP BY CAST(se.DTSAIDA AS DATE) ORDER BY 1`, []);
+  if (rows.some((row) => Number(row.SEM) > 0)) {
+    return { linhas: [], quantidade: 0, resumo: VALOR_AUSENTE, etapas: [{ nome: "Backtesting e previsão", situacao: "concluida_parcial", quantidade: 0 }] };
+  }
   const result = forecastSeries(rows, { dateField: "DATA", valueField: "VALOR", horizon: params.dias, minimumRecords: 28 });
   return { linhas: result.forecasts || [], quantidade: result.forecasts?.length || 0, resumo: result.ok ? `Previsão de faturamento: ${money(result.total)} nos próximos ${params.dias} dias; modelo ${result.model}, qualidade ${result.quality.status}. É uma projeção, não uma garantia.` : result.message, etapas: [{ nome: "Backtesting e previsão", situacao: result.ok ? "concluida" : "concluida_parcial", quantidade: result.validation?.samples || 0 }] };
 }
@@ -1285,4 +1298,5 @@ export const ACTION_RUNNERS = {
   "cadastro.criar_cliente": prepararCliente,
   "cadastro.atualizar_cliente": prepararAtualizacaoCliente,
   "comercial.criar_pedido_rascunho": prepararPedidoRascunho,
+  ...LEAD_RUNNERS,
 };

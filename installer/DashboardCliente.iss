@@ -52,8 +52,11 @@ Source: "..\nfe_sefaz_config.example.json"; DestDir: "{sd}\Administracao\Dashboa
 Source: "..\boletos_caixa_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "boletos_caixa_config.json"; Flags: onlyifdoesntexist
 Source: "..\cartao_depara.json"; DestDir: "{sd}\Administracao\Dashboard"; Flags: onlyifdoesntexist
 #ifdef WithOllama
-Source: "InstallOllama.ps1"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "InstallOllama.ps1"; DestDir: "{sd}\Administracao\Ollama"; Flags: ignoreversion
+Source: "InstalarModelo.cmd"; DestDir: "{sd}\Administracao\Ollama"; Flags: ignoreversion
 #endif
+Source: "QueryCompany.cjs"; Flags: dontcopy
+Source: "QueryCompany.ps1"; Flags: dontcopy
 
 [Icons]
 Name: "{group}\Abrir Dashboard"; Filename: "http://localhost:805"
@@ -69,22 +72,24 @@ Filename: "{app}\DashboardService.exe"; Parameters: "install"; WorkingDir: "{app
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Dashboard Gerencial 805"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Dashboard Gerencial 805"" dir=in action=allow protocol=TCP localport=805"; Flags: runhidden waituntilterminated
 Filename: "{app}\DashboardService.exe"; Parameters: "start"; WorkingDir: "{app}"; StatusMsg: "Iniciando serviço..."; Flags: runhidden waituntilterminated
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Updater\InstallUpdater.ps1"" -CenterUrl ""https://financeiroweb.nuvempontual.com"" -InstallRoot ""{app}"" -DataDir ""{sd}\Administracao\Dashboard"" -CurrentVersion ""{#AppVersion}"" -ParamsFile ""{app}\Updater\enrollment.json"" -PreviousXml ""{tmp}\UpdaterService.anterior.xml"""; StatusMsg: "Instalando atualização automática..."; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""ACBrMonitor NF-e 3434"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""ACBrMonitor NF-e 3434"" dir=in action=allow protocol=TCP localport=3434 remoteip=127.0.0.1"; Flags: runhidden waituntilterminated
 Filename: "{sd}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{sd}\ACBrMonitorPLUS"; StatusMsg: "Iniciando o ACBr para emissão de nota..."; Flags: nowait
 #ifdef WithOllama
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{tmp}\InstallOllama.ps1"" -Step Install"; StatusMsg: "Etapa 1 de 2: instalando e iniciando o Ollama..."; Flags: waituntilterminated
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{tmp}\InstallOllama.ps1"" -Step Model"; StatusMsg: "Etapa 2 de 2: baixando e instalando o modelo qwen3:8b (aprox. 5,2 GB)..."; Flags: waituntilterminated
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -File ""{sd}\Administracao\Ollama\InstallOllama.ps1"" -Step Completo"; StatusMsg: "Baixando o Ollama e o modelo qwen3:8b. A janela da frente mostra cada etapa."; Flags: waituntilterminated; AfterInstall: AvisarModeloOllama
 #endif
 
 [UninstallRun]
+Filename: "{app}\Updater\UpdaterService.exe"; Parameters: "stop"; WorkingDir: "{app}\Updater"; Flags: runhidden waituntilterminated; RunOnceId: StopUpdater
+Filename: "{app}\Updater\UpdaterService.exe"; Parameters: "uninstall"; WorkingDir: "{app}\Updater"; Flags: runhidden waituntilterminated; RunOnceId: RemoveUpdater
 Filename: "{app}\DashboardService.exe"; Parameters: "stop"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; RunOnceId: StopService
 Filename: "{app}\DashboardService.exe"; Parameters: "uninstall"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; RunOnceId: RemoveService
 
 [Code]
 var
-  DatabasePage: TWizardPage;
-  HostEdit, PortEdit, DatabaseEdit, UserEdit, PasswordEdit: TNewEdit;
+  DatabasePage, UpdaterPage: TWizardPage;
+  HostEdit, PortEdit, DatabaseEdit, UserEdit, PasswordEdit, CompanyEdit, TokenEdit: TNewEdit;
   AmbienteProducao, AmbienteHomologacao: TNewRadioButton;
 
 function JsonEscape(Value: String): String;
@@ -189,6 +194,58 @@ begin
   if Password then Result.PasswordChar := '*';
 end;
 
+function ConsultarEmpresa: String;
+var
+  NodePath, ModulesPath, FbClient, ConfigPath, OutputPath, Config, Params: String;
+  ResultCode: Integer;
+  Conteudo: AnsiString;
+begin
+  Result := '';
+  NodePath := ExpandConstant('{app}\DashboardNode.exe');
+  ModulesPath := ExpandConstant('{app}\node-app\node_modules');
+  FbClient := ExpandConstant('{app}\Firebird-5.0.4\fbclient.dll');
+  if (not FileExists(NodePath)) or (not FileExists(ModulesPath + '\node-firebird-native-api\package.json')) then Exit;
+  ExtractTemporaryFile('QueryCompany.cjs');
+  ExtractTemporaryFile('QueryCompany.ps1');
+  ConfigPath := ExpandConstant('{tmp}\empresa-conexao.json');
+  OutputPath := ExpandConstant('{tmp}\empresa-nome.txt');
+  Config := '{' + #13#10 +
+    '  "host": "' + JsonEscape(Trim(HostEdit.Text)) + '",' + #13#10 +
+    '  "port": ' + Trim(PortEdit.Text) + ',' + #13#10 +
+    '  "database": "' + JsonEscape(Trim(DatabaseEdit.Text)) + '",' + #13#10 +
+    '  "user": "' + JsonEscape(Trim(UserEdit.Text)) + '",' + #13#10 +
+    '  "password": "' + JsonEscape(PasswordEdit.Text) + '"' + #13#10 +
+    '}' + #13#10;
+  if not SaveStringToFile(ConfigPath, Config, False) then Exit;
+  DeleteFile(OutputPath);
+  Params := '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{tmp}\QueryCompany.ps1') + '"' +
+    ' -Node "' + NodePath + '" -Script "' + ExpandConstant('{tmp}\QueryCompany.cjs') + '"' +
+    ' -Config "' + ConfigPath + '" -Output "' + OutputPath + '"' +
+    ' -Modules "' + ModulesPath + '" -FbClient "' + FbClient + '"';
+  if Exec(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe'), Params, '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+    if LoadStringFromFile(OutputPath, Conteudo) then
+      Result := Trim(String(Conteudo));
+  DeleteFile(ConfigPath);
+  DeleteFile(OutputPath);
+end;
+
+procedure AjustarCamposAtualizador(Sender: TWizardPage);
+var
+  Largura: Integer;
+begin
+  Largura := UpdaterPage.SurfaceWidth - CompanyEdit.Left;
+  if Largura < ScaleX(80) then Exit;
+  CompanyEdit.Width := Largura;
+  TokenEdit.Width := Largura;
+end;
+
+procedure AtivarPaginaAtualizador(Sender: TWizardPage);
+begin
+  AjustarCamposAtualizador(Sender);
+  if Trim(CompanyEdit.Text) = '' then
+    CompanyEdit.Text := ConsultarEmpresa;
+end;
+
 procedure AjustarCamposBanco(Sender: TWizardPage);
 var
   Largura: Integer;
@@ -277,6 +334,13 @@ begin
     else
       AmbienteProducao.Checked := True;
   end;
+
+  UpdaterPage := CreateCustomPage(DatabasePage.ID,
+    'Atualização automática',
+    'O nome da empresa é lido do cadastro no banco. Se o campo continuar vazio, ele é gravado ao concluir a instalação. O token de registro é opcional.');
+  UpdaterPage.OnActivate := @AtivarPaginaAtualizador;
+  CompanyEdit := AddLabeledEdit(UpdaterPage, 'Nome da empresa:', 0, LabelWidth, False);
+  TokenEdit := AddLabeledEdit(UpdaterPage, 'Token de registro:', ScaleY(28), LabelWidth, False);
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -309,9 +373,41 @@ begin
   end;
 end;
 
+procedure AvisarModeloOllama;
+var
+  Motivo: String;
+  Linhas: TArrayOfString;
+  I: Integer;
+begin
+  if FileExists(ExpandConstant('{sd}\Administracao\Ollama\modelo-qwen3-8b.ok')) then Exit;
+  Motivo := 'A etapa do Ollama terminou sem registrar o modelo.';
+  if LoadStringsFromFile(ExpandConstant('{sd}\Administracao\Ollama\instalacao.log'), Linhas) then
+  begin
+    for I := GetArrayLength(Linhas) - 1 downto 0 do
+      if Pos('Falha', Linhas[I]) > 0 then
+      begin
+        Motivo := Trim(Linhas[I]);
+        Break;
+      end;
+    if Pos('Falha', Motivo) = 0 then
+      for I := GetArrayLength(Linhas) - 1 downto 0 do
+        if Trim(Linhas[I]) <> '' then
+        begin
+          Motivo := Trim(Linhas[I]);
+          Break;
+        end;
+  end;
+  if Length(Motivo) > 500 then
+    Motivo := Copy(Motivo, 1, 500);
+  MsgBox('O Dashboard foi instalado, mas o modelo qwen3:8b não ficou disponível.' + #13#10 + #13#10 +
+    Motivo + #13#10 + #13#10 +
+    'O Charlie continua respondendo pelas regras do sistema. Para baixar o modelo quando a internet estiver disponível, execute C:\Administracao\Ollama\InstalarModelo.cmd.' + #13#10 + #13#10 +
+    'O registro completo fica em C:\Administracao\Ollama\instalacao.log.', mbError, MB_OK);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  Config, ConfigPath, NfePath, NfeText, AmbienteNome, AcbrIni: String;
+  Config, ConfigPath, NfePath, NfeText, AmbienteNome, AcbrIni, UpdaterParams, UpdaterJson: String;
   NfeRaw: AnsiString;
   AcbrAmbiente, ResultCode: Integer;
 begin
@@ -355,6 +451,17 @@ begin
   else
     MsgBox('Não foi possível abrir ' + NfePath + ' para definir o ambiente da NF-e.', mbError, MB_OK);
 
+  if Trim(CompanyEdit.Text) = '' then
+    CompanyEdit.Text := ConsultarEmpresa;
+
+  UpdaterParams := ExpandConstant('{app}\Updater\enrollment.json');
+  UpdaterJson := '{' + #13#10 +
+    '  "companyName": "' + JsonEscape(Trim(CompanyEdit.Text)) + '",' + #13#10 +
+    '  "enrollmentToken": "' + JsonEscape(Trim(TokenEdit.Text)) + '"' + #13#10 +
+    '}' + #13#10;
+  if not SaveStringToFile(UpdaterParams, UpdaterJson, False) then
+    MsgBox('Não foi possível salvar o registro da atualização automática em ' + UpdaterParams + '.', mbError, MB_OK);
+
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM ACBrMonitor64.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   AcbrIni := ExpandConstant('{sd}\ACBrMonitorPLUS\ACBrMonitor.ini');
   if FileExists(AcbrIni) then
@@ -378,6 +485,14 @@ begin
   begin
     Exec(ExpandConstant('{sys}\sc.exe'), 'stop {#ServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec(ExpandConstant('{sys}\sc.exe'), 'delete {#ServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  end;
+  if FileExists(ExpandConstant('{app}\Updater\UpdaterService.xml')) then
+    FileCopy(ExpandConstant('{app}\Updater\UpdaterService.xml'), ExpandConstant('{tmp}\UpdaterService.anterior.xml'), False);
+  if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\ErpAutoUpdater') then
+  begin
+    Exec(ExpandConstant('{sys}\sc.exe'), 'stop ErpAutoUpdater', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM UpdaterNode.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant('{sys}\sc.exe'), 'delete ErpAutoUpdater', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
   Result := '';
 end;

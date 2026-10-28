@@ -68,8 +68,8 @@ async function nextGeneratorValue(tx, generatorName) {
     "SELECT FIRST 1 TRIM(rdb$generator_name) AS NAME FROM rdb$generators WHERE TRIM(rdb$generator_name) = ?", [gen]
   );
   if (!exists) throw new Error("Generator Firebird nao encontrado: " + gen);
-  const row = await tx.singleton(`SELECT GEN_ID(${gen}, 1) AS VALUE FROM RDB$DATABASE`);
-  const value = Number(row?.VALUE);
+  const row = await tx.singleton(`SELECT GEN_ID(${gen}, 1) AS PROXIMO FROM RDB$DATABASE`);
+  const value = Number(row?.PROXIMO);
   if (!Number.isFinite(value)) throw new Error("Nao foi possivel obter o proximo valor de " + gen);
   return value;
 }
@@ -81,7 +81,15 @@ async function nextNfNumber(tx, idempresa) {
 // Colunas opcionais de CTARECEBER que podem nao existir no banco (varia por
 // instalacao/versao do ERP). Cache por processo: true = existe, false = nao.
 const colunasOkCache = {};
-const COLS_OPCIONAIS = ["CDVENDEDOR", "CCUSTO", "CDCONTA", "CDSUBCONTA", "ACORDO_NF", "PARCELA", "TOTALPG", "VLPAGTO", "VLPGLIQ", "DTPAGTO"];
+const COLS_OPCIONAIS = ["CDVENDEDOR", "CDVEND", "CCUSTO", "CDCONTA", "CDSUBCONTA", "ACORDO_NF", "PARCELA", "TOTALPG", "VLPAGTO", "VLPGLIQ", "DTPAGTO", "DTCOB"];
+
+// O Automec grava o vendedor em CDVEND e a data da baixa em DTCOB.
+// CDVENDEDOR, DTPAGTO e VLPAGTO aparecem em outras versoes ou em CTAPAGAR.
+export function expressaoColuna(existentes, nomes) {
+  const set = existentes instanceof Set ? existentes : new Set(existentes);
+  const nome = nomes.find((coluna) => set.has(coluna));
+  return nome ? `cr.${nome}` : "NULL";
+}
 
 async function testarColuna(tx, coluna) {
   if (coluna in colunasOkCache) return colunasOkCache[coluna];
@@ -95,6 +103,24 @@ async function testarColuna(tx, coluna) {
 }
 async function col(tx, coluna) {
   return (await testarColuna(tx, coluna)) ? coluna : "NULL";
+}
+async function expr(tx, nomes) {
+  const existentes = new Set();
+  for (const nome of nomes) {
+    if (await testarColuna(tx, nome)) existentes.add(nome);
+  }
+  return expressaoColuna(existentes, nomes);
+}
+async function exprTabela(tx, tabela, nomes) {
+  for (const nome of nomes) {
+    const rows = await tx.query(
+      "SELECT FIRST 1 TRIM(rf.RDB$FIELD_NAME) AS COL FROM RDB$RELATION_FIELDS rf" +
+      " WHERE TRIM(rf.RDB$RELATION_NAME) = ? AND TRIM(rf.RDB$FIELD_NAME) = ?",
+      [tabela, nome]
+    );
+    if (rows.length) return nome;
+  }
+  return null;
 }
 
 async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
@@ -118,7 +144,7 @@ async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
     filtro = ` AND cr.CDCLIENTE NOT IN (${excluidos.map(() => "?").join(",")})`;
     params.push(...excluidos);
   }
-  const cdvendedor = await col(tx, "CDVENDEDOR");
+  const cdvendedor = await expr(tx, ["CDVENDEDOR", "CDVEND"]);
   const ccusto = await col(tx, "CCUSTO");
   const cdconta = await col(tx, "CDCONTA");
   const cdsubconta = await col(tx, "CDSUBCONTA");
@@ -126,9 +152,14 @@ async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
   const totalpg = await col(tx, "TOTALPG");
   const vlpagto = await col(tx, "VLPAGTO");
   const vlpgliq = await col(tx, "VLPGLIQ");
-  const dtpagto = await col(tx, "DTPAGTO");
+  const dtpagto = await expr(tx, ["DTPAGTO", "DTCOB"]);
   const valorTitulo = "COALESCE(cr.VALOR, cr.DIVIDA, 0)";
   const valorPago = `COALESCE(NULLIF(${totalpg}, 0), NULLIF(${vlpagto}, 0), NULLIF(${vlpgliq}, 0), 0)`;
+  // DTCOB no Automec fica 30/12/1899 enquanto o titulo nao foi baixado.
+  // So DTPAGTO, quando existe, significa baixa. Sem ele, o saldo decide.
+  const dataPagamento = dtpagto === "NULL"
+    ? "NULL"
+    : `CASE WHEN ${dtpagto} IS NULL OR ${dtpagto} < DATE '1900-01-01' THEN NULL ELSE CAST(${dtpagto} AS DATE) END`;
   const filtroQuitado = (await testarColuna(tx, "DTPAGTO"))
     ? "   AND cr.DTPAGTO IS NULL"
     : `   AND ABS(${valorTitulo}) > ABS(${valorPago}) + 0.009`;
@@ -139,7 +170,7 @@ async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
     " cr.NRPEDIDO," +
     " CAST(cr.DTMOV AS DATE) AS DTMOV," +
     " CAST(cr.DTVENC AS DATE) AS DTVENC," +
-    ` CAST(${dtpagto} AS DATE) AS DTPAGTO,` +
+    ` ${dataPagamento} AS DTPAGTO,` +
     ` ${valorTitulo} AS VALOR,` +
     ` ${valorPago} AS VALOR_PAGO,` +
     ` ${parcela} AS PARCELA,` +
@@ -323,10 +354,12 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
         let cdvendedorNf = intOrNone(tituloRef.CDVENDEDOR);
         const phPedidos = pedidos.map(() => "?").join(",");
         for (const tabela of ["SAIDAESTOQUE", "SAIDAPRODUTO"]) {
+          const colunaVend = await exprTabela(tx, tabela, ["CDVENDEDOR", "CDVEND"]);
+          if (!colunaVend) continue;
           try {
             const vrow = (await tx.query(
-              `SELECT FIRST 1 se.CDVENDEDOR FROM ${tabela} se` +
-              ` WHERE se.IDEMPRESA = ? AND se.NRPEDIDO IN (${phPedidos}) AND se.CDVENDEDOR IS NOT NULL`,
+              `SELECT FIRST 1 se.${colunaVend} AS CDVENDEDOR FROM ${tabela} se` +
+              ` WHERE se.IDEMPRESA = ? AND se.NRPEDIDO IN (${phPedidos}) AND se.${colunaVend} IS NOT NULL`,
               [idempresa, ...pedidos]
             ))[0];
             if (vrow && vrow.CDVENDEDOR !== null && vrow.CDVENDEDOR !== undefined) {

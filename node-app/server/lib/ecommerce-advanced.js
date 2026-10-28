@@ -13,6 +13,10 @@ const num = (value) => { if (value === null || value === undefined || value === 
 const id = (prefix, key) => `${prefix}-${crypto.createHash("sha256").update(String(key)).digest("hex").slice(0, 12)}`;
 const margin = (price, cost) => price > 0 && cost !== null ? ((price - cost) / price) * 100 : null;
 
+function valorLido(valor) {
+  return valor != null && Number.isFinite(Number(valor)) ? Number(valor) : null;
+}
+
 function productSales(store) {
   const map = new Map();
   for (const order of Object.values(store.orders || {})) {
@@ -20,14 +24,34 @@ function productSales(store) {
     for (const item of order.items || []) {
       const key = item.externalId || item.reference;
       if (!key) continue;
-      const current = map.get(key) || { quantity: 0, revenue: 0, lastSaleAt: null, channels: {} };
-      current.quantity += Number(item.quantity || 0); current.revenue += Number(item.total || 0);
+      const current = map.get(key) || { linhas: 0, comQuantidade: 0, quantidade: 0, comValor: 0, soma: 0, lastSaleAt: null, channels: {} };
+      current.linhas += 1;
+      const quantidade = valorLido(item.quantity);
+      const total = valorLido(item.total);
+      if (quantidade != null) {
+        current.comQuantidade += 1;
+        current.quantidade += quantidade;
+      }
+      if (total != null) {
+        current.comValor += 1;
+        current.soma += total;
+      }
       current.lastSaleAt = !current.lastSaleAt || String(order.date) > current.lastSaleAt ? order.date : current.lastSaleAt;
-      current.channels[order.marketplace] = (current.channels[order.marketplace] || 0) + Number(item.quantity || 0);
+      const canal = order.marketplace || "Loja virtual Tray";
+      if (current.channels[canal] !== null) current.channels[canal] = quantidade == null ? null : (current.channels[canal] || 0) + quantidade;
       map.set(key, current);
     }
   }
-  return map;
+  const fechado = new Map();
+  for (const [key, current] of map) {
+    fechado.set(key, {
+      quantity: current.comQuantidade === current.linhas ? current.quantidade : null,
+      revenue: current.comValor === current.linhas ? current.soma : null,
+      lastSaleAt: current.lastSaleAt,
+      channels: current.channels,
+    });
+  }
+  return fechado;
 }
 
 export function analyzeEcommerceAdvanced(store = readEcommerceStore(), control = read(), options = {}) {
@@ -35,28 +59,36 @@ export function analyzeEcommerceAdvanced(store = readEcommerceStore(), control =
   const products = Object.values(store.products || {}).map((product) => {
     const sold = sales.get(product.externalId) || { quantity: 0, revenue: 0, lastSaleAt: null, channels: {} };
     const contributionMargin = margin(num(product.price), num(product.cost));
-    const dailyDemand = sold.quantity / 90;
-    const coverageDays = dailyDemand > 0 && product.stock !== null ? Number(product.stock) / dailyDemand : null;
-    const risk = coverageDays !== null && coverageDays < 15 ? "high" : coverageDays !== null && coverageDays < 30 ? "medium" : "low";
+    const dailyDemand = sold.quantity == null ? null : sold.quantity / 90;
+    const coverageDays = dailyDemand > 0 && product.stock !== null && product.stock !== undefined ? Number(product.stock) / dailyDemand : null;
+    const risk = sold.quantity == null ? null : coverageDays == null ? "low" : coverageDays < 15 ? "high" : coverageDays < 30 ? "medium" : "low";
     return { ...product, ...sold, contributionMargin, dailyDemand, coverageDays, stockRisk: risk, estimated: true };
   });
   const opportunities = [];
   for (const product of products) {
-    if (product.contributionMargin !== null && product.contributionMargin < 0) opportunities.push({ key: `negative-margin:${product.externalId}`, productId: product.externalId, product, type: "pricing", priority: "critical", description: `${product.name} apresenta margem de contribuição estimada negativa.`, potentialValue: Math.abs((product.price - product.cost) * product.quantity), confidence: "high", evidence: { price: product.price, cost: product.cost, margin: product.contributionMargin }, recommendation: "Revisar preço e custos antes de novas vendas." });
+    if (product.contributionMargin !== null && product.contributionMargin < 0) opportunities.push({ key: `negative-margin:${product.externalId}`, productId: product.externalId, product, type: "pricing", priority: "critical", description: `${product.name} apresenta margem de contribuição estimada negativa.`, potentialValue: product.quantity == null ? null : Math.abs((product.price - product.cost) * product.quantity), confidence: "high", evidence: { price: product.price, cost: product.cost, margin: product.contributionMargin }, recommendation: "Revisar preço e custos antes de novas vendas." });
     else if (product.contributionMargin !== null && product.contributionMargin < control.settings.minimumMargin) opportunities.push({ key: `low-margin:${product.externalId}`, productId: product.externalId, product, type: "pricing", priority: "high", description: `${product.name} está abaixo da margem mínima configurada.`, potentialValue: null, confidence: "high", evidence: { margin: product.contributionMargin, target: control.settings.minimumMargin }, recommendation: "Simular reajuste dentro dos limites autorizados." });
-    if (product.stockRisk === "high") opportunities.push({ key: `rupture:${product.externalId}`, productId: product.externalId, product, type: "inventory", priority: "critical", description: `${product.name} pode ficar sem estoque antes de 15 dias.`, potentialValue: product.dailyDemand * product.price * 15, confidence: product.quantity >= 3 ? "medium" : "low", evidence: { stock: product.stock, dailyDemand: product.dailyDemand, coverageDays: product.coverageDays }, recommendation: "Preparar solicitação de compra para aprovação." });
+    if (product.stockRisk === "high") opportunities.push({ key: `rupture:${product.externalId}`, productId: product.externalId, product, type: "inventory", priority: "critical", description: `${product.name} pode ficar sem estoque antes de 15 dias.`, potentialValue: product.dailyDemand == null || num(product.price) == null ? null : product.dailyDemand * Number(product.price) * 15, confidence: product.quantity >= 3 ? "medium" : "low", evidence: { stock: product.stock, dailyDemand: product.dailyDemand, coverageDays: product.coverageDays }, recommendation: "Preparar solicitação de compra para aprovação." });
     if (product.stock > 0 && product.quantity === 0) opportunities.push({ key: `idle:${product.externalId}`, productId: product.externalId, product, type: "campaign", priority: "medium", description: `${product.name} possui estoque e nenhuma venda no histórico sincronizado.`, potentialValue: null, confidence: "medium", evidence: { stock: product.stock, synchronizedHistory: true }, recommendation: "Avaliar campanha sem reduzir a margem mínima." });
   }
   const customerOrders = new Map();
   for (const order of Object.values(store.orders || {})) {
     if (!order.customerId || /cancel/i.test(order.status) || !order.date) continue;
-    const current = customerOrders.get(order.customerId) || { customerId: order.customerId, customerName: order.customerName, dates: [], revenue: 0 };
-    current.dates.push(String(order.date)); current.revenue += Number(order.total || 0); customerOrders.set(order.customerId, current);
+    const current = customerOrders.get(order.customerId) || { customerId: order.customerId, customerName: order.customerName, dates: [], pedidos: 0, comValor: 0, soma: 0 };
+    current.pedidos += 1;
+    current.dates.push(String(order.date));
+    const total = valorLido(order.total);
+    if (total != null) {
+      current.comValor += 1;
+      current.soma += total;
+    }
+    customerOrders.set(order.customerId, current);
   }
   const cutoff = Date.now() - control.settings.inactiveCustomerDays * 86400000;
   for (const customer of customerOrders.values()) {
     customer.dates.sort(); const lastPurchaseAt = customer.dates.at(-1); const lastTime = Date.parse(String(lastPurchaseAt).replace(" ", "T"));
-    if (customer.dates.length >= 2 && Number.isFinite(lastTime) && lastTime < cutoff) opportunities.push({ key: `customer-recovery:${customer.customerId}`, customerId: customer.customerId, type: "customer_recovery", priority: "medium", description: `${customer.customerName || `Cliente ${customer.customerId}`} não compra há mais de ${control.settings.inactiveCustomerDays} dias.`, potentialValue: customer.revenue / customer.dates.length, confidence: "medium", evidence: { lastPurchaseAt, priorOrders: customer.dates.length, historicalAverage: customer.revenue / customer.dates.length }, recommendation: "Criar tarefa no CRM e preparar contato conforme consentimento e preferências." });
+    const media = customer.comValor === customer.pedidos && customer.dates.length ? customer.soma / customer.dates.length : null;
+    if (customer.dates.length >= 2 && Number.isFinite(lastTime) && lastTime < cutoff) opportunities.push({ key: `customer-recovery:${customer.customerId}`, customerId: customer.customerId, type: "customer_recovery", priority: "medium", description: `${customer.customerName || `Cliente ${customer.customerId}`} não compra há mais de ${control.settings.inactiveCustomerDays} dias.`, potentialValue: media, confidence: "medium", evidence: { lastPurchaseAt, priorOrders: customer.dates.length, historicalAverage: media }, recommendation: "Criar tarefa no CRM e preparar contato conforme consentimento e preferências." });
   }
   const now = new Date().toISOString();
   for (const candidate of opportunities) {
@@ -136,12 +168,22 @@ export function prepareCampaign(input = {}, actor = {}) {
 export function ecommerceResults(state = read()) {
   const actions = Object.values(state.actions); const opportunities = Object.values(state.opportunities);
   const executed = actions.filter((item) => item.status === "executed");
-  return { opportunities: opportunities.length, convertedOpportunities: opportunities.filter((item) => item.status === "converted").length, actions: actions.length, executedActions: executed.length, rejectedActions: actions.filter((item) => item.status === "rejected").length, successfulActions: executed.filter((item) => item.result?.ok !== false).length, campaigns: Object.values(state.campaigns).length, observedRevenue: executed.reduce((sum, item) => sum + Number(item.result?.observedRevenue || 0), 0), estimatedRevenue: opportunities.reduce((sum, item) => sum + Number(item.potentialValue || 0), 0), attributionNotice: "Estimativas são separadas de resultados observados e não atribuem automaticamente vendas ao Charlie." };
+  const receitasObservadas = executed.map((item) => valorLido(item.result?.observedRevenue));
+  const potenciais = opportunities.map((item) => valorLido(item.potentialValue));
+  const potencialIncompleto = potenciais.some((item) => item == null);
+  return { opportunities: opportunities.length, convertedOpportunities: opportunities.filter((item) => item.status === "converted").length, actions: actions.length, executedActions: executed.length, rejectedActions: actions.filter((item) => item.status === "rejected").length, successfulActions: executed.filter((item) => item.result?.ok !== false).length, campaigns: Object.values(state.campaigns).length, observedRevenue: receitasObservadas.some((item) => item == null) ? null : receitasObservadas.reduce((sum, item) => sum + item, 0), estimatedRevenue: potenciais.reduce((sum, item) => sum + (item == null ? 0 : item), 0), estimatedRevenueObservacao: potencialIncompleto ? "A soma usa só as oportunidades que têm valor." : null, attributionNotice: "Estimativas são separadas de resultados observados e não atribuem automaticamente vendas ao Charlie." };
+}
+
+export function faturamentoDoDia(orders = [], day) {
+  const dayOrders = orders.filter((item) => String(item.date || "").slice(0, 10) === day && !/cancel/i.test(item.status || ""));
+  const completos = dayOrders.map((item) => valorLido(item.total));
+  return { orders: dayOrders.length, revenue: completos.some((item) => item == null) ? null : completos.reduce((sum, item) => sum + item, 0) };
 }
 
 export function ecommerceDailyReport(analysis = analyzeEcommerceAdvanced()) {
   const store = readEcommerceStore(); const orders = Object.values(store.orders); const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); const day = yesterday.toISOString().slice(0, 10);
-  const dayOrders = orders.filter((item) => String(item.date || "").slice(0, 10) === day && !/cancel/i.test(item.status));
-  const revenue = dayOrders.reduce((sum, item) => sum + Number(item.total || 0), 0);
-  return { title: "CHARLIE — RELATÓRIO DIÁRIO DO E-COMMERCE", date: day, revenue, orders: dayOrders.length, negativeMargin: analysis.products.filter((item) => item.contributionMargin !== null && item.contributionMargin < 0).length, ruptureRisk: analysis.products.filter((item) => item.stockRisk === "high").length, opportunities: analysis.opportunities.filter((item) => !["converted", "dismissed"].includes(item.status)).length, limitations: ["Comparações históricas exigem janela sincronizada suficiente.", "Margens são estimativas quando impostos e taxas do canal não estão disponíveis."], generatedAt: new Date().toISOString() };
+  const dia = faturamentoDoDia(orders, day);
+  const limitations = ["Comparações históricas exigem janela sincronizada suficiente.", "Margens são estimativas quando impostos e taxas do canal não estão disponíveis."];
+  if (dia.revenue == null) limitations.push("Há pedido do dia sem valor. O faturamento não foi somado.");
+  return { title: "CHARLIE — RELATÓRIO DIÁRIO DO E-COMMERCE", date: day, revenue: dia.revenue, orders: dia.orders, negativeMargin: analysis.products.filter((item) => item.contributionMargin !== null && item.contributionMargin < 0).length, ruptureRisk: analysis.products.filter((item) => item.stockRisk === "high").length, opportunities: analysis.opportunities.filter((item) => !["converted", "dismissed"].includes(item.status)).length, limitations, generatedAt: new Date().toISOString() };
 }

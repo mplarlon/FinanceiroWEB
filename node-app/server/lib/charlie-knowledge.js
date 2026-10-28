@@ -15,7 +15,7 @@ const RULES = [
     id: "venda-efetiva",
     temas: ["venda", "vendas", "fatur", "pedido", "vendedor"],
     tabelas: ["SAIDAESTOQUE", "SAIDAPRODUTO", "CLIENTE", "VENDEDOR", "PRODUTO"],
-    texto: "Venda efetiva: SAIDAESTOQUE.DTCANCELAMENTO IS NULL e SAIDAPRODUTO com COALESCE(STATUSSE,0)=0. Data: SAIDAESTOQUE.DTSAIDA. Valor do item: COALESCE(SAIDAPRODUTO.SUBTOTAL,SAIDAPRODUTO.TOTAL,SAIDAPRODUTO.QTDPRODUTO*SAIDAPRODUTO.VLUNIT,0). Vendedor: SAIDAESTOQUE.CDVENDEDOR = VENDEDOR.CDVENDEDOR. Cliente: SAIDAESTOQUE.CDCLIENTE = CLIENTE.CDCLIENTE. Itens ligam por NRPEDIDO e IDEMPRESA.",
+    texto: "Venda efetiva: SAIDAESTOQUE.DTCANCELAMENTO IS NULL e SAIDAPRODUTO com COALESCE(STATUSSE,0)=0. Data: SAIDAESTOQUE.DTSAIDA. Valor do item: SUBTOTAL, depois TOTAL, depois quantidade vezes VLUNIT somente quando os dois existem. Item sem esses valores não entra como zero. Vendedor: SAIDAESTOQUE.CDVENDEDOR = VENDEDOR.CDVENDEDOR. Cliente: SAIDAESTOQUE.CDCLIENTE = CLIENTE.CDCLIENTE. Itens ligam por NRPEDIDO e IDEMPRESA.",
   },
   {
     id: "nota-fiscal",

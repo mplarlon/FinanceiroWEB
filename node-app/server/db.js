@@ -104,12 +104,19 @@ export async function withWriteTransaction(action, config) {
     const tx = {
       execute: (sql, params = []) => db.execute(transaction, sql, params),
       query: async (sql, params = []) => {
-        const resultSet = await db.executeQuery(transaction, sql, params);
+        // INSERT/UPDATE/DELETE ... RETURNING não abre cursor no Firebird.
+        // executeQuery nesse caso falha com "Cursor is not open".
+        const statement = await db.prepare(transaction, sql);
         try {
+          if (!statement.hasResultSet) {
+            const row = await statement.executeSingletonAsObject(transaction, params);
+            return row && Object.keys(row).length ? [normalizeRow(row)] : [];
+          }
+          const resultSet = await statement.executeQuery(transaction, params);
           const rows = await resultSet.fetchAsObject();
           return rows.map(normalizeRow);
         } finally {
-          if (resultSet.isValid) await resultSet.close();
+          if (statement.isValid) await statement.dispose();
         }
       },
       singleton: async (sql, params = []) => {

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api.js";
+import { trayProductPhoto } from "../../../server/lib/tray-product-photo.js";
 import TrayProductStudio from "../components/TrayProductStudio.jsx";
-import CharlieLeads from "./CharlieLeads.jsx";
-import EcommerceIntelligence from "./EcommerceIntelligence.jsx";
+import CharlieSalesShell from "./CharlieSalesShell.jsx";
 
 const emptyConfig = { api_address: "", store_host: "", store_id: "", consumer_key: "", consumer_secret: "", access_token: "", refresh_token: "", webhook_secret: "", auto_sync: false, sync_interval_minutes: 15 };
 const money = (value) => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const dateTime = (value) => value ? new Date(value).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" }) : "Ainda não executada";
+const connectionDetail = (estado) => {
+  const erro = String(estado?.erro || "");
+  if (/unauthorized access/i.test(erro)) return "A renovação automática não foi aceita pela Tray. Autorize o aplicativo novamente.";
+  return erro || `Última sincronização: ${dateTime(estado?.ultima_sincronizacao)}`;
+};
 
 export default function TrayIntegration() {
-  const [access, setAccess] = useState(null);
-  const [password, setPassword] = useState("");
-  const [accessError, setAccessError] = useState("");
   const [config, setConfig] = useState(emptyConfig);
   const [meta, setMeta] = useState({ conectado: false, estado: {} });
   const [summary, setSummary] = useState(null);
@@ -19,41 +21,23 @@ export default function TrayIntegration() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [authCode, setAuthCode] = useState("");
-  const [secao, setSecao] = useState("intelligence");
 
   async function load() {
     try {
       const data = await api.get("/tray/config");
       setConfig((current) => ({ ...current, ...data.config }));
       setMeta({ conectado: data.conectado, estado: data.estado || {} });
-      if (data.conectado) {
+      if (!data.conectado) return;
+      try {
         const result = await api.get("/tray/resumo");
         setSummary(result);
         setMeta((current) => ({ ...current, estado: result.estado || current.estado }));
+      } catch (e) {
+        setMeta((current) => ({ ...current, estado: { ...current.estado, status: "erro", erro: e.message } }));
       }
     } catch (e) { setError(e.message); }
   }
-  useEffect(() => {
-    api.get("/tray/acesso")
-      .then((data) => setAccess(Boolean(data.liberado)))
-      .catch((cause) => { setAccess(false); setAccessError(cause.message); });
-  }, []);
-  useEffect(() => { if (access) load(); }, [access]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function unlock(event) {
-    event.preventDefault();
-    setBusy("access");
-    setAccessError("");
-    try {
-      await api.post("/tray/acesso", { senha: password });
-      setPassword("");
-      setAccess(true);
-    } catch (cause) {
-      setAccessError(cause.message);
-    } finally {
-      setBusy("");
-    }
-  }
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function save(event) {
     event.preventDefault(); setBusy("save"); setError(""); setMessage("");
@@ -86,12 +70,6 @@ export default function TrayIntegration() {
     } catch (e) { setError(e.message); }
     finally { setBusy(""); }
   }
-  async function renew() {
-    setBusy("renew"); setError("");
-    try { const data = await api.post("/tray/renovar-token"); setConfig((current) => ({ ...current, ...data.config })); setMessage(data.mensagem); }
-    catch (e) { setError(e.message); }
-    finally { setBusy(""); }
-  }
   async function editProduct(product) {
     const stock = window.prompt(`Novo estoque de ${product.name || product.id}:`, product.stock ?? "");
     if (stock === null) return;
@@ -112,50 +90,18 @@ export default function TrayIntegration() {
   }
   const set = (field) => (event) => setConfig((current) => ({ ...current, [field]: event.target.value }));
 
-  if (access === null)
-    return <div className="tray-access"><section className="panel"><p>Verificando acesso ao e-commerce...</p></section></div>;
-
-  if (!access)
-    return (
-      <div className="tray-access">
-        <form className="panel" onSubmit={unlock}>
-          <span className="tray-kicker">ÁREA PROTEGIDA</span>
-          <h2>Abrir e-commerce</h2>
-          <p>Informe a senha para acessar pedidos, produtos e configurações da Tray.</p>
-          <label>
-            Senha
-            <input
-              type="password"
-              inputMode="numeric"
-              autoFocus
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </label>
-          <button disabled={busy === "access"}>{busy === "access" ? "Verificando..." : "Entrar"}</button>
-          {accessError && <div className="error">{accessError}</div>}
-        </form>
-      </div>
-    );
-
   return (
-    <div className="tray-page">
-      <nav className="tray-sections" aria-label="Seções do e-commerce">
-        <button type="button" className={secao === "intelligence" ? "ativo" : ""} onClick={() => setSecao("intelligence")}>Charlie E-Commerce Intelligence</button>
-        <button type="button" className={secao === "loja" ? "ativo" : ""} onClick={() => setSecao("loja")}>Loja Tray</button>
-        <button type="button" className={secao === "leads" ? "ativo" : ""} onClick={() => setSecao("leads")}>Charlie Leads</button>
-      </nav>
-      {secao === "leads" ? <CharlieLeads /> : secao === "intelligence" ? <EcommerceIntelligence connected={meta.conectado} onSynchronized={load} /> : <>
+    <CharlieSalesShell connected={meta.conectado} onSynchronized={load}>
+      <>
       <section className="tray-hero">
         <div>
-          <span className="tray-kicker">E-COMMERCE CONECTADO</span>
-          <h2>Integração Tray</h2>
+          <span className="tray-kicker">LOJA CONECTADA</span>
+          <h2>Loja Tray</h2>
           <p>Centralize pedidos, produtos e clientes da sua loja virtual dentro do Pontual Financeiro.</p>
         </div>
-        <div className={`tray-status ${meta.conectado ? "online" : "offline"}`}>
+        <div className={`tray-status ${meta.conectado && meta.estado?.status !== "erro" ? "online" : "offline"}`}>
           <i />
-          <span><b>{meta.conectado ? "Integração configurada" : "Aguardando configuração"}</b><small>Última sincronização: {dateTime(meta.estado?.ultima_sincronizacao)}</small></span>
+          <span><b>{meta.conectado ? "Integração configurada" : "Aguardando configuração"}</b><small>{connectionDetail(meta.estado)}</small></span>
         </div>
       </section>
 
@@ -189,8 +135,8 @@ export default function TrayIntegration() {
           </form>
           <div className="tray-oauth">
             <h3>Autorizar aplicativo via OAuth 2.0</h3>
-            <p>Depois de instalar o aplicativo na Tray, copie o parâmetro <b>code</b> recebido no callback e troque-o por tokens aqui.</p>
-            <div><input value={authCode} onChange={(e) => setAuthCode(e.target.value)} placeholder="Código de autorização" /><button type="button" onClick={authorize} disabled={Boolean(busy)}>{busy === "auth" ? "Autorizando..." : "Autorizar"}</button>{config.has_refresh_token && <button type="button" className="secondary" onClick={renew} disabled={Boolean(busy)}>{busy === "renew" ? "Renovando..." : "Renovar token"}</button>}</div>
+            <p>O access token é renovado automaticamente, sem interromper o uso. O código abaixo só é necessário na instalação do aplicativo.</p>
+            <div><input value={authCode} onChange={(e) => setAuthCode(e.target.value)} placeholder="Código de autorização" /><button type="button" onClick={authorize} disabled={Boolean(busy)}>{busy === "auth" ? "Autorizando..." : "Autorizar"}</button></div>
           </div>
           {message && <div className="tray-message success">✓ {message}</div>}
           {error && <div className="error">{error}</div>}
@@ -220,10 +166,13 @@ export default function TrayIntegration() {
       )}
       {summary?.produtos?.length > 0 && (
         <section className="panel tray-orders"><header><div><span className="tray-step">04</span><h2>Catálogo e estoque</h2></div><small>Atualização direta na Tray</small></header><div className="table-scroll"><table className="tabela"><thead><tr><th>Produto</th><th>Referência</th><th>Estoque</th><th className="money-cell">Preço</th><th>Ação</th></tr></thead><tbody>
-          {summary.produtos.map((product) => <tr key={product.id}><td><b>{product.name || `Produto ${product.id}`}</b></td><td>{product.reference || "-"}</td><td>{product.stock ?? "-"}</td><td className="money-cell">{money(product.price)}</td><td><button className="tray-table-action" onClick={() => editProduct(product)} disabled={Boolean(busy)}>{busy === `product-${product.id}` ? "Salvando..." : "Editar"}</button></td></tr>)}
+          {summary.produtos.map((product) => {
+            const photo = trayProductPhoto(product);
+            return <tr key={product.id}><td><span className="tray-product-cell">{photo ? <img className="tray-product-photo" src={photo} alt="" /> : <span className="tray-product-photo tray-product-photo-empty" aria-hidden="true" />}<b>{product.name || `Produto ${product.id}`}</b></span></td><td>{product.reference || "-"}</td><td>{product.stock ?? "-"}</td><td className="money-cell">{money(product.price)}</td><td><button className="tray-table-action" onClick={() => editProduct(product)} disabled={Boolean(busy)}>{busy === `product-${product.id}` ? "Salvando..." : "Editar"}</button></td></tr>;
+          })}
         </tbody></table></div></section>
       )}
-      </>}
-    </div>
+      </>
+    </CharlieSalesShell>
   );
 }

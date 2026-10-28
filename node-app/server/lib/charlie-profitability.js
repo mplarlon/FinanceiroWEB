@@ -1,5 +1,6 @@
 import { query } from "../db.js";
 import { saleItemCost } from "./sale-cost.js";
+import { ITEM_VALOR_SQL } from "./charlie-sale-value.js";
 
 const n = (value) => {
   const parsed = Number(value);
@@ -106,7 +107,7 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
       COALESCE(c.CLIENTE,c.RAZAO,'Cliente') CLIENTE, se.CDVENDEDOR,
       COALESCE(v.VENDEDOR,'Sem vendedor') VENDEDOR, sp.CDPRODUTO,
       COALESCE(p.PRODUTO,sp.DESCRICAO,'Produto') PRODUTO, sp.QTDPRODUTO QUANTIDADE,
-      COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) RECEITA,
+      ${ITEM_VALOR_SQL} RECEITA,
       COALESCE(sp.DESCONTO,0) DESCONTO,
       COALESCE(sp.QTDPRODUTO,0)*${custoItem} CUSTO,
       CASE WHEN ${custoItem}>0 THEN 1 ELSE 0 END CUSTO_HISTORICO,
@@ -131,7 +132,12 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
     grouped.get(key).push(row);
   }
   const occurrences = [];
+  let receitaIncompleta = 0;
   for (const saleRows of grouped.values()) {
+    if (saleRows.some((row) => row.RECEITA == null)) {
+      receitaIncompleta += 1;
+      continue;
+    }
     const freightPaid = allocateAmount(saleRows[0].FRETE_PAGO, saleRows.map((row) => ({ revenue: row.RECEITA })));
     const freightCharged = allocateAmount(saleRows[0].FRETE_COBRADO, saleRows.map((row) => ({ revenue: row.RECEITA })));
     saleRows.forEach((row, index) => {
@@ -221,6 +227,7 @@ export async function profitabilityDashboard(db, actor = {}, options = {}) {
       "Custos ausentes no item não são substituídos silenciosamente pelo custo atual.",
       "Campanhas e autorizações comerciais dependem de cadastro estruturado para validação automática.",
       "No estoque parado, ausência de última venda significa que não houve venda no período analisado; a data histórica anterior não é inferida.",
+      ...(receitaIncompleta ? ["Há item sem valor. Essa venda não entrou na margem."] : []),
     ],
   };
 }

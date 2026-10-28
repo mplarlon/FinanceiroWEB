@@ -149,7 +149,7 @@ export async function responderLeads(pergunta, ator, deps = {}, contexto = {}) {
         filtro.desde = inicio.toISOString();
       }
       const leads = listarLeads(filtro, ator);
-      return resposta(leads.length ? `Encontrei ${leads.length} lead(s) no cadastro do Charlie Leads.` : "Não há leads nesses critérios.", leads, { acao: comando.acao, origem: "banco" });
+      return resposta(leads.length ? `Encontrei ${leads.length} contato(s) no cadastro.` : "Não há contatos nesses critérios.", leads, { acao: comando.acao, origem: "banco" });
     }
     if (comando.acao === "leads.qualificar_lead") {
       const inicio = new Date();
@@ -157,11 +157,11 @@ export async function responderLeads(pergunta, ator, deps = {}, contexto = {}) {
       const leads = listarLeads({ desde: inicio.toISOString(), ordem: "score" }, ator).slice(0, 20);
       const analisados = [];
       for (const lead of leads) analisados.push(await analisarLead(lead.id, ator, deps));
-      return resposta(analisados.length ? `Analisei ${analisados.length} lead(s) encontrado(s) hoje. A pontuação é determinística; o texto só organiza os motivos já calculados.` : "Não há leads encontrados hoje para analisar.", analisados, { acao: comando.acao, origem: "banco" });
+      return resposta(analisados.length ? `Analisei ${analisados.length} contato(s) encontrado(s) hoje. A pontuação segue a regra já calculada; o texto só organiza esses motivos.` : "Não há contatos encontrados hoje para analisar.", analisados, { acao: comando.acao, origem: "banco" });
     }
     if (comando.acao === "leads.atribuir_vendedor") {
       const resultado = await distribuirLeads({ quantidade: comando.criterios.quantidade }, ator);
-      return resposta(`Distribuí ${resultado.quantidade} lead(s) conforme as regras de vendedor. Nenhum lead que já tinha responsável foi reatribuído.`, [], { acao: comando.acao, origem: "banco" });
+      return resposta(`Distribuí ${resultado.quantidade} contato(s) conforme as regras de vendedor. Nenhum contato que já tinha responsável foi reatribuído.`, [], { acao: comando.acao, origem: "banco" });
     }
     if (comando.acao === "leads.verificar_saldo") {
       const saldo = await consultarSaldo(ator, deps);
@@ -171,7 +171,7 @@ export async function responderLeads(pergunta, ator, deps = {}, contexto = {}) {
     if (!ator?.gerencial) return resposta("A pesquisa na Casa dos Dados exige permissão gerencial.", [], { acao: comando.acao });
     const autorizado = estado.config.consultasPagasAutorizadas && estado.config.ativa && estado.config.apiKey;
     if (!autorizado) {
-      if (!estado.config.apiKey) return resposta("A API Key da Casa dos Dados ainda não está configurada. Nenhuma consulta foi feita. Abra E-commerce, Charlie Leads, Configurações, e grave a chave.", [], { acao: comando.acao });
+      if (!estado.config.apiKey) return resposta("A chave da Casa dos Dados ainda não está configurada. Nenhuma consulta foi feita. Abra Vendas, Contatos, Configurações, e grave a chave.", [], { acao: comando.acao });
       const id = crypto.randomUUID();
       await updateState((atual) => {
         atual.pendencias = atual.pendencias.filter((item) => Number(item.usuarioId) !== Number(ator.id));

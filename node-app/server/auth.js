@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { query, withDatabase } from "./db.js";
+import { exigirPrazo } from "./lib/prazo-acesso.js";
 
 // O ERP legado gravou senhas com mais de uma chave ao longo do tempo. A
 // primeira e a atual; as demais mantem compatibilidade com cadastros antigos
@@ -75,5 +76,8 @@ export async function authenticate(login, password) {
       idmenuitems: menuIds,
       menus: []
     };
+  }).then(async (usuario) => {
+    await exigirPrazo();
+    return usuario;
   });
 }

@@ -38,8 +38,9 @@ export async function answerUpdateQuestion(question) {
     const version = normalized.match(/\d+\.\d+\.\d+/)[0]; rows = fleet.installations.filter((item) => item.version === version);
     response = `${rows.length} instalação(ões) estão na versão ${version}.`;
   } else {
-    rows = fleet.installations.filter((item) => latest && item.version !== latest && !item.revokedAt);
-    response = latest ? `${rows.length} instalação(ões) estão abaixo da versão publicada mais recente (${latest}).` : "Ainda não existe uma versão publicada na central.";
+    rows = fleet.installations.filter((item) => item.outdated || (latest && item.version !== latest && !item.revokedAt));
+    const nomes = rows.slice(0, 12).map((item) => `${item.companyName || "Sem empresa"} — ${item.hostname || "máquina sem nome"} (${(item.addresses || []).join(", ") || "IP ainda não informado"}) na ${item.version || "versão desconhecida"}`);
+    response = latest ? `${rows.length} instalação(ões) estão abaixo da versão publicada mais recente (${latest}).${nomes.length ? ` ${nomes.join("; ")}.` : ""}` : "Ainda não existe uma versão publicada na central.";
   }
   return { resposta: response, intencao: { type: "atualizacoes_consulta", interpretador: "central_atualizacoes" }, dados: rows.slice(0, 200), origem: "central_atualizacoes", sugestoes: ["Quais clientes tiveram falha ou rollback?", "Quantas instalações usam a versão atual?"] };
 }

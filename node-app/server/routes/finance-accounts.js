@@ -4,6 +4,8 @@ import express from "express";
 import { dataDir } from "../config.js";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
 import { buildInstallments } from "../lib/account-parcels.js";
+import { interestDays, parcelInterest } from "../lib/finance-settlement.js";
+import { ITEM_VALOR_SQL } from "../lib/charlie-sale-value.js";
 
 const router = express.Router();
 const asInt = (value) =>
@@ -37,10 +39,16 @@ export function financeStatusLabel(
     return "Vencido";
   return FINANCE_STATUS[code] || `Status ${code}`;
 }
-export const agreementStatusSql = (type) =>
+export function sqlDate(value) {
+  const key = calendarDate(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(key))
+    throw Object.assign(new Error("Data invalida."), { status: 400 });
+  return `DATE '${key}'`;
+}
+export const agreementStatusSql = (type, due) =>
   type === "receber"
-    ? "UPDATE CTARECEBER SET STATUS=6,ACORDO=?,DTCOB=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1"
-    : "UPDATE CTAPAGAR SET STATUS=6,ACORDO=?,DTPAGTO=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1";
+    ? `UPDATE CTARECEBER SET STATUS=6,ACORDO=?,DTCOB=${sqlDate(due)},DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`
+    : `UPDATE CTAPAGAR SET STATUS=6,ACORDO=?,DTPAGTO=${sqlDate(due)},DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`;
 
 export function settlementInput(body = {}) {
   const date = String(body.data_pagamento || "").slice(0, 10);
@@ -242,10 +250,14 @@ export function newAccountInput(body = {}) {
     parcels: signedParcels,
     document,
     history: creditHistory(text(body.historico), credit),
-    paymentNumber: credit ? null : accountPaymentNumber(body.numero_pagamento),
-    payment: credit ? null : asInt(body.forma_pagamento),
+    paymentNumber:
+      credit && type === "pagar"
+        ? null
+        : accountPaymentNumber(body.numero_pagamento),
+    payment:
+      credit && type === "pagar" ? null : asInt(body.forma_pagamento),
     credit,
-    cash: credit ? null : asInt(body.caixa),
+    cash: credit && type === "pagar" ? null : asInt(body.caixa),
     costCenter: asInt(body.centro_custo),
     account: asInt(body.conta),
     subaccount: asInt(body.subconta),
@@ -262,13 +274,37 @@ export function calendarDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : "";
 }
 
+export function addCalendarDays(isoDate, days) {
+  const base = firebirdDate(isoDate);
+  if (!base) return "";
+  base.setDate(base.getDate() + (Number(days) || 0));
+  return calendarDate(base);
+}
+
+export function agreementPayableIdentity(agreementId, installment = 1) {
+  const invoice = `AC: ${Number(agreementId)}`.slice(0, 20);
+  const parcel = asInt(installment) || 1;
+  return {
+    NOTAFISCAL: invoice,
+    NRDOC: `${invoice}-${parcel}`.slice(0, 20),
+  };
+}
+
 export function overdueDays(due, paidOn) {
-  const dueKey = calendarDate(due);
-  const paidKey = calendarDate(paidOn);
-  if (!dueKey || !paidKey) return 0;
-  const dueDate = new Date(`${dueKey}T12:00:00`);
-  const paidDate = new Date(`${paidKey}T12:00:00`);
-  return Math.max(0, Math.floor((paidDate - dueDate) / 86400000));
+  return interestDays(due, paidOn);
+}
+export function wallClock(value) {
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    const pad = (part) => String(part).padStart(2, "0");
+    return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}T${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
+  }
+  const key = calendarDate(value);
+  return key ? `${key}T00:00:00` : "";
+}
+export function generatorAdvance(current, maxId) {
+  const now = Number(current) || 0;
+  const max = Number(maxId) || 0;
+  return now < max ? max - now : 0;
 }
 
 export function paymentFormSettlesPayable(form) {
@@ -284,14 +320,15 @@ export function creditHistory(history, credit) {
 
 export function accountLaunchValue(amount, type, credit) {
   const value = Math.round(Number(amount) * 100) / 100;
-  if (type === "pagar" && credit) return -Math.abs(value);
+  if (credit) return -Math.abs(value);
   return value;
 }
 
 export function manualReceivablePlan(form = {}, credit = false) {
-  if (credit) return { status: 3, settled: false, credit: true };
-  const settled = Number(form.STATUS) === 2;
-  return { status: settled ? 2 : 1, settled, credit: false };
+  const formStatus = Number(form.STATUS);
+  const status = [1, 2, 3].includes(formStatus) ? formStatus : 1;
+  const settled = status === 2;
+  return { status, settled, credit };
 }
 
 export function accountPaymentNumber(value) {
@@ -531,19 +568,64 @@ async function postPayableCash(tx, { company, cash, subject, amount, when, payme
   );
 }
 
+function accountSequence(table) {
+  if (table === "CTARECEBER") return "GEN_CTARECEBER";
+  if (table === "CTAPAGAR") return "GEN_CTAPAGAR";
+  throw Object.assign(new Error("Tabela financeira invalida."), { status: 400 });
+}
+async function syncAccountGenerator(tx, table) {
+  const sequence = accountSequence(table);
+  const maxId = Number((await tx.singleton(`SELECT COALESCE(MAX(CONTROLE),0) AS ID FROM ${table}`)).ID) || 0;
+  const current = Number((await tx.singleton(`SELECT GEN_ID(${sequence}, 0) AS ID FROM RDB$DATABASE`)).ID) || 0;
+  const advance = generatorAdvance(current, maxId);
+  if (advance > 0)
+    await tx.singleton(`SELECT GEN_ID(${sequence}, ${advance}) AS ID FROM RDB$DATABASE`);
+  return Math.max(current, maxId);
+}
+async function controlTriggerAssigns(tx, table) {
+  const name = table === "CTARECEBER" ? "TG_ID_CTARECEBER" : "TG_ID_CTAPAGAR";
+  const row = await tx.singleton(
+    "SELECT COALESCE(RDB$TRIGGER_INACTIVE,1) AS INATIVO FROM RDB$TRIGGERS WHERE TRIM(RDB$TRIGGER_NAME)=?",
+    [name],
+  );
+  return Boolean(row) && Number(row.INATIVO) === 0;
+}
 async function nextAccountControl(tx, table) {
-  const sequence = table === "CTARECEBER" ? "GEN_CTARECEBER" : "GEN_CTAPAGAR";
-  try {
-    const row = await tx.singleton(`SELECT NEXT VALUE FOR ${sequence} AS ID FROM RDB$DATABASE`);
-    const value = Number(row?.ID);
-    if (value > 0) {
-      const duplicate = await tx.singleton(`SELECT FIRST 1 1 AS OK FROM ${table} WHERE CONTROLE=?`, [value]);
-      if (!duplicate) return value;
-    }
-  } catch {
-    // Bancos Automec antigos podem nao possuir os generators padrao.
+  const sequence = accountSequence(table);
+  await syncAccountGenerator(tx, table);
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const value = Number((await tx.singleton(`SELECT GEN_ID(${sequence}, 1) AS ID FROM RDB$DATABASE`)).ID);
+    if (!Number.isInteger(value) || value <= 0) continue;
+    const duplicate = await tx.singleton(`SELECT FIRST 1 1 AS OK FROM ${table} WHERE CONTROLE=?`, [value]);
+    if (!duplicate) return value;
   }
-  return Number((await tx.singleton(`SELECT COALESCE(MAX(CONTROLE),0)+1 AS ID FROM ${table}`)).ID);
+  throw Object.assign(new Error("Nao foi possivel reservar o controle da conta."), { status: 409 });
+}
+
+async function nextLegacyAgreementNumber(tx, type, company) {
+  const table = type === "receber" ? "CTARECEBER" : "CTAPAGAR";
+  const row = await tx.singleton(
+    type === "receber"
+      ? "SELECT COALESCE(MAX(ACORDO),0) AS ID FROM CTARECEBER WHERE IDEMPRESA=?"
+      : "SELECT COALESCE(MAX(ACORDO),0) AS ID FROM CTAPAGAR",
+    type === "receber" ? [company] : [],
+  );
+  let id = (Number(row?.ID) || 0) + 1;
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const reserved = await tx.singleton(
+      "SELECT FIRST 1 1 AS OK FROM DASH_FIN_ACORDO WHERE IDACORDO=? AND TIPO=?",
+      [id, type],
+    );
+    const active = await tx.singleton(
+      type === "receber"
+        ? `SELECT FIRST 1 1 AS OK FROM ${table} WHERE ACORDO=? AND IDEMPRESA=?`
+        : `SELECT FIRST 1 1 AS OK FROM ${table} WHERE ACORDO=?`,
+      type === "receber" ? [id, company] : [id],
+    );
+    if (!reserved && !active) return id;
+    id += 1;
+  }
+  throw Object.assign(new Error("Nao foi possivel reservar o numero do acordo."), { status: 409 });
 }
 
 async function accountPaymentDefaults(tx, input) {
@@ -559,7 +641,8 @@ export function completeAccountInput(input, paymentDefaults = {}) {
   const pick = (provided, fallback) => provided ?? fallback ?? null;
   return {
     ...input,
-    cash: input.credit ? null : input.cash ?? 1,
+    cash:
+      input.credit && input.type === "pagar" ? null : input.cash ?? 1,
     costCenter: pick(input.costCenter, paymentDefaults.CCUSTO),
     account: pick(input.account, paymentDefaults.CDCONTA),
     subaccount: pick(input.subaccount, paymentDefaults.CDSUBCONTA),
@@ -570,7 +653,13 @@ export function completeAccountInput(input, paymentDefaults = {}) {
 }
 
 function receivePaymentGroup(input, paymentDefaults) {
-  return input.type === "receber" ? paymentDefaults.CDGRUPO ?? null : null;
+  return paymentDefaults.CDGRUPO ?? null;
+}
+
+export function payableDocumentNumber(invoice, installment = 1) {
+  const base = text(invoice).replace(/-\d+$/, "");
+  const parcel = asInt(installment) || 1;
+  return `${base}-${parcel}`.slice(0, 20);
 }
 async function ensureAgreementSchema(tx) {
   const has = async (kind, name) =>
@@ -595,6 +684,58 @@ async function ensureAgreementSchema(tx) {
     await tx.execute(
       "CREATE TABLE DASH_FIN_AUDIT (IDAUDIT BIGINT NOT NULL PRIMARY KEY,OPERACAO VARCHAR(30) NOT NULL,TIPO VARCHAR(10) NOT NULL,CONTROLE INTEGER,IDEMPRESA INTEGER,DETALHE VARCHAR(1000),USUARIO_ID INTEGER,DATAHORA TIMESTAMP NOT NULL)",
     );
+  const itemType = await tx.singleton(
+    "SELECT 1 AS OK FROM RDB$RELATION_FIELDS WHERE TRIM(RDB$RELATION_NAME)='DASH_FIN_ACORDO_ITEM' AND TRIM(RDB$FIELD_NAME)='TIPO'",
+  );
+  if (!itemType)
+    await tx.execute("ALTER TABLE DASH_FIN_ACORDO_ITEM ADD TIPO VARCHAR(10)");
+}
+async function agreementPrimaryColumns(tx, table) {
+  return tx.query(
+    "SELECT TRIM(s.RDB$FIELD_NAME) AS NAME FROM RDB$RELATION_CONSTRAINTS c JOIN RDB$INDEX_SEGMENTS s ON s.RDB$INDEX_NAME=c.RDB$INDEX_NAME WHERE TRIM(c.RDB$RELATION_NAME)=? AND c.RDB$CONSTRAINT_TYPE='PRIMARY KEY' ORDER BY s.RDB$FIELD_POSITION",
+    [table],
+  );
+}
+let agreementSchemaReady = false;
+async function prepareAgreementSchema() {
+  if (agreementSchemaReady) return;
+  await withWriteTransaction(ensureAgreementSchema);
+  await withWriteTransaction(backfillAgreementType);
+  await withWriteTransaction(widenAgreementKey);
+  agreementSchemaReady = true;
+}
+async function backfillAgreementType(tx) {
+  await tx.execute(
+    "UPDATE DASH_FIN_ACORDO_ITEM i SET TIPO=(SELECT a.TIPO FROM DASH_FIN_ACORDO a WHERE a.IDACORDO=i.IDACORDO) WHERE i.TIPO IS NULL",
+  );
+  await tx.execute("UPDATE DASH_FIN_ACORDO_ITEM SET TIPO='receber' WHERE TIPO IS NULL");
+}
+async function widenAgreementKey(tx) {
+  const header = (await agreementPrimaryColumns(tx, "DASH_FIN_ACORDO")).map((row) => row.NAME);
+  if (!header.includes("TIPO")) {
+    const pk = await tx.singleton(
+      "SELECT TRIM(RDB$CONSTRAINT_NAME) AS NAME FROM RDB$RELATION_CONSTRAINTS WHERE TRIM(RDB$RELATION_NAME)='DASH_FIN_ACORDO' AND RDB$CONSTRAINT_TYPE='PRIMARY KEY'",
+    );
+    if (pk?.NAME) {
+      await tx.execute(`ALTER TABLE DASH_FIN_ACORDO DROP CONSTRAINT ${pk.NAME}`);
+      await tx.execute(
+        "ALTER TABLE DASH_FIN_ACORDO ADD CONSTRAINT PK_DASH_FIN_ACORDO PRIMARY KEY (IDACORDO, TIPO)",
+      );
+    }
+  }
+  const item = (await agreementPrimaryColumns(tx, "DASH_FIN_ACORDO_ITEM")).map((row) => row.NAME);
+  if (!item.includes("TIPO")) {
+    await tx.execute("ALTER TABLE DASH_FIN_ACORDO_ITEM ALTER TIPO SET NOT NULL");
+    const pk = await tx.singleton(
+      "SELECT TRIM(RDB$CONSTRAINT_NAME) AS NAME FROM RDB$RELATION_CONSTRAINTS WHERE TRIM(RDB$RELATION_NAME)='DASH_FIN_ACORDO_ITEM' AND RDB$CONSTRAINT_TYPE='PRIMARY KEY'",
+    );
+    if (pk?.NAME) {
+      await tx.execute(`ALTER TABLE DASH_FIN_ACORDO_ITEM DROP CONSTRAINT ${pk.NAME}`);
+      await tx.execute(
+        "ALTER TABLE DASH_FIN_ACORDO_ITEM ADD CONSTRAINT PK_DASH_FIN_ACORDO_ITEM PRIMARY KEY (IDACORDO, TIPO, PAPEL, CONTROLE, IDEMPRESA)",
+      );
+    }
+  }
 }
 async function cloneAccount(tx, table, model, overrides) {
   const columns = (
@@ -610,10 +751,11 @@ async function cloneAccount(tx, table, model, overrides) {
       parts.push("?");
       params.push(overrides[column]);
     } else parts.push(column);
-  await tx.execute(
-    `INSERT INTO ${table} (${columns.join(",")}) SELECT ${parts.join(",")} FROM ${table} WHERE CONTROLE=? AND IDEMPRESA=?`,
+  const inserted = await tx.singleton(
+    `INSERT INTO ${table} (${columns.join(",")}) SELECT ${parts.join(",")} FROM ${table} WHERE CONTROLE=? AND IDEMPRESA=? RETURNING CONTROLE`,
     [...params, ...model],
   );
+  return Number(inserted?.CONTROLE) || null;
 }
 
 export function buildAccountFilters(type, input = {}) {
@@ -812,7 +954,7 @@ export function buildAccountFilters(type, input = {}) {
         : "p.FORNECEDOR",
       doc = receive
         ? "CAST(COALESCE(CAST(t.NRPEDIDO AS VARCHAR(20)),t.NRDOC,t.NRDOC2) AS VARCHAR(40))"
-        : "CAST(COALESCE(t.NOTAFISCAL,t.NRDOC,t.NRDOC2) AS VARCHAR(40))";
+        : "CAST(COALESCE(t.NRDOC,t.NOTAFISCAL,t.NRDOC2) AS VARCHAR(40))";
     where.push(
       `(UPPER(${person}) LIKE ? OR UPPER(COALESCE(t.HISTORICO,'')) LIKE ? OR UPPER(${doc}) LIKE ?)`,
     );
@@ -833,7 +975,7 @@ export async function accounts(db, type, args) {
       : "p.FORNECEDOR",
     doc = receive
       ? "CAST(COALESCE(CAST(t.NRPEDIDO AS VARCHAR(20)),t.NRDOC,t.NRDOC2) AS VARCHAR(40))"
-      : "CAST(COALESCE(t.NOTAFISCAL,t.NRDOC,t.NRDOC2) AS VARCHAR(40))",
+      : "CAST(COALESCE(t.NRDOC,t.NOTAFISCAL,t.NRDOC2) AS VARCHAR(40))",
     value = receive
       ? "COALESCE(t.VALOR,t.DIVIDA,0)"
       : "COALESCE(t.VALOR,t.TOTAL,0)",
@@ -855,12 +997,13 @@ export async function accounts(db, type, args) {
   try {
     dados = await query(
       db,
-      `SELECT FIRST 500 t.CONTROLE,t.IDEMPRESA,${personId} AS PESSOA_ID,${person} AS PESSOA,${doc} AS DOCUMENTO,t.PARCELA,CAST(t.DTVENC AS DATE) AS VENCIMENTO,CASE WHEN ${paidAt} IS NULL OR ${paidAt}<=CAST('1899-12-30' AS DATE) THEN NULL ELSE CAST(${paidAt} AS DATE) END AS DATA_BAIXA,${shown} AS VALOR,${paid} AS VALOR_PAGO,COALESCE(t.RETENCAO,0) AS RETENCAO,(${shown}-${paid}) AS SALDO,${receive ? "t.CAIXA" : "t.CDCAIXA"} AS CAIXA,t.STATUS,CASE WHEN t.STATUS=1 AND t.DTVENC<CURRENT_DATE THEN 'Vencido' WHEN t.STATUS=1 THEN 'Aberto' WHEN t.STATUS=2 THEN 'Quitado' WHEN t.STATUS=3 THEN 'Devolucao' WHEN t.STATUS=4 THEN 'Cancelado' WHEN t.STATUS=5 THEN 'Transferencia' WHEN t.STATUS=6 THEN 'Acordo' WHEN t.STATUS=7 THEN 'Acordo em nota fiscal' WHEN t.STATUS=8 THEN 'Acordo no recebimento' WHEN t.STATUS=9 THEN 'Excluido' ELSE 'Status '||CAST(t.STATUS AS VARCHAR(10)) END AS STATUS_TITULO,DATEDIFF(DAY,t.DTVENC,CURRENT_DATE) AS DIAS_ATRASO,t.ACORDO FROM ${table} t ${personJoin} WHERE ${where.join(" AND ")} ORDER BY ${order}`,
+      `SELECT FIRST 500 t.CONTROLE,t.IDEMPRESA,${personId} AS PESSOA_ID,${person} AS PESSOA,${doc} AS DOCUMENTO,t.PARCELA,t.DTVENC AS VENCIMENTO,CASE WHEN ${paidAt} IS NULL OR ${paidAt}<=CAST('1899-12-30' AS DATE) THEN NULL ELSE CAST(${paidAt} AS DATE) END AS DATA_BAIXA,${shown} AS VALOR,${paid} AS VALOR_PAGO,COALESCE(t.RETENCAO,0) AS RETENCAO,(${shown}-${paid}) AS SALDO,${receive ? "t.CAIXA" : "t.CDCAIXA"} AS CAIXA,t.STATUS,CASE WHEN t.STATUS=1 AND t.DTVENC<CURRENT_DATE THEN 'Vencido' WHEN t.STATUS=1 THEN 'Aberto' WHEN t.STATUS=2 THEN 'Quitado' WHEN t.STATUS=3 THEN 'Devolucao' WHEN t.STATUS=4 THEN 'Cancelado' WHEN t.STATUS=5 THEN 'Transferencia' WHEN t.STATUS=6 THEN 'Acordo' WHEN t.STATUS=7 THEN 'Acordo em nota fiscal' WHEN t.STATUS=8 THEN 'Acordo no recebimento' WHEN t.STATUS=9 THEN 'Excluido' ELSE 'Status '||CAST(t.STATUS AS VARCHAR(10)) END AS STATUS_TITULO,DATEDIFF(DAY,t.DTVENC,CURRENT_DATE) AS DIAS_ATRASO,t.ACORDO FROM ${table} t ${personJoin} WHERE ${where.join(" AND ")} ORDER BY ${order}`,
       params,
     );
   } catch (error) {
     throw new Error(`Falha ao listar títulos: ${error.message}`);
   }
+  dados = dados.map((row) => ({ ...row, VENCIMENTO: wallClock(row.VENCIMENTO) }));
   let resumo;
   try {
     resumo =
@@ -907,10 +1050,47 @@ async function repairPayableNanAmounts() {
   }
 }
 
+let agreementDueRepairTried = false;
+async function repairAgreementDueDates() {
+  if (agreementDueRepairTried) return;
+  try {
+    await prepareAgreementSchema();
+  } catch {
+    return;
+  }
+  agreementDueRepairTried = true;
+  try {
+    await withWriteTransaction(async (tx) => {
+      const exists = await tx.singleton(
+        "SELECT FIRST 1 1 AS OK FROM RDB$RELATIONS WHERE TRIM(RDB$RELATION_NAME)='DASH_FIN_ACORDO_ITEM'",
+      );
+      if (!exists) return;
+      const clock =
+        "EXTRACT(HOUR FROM CAST(t.DTVENC AS TIMESTAMP))<>0 OR EXTRACT(MINUTE FROM CAST(t.DTVENC AS TIMESTAMP))<>0 OR EXTRACT(SECOND FROM CAST(t.DTVENC AS TIMESTAMP))<>0";
+      for (const table of ["CTARECEBER", "CTAPAGAR"]) {
+        try {
+          await syncAccountGenerator(tx, table);
+        } catch {
+          // O gerador pode ter outro nome em uma base antiga.
+        }
+        await tx.execute(
+          `UPDATE ${table} t SET DTVENC=CAST(DTVENC AS DATE) WHERE EXISTS (SELECT 1 FROM DASH_FIN_ACORDO_ITEM i WHERE i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA AND i.PAPEL='N') AND (${clock})`,
+        );
+      }
+      await tx.execute(
+        "UPDATE CTAPAGAR t SET NOTAFISCAL=(SELECT FIRST 1 SUBSTRING('AC: ' || i.IDACORDO FROM 1 FOR 20) FROM DASH_FIN_ACORDO_ITEM i JOIN DASH_FIN_ACORDO a ON a.IDACORDO=i.IDACORDO AND a.TIPO=i.TIPO AND a.TIPO='pagar' WHERE i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA AND i.PAPEL='N' ORDER BY i.IDACORDO DESC), NRDOC=(SELECT FIRST 1 SUBSTRING('AC: ' || i.IDACORDO || '-' || t.PARCELA FROM 1 FOR 20) FROM DASH_FIN_ACORDO_ITEM i JOIN DASH_FIN_ACORDO a ON a.IDACORDO=i.IDACORDO AND a.TIPO=i.TIPO AND a.TIPO='pagar' WHERE i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA AND i.PAPEL='N' ORDER BY i.IDACORDO DESC) WHERE EXISTS (SELECT 1 FROM DASH_FIN_ACORDO_ITEM i JOIN DASH_FIN_ACORDO a ON a.IDACORDO=i.IDACORDO AND a.TIPO=i.TIPO AND a.TIPO='pagar' WHERE i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA AND i.PAPEL='N') AND COALESCE(t.NRDOC,'') NOT STARTING WITH 'AC:'",
+      );
+    });
+  } catch {
+    agreementDueRepairTried = false;
+  }
+}
+
 const endpoint = (type) => async (req, res) => {
   try {
     if (type === "receber") await repairReceivableNanAmounts();
     if (type === "pagar") await repairPayableNanAmounts();
+    await repairAgreementDueDates();
     res.json(await withDatabase((db) => accounts(db, type, req.query)));
   } catch (error) {
     res.status(500).json({ ok: false, erro: error.message });
@@ -963,7 +1143,7 @@ router.get("/operacoes/detalhe", async (req, res) => {
         if (includeAccountProducts(tipo, req.query))
           itens = await query(
             db,
-            "SELECT sp.POSIC,sp.CDPRODUTO,sp.DESCRICAO,sp.UNID,sp.QTDPRODUTO,sp.VLUNIT,COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0) AS TOTAL FROM SAIDAPRODUTO sp WHERE sp.NRPEDIDO=? AND sp.IDEMPRESA=? AND COALESCE(sp.STATUSSE,0)=0 ORDER BY sp.POSIC",
+            `SELECT sp.POSIC,sp.CDPRODUTO,sp.DESCRICAO,sp.UNID,sp.QTDPRODUTO,sp.VLUNIT,${ITEM_VALOR_SQL} AS TOTAL FROM SAIDAPRODUTO sp WHERE sp.NRPEDIDO=? AND sp.IDEMPRESA=? AND COALESCE(sp.STATUSSE,0)=0 ORDER BY sp.POSIC`,
             [titulo.NRPEDIDO, empresa],
           );
       } else if (!receber) {
@@ -979,7 +1159,7 @@ router.get("/operacoes/detalhe", async (req, res) => {
         if (entrada)
           itens = await query(
             db,
-            "SELECT ep.POSIC,ep.CDPRODUTO,ep.DESCRICAO,ep.UNID,ep.QTDE AS QTDPRODUTO,ep.VLUNIT,COALESCE(ep.VLTOT,ep.QTDE*ep.VLUNIT,0) AS TOTAL,COALESCE(ep.DESCONTO,0) AS DESCONTO,COALESCE(ep.VLFRETE,0) AS FRETE,COALESCE(ep.VLIPI,0) AS IPI FROM ENTRPRODUTO ep WHERE ep.IDENTRADA=? AND ep.IDEMPRESA=? ORDER BY ep.POSIC",
+            "SELECT ep.POSIC,ep.CDPRODUTO,ep.DESCRICAO,ep.UNID,ep.QTDE AS QTDPRODUTO,ep.VLUNIT,CASE WHEN ep.VLTOT IS NOT NULL THEN ep.VLTOT WHEN ep.QTDE IS NOT NULL AND ep.VLUNIT IS NOT NULL THEN ep.QTDE * ep.VLUNIT END AS TOTAL,ep.DESCONTO AS DESCONTO,ep.VLFRETE AS FRETE,ep.VLIPI AS IPI FROM ENTRPRODUTO ep WHERE ep.IDENTRADA=? AND ep.IDEMPRESA=? ORDER BY ep.POSIC",
             [entrada.IDENTRADA, entrada.IDEMPRESA],
           );
       }
@@ -1135,11 +1315,16 @@ router.post("/operacoes/alterar", async (req, res) => {
       const plan = accountEditPlan(type, current, req.body || {});
       if (!plan.changes.length)
         return { ok: true, alterado: false, mensagem: "Nenhum dado foi alterado." };
-      const assignments = Object.keys(plan.values).map((column) => `${column}=?`);
+      const params = [];
+      const assignments = Object.entries(plan.values).map(([column, value]) => {
+        if (column === "DTVENC") return `DTVENC=${sqlDate(value)}`;
+        params.push(value);
+        return `${column}=?`;
+      });
       assignments.push("SIST_ALT='LOCAL'");
       await tx.execute(
         `UPDATE ${table} SET ${assignments.join(",")} WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`,
-        [...Object.values(plan.values), controle, empresa],
+        [...params, controle, empresa],
       );
       const contexto = `CONTROLE=${controle};IDEMPRESA=${empresa};`.slice(0, 50);
       await tx.execute(
@@ -1162,7 +1347,7 @@ router.post("/operacoes/alterar", async (req, res) => {
 export const manualReceivableInsert =
   "INSERT INTO CTARECEBER (CONTROLE,IDEMPRESA,NRDOC,PARCELA,CDCLIENTE,DTVENC,VALOR,INTERVALO,ORIGEM,DIVIDA,TOTALPG,DTCOB,CAIXA,CODPAGTO,DTMOV,TPPAGTO,STATUS,CDUSR,DTLOG,HORALOG,CDRECGRUPO,NRDOC2,ACORDO,DTALTER,SIST_ALT,CDCAIXAORIGEM,HISTORICO,VLPGLIQ,CCUSTO,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,JUROS,DESCONTO,RETENCAO,AVISOS) VALUES (?,?,?,?,?,?,?,?,'LANCAMENTO MANUAL',?,?,?,?,?,CURRENT_TIMESTAMP,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,0,CURRENT_TIMESTAMP,'LOCAL',?,?,?,?,?,?,?,?,0,0,0,0)";
 export const manualPayableInsert =
-  "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,INTERVALO,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,NRDOC,NRDOC2,DTVENC,DTPAGTO,DTINCLUSAO,DTLOG,HORALOG,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS,DESCONTO,RETENCAO,ACORDO,COMBOLETO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,?,0,0,0,0,0,?,'LOCAL','LANCAMENTO MANUAL',?)";
+  "INSERT INTO CTAPAGAR (CONTROLE,IDEMPRESA,NOTAFISCAL,NUMERO,CDFORNECEDOR,PARCELA,INTERVALO,STATUS,CDCAIXA,CCUSTO,CODPAGTO,TPPAGTO,CDRECGRUPO,NRDOC,NRDOC2,DTVENC,DTPAGTO,DTINCLUSAO,DTEMISSAO,DTLOG,HORALOG,CDCONTA,CDSUBCONTA,CDSUBSUBCONTA,CDSUBSUBSUBCONTA,HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS,DESCONTO,RETENCAO,ACORDO,COMBOLETO,IDUSUARIO,SIST_ALT,ORIGEM,COMPETENCIA) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?,?,?,0,0,0,0,0,?,'LOCAL','LANCAMENTO MANUAL',?)";
 
 router.post("/operacoes/criar", async (req, res) => {
   try {
@@ -1173,7 +1358,7 @@ router.post("/operacoes/criar", async (req, res) => {
       const defaults = await accountPaymentDefaults(tx, input);
       input = completeAccountInput(input, defaults);
       const receivePlan = manualReceivablePlan(defaults, input.credit);
-      const settled = input.credit
+      const settled = input.credit && input.type === "pagar"
         ? false
         : input.type === "pagar"
           ? paymentFormSettlesPayable(defaults)
@@ -1188,18 +1373,18 @@ router.post("/operacoes/criar", async (req, res) => {
       const controls = [];
       const clock = historyClock();
       for (const parcel of input.parcels) {
-        const control = await nextAccountControl(tx, table);
+        let control = await nextAccountControl(tx, table);
         const due = firebirdDate(parcel.vencimento);
-        controls.push(control);
         if (input.type === "receber") {
           const status = receivePlan.status;
           const paid = settled ? parcel.valor : 0;
           const paidAt = settled ? paidOn : null;
           const quitPayment = settled ? input.payment : null;
-          await tx.execute(
-            manualReceivableInsert,
+          const inserted = await tx.singleton(
+            `${manualReceivableInsert} RETURNING CONTROLE`,
             [control,input.company,input.document,parcel.parcela,input.person,due,parcel.valor,parcel.intervalo,input.amount,paid,paidAt,input.cash,input.payment,quitPayment,status,user,input.receiptGroup,input.document,input.cash,input.history,paid,input.costCenter,input.account,input.subaccount,input.thirdAccount,input.fourthAccount],
           );
+          control = Number(inserted?.CONTROLE) || control;
           if (settled)
             await postReceivableCash(tx, {
               company: input.company,
@@ -1236,10 +1421,11 @@ router.post("/operacoes/criar", async (req, res) => {
           const status = settled ? 2 : 1;
           const paidAt = settled ? due : null;
           const paidValue = settled ? parcel.valor : 0;
-          await tx.execute(
-            manualPayableInsert,
-            [control,input.company,input.document,input.document.slice(0,10),input.person,parcel.parcela,parcel.intervalo,status,input.cash,input.costCenter,input.payment,input.payment,input.document,input.paymentNumber,due,paidAt,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,parcel.valor,input.amount,paidValue,user,due],
+          const inserted = await tx.singleton(
+            `${manualPayableInsert} RETURNING CONTROLE`,
+            [control,input.company,input.document,input.document.slice(0,10),input.person,parcel.parcela,parcel.intervalo,status,input.cash,input.costCenter,input.payment,settled ? input.payment : null,input.receiptGroup,payableDocumentNumber(input.document, parcel.parcela),input.paymentNumber,due,paidAt,input.account,input.subaccount,input.thirdAccount,input.fourthAccount,input.history,parcel.valor,input.amount,paidValue,user,due],
           );
+          control = Number(inserted?.CONTROLE) || control;
           if (settled) {
             await postPayableCash(tx, {
               company: input.company,
@@ -1270,7 +1456,13 @@ router.post("/operacoes/criar", async (req, res) => {
             );
           }
         }
+        controls.push(control);
+        await tx.execute(
+          `UPDATE ${table} SET DTVENC=${sqlDate(parcel.vencimento)} WHERE CONTROLE=? AND IDEMPRESA=?`,
+          [control, input.company],
+        );
       }
+      await syncAccountGenerator(tx, table);
       return {
         controle: controls[0],
         controles: controls,
@@ -1293,6 +1485,7 @@ router.post("/operacoes/criar", async (req, res) => {
 
 router.get("/operacoes/acordos", async (req, res) => {
   try {
+    await prepareAgreementSchema();
     const tipo = text(req.query.tipo).toLowerCase();
     const result = await withDatabase(async (db) => {
       const exists = await query(
@@ -1308,7 +1501,7 @@ router.get("/operacoes/acordos", async (req, res) => {
       }
       return query(
         db,
-        `SELECT FIRST 100 a.IDACORDO,a.TIPO,a.PESSOA_ID,a.SALDO_ORIGINAL,a.JUROS,a.DESCONTO,a.RETENCAO,a.ACRESCIMO,a.TOTAL_NOVO,a.STATUS,a.CRIADO_EM,a.DESFEITO_EM,(SELECT COUNT(*) FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=a.IDACORDO AND i.PAPEL='O') AS TITULOS_ORIGINAIS,(SELECT COUNT(*) FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=a.IDACORDO AND i.PAPEL='N') AS PARCELAS_NOVAS FROM DASH_FIN_ACORDO a ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY a.CRIADO_EM DESC`,
+        `SELECT FIRST 100 a.IDACORDO,a.TIPO,a.PESSOA_ID,a.SALDO_ORIGINAL,a.JUROS,a.DESCONTO,a.RETENCAO,a.ACRESCIMO,a.TOTAL_NOVO,a.STATUS,a.CRIADO_EM,a.DESFEITO_EM,(SELECT COUNT(*) FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=a.IDACORDO AND i.TIPO=a.TIPO AND i.PAPEL='O') AS TITULOS_ORIGINAIS,(SELECT COUNT(*) FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=a.IDACORDO AND i.TIPO=a.TIPO AND i.PAPEL='N') AS PARCELAS_NOVAS FROM DASH_FIN_ACORDO a ${where.length ? `WHERE ${where.join(" AND ")}` : ""} ORDER BY a.CRIADO_EM DESC`,
         params,
       );
     });
@@ -1355,8 +1548,11 @@ router.post("/operacoes/acordo", async (req, res) => {
       values.some((value) => !Number.isFinite(value) || value <= 0)
     )
       throw Object.assign(new Error("Parcelamento invalido."), { status: 400 });
+    // Firebird pode nao preparar um INSERT para uma tabela criada dentro da
+    // mesma transacao DDL. Confirma o schema antes de iniciar a operacao.
+    await prepareAgreementSchema();
+    await repairAgreementDueDates();
     const agreement = await withWriteTransaction(async (tx) => {
-      await ensureAgreementSchema(tx);
       const person = type === "receber" ? "CDCLIENTE" : "CDFORNECEDOR",
         value =
           type === "receber"
@@ -1435,13 +1631,7 @@ router.post("/operacoes/acordo", async (req, res) => {
           ),
           { status: 400 },
         );
-      const id = Number(
-          (
-            await tx.singleton(
-              "SELECT NEXT VALUE FOR GEN_DASH_FIN_ACORDO AS ID FROM RDB$DATABASE",
-            )
-          ).ID,
-        ),
+      const id = await nextLegacyAgreementNumber(tx, type, model[1]),
         uid = Number(req.dashboardSession?.user?.idusuario || 1);
       await tx.execute(
         "INSERT INTO DASH_FIN_ACORDO (IDACORDO,TIPO,PESSOA_ID,MODELO_CONTROLE,MODELO_EMPRESA,SALDO_ORIGINAL,JUROS,DESCONTO,RETENCAO,ACRESCIMO,TOTAL_NOVO,STATUS,CRIADO_EM,CRIADO_POR) VALUES (?,?,?,?,?,?,?,?,?,?,?,'ATIVO',CURRENT_TIMESTAMP,?)",
@@ -1462,43 +1652,37 @@ router.post("/operacoes/acordo", async (req, res) => {
       const clock = historyClock();
       const realization = agreementRealizationHistory(id, clock.day);
       for (let i = 0; i < refs.length; i++) {
-        await tx.execute(agreementStatusSql(type), [id, startDate, ...refs[i]]);
+        await tx.execute(agreementStatusSql(type, start), [id, ...refs[i]]);
         await tx.execute(
-          "INSERT INTO DASH_FIN_ACORDO_ITEM (IDACORDO,PAPEL,CONTROLE,IDEMPRESA,STATUS_ANTERIOR,ACORDO_ANTERIOR) VALUES (?,'O',?,?,1,?)",
-          [id, ...refs[i], rows[i].ACORDO],
+          "INSERT INTO DASH_FIN_ACORDO_ITEM (IDACORDO,TIPO,PAPEL,CONTROLE,IDEMPRESA,STATUS_ANTERIOR,ACORDO_ANTERIOR) VALUES (?,?,'O',?,?,1,?)",
+          [id, type, ...refs[i], rows[i].ACORDO],
         );
         await recordAccountHistory(tx, type, refs[i][0], refs[i][1], 2, realization, uid);
       }
       let firstDueDate = null;
       let lastDueDate = null;
+      const triggerAssigns = await controlTriggerAssigns(tx, table);
       for (let i = 0; i < values.length; i++) {
-        const control = Number(
-            (
-              await tx.singleton(
-                `SELECT COALESCE(MAX(CONTROLE),0)+1 AS ID FROM ${table}`,
-              )
-            ).ID,
-          ),
-          due = new Date(`${start}T12:00:00`);
-        due.setDate(due.getDate() + interval * i);
-        const dueDate = due.toISOString().slice(0, 10);
+        const reserved = triggerAssigns ? null : await nextAccountControl(tx, table);
+        const dueDate = addCalendarDays(start, interval * i);
         firstDueDate ||= dueDate;
         lastDueDate = dueDate;
         const history =
             informedHistory ||
             `Acordo nº ${id}${boleto ? " - transformado em boleto" : ""}`,
+          identity = type === "pagar" ? agreementPayableIdentity(id, i + 1) : null,
           overrides = {
-            CONTROLE: control,
+            ...(reserved ? { CONTROLE: reserved } : {}),
             IDEMPRESA: model[1],
             STATUS: 1,
             ACORDO: id,
             PARCELA: i + 1,
             INTERVALO: interval,
-            DTVENC: due,
             CODPAGTO: form.CODPAGTO,
             CDRECGRUPO: form.CDGRUPO,
             CCUSTO: form.CCUSTO,
             ...(type === "receber" ? { CAIXA: cash } : { CDCAIXA: cash }),
+            ...(identity || {}),
             HISTORICO: history,
             DTALTER: new Date(),
           };
@@ -1520,13 +1704,26 @@ router.post("/operacoes/acordo", async (req, res) => {
             VLPAGTO: 0,
             DTPAGTO: null,
           });
-        await cloneAccount(tx, table, model, overrides);
+        const control = await cloneAccount(tx, table, model, overrides);
+        if (!control)
+          throw Object.assign(new Error("A parcela do acordo nao recebeu controle."), { status: 409 });
+        if (identity)
+          await tx.execute(
+            `UPDATE ${table} SET DTVENC=${sqlDate(dueDate)},NOTAFISCAL=?,NRDOC=? WHERE CONTROLE=? AND IDEMPRESA=?`,
+            [identity.NOTAFISCAL, identity.NRDOC, control, model[1]],
+          );
+        else
+          await tx.execute(
+            `UPDATE ${table} SET DTVENC=${sqlDate(dueDate)} WHERE CONTROLE=? AND IDEMPRESA=?`,
+            [control, model[1]],
+          );
         await tx.execute(
-          "INSERT INTO DASH_FIN_ACORDO_ITEM (IDACORDO,PAPEL,CONTROLE,IDEMPRESA,STATUS_ANTERIOR) VALUES (?,'N',?,?,NULL)",
-          [id, control, model[1]],
+          "INSERT INTO DASH_FIN_ACORDO_ITEM (IDACORDO,TIPO,PAPEL,CONTROLE,IDEMPRESA,STATUS_ANTERIOR) VALUES (?,?,'N',?,?,NULL)",
+          [id, type, control, model[1]],
         );
         await recordAccountHistory(tx, type, control, model[1], 1, history, uid);
       }
+      await syncAccountGenerator(tx, table);
       return {
         id,
         firstDueDate,
@@ -1592,7 +1789,7 @@ router.post("/operacoes/cancelar-baixa", async (req, res) => {
         }
         const sql =
           type === "receber"
-            ? "UPDATE CTARECEBER SET STATUS=1,DTCOB=NULL,TPPAGTO=NULL,CDBANCO=NULL,CAIXA=NULL,NUMCONTA=NULL,AGENCIA=NULL,TOTALPG=0,VLPGLIQ=0,MOV_BANCARIA=NULL,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=2"
+            ? "UPDATE CTARECEBER SET STATUS=1,DTCOB=NULL,TPPAGTO=NULL,CDBANCO=NULL,CAIXA=NULL,NUMCONTA=NULL,AGENCIA=NULL,JUROS=0,DESCONTO=0,RETENCAO=0,TOTALPG=0,VLPGLIQ=0,MOV_BANCARIA=NULL,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=2"
             : "UPDATE CTAPAGAR SET STATUS=1,DTPAGTO=NULL,TPPAGTO=NULL,CDBANCO=NULL,CDCAIXA=NULL,CONTA=NULL,AGENCIA=NULL,VLPAGTO=0,MOV_BANCARIA=NULL,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=2";
         for (const ref of refs) {
           await tx.execute(sql, ref);
@@ -1698,8 +1895,8 @@ router.post("/operacoes/baixar", async (req, res) => {
             : "COALESCE(NRDOC,NOTAFISCAL,'')",
         personName =
           type === "receber"
-            ? "(SELECT COALESCE(CLIENTE,RAZAO,'') FROM CLIENTE p WHERE p.CDCLIENTE=CTARECEBER.CDCLIENTE)"
-            : "(SELECT COALESCE(FORNECEDOR,'') FROM FORNECEDOR p WHERE p.CDFORNECEDOR=CTAPAGAR.CDFORNECEDOR)",
+            ? "(SELECT COALESCE(CAST(CAST(p.CLIENTE AS VARCHAR(80) CHARACTER SET OCTETS) AS VARCHAR(80) CHARACTER SET NONE),CAST(CAST(p.RAZAO AS VARCHAR(80) CHARACTER SET OCTETS) AS VARCHAR(80) CHARACTER SET NONE)) FROM CLIENTE p WHERE p.CDCLIENTE=CTARECEBER.CDCLIENTE)"
+            : "(SELECT CAST(CAST(p.FORNECEDOR AS VARCHAR(80) CHARACTER SET OCTETS) AS VARCHAR(80) CHARACTER SET NONE) FROM FORNECEDOR p WHERE p.CDFORNECEDOR=CTAPAGAR.CDFORNECEDOR)",
         rows = [];
       for (const ref of refs) {
         const row = await tx.singleton(
@@ -1754,14 +1951,17 @@ router.post("/operacoes/baixar", async (req, res) => {
           [row.IDEMPRESA],
         );
         const days = overdueDays(row.DTVENC, date);
-        const parcelInterest =
-          Math.round(Number(row.VALOR) * Number(cfg?.TAXA || 0) * days) / 100;
-        if (!Number.isFinite(parcelInterest))
+        const calculatedInterest = parcelInterest(
+          row.VALOR,
+          cfg?.TAXA,
+          days,
+        );
+        if (!Number.isFinite(calculatedInterest))
           throw Object.assign(
             new Error("Nao foi possivel calcular os juros da conta."),
             { status: 400 },
           );
-        interest.push(parcelInterest);
+        interest.push(calculatedInterest);
       }
       const totalInterest =
           Math.round(interest.reduce((a, b) => a + b, 0) * 100) / 100,
@@ -1888,9 +2088,10 @@ router.post("/operacoes/baixar", async (req, res) => {
           });
         } else
           await tx.execute(
-            "UPDATE CTAPAGAR SET STATUS=2,DTPAGTO=?,TPPAGTO=?,CDBANCO=?,CDCAIXA=?,CONTA=?,AGENCIA=?,CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,VLPAGTO=?,HISTORICO=COALESCE(NULLIF(?,''),HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1",
+            "UPDATE CTAPAGAR SET STATUS=2,DTPAGTO=?,CODPAGTO=?,TPPAGTO=?,CDBANCO=?,CDCAIXA=?,CONTA=?,AGENCIA=?,CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,VLPAGTO=?,HISTORICO=COALESCE(NULLIF(?,''),HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1",
             [
               paymentDate,
+              payment,
               payment,
               bankId,
               cashBox,
@@ -1974,6 +2175,7 @@ router.post("/operacoes/baixar", async (req, res) => {
 
 async function undoAgreement(req, res) {
   try {
+    await prepareAgreementSchema();
     const { type, refs, table } = financeInput(req.body),
       result = await withWriteTransaction(async (tx) => {
         const userId = Number(req.dashboardSession?.user?.idusuario || 0) || null;
@@ -1982,7 +2184,7 @@ async function undoAgreement(req, res) {
         for (const ref of refs)
           links.push(
             await tx.singleton(
-              "SELECT a.IDACORDO,a.STATUS FROM DASH_FIN_ACORDO a JOIN DASH_FIN_ACORDO_ITEM i ON i.IDACORDO=a.IDACORDO AND i.PAPEL='N' WHERE a.TIPO=? AND i.CONTROLE=? AND i.IDEMPRESA=?",
+              "SELECT a.IDACORDO,a.STATUS FROM DASH_FIN_ACORDO a JOIN DASH_FIN_ACORDO_ITEM i ON i.IDACORDO=a.IDACORDO AND i.TIPO=a.TIPO AND i.PAPEL='N' WHERE a.TIPO=? AND i.CONTROLE=? AND i.IDEMPRESA=?",
               [type, ...ref],
             ),
           );
@@ -2064,14 +2266,14 @@ async function undoAgreement(req, res) {
           );
         const agreement = [...agreements][0],
           items = await tx.query(
-            "SELECT PAPEL,CONTROLE,IDEMPRESA,ACORDO_ANTERIOR FROM DASH_FIN_ACORDO_ITEM WHERE IDACORDO=?",
-            [agreement],
+            "SELECT PAPEL,CONTROLE,IDEMPRESA,ACORDO_ANTERIOR FROM DASH_FIN_ACORDO_ITEM WHERE IDACORDO=? AND TIPO=?",
+            [agreement, type],
           ),
           newItems = items.filter((item) => String(item.PAPEL).trim() === "N"),
           originals = items.filter((item) => String(item.PAPEL).trim() === "O");
         const nested = await tx.singleton(
-          `SELECT FIRST 1 t.CONTROLE FROM ${table} t WHERE t.STATUS=6 AND EXISTS (SELECT 1 FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=? AND i.PAPEL='N' AND i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA)`,
-          [agreement],
+          `SELECT FIRST 1 t.CONTROLE FROM ${table} t WHERE t.STATUS=6 AND EXISTS (SELECT 1 FROM DASH_FIN_ACORDO_ITEM i WHERE i.IDACORDO=? AND i.TIPO=? AND i.PAPEL='N' AND i.CONTROLE=t.CONTROLE AND i.IDEMPRESA=t.IDEMPRESA)`,
+          [agreement, type],
         );
         if (nested)
           throw Object.assign(
@@ -2097,8 +2299,8 @@ async function undoAgreement(req, res) {
           await recordAccountHistory(tx, type, item.CONTROLE, item.IDEMPRESA, 2, undone, userId);
         }
         await tx.execute(
-          "UPDATE DASH_FIN_ACORDO SET STATUS='DESFEITO',DESFEITO_EM=CURRENT_TIMESTAMP,DESFEITO_POR=? WHERE IDACORDO=? AND STATUS='ATIVO'",
-          [Number(req.dashboardSession?.user?.idusuario || 1), agreement],
+          "UPDATE DASH_FIN_ACORDO SET STATUS='DESFEITO',DESFEITO_EM=CURRENT_TIMESTAMP,DESFEITO_POR=? WHERE IDACORDO=? AND TIPO=? AND STATUS='ATIVO'",
+          [Number(req.dashboardSession?.user?.idusuario || 1), agreement, type],
         );
         return { agreement, origin: "dashboard" };
       });

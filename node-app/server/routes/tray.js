@@ -1,7 +1,35 @@
 import express from "express";
+import { query, withDatabase } from "../db.js";
 import { readJsonConfig, writeJsonConfig } from "../lib/json-config.js";
+import { ollamaChat } from "../lib/ollama.js";
 import { suggestTrayProduct } from "../lib/tray-product-ai.js";
-import { trayPasswordMatches } from "../lib/tray-access.js";
+import {
+  ERP_STOCK_SQL,
+  acceptListingSuggestion,
+  analyzeMarketplaceListings,
+  boosterFacts,
+  composeListingSuggestion,
+  contentPayload,
+  decideBoosterFinding,
+  mapErpBoosterRow,
+  markBoosterApplied,
+  markBoosterFailed,
+  markBoosterManual,
+  markBoosterReverted,
+  mergeBoosterState,
+  previousContent,
+  readMarketplaceBooster,
+  recordBoosterSuggestion,
+  saveMarketplaceBooster,
+} from "../lib/marketplace-booster.js";
+import {
+  definirCanal,
+  definirPiso,
+  montarPainel,
+  propor,
+  simular,
+} from "../lib/charlie-price-intelligence-service.js";
+import { cadastrarReferencia, montarRadar, registrarConsulta } from "../lib/charlie-competitor-radar-service.js";
 import { deliverReport } from "../lib/charlie-breakfast-delivery.js";
 import {
   buildEcommerceDashboard,
@@ -9,6 +37,8 @@ import {
   readEcommerceStore,
   recordEcommerceSyncFailure,
 } from "../lib/ecommerce-intelligence.js";
+import { trayProductPhoto } from "../lib/tray-product-photo.js";
+import { accessTokenNeedsRefresh, createTokenCoordinator, trayRefreshError } from "../lib/tray-auth.js";
 import {
   analyzeEcommerceAdvanced,
   canEcommerce,
@@ -28,30 +58,8 @@ const STATE_FILE = "tray_sync_state.json";
 const SECRET_FIELDS = ["access_token", "refresh_token", "consumer_secret", "webhook_secret"];
 const EDITABLE_FIELDS = ["api_address", "store_host", "store_id", "consumer_key", "auto_sync", "sync_interval_minutes", ...SECRET_FIELDS];
 
-router.get("/acesso", (req, res) => {
-  const managerFallback = !process.env.DASHBOARD_TRAY_PASSWORD && req.dashboardSession?.user?.permissao_gerencial;
-  if (managerFallback) req.dashboardSession.trayUnlocked = true;
-  res.json({ ok: true, liberado: Boolean(req.dashboardSession?.trayUnlocked) });
-});
-
-router.post("/acesso", (req, res) => {
-  if (!process.env.DASHBOARD_TRAY_PASSWORD && req.dashboardSession?.user?.permissao_gerencial) {
-    req.dashboardSession.trayUnlocked = true;
-    return res.json({ ok: true, liberado: true });
-  }
-  if (!trayPasswordMatches(req.body?.senha))
-    return res.status(401).json({ ok: false, erro: "Senha do e-commerce inválida." });
-  req.dashboardSession.trayUnlocked = true;
+router.get("/acesso", (_req, res) => {
   res.json({ ok: true, liberado: true });
-});
-
-router.use((req, res, next) => {
-  if (req.path === "/webhook" || req.dashboardSession?.trayUnlocked) return next();
-  return res.status(403).json({
-    ok: false,
-    ecommerce_password_required: true,
-    erro: "Informe a senha para abrir o e-commerce.",
-  });
 });
 
 function config() {
@@ -86,35 +94,45 @@ function safeBaseUrl(value) {
   return url.href.replace(/\/$/, "");
 }
 
-function saveTokens(payload, current = config()) {
-  const next = {
-    ...current,
-    access_token: payload.access_token || current.access_token,
-    refresh_token: payload.refresh_token || current.refresh_token,
-    access_token_expires_at: payload.date_expiration_access_token || current.access_token_expires_at,
-    refresh_token_expires_at: payload.date_expiration_refresh_token || current.refresh_token_expires_at,
+let authBackoffUntil = 0;
+
+function tokenPayload(payload, current) {
+  return {
+    access_token: payload.access_token,
+    refresh_token: payload.refresh_token,
+    access_token_expires_at: payload.date_expiration_access_token,
+    refresh_token_expires_at: payload.date_expiration_refresh_token,
     api_address: payload.api_host ? safeBaseUrl(payload.api_host) : current.api_address,
-    store_id: String(payload.store_id || current.store_id || ""),
+    store_id: payload.store_id ? String(payload.store_id) : current.store_id,
   };
-  writeJsonConfig(CONFIG_FILE, next);
-  return next;
 }
 
-async function refreshTokens(current = config()) {
-  if (!current.refresh_token) throw Object.assign(new Error("Refresh token não configurado. Autorize novamente o aplicativo."), { status: 401 });
-  const url = new URL(`${safeBaseUrl(current.api_address)}/auth`);
-  url.searchParams.set("refresh_token", current.refresh_token);
-  const response = await fetch(url, { headers: { Accept: "application/json" } });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || !payload.access_token) throw Object.assign(new Error(payload.message || payload.name || "Não foi possível renovar o token da Tray."), { status: response.status || 502 });
-  return saveTokens(payload, current);
+const tokens = createTokenCoordinator({
+  read: () => config(),
+  write: (value) => writeJsonConfig(CONFIG_FILE, value),
+  refresh: async (current) => {
+    const url = new URL(`${safeBaseUrl(current.api_address)}/auth`);
+    url.searchParams.set("refresh_token", current.refresh_token);
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload.access_token) throw trayRefreshError(payload, response.status);
+    authBackoffUntil = 0;
+    return tokenPayload(payload, current);
+  },
+});
+
+function refreshTokens() {
+  return tokens.refreshTokens();
+}
+
+function ensureAccessToken() {
+  return tokens.ensureAccessToken();
 }
 
 const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export async function trayRequest(endpoint, query = {}, options = {}, authRetried = false, attempt = 0) {
-  let current = config();
-  if (current.access_token_expires_at && new Date(String(current.access_token_expires_at).replace(" ", "T")) <= new Date()) current = await refreshTokens(current);
+  let current = await ensureAccessToken();
   const apiAddress = safeBaseUrl(current.api_address);
   if (!current.access_token) throw Object.assign(new Error("Access token da Tray ainda não configurado."), { status: 400 });
   const url = new URL(`${apiAddress}/${String(endpoint).replace(/^\//, "")}`);
@@ -127,8 +145,9 @@ export async function trayRequest(endpoint, query = {}, options = {}, authRetrie
   try {
     const response = await fetch(url, { ...options, signal: controller.signal, headers: { Accept: "application/json", ...(options.headers || {}) } });
     const payload = await response.json().catch(() => ({}));
-    if (response.status === 401 && !authRetried && current.refresh_token) {
-      await refreshTokens(current);
+    const rejected = response.status === 401 || Number(payload?.error_code) === 1099;
+    if (rejected && !authRetried && current.refresh_token) {
+      await refreshTokens();
       return trayRequest(endpoint, query, options, true, attempt);
     }
     if ((response.status === 429 || response.status >= 500) && attempt < 3) {
@@ -137,6 +156,7 @@ export async function trayRequest(endpoint, query = {}, options = {}, authRetrie
       return trayRequest(endpoint, query, options, authRetried, attempt + 1);
     }
     if (!response.ok || Number(payload?.code) >= 400) {
+      if (response.status === 401 || Number(payload?.error_code) === 1099) throw trayRefreshError(payload, response.status);
       const reason = payload?.message || payload?.name || payload?.causes?.[0] || `HTTP ${response.status}`;
       throw Object.assign(new Error(`Tray: ${typeof reason === "string" ? reason : JSON.stringify(reason)}`), { status: response.status || 502 });
     }
@@ -241,7 +261,8 @@ export async function runEcommerceDailyIfDue(now = new Date()) {
   const notification = control.settings.notification || {};
   let delivery = { email: "desligado", whatsapp: "desligado", enviados: [] };
   if (control.settings.notifications && (notification.email || notification.whatsapp)) {
-    const text = `${report.title}\nFaturamento: R$ ${report.revenue.toFixed(2)}\nPedidos: ${report.orders}\nMargem negativa: ${report.negativeMargin}\nRisco de ruptura: ${report.ruptureRisk}\nOportunidades: ${report.opportunities}`;
+    const faturamento = report.revenue == null ? "não informado" : `R$ ${report.revenue.toFixed(2)}`;
+    const text = `${report.title}\nFaturamento: ${faturamento}\nPedidos: ${report.orders}\nMargem negativa: ${report.negativeMargin}\nRisco de ruptura: ${report.ruptureRisk}\nOportunidades: ${report.opportunities}`;
     delivery = await deliverReport({ referencia: report.date, texto: text, vendas: { ontem: report.revenue, mes: null }, meta: {}, orcamentos: {}, ranking: [], rankingMes: [], observacoes: report.limitations, alertas: [] }, { canais: { email: Boolean(notification.email), whatsapp: Boolean(notification.whatsapp) }, emails: notification.emails, whatsapp: notification.phones, enviarReal: Boolean(notification.sendReal), templateWhatsapp: notification.whatsappTemplate, templateIdioma: "pt_BR" });
   }
   writeJsonConfig("ecommerce_daily_state.json", { lastDay: day, lastRunAt: now.toISOString(), report, delivery });
@@ -254,8 +275,9 @@ async function exchangeCode(code) {
   const body = new URLSearchParams({ consumer_key: current.consumer_key, consumer_secret: current.consumer_secret, code: String(code || "") });
   const response = await fetch(`${safeBaseUrl(current.api_address)}/auth`, { method: "POST", headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded" }, body });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok || !payload.access_token) throw Object.assign(new Error(payload.message || payload.name || "A Tray não gerou as chaves de acesso."), { status: response.status || 502 });
-  return saveTokens(payload, current);
+  if (!response.ok || !payload.access_token) throw trayRefreshError(payload, response.status);
+  authBackoffUntil = 0;
+  return tokens.update((latest) => ({ ...latest, ...tokenPayload(payload, latest) }));
 }
 
 function itemsFrom(payload, singular, plural) {
@@ -264,23 +286,51 @@ function itemsFrom(payload, singular, plural) {
   return list.map((item) => item?.[singular] || item).filter(Boolean);
 }
 
+const boosterRank = { high: 0, medium: 1, low: 2 };
+function publicBooster(state) {
+  return {
+    analyzedAt: state.analyzedAt,
+    limitations: state.limitations || [],
+    findings: Object.values(state.findings || {}).filter((item) => item.status !== "resolved").sort((a, b) => (boosterRank[a.priority] ?? 9) - (boosterRank[b.priority] ?? 9) || String(a.productName).localeCompare(String(b.productName), "pt-BR")),
+  };
+}
+async function erpProductsForBooster() {
+  try {
+    const rows = await withDatabase((db) => query(db, ERP_STOCK_SQL, []));
+    return { products: rows.map(mapErpBoosterRow), error: "" };
+  } catch (error) {
+    return { products: [], error: String(error.message || error) };
+  }
+}
+function runBoosterAnalysis(erp) {
+  const analysis = analyzeMarketplaceListings(readEcommerceStore(), {
+    erpProducts: erp.products,
+    erpError: erp.error,
+    minimumMargin: ecommerceControl().settings.minimumMargin,
+  });
+  const state = mergeBoosterState(readMarketplaceBooster(), analysis);
+  saveMarketplaceBooster(state);
+  return state;
+}
+
 router.get("/config", (_req, res) => {
   const current = config();
   res.json({ ok: true, config: publicConfig(current), conectado: Boolean(current.api_address && current.access_token), estado: readJsonConfig(STATE_FILE, {}) });
 });
 
-router.put("/config", (req, res) => {
+router.put("/config", async (req, res) => {
   try {
-    const current = config();
-    const next = { ...current };
-    for (const field of EDITABLE_FIELDS) {
-      if (!(field in (req.body || {}))) continue;
-      const value = field === "auto_sync" ? Boolean(req.body[field]) : field === "sync_interval_minutes" ? Math.max(5, Math.min(1440, Number(req.body[field] || 15))) : String(req.body[field] || "").trim();
-      if (SECRET_FIELDS.includes(field) && !value) continue;
-      next[field] = value;
-    }
-    if (next.api_address) next.api_address = safeBaseUrl(next.api_address);
-    writeJsonConfig(CONFIG_FILE, next);
+    const next = await tokens.update((current) => {
+      const saved = { ...current };
+      for (const field of EDITABLE_FIELDS) {
+        if (!(field in (req.body || {}))) continue;
+        const value = field === "auto_sync" ? Boolean(req.body[field]) : field === "sync_interval_minutes" ? Math.max(5, Math.min(1440, Number(req.body[field] || 15))) : String(req.body[field] || "").trim();
+        if (SECRET_FIELDS.includes(field) && !value) continue;
+        saved[field] = value;
+      }
+      if (saved.api_address) saved.api_address = safeBaseUrl(saved.api_address);
+      return saved;
+    });
     res.json({ ok: true, config: publicConfig(next), conectado: Boolean(next.api_address && next.access_token) });
   } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
 });
@@ -325,7 +375,9 @@ router.get("/resumo", async (_req, res) => {
         produtos: Number(productsPayload?.paging?.total || products.length),
         clientes: Number(customersPayload?.paging?.total || itemsFrom(customersPayload, "Customer", "Customers").length),
       },
-      pedidos: orders.slice(0, 10), produtos: products.slice(0, 10), estado: state,
+      pedidos: orders.slice(0, 10),
+      produtos: products.slice(0, 10).map((product) => ({ ...product, imagem: trayProductPhoto(product) })),
+      estado: state,
     });
   } catch (error) { res.status(error.status || 502).json({ ok: false, erro: error.message }); }
 });
@@ -363,6 +415,59 @@ router.get("/intelligence/actions/:id", (req, res) => {
 router.put("/intelligence/settings", (req, res) => {
   try { if (!canEcommerce(req.dashboardSession?.user, "configure")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para configurar o e-commerce." }); res.json({ ok: true, settings: saveEcommerceSettings(req.body || {}) }); }
   catch (error) { res.status(400).json({ ok: false, erro: error.message }); }
+});
+
+router.get("/precos", (_req, res) => {
+  try { res.json({ ok: true, ...montarPainel() }); }
+  catch (error) { res.status(500).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/precos/simular", (req, res) => {
+  try { res.json({ ok: true, ...simular(req.body?.productId, req.body || {}) }); }
+  catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/precos/piso", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "configure")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para configurar o e-commerce." });
+    res.json({ ok: true, piso: definirPiso(req.body?.productId, req.body?.preco) });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/precos/canal", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "configure")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para configurar o e-commerce." });
+    res.json({ ok: true, margem: definirCanal(req.body?.canal, req.body?.margem) });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/precos/propor", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "approve")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para propor alteração de preço." });
+    const user = req.dashboardSession.user;
+    res.json({ ok: true, ...propor(req.body?.productId, req.body || {}, { id: user.idusuario, idusuario: user.idusuario, permissao_gerencial: user.permissao_gerencial }) });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.get("/radar", (_req, res) => {
+  try { res.json({ ok: true, ...montarRadar() }); }
+  catch (error) { res.status(500).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/radar", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "configure")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para cadastrar referência." });
+    const user = req.dashboardSession.user;
+    res.status(201).json({ ok: true, referencia: cadastrarReferencia(req.body || {}, { idusuario: user.idusuario }) });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/radar/:id/consulta", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "configure")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para registrar consulta." });
+    const user = req.dashboardSession.user;
+    res.json({ ok: true, referencia: registrarConsulta(req.params.id, req.body || {}, { idusuario: user.idusuario }) });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
 });
 
 router.post("/intelligence/actions", (req, res) => {
@@ -494,12 +599,114 @@ router.post("/webhook", express.urlencoded({ extended: true }), async (req, res)
 
 router.get("/eventos", (_req, res) => res.json({ ok: true, eventos: readJsonConfig("tray_webhooks.json", []).slice(0, 100) }));
 
+router.get("/booster", (_req, res) => {
+  res.json({ ok: true, ...publicBooster(readMarketplaceBooster()) });
+});
+
+router.post("/booster/analisar", async (_req, res) => {
+  try { res.json({ ok: true, ...publicBooster(runBoosterAnalysis(await erpProductsForBooster())) }); }
+  catch (error) { res.status(500).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/booster/:id/sugerir", async (req, res) => {
+  try {
+    const erp = await erpProductsForBooster();
+    const { facts } = boosterFacts(readMarketplaceBooster(), req.params.id, readEcommerceStore(), erp.products);
+    let suggestion = { ...composeListingSuggestion(facts), source: "cadastro" };
+    let aviso = "Sugestão montada somente com os dados do cadastro.";
+    try {
+      const content = await ollamaChat({
+        maxTokens: 700,
+        temperature: 0.1,
+        format: { type: "object", properties: { name: { type: "string" }, description_small: { type: "string" }, description: { type: "string" }, keywords: { type: "string" } }, required: ["name", "description_small", "description", "keywords"] },
+        messages: [
+          { role: "system", content: "Você redige anúncio em português do Brasil e responde só JSON. Use exclusivamente os fatos recebidos. Não invente medida, material, compatibilidade, certificação, garantia ou benefício. Não use HTML." },
+          { role: "user", content: JSON.stringify(facts) },
+        ],
+      });
+      if (content) {
+        const guarded = acceptListingSuggestion({ ...JSON.parse(content), source: "ollama" }, facts);
+        if (guarded.ok) { suggestion = guarded.suggestion; aviso = "Sugestão do Ollama aceita porque não trouxe número fora do cadastro."; }
+        else aviso = `${guarded.reason} O texto do cadastro foi mantido.`;
+      }
+    } catch { aviso = "O Ollama não entregou uma sugestão utilizável. O texto do cadastro foi mantido."; }
+    const state = recordBoosterSuggestion(readMarketplaceBooster(), req.params.id, suggestion, req.dashboardSession.user);
+    saveMarketplaceBooster(state);
+    res.json({ ok: true, finding: state.findings[req.params.id], aviso });
+  } catch (error) { res.status(error.status || 500).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/booster/:id/decisao", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "approve")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para aprovar ações de e-commerce." });
+    if (!["approve", "reject"].includes(req.body?.decision)) return res.status(400).json({ ok: false, erro: "Decisão inválida." });
+    const state = decideBoosterFinding(readMarketplaceBooster(), req.params.id, req.body.decision, req.dashboardSession.user);
+    saveMarketplaceBooster(state);
+    res.json({ ok: true, finding: state.findings[req.params.id] });
+  } catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
+});
+
+router.post("/booster/:id/aplicar", async (req, res) => {
+  const actor = req.dashboardSession?.user;
+  try {
+    if (!canEcommerce(actor, "execute")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para executar ações de e-commerce." });
+    const current = readMarketplaceBooster();
+    const finding = current.findings[req.params.id];
+    if (!finding) return res.status(404).json({ ok: false, erro: "Achado não encontrado." });
+    if (finding.execution !== "tray_content") {
+      const state = markBoosterManual(current, finding.id, actor);
+      saveMarketplaceBooster(state);
+      return res.json({ ok: true, finding: state.findings[finding.id], manual: true });
+    }
+    if (finding.status !== "approved") return res.status(409).json({ ok: false, erro: "A aplicação exige aprovação." });
+    const payload = contentPayload(finding.suggestion || {});
+    if (!finding.productId || !payload.name) return res.status(409).json({ ok: false, erro: "A sugestão aprovada não tem título para enviar à Tray." });
+    const product = readEcommerceStore().products?.[finding.productId] || {};
+    const result = await trayRequest(`products/${encodeURIComponent(finding.productId)}`, {}, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ Product: payload }) });
+    const state = markBoosterApplied(readMarketplaceBooster(), finding.id, actor, { previous: previousContent(product), result: { ok: true } });
+    saveMarketplaceBooster(state);
+    res.json({ ok: true, finding: state.findings[finding.id], retorno: result });
+  } catch (error) {
+    try { saveMarketplaceBooster(markBoosterFailed(readMarketplaceBooster(), req.params.id, actor, error.message)); } catch { /* achado ausente */ }
+    res.status(error.status || 502).json({ ok: false, erro: error.message });
+  }
+});
+
+router.post("/booster/:id/reverter", async (req, res) => {
+  const actor = req.dashboardSession?.user;
+  try {
+    if (!canEcommerce(actor, "execute")) return res.status(403).json({ ok: false, erro: "Sem permissão específica para executar ações de e-commerce." });
+    const finding = readMarketplaceBooster().findings[req.params.id];
+    if (!finding) return res.status(404).json({ ok: false, erro: "Achado não encontrado." });
+    const payload = contentPayload(finding.previous || {});
+    if (!finding.productId || !Object.keys(payload).length) return res.status(409).json({ ok: false, erro: "Não havia texto anterior sincronizado para restaurar." });
+    const result = await trayRequest(`products/${encodeURIComponent(finding.productId)}`, {}, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ Product: payload }) });
+    const state = markBoosterReverted(readMarketplaceBooster(), finding.id, actor, { ok: true, tray: true });
+    saveMarketplaceBooster(state);
+    res.json({ ok: true, finding: state.findings[finding.id], retorno: result });
+  } catch (error) { res.status(error.status || 502).json({ ok: false, erro: error.message }); }
+});
+
 export function startTrayScheduler() {
   let running = false;
   const tick = async () => {
     const current = config();
     try { await runEcommerceDailyIfDue(); } catch (error) { console.error(`[tray-daily] ${error.message}`); }
     if (running || !current.auto_sync || !current.api_address || !current.access_token) return;
+    if (accessTokenNeedsRefresh(current.access_token_expires_at)) {
+      const expired = accessTokenNeedsRefresh(current.access_token_expires_at, new Date(), 0);
+      if (Date.now() < authBackoffUntil) {
+        if (expired) return;
+      } else {
+        try { await refreshTokens(); }
+        catch (error) {
+          authBackoffUntil = Date.now() + 5 * 60_000;
+          const state = readJsonConfig(STATE_FILE, {});
+          writeJsonConfig(STATE_FILE, { ...state, ultima_tentativa: new Date().toISOString(), status: "erro", erro: error.message });
+          if (expired) return;
+        }
+      }
+    }
     const state = readJsonConfig(STATE_FILE, {});
     const interval = Math.max(5, Number(current.sync_interval_minutes || 15)) * 60_000;
     if (state.ultima_sincronizacao && Date.now() - new Date(state.ultima_sincronizacao).getTime() < interval) return;
@@ -508,7 +715,11 @@ export function startTrayScheduler() {
       await processTrayWebhookEvents();
       const synced = await synchronizeTray({ mode: "incremental" });
       const control = ecommerceControl();
-      if (control.settings.autoAnalysis) analyzeEcommerceAdvanced();
+      if (control.settings.autoAnalysis) {
+        analyzeEcommerceAdvanced();
+        try { runBoosterAnalysis(await erpProductsForBooster()); }
+        catch (error) { console.error(`[tray-booster] ${error.message}`); }
+      }
       if (control.settings.mode === "automatic") {
         for (const action of Object.values(ecommerceControl().actions).filter((item) => item.status === "approved" && item.type === "price")) {
           try { await executeApprovedPriceAction(action, { id: "Charlie" }); }

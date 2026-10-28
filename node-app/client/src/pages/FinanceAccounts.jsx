@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api.js";
 import SearchableSelect from "../components/SearchableSelect.jsx";
 import { buildInstallments } from "../../../server/lib/account-parcels.js";
+import { interestDays, parcelInterest } from "../../../server/lib/finance-settlement.js";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const monthStart = () => {
@@ -14,18 +15,6 @@ const money = (value) => {
     style: "currency",
     currency: "BRL",
   });
-};
-const civilDate = (value) => {
-  if (value instanceof Date && !Number.isNaN(value.getTime()))
-    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
-  const key = String(value || "").slice(0, 10);
-  return /^\d{4}-\d{2}-\d{2}$/.test(key) ? key : "";
-};
-const lateDays = (due, paidOn) => {
-  const dueKey = civilDate(due);
-  const paidKey = civilDate(paidOn);
-  if (!dueKey || !paidKey) return 0;
-  return Math.max(0, Math.floor((new Date(`${paidKey}T12:00:00`) - new Date(`${dueKey}T12:00:00`)) / 86400000));
 };
 const displayDate = (value) => {
   const normalized = String(value || "").slice(0, 10);
@@ -71,7 +60,7 @@ const initialFilters = (type = "receber") => ({
   tipo_data: "vencimento",
   ...(type === "pagar" ? { vale: "todos" } : {}),
 });
-function PersonField({ type, value, onChange, placeholder = "Digite para buscar", allowEmpty = false, initialLabel = "" }) {
+function PersonField({ type, value, onChange, placeholder = "Digite nome ou código", allowEmpty = false, initialLabel = "", hint = "" }) {
   const [options, setOptions] = useState([]);
   const [query, setQuery] = useState("");
   const [known, setKnown] = useState(initialLabel);
@@ -98,17 +87,20 @@ function PersonField({ type, value, onChange, placeholder = "Digite para buscar"
     ...options,
   ];
   return (
-    <SearchableSelect
-      remote
-      value={value}
-      onQuery={(next) => {
-        const current = choices.find((item) => String(item.value) === String(value ?? ""));
-        setQuery(!next || next === current?.label ? "" : next);
-      }}
-      onChange={onChange}
-      options={choices}
-      placeholder={placeholder}
-    />
+    <span className="person-field">
+      <SearchableSelect
+        remote
+        value={value}
+        onQuery={(next) => {
+          const current = choices.find((item) => String(item.value) === String(value ?? ""));
+          setQuery(!next || next === current?.label ? "" : next);
+        }}
+        onChange={onChange}
+        options={choices}
+        placeholder={placeholder}
+      />
+      {hint ? <small className="muted">{hint}</small> : null}
+    </span>
   );
 }
 
@@ -210,7 +202,8 @@ function NewAccountModal({ type, options, onClose, onDone }) {
     });
   const paymentOptions = paymentChoices(type, options);
   const selectedPayment = paymentOptions.find((item) => String(item.value) === String(form.forma_pagamento));
-  const willSettle = Boolean(selectedPayment?.settled) && !form.gerar_credito;
+  const creditLocksPayment = form.gerar_credito && type === "pagar";
+  const willSettle = Boolean(selectedPayment?.settled) && !creditLocksPayment;
   async function submit(event) {
     event.preventDefault();
     setBusy(true);
@@ -263,9 +256,11 @@ function NewAccountModal({ type, options, onClose, onDone }) {
               setForm((current) => ({
                 ...current,
                 gerar_credito: checked,
-                forma_pagamento: checked ? "" : current.forma_pagamento,
-                caixa: checked ? "" : current.caixa,
-                numero_pagamento: checked ? "" : current.numero_pagamento,
+                forma_pagamento:
+                  checked && type === "pagar" ? "" : current.forma_pagamento,
+                caixa: checked && type === "pagar" ? "" : current.caixa,
+                numero_pagamento:
+                  checked && type === "pagar" ? "" : current.numero_pagamento,
               }));
             }}
           />
@@ -274,14 +269,14 @@ function NewAccountModal({ type, options, onClose, onDone }) {
             <small>
               {type === "pagar"
                 ? "Gerar crédito do fornecedor. O valor fica negativo, sem quitação e sem lançar no caixa."
-                : "Gerar crédito para o cliente. A parcela fica como devolução, sem quitação e sem lançar no caixa."}
+                : "Gerar crédito para o cliente. O valor fica negativo e o status segue a forma de pagamento."}
             </small>
           </span>
         </label>
-        <p>{form.gerar_credito ? (type === "pagar" ? "Será gerado um crédito do fornecedor, com valor negativo, sem quitação e sem lançar no caixa." : "Será gerado um crédito (devolução) para o cliente, sem forma de quitação e sem lançar no caixa.") : willSettle ? "A forma escolhida é quitada. A parcela será gravada como paga, com valor pago e lançamento no caixa." : type === "receber" ? "A parcela fica em aberto. A forma escolhida é só a previsão; a quitação permanece vazia." : "O título fica em aberto e o nº pagamento permanece vazio até a quitação."}</p>
+        <p>{form.gerar_credito ? (type === "pagar" ? "Será gerado um crédito do fornecedor, com valor negativo, sem quitação e sem lançar no caixa." : "Será gerado um crédito para o cliente com valor negativo. O status seguirá a forma de pagamento escolhida.") : willSettle ? "A forma escolhida é quitada. A parcela será gravada como paga, com valor pago e lançamento no caixa." : type === "receber" ? "A parcela fica em aberto. A forma escolhida é só a previsão; a quitação permanece vazia." : "O título fica em aberto e o nº pagamento permanece vazio até a quitação."}</p>
         <div className="form-grid">
           <label>Empresa<SearchableSelect value={form.idempresa} onChange={(value) => set("idempresa", value)} placeholder="Digite para buscar" required options={(options.empresas || []).map((item) => ({ value: item.IDEMPRESA, label: item.NOMEEMPRESA }))} /></label>
-          <label>{type === "receber" ? "Cliente" : "Fornecedor"}<PersonField type={type} value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} /></label>
+          <label>{type === "receber" ? "Cliente" : "Fornecedor"}<PersonField type={type} value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} hint="A lista inicial mostra 40 nomes. Digite o nome ou o código para localizar outro." /></label>
         </div>
         <div className="form-grid">
           <label>Documento<span className="document-field"><input value={form.documento} maxLength={type === "receber" ? 15 : 20} onChange={(e) => set("documento", e.target.value)} required /><button type="button" className="secondary" disabled={generating} onClick={generateDocument}>{generating ? "Gerando..." : "Gerar número"}</button></span></label>
@@ -320,8 +315,8 @@ function NewAccountModal({ type, options, onClose, onDone }) {
         </div>
         {scheduleError && <div className="error">{scheduleError}</div>}
         <div className="form-grid">
-          <label>Forma prevista<select value={form.forma_pagamento} disabled={form.gerar_credito} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">{form.gerar_credito ? "Não usada no crédito" : "Não informada"}</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}{item.settled ? " (quitado)" : ""}</option>)}</select></label>
-          <label>Caixa{willSettle ? " *" : ""}<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder={willSettle ? "Obrigatório" : "Não informado"} disabled={form.gerar_credito} options={[{ value: "", label: willSettle ? "Selecione" : "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
+          <label>Forma prevista<select value={form.forma_pagamento} disabled={creditLocksPayment} onChange={(e) => set("forma_pagamento", e.target.value)}><option value="">{creditLocksPayment ? "Não usada no crédito" : "Não informada"}</option>{paymentOptions.map((item) => <option key={item.value} value={item.value}>{item.label}{item.settled ? " (quitado)" : ""}</option>)}</select></label>
+          <label>Caixa{willSettle ? " *" : ""}<SearchableSelect value={form.caixa} onChange={(value) => set("caixa", value)} placeholder={willSettle ? "Obrigatório" : "Não informado"} disabled={creditLocksPayment} options={[{ value: "", label: willSettle ? "Selecione" : "Não informado" }, ...(options.caixas || []).map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }))]} /></label>
         </div>
         <details className="finance-advanced">
           <summary>Classificação contábil</summary>
@@ -549,8 +544,8 @@ function ActionModal({ action, selected, type, options, onClose, onDone }) {
         (item) => Number(item.IDEMPRESA) === Number(row.IDEMPRESA),
       )?.TXJUROS || 0,
     );
-    const days = lateDays(row.VENCIMENTO, form.data_pagamento);
-    return sum + (Number(row.VALOR || 0) * rate * days) / 100;
+    const days = interestDays(row.VENCIMENTO, form.data_pagamento);
+    return sum + parcelInterest(row.VALOR, rate, days);
   }, 0);
   const gross =
     Math.round((original + interest - Number(form.desconto || 0)) * 100) / 100;
@@ -903,7 +898,7 @@ function AccountDetailModal({ detail, loading, onClose }) {
           <>
             <div className="detail-grid">
               <div><small>{detail.tipo === "pagar" ? "Fornecedor" : "Cliente"}</small><strong>{title.PESSOA || "—"}</strong></div>
-              <div><small>Documento</small><strong>{title.NOTAFISCAL || title.NRDOC || title.NRDOC2 || "—"}</strong></div>
+              <div><small>Documento</small><strong>{title.NRDOC || title.NOTAFISCAL || title.NRDOC2 || "—"}</strong></div>
               <div><small>Parcela</small><strong>{title.PARCELA ?? "—"}</strong></div>
               <div><small>Vencimento</small><strong>{displayDate(title.DTVENC)}</strong></div>
               <div><small>Quitação</small><strong>{displayDate(title.DATA_BAIXA)}</strong></div>
@@ -932,7 +927,7 @@ function AccountDetailModal({ detail, loading, onClose }) {
                         {products.map((item) => (
                           <tr key={`${item.POSIC}-${item.CDPRODUTO}`}>
                             <td>{item.CDPRODUTO}</td><td>{item.DESCRICAO}</td><td>{Number(item.QTDPRODUTO || 0).toLocaleString("pt-BR")} {item.UNID || ""}</td>
-                            <td className="money-cell">{money(item.VLUNIT)}</td><td className="money-cell">{money(item.TOTAL)}</td>
+                            <td className="money-cell">{money(item.VLUNIT)}</td><td className="money-cell">{item.TOTAL == null ? "não informado" : money(item.TOTAL)}</td>
                           </tr>
                         ))}
                         {!products.length && <tr><td colSpan="5">Nenhum produto encontrado para este pedido.</td></tr>}
@@ -955,7 +950,7 @@ function AccountDetailModal({ detail, loading, onClose }) {
                       {(detail.itens || []).map((item) => (
                         <tr key={`${item.POSIC}-${item.CDPRODUTO}`}>
                           <td>{item.CDPRODUTO}</td><td>{item.DESCRICAO}</td><td>{Number(item.QTDPRODUTO || 0).toLocaleString("pt-BR")} {item.UNID || ""}</td>
-                          <td className="money-cell">{money(item.VLUNIT)}</td><td className="money-cell">{money(item.DESCONTO)}</td><td className="money-cell">{money(item.TOTAL)}</td>
+                          <td className="money-cell">{item.VLUNIT == null ? "não informado" : money(item.VLUNIT)}</td><td className="money-cell">{item.DESCONTO == null ? "não informado" : money(item.DESCONTO)}</td><td className="money-cell">{item.TOTAL == null ? "não informado" : money(item.TOTAL)}</td>
                         </tr>
                       ))}
                       {!detail.itens?.length && <tr><td colSpan="6">Nenhum produto encontrado para esta nota.</td></tr>}
@@ -1163,7 +1158,7 @@ export default function FinanceAccounts() {
           </label>
           <label className="filtro-pessoa">
             {type === "receber" ? "Cliente" : "Fornecedor"}
-            <PersonField type={type} allowEmpty value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite o nome" />
+            <PersonField type={type} allowEmpty value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite nome ou código" hint="A lista inicial mostra 40 nomes. Digite para localizar outro." />
           </label>
           <button onClick={() => load()} disabled={loading}>{loading ? "Atualizando..." : "Buscar / atualizar"}</button>
           <button className="secondary" onClick={clearFilters}>Limpar</button>

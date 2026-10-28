@@ -40,14 +40,19 @@ export function identifyMarketplace(order = {}) {
 function normalizeItems(order = {}) {
   const raw = first(order.ProductsSolds, order.ProductsSold, order.products, order.items, order.OrderProducts, []);
   const list = Array.isArray(raw) ? raw : [raw];
-  return list.map((entry) => entry?.ProductsSold || entry?.Product || entry).filter(Boolean).map((item) => ({
-    externalId: text(first(item.product_id, item.id, item.Product?.id)),
-    reference: text(first(item.reference, item.sku, item.Product?.reference)),
-    name: text(first(item.name, item.product_name, item.Product?.name)) || "Produto sem descrição",
-    quantity: number(first(item.quantity, item.amount, item.qty)) ?? 0,
-    unitPrice: number(first(item.price, item.unit_price, item.value)),
-    total: number(first(item.total, item.total_price)) ?? ((number(first(item.price, item.unit_price)) ?? 0) * (number(first(item.quantity, item.amount)) ?? 0)),
-  }));
+  return list.map((entry) => entry?.ProductsSold || entry?.Product || entry).filter(Boolean).map((item) => {
+    const quantity = number(first(item.quantity, item.amount, item.qty));
+    const unitPrice = number(first(item.price, item.unit_price, item.value));
+    const explicitTotal = number(first(item.total, item.total_price));
+    return {
+      externalId: text(first(item.product_id, item.id, item.Product?.id)),
+      reference: text(first(item.reference, item.sku, item.Product?.reference)),
+      name: text(first(item.name, item.product_name, item.Product?.name)) || "Produto sem descrição",
+      quantity,
+      unitPrice,
+      total: explicitTotal != null ? explicitTotal : (unitPrice != null && quantity != null ? unitPrice * quantity : null),
+    };
+  });
 }
 
 export function normalizeTrayOrder(order = {}) {
@@ -74,10 +79,55 @@ export function normalizeTrayOrder(order = {}) {
   };
 }
 
-function normalizeProduct(product = {}) {
+function httpsImage(value) {
+  const url = text(value);
+  if (/^https:\/\//i.test(url)) return url;
+  if (/^http:\/\/images\.tcdn\.com\.br\//i.test(url)) return `https://${url.slice("http://".length)}`;
+  return "";
+}
+
+function imageUrlFromEntry(entry) {
+  if (entry && typeof entry === "object") {
+    const thumbs = entry.thumbs || {};
+    return httpsImage(first(
+      thumbs["90"]?.https, thumbs["180"]?.https, thumbs["30"]?.https, entry.https,
+      thumbs["90"]?.http, thumbs["180"]?.http, thumbs["30"]?.http, entry.http, entry.image,
+    ));
+  }
+  return httpsImage(entry);
+}
+
+function imageObservation(product) {
+  const list = [product.ProductImage, product.ProductImages, product.images].find(Array.isArray);
+  if (list) {
+    const imageCount = list.filter((entry) => {
+      const value = text(entry?.https || entry?.http || entry?.image || entry);
+      return value && value !== "0";
+    }).length;
+    const imageUrl = list.map(imageUrlFromEntry).find(Boolean) || null;
+    return { imagesObserved: true, imageCount, imageUrl };
+  }
+  if ("image" in product || "picture" in product || "url_image" in product) {
+    const value = text(first(product.image, product.picture, product.url_image));
+    const imageUrl = httpsImage(value) || null;
+    return { imagesObserved: true, imageCount: imageUrl ? 1 : (value && value !== "0" ? 1 : 0), imageUrl };
+  }
+  return null;
+}
+
+function characteristicObservation(product) {
+  const key = ["ProductCharacteristic", "characteristics", "technical_information", "additional_info"].find((name) => name in product);
+  if (!key) return null;
+  const raw = product[key];
+  const list = Array.isArray(raw) ? raw : [raw];
+  const characteristics = list.map((entry) => text(entry?.value || entry?.description || entry?.name || entry)).filter(Boolean).join("; ");
+  return { characteristicsObserved: true, characteristics };
+}
+
+export function normalizeTrayProduct(product = {}) {
   const externalId = text(first(product.id, product.product_id));
   if (!externalId) return null;
-  return {
+  const item = {
     externalId,
     reference: text(first(product.reference, product.sku)),
     name: text(product.name) || "Produto sem descrição",
@@ -88,6 +138,12 @@ function normalizeProduct(product = {}) {
     stock: number(product.stock),
     updatedAt: text(first(product.modified, product.updated_at)),
   };
+  if ("description" in product) item.description = text(product.description);
+  if ("description_small" in product || "descriptionSmall" in product) item.descriptionSmall = text(first(product.description_small, product.descriptionSmall));
+  if ("model" in product) item.model = text(product.model);
+  if ("available" in product) item.available = number(product.available);
+  for (const field of ["weight", "length", "width", "height"]) if (field in product) item[field] = number(product[field]);
+  return { ...item, ...imageObservation(product), ...characteristicObservation(product) };
 }
 
 function normalizeCustomer(customer = {}) {
@@ -107,7 +163,7 @@ export function mergeEcommerceData({ orders = [], products = [], customers = [],
     store.orders[item.externalId] = { ...store.orders[item.externalId], ...item, synchronizedAt: at };
   }
   for (const raw of products) {
-    const item = normalizeProduct(raw);
+    const item = normalizeTrayProduct(raw);
     if (item) store.products[item.externalId] = { ...store.products[item.externalId], ...item, synchronizedAt: at };
   }
   for (const raw of customers) {
@@ -132,7 +188,7 @@ export function recordEcommerceSyncFailure(error, at = new Date().toISOString())
 }
 
 function metric(value, available = true, reason = null) {
-  return { value: available ? value : null, available, reason: available ? null : reason };
+  return { value: available ? value : null, available, reason: reason || null };
 }
 
 export function buildEcommerceDashboard(filters = {}, store = readEcommerceStore()) {
@@ -157,22 +213,40 @@ export function buildEcommerceDashboard(filters = {}, store = readEcommerceStore
   const revenue = withTotal.reduce((sum, order) => sum + order.total, 0);
   const channels = new Map();
   for (const order of valid) {
-    const current = channels.get(order.marketplace) || { marketplace: order.marketplace, revenue: 0, orders: 0 };
+    const current = channels.get(order.marketplace) || { marketplace: order.marketplace, orders: 0, comValor: 0, soma: 0 };
     current.orders += 1;
-    if (order.total !== null) current.revenue += order.total;
+    if (order.total !== null && Number.isFinite(Number(order.total))) {
+      current.comValor += 1;
+      current.soma += Number(order.total);
+    }
     channels.set(order.marketplace, current);
   }
   const products = new Map();
   for (const order of valid) for (const item of order.items || []) {
     const key = item.externalId || item.reference || item.name;
-    const current = products.get(key) || { id: key, name: item.name, reference: item.reference, quantity: 0, revenue: 0 };
-    current.quantity += item.quantity || 0;
-    current.revenue += item.total || 0;
+    const current = products.get(key) || { id: key, name: item.name, reference: item.reference, linhas: 0, comQuantidade: 0, quantity: 0, comValor: 0, soma: 0 };
+    current.linhas += 1;
+    if (item.quantity != null && Number.isFinite(Number(item.quantity))) {
+      current.comQuantidade += 1;
+      current.quantity += Number(item.quantity);
+    }
+    if (item.total != null && Number.isFinite(Number(item.total))) {
+      current.comValor += 1;
+      current.soma += Number(item.total);
+    }
     products.set(key, current);
   }
-  const ranked = [...products.values()].sort((a, b) => b.quantity - a.quantity || b.revenue - a.revenue);
+  const ranked = [...products.values()].map((item) => ({
+    id: item.id,
+    name: item.name,
+    reference: item.reference,
+    quantity: item.comQuantidade === item.linhas ? item.quantity : null,
+    revenue: item.comValor === item.linhas ? item.soma : null,
+    observacao: item.comValor > 0 && item.comValor < item.linhas ? "Há item sem valor neste produto." : null,
+  })).sort((a, b) => (b.quantity ?? Number.NEGATIVE_INFINITY) - (a.quantity ?? Number.NEGATIVE_INFINITY) || (b.revenue ?? Number.NEGATIVE_INFINITY) - (a.revenue ?? Number.NEGATIVE_INFINITY));
   const hasOrders = orderList.length > 0;
   const hasTotals = withTotal.length > 0;
+  const parcial = hasTotals && withTotal.length < valid.length;
   const insufficient = hasOrders ? "A API não forneceu valores monetários para os pedidos filtrados." : "Nenhum pedido sincronizado para os filtros selecionados.";
   return {
     generatedAt: new Date().toISOString(),
@@ -185,17 +259,30 @@ export function buildEcommerceDashboard(filters = {}, store = readEcommerceStore
       brands: [...new Set(Object.values(store.products).map((item) => item.brand).filter(Boolean))].sort(),
     },
     metrics: {
-      revenue: metric(revenue, hasTotals, insufficient),
+      revenue: metric(revenue, hasTotals, hasTotals ? (parcial ? "A soma usa só os pedidos que têm valor." : null) : insufficient),
       orders: metric(orderList.length, true),
-      averageTicket: metric(hasTotals && valid.length ? revenue / valid.length : null, hasTotals && valid.length > 0, insufficient),
+      averageTicket: metric(
+        !parcial && hasTotals && valid.length ? revenue / valid.length : null,
+        !parcial && hasTotals && valid.length > 0,
+        parcial ? "Há pedido sem valor no período. O ticket médio não foi calculado." : insufficient,
+      ),
       contributionMargin: metric(null, false, "Custos, impostos e comissões ainda não estão consolidados na Fase 1."),
       operatingProfit: metric(null, false, "Dados suficientes de custos operacionais não estão disponíveis."),
       canceledOrders: metric(canceled.length, true),
       pendingOrders: metric(pending.length, true),
     },
-    channels: [...channels.values()].sort((a, b) => b.revenue - a.revenue),
+    channels: [...channels.values()].map((channel) => {
+      const completo = channel.orders > 0 && channel.comValor === channel.orders;
+      return {
+        marketplace: channel.marketplace,
+        orders: channel.orders,
+        revenue: completo ? channel.soma : null,
+        ticket: completo ? channel.soma / channel.orders : null,
+        observacao: channel.comValor > 0 && channel.comValor < channel.orders ? "Há pedido sem valor neste canal." : null,
+      };
+    }).sort((a, b) => (b.revenue ?? Number.NEGATIVE_INFINITY) - (a.revenue ?? Number.NEGATIVE_INFINITY) || b.orders - a.orders),
     topProducts: ranked.slice(0, 10),
-    lowProducts: ranked.length ? [...ranked].sort((a, b) => a.quantity - b.quantity).slice(0, 10) : [],
+    lowProducts: ranked.length ? [...ranked].sort((a, b) => (a.quantity ?? Number.POSITIVE_INFINITY) - (b.quantity ?? Number.POSITIVE_INFINITY)).slice(0, 10) : [],
     unavailable: ["margem de contribuição", "lucro operacional", "risco de ruptura", "estoque parado", "oportunidades da IA", "receita incremental"],
   };
 }

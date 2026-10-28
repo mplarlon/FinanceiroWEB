@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { UpdateEngine } from "../update-system/agent/engine.js";
-import { activeBlockers, UpdateAgent, withinUpdateWindow } from "../update-system/agent/agent.js";
+import { activeBlockers, localAddresses, UpdateAgent, withinUpdateWindow } from "../update-system/agent/agent.js";
 import { UpdateStore } from "../update-system/center/store.js";
 import { createUpdateCenter } from "../update-system/center/server.js";
 import { answerUpdateQuestion } from "../server/lib/update-center-client.js";
@@ -24,9 +24,15 @@ test("versionamento semantico ordena major, minor e patch", () => {
   assert.throws(() => compareSemver("1.2", "1.2.0"));
 });
 
+test("endereco local ignora loopback e link-local", () => {
+  const addresses = localAddresses({ lo: [{ family: "IPv4", internal: true, address: "127.0.0.1" }], eth: [{ family: "IPv4", internal: false, address: "192.168.0.20" }, { family: "IPv4", internal: false, address: "169.254.1.2" }, { family: "IPv6", internal: false, address: "fe80::1" }] });
+  assert.deepEqual(addresses, ["192.168.0.20"]);
+});
+
 test("janela noturna e bloqueadores de operacao critica adiam atualizacao", () => {
   assert.equal(withinUpdateWindow("22:00-05:00", new Date(2026, 0, 1, 23, 0)), true);
   assert.equal(withinUpdateWindow("22:00-05:00", new Date(2026, 0, 1, 12, 0)), false);
+  assert.equal(withinUpdateWindow("imediata", new Date(2026, 0, 1, 12, 0)), true);
   const root = temporary(); const directory = path.join(root, "update-blockers"); fs.mkdirSync(directory, { recursive: true }); fs.writeFileSync(path.join(directory, "active.json"), JSON.stringify({ type: "fechamento", expiresAt: new Date(Date.now() + 60_000).toISOString() })); fs.writeFileSync(path.join(directory, "expired.json"), JSON.stringify({ type: "old", expiresAt: new Date(Date.now() - 60_000).toISOString() }));
   assert.deepEqual(activeBlockers(root).map((item) => item.type), ["fechamento"]); assert.equal(fs.existsSync(path.join(directory, "expired.json")), false);
 });
@@ -62,6 +68,15 @@ test("central nao oferece versao sem autorizacao, bloqueada ou incompativel", ()
   store.state.releases["2.5.0"].status = "blocked"; assert.equal(store.eligible(installation), null);
   store.state.releases["2.5.0"].status = "published"; assert.equal(store.eligible({ ...installation, architecture: "unsupported" }), null);
   store.state.suspended = true; assert.equal(store.eligible(installation), null);
+});
+
+test("remove versao publicada e o pacote", () => {
+  const root = temporary(); const store = new UpdateStore(root); const packagePath = path.join(store.packagesDir, "2.5.0.tar.gz");
+  fs.writeFileSync(packagePath, "pacote"); store.release(manifest(Buffer.from("x")), "sig", packagePath); store.authorize({ version: "2.5.0", percentage: 100, actor: "tester" });
+  store.removeRelease("2.5.0");
+  assert.equal(store.state.releases["2.5.0"], undefined);
+  assert.equal(store.state.authorizations.length, 0);
+  assert.equal(fs.existsSync(packagePath), false);
 });
 
 test("rollout e cliente atualizado nao repetem instalacao", () => {
@@ -109,12 +124,20 @@ test("API central separa leitura e administracao, autentica instalacao e bloquei
   const tokenResponse = await fetch(`${base}/api/admin/enrollment-tokens`, { method: "POST", headers: { authorization: "Bearer test-admin-token", "content-type": "application/json" }, body: JSON.stringify({ clientId: "c1", companyName: "Empresa A", group: "pilot" }) });
   const enrollmentToken = (await tokenResponse.json()).token; const identity = generateInstallationIdentity();
   const enrolled = await fetch(`${base}/api/v1/enroll`, { method: "POST", headers: { authorization: `Bearer ${enrollmentToken}`, "content-type": "application/json" }, body: JSON.stringify({ installationId: identity.installationId, publicKey: identity.publicKey, version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0" }) }); assert.equal(enrolled.status, 201);
-  const body = Buffer.from(JSON.stringify({ version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0" })); const timestamp = Date.now(); const nonce = "single-use-nonce"; const signature = signRequest({ method: "POST", pathname: "/api/v1/check", timestamp, nonce, body }, identity.privateKey); const headers = { "content-type": "application/json", "x-installation-id": identity.installationId, "x-update-timestamp": String(timestamp), "x-update-nonce": nonce, "x-update-signature": signature };
+  const body = Buffer.from(JSON.stringify({ version: "2.4.5", platform: process.platform, architecture: process.arch, agentVersion: "1.0.0", companyName: "Boca do Mato", hostname: "CAIXA-01", addresses: ["192.168.0.15", "nao-e-ip"] })); const timestamp = Date.now(); const nonce = "single-use-nonce"; const signature = signRequest({ method: "POST", pathname: "/api/v1/check", timestamp, nonce, body }, identity.privateKey); const headers = { "content-type": "application/json", "x-installation-id": identity.installationId, "x-update-timestamp": String(timestamp), "x-update-nonce": nonce, "x-update-signature": signature };
   const checked = await fetch(`${base}/api/v1/check`, { method: "POST", headers, body }); assert.equal(checked.status, 200); assert.equal((await checked.json()).update, null);
+  const saved = store.state.installations[identity.installationId]; assert.equal(saved.companyName, "Boca do Mato"); assert.equal(saved.hostname, "CAIXA-01"); assert.deepEqual(saved.addresses, ["192.168.0.15"]); assert.equal(saved.remoteAddress, "127.0.0.1");
   const replayed = await fetch(`${base}/api/v1/check`, { method: "POST", headers, body }); assert.equal(replayed.status, 409); assert.ok(store.state.installations[identity.installationId].lastSeenAt);
   const packageBytes = Buffer.from("signed-package"); const releaseManifest = manifest(packageBytes); const uploaded = await fetch(`${base}/api/admin/releases/2.5.0/package`, { method: "POST", headers: { authorization: "Bearer test-admin-token", "content-type": "application/octet-stream", "x-update-manifest": Buffer.from(JSON.stringify(releaseManifest)).toString("base64url"), "x-update-signature": signManifest(releaseManifest, releasePair.privateKey) }, body: packageBytes }); assert.equal(uploaded.status, 201);
   store.authorize({ version: "2.5.0", percentage: 100, actor: "test" }); const previousUrl = process.env.UPDATE_CENTER_URL; const previousToken = process.env.UPDATE_CENTER_READ_TOKEN; process.env.UPDATE_CENTER_URL = base; process.env.UPDATE_CENTER_READ_TOKEN = "read-only-token";
   try { const answer = await answerUpdateQuestion("Charlie, quais clientes estão desatualizados?"); assert.equal(answer.intencao.type, "atualizacoes_consulta"); assert.match(answer.resposta, /instalação/); } finally { if (previousUrl === undefined) delete process.env.UPDATE_CENTER_URL; else process.env.UPDATE_CENTER_URL = previousUrl; if (previousToken === undefined) delete process.env.UPDATE_CENTER_READ_TOKEN; else process.env.UPDATE_CENTER_READ_TOKEN = previousToken; }
+});
+
+test("agente sem token fica instalado e nao grava identidade", async () => {
+  const root = temporary(); const publicKeyFile = path.join(root, "release-public.pem"); fs.writeFileSync(publicKeyFile, keys().publicKey.export({ type: "spki", format: "pem" }));
+  const agent = new UpdateAgent({ centerUrl: "https://financeiroweb.nuvempontual.com", enrollmentToken: "", companyName: "Empresa", installRoot: path.join(root, "install"), dataDir: path.join(root, "data"), releasePublicKey: publicKeyFile, currentVersion: "2.4.5", updateWindow: "22:00-05:00" });
+  assert.equal(await agent.initialize(), false);
+  assert.equal(fs.existsSync(path.join(root, "data", "updater", "identity.json")), false);
 });
 
 test("fluxo integrado publica, autoriza, baixa, ativa e confirma a atualizacao", async (context) => {

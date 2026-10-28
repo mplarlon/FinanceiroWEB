@@ -116,7 +116,7 @@ A chave privada `release-private.pem` permanece somente na máquina/cofre de pub
 
 4. Confirme o serviço `ErpAutoUpdater` e a primeira comunicação no painel. Nenhuma porta de entrada é necessária.
 
-A janela padrão do serviço é `22:00-05:00`. Ajuste `ERP_UPDATE_WINDOW=HH:MM-HH:MM` no XML do serviço e reinstale o serviço quando outra janela for necessária.
+O padrão é instalar assim que a central tiver uma versão autorizada para o cliente, em qualquer horário. O agente consulta a cada 5 minutos. Uma operação crítica em andamento continua adiando a troca. Para limitar a um horário, use `ERP_UPDATE_WINDOW=HH:MM-HH:MM` no XML do serviço e reinstale o serviço.
 
 Operações críticas usam arquivos temporários em `C:\Administracao\Dashboard\update-blockers`. Rotinas do ERP devem usar `withCriticalOperation()` de `server/lib/update-readiness.js`; o agente remove bloqueadores expirados e adia a atualização enquanto houver um ativo.
 

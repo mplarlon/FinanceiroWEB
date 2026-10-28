@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api.js";
 
-const money = value => Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const money = (value) => value == null || value === "" || !Number.isFinite(Number(value))
+  ? "não informado"
+  : Number(value).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const number = value => Number(value || 0).toLocaleString("pt-BR", { maximumFractionDigits: 2 });
 
 function Metric({ label, value }) {
@@ -14,16 +16,16 @@ function Sales({ data }) {
     <section className="grid">
       <Metric label="Faturamento" value={money(k.faturamento_total)} />
       <Metric label="Lucro bruto" value={money(k.lucro_bruto)} />
-      <Metric label="Margem" value={`${number(k.margem_lucro)}%`} />
+      <Metric label="Margem" value={k.margem_lucro === null ? "não informado" : `${number(k.margem_lucro)}%`} />
       <Metric label="Pedidos" value={number(k.quantidade_vendas)} />
       <Metric label="Ticket médio" value={money(k.ticket_medio)} />
     </section>
     <section className="dashboard-columns">
       <article className="panel"><h2>Produtos mais vendidos</h2><table className="tabela"><thead><tr><th>Produto</th><th>Qtd.</th><th className="money-cell">Total</th></tr></thead><tbody>
-        {(data.top_produtos || []).map(p => <tr key={p.CODIGO}><td>{p.CODIGO} — {p.PRODUTO}</td><td>{number(p.QTD)}</td><td className="money-cell">{money(p.TOTAL)}</td></tr>)}
+        {[...(data.top_produtos || [])].sort((a, b) => (a.TOTAL == null) - (b.TOTAL == null) || Number(b.TOTAL) - Number(a.TOTAL)).map(p => <tr key={p.CODIGO}><td>{p.CODIGO} — {p.PRODUTO}</td><td>{number(p.QTD)}</td><td className="money-cell">{money(p.TOTAL)}</td></tr>)}
       </tbody></table></article>
       <article className="panel"><h2>Vendedores</h2><table className="tabela"><thead><tr><th>Vendedor</th><th>Pedidos</th><th className="money-cell">Total</th></tr></thead><tbody>
-        {(data.por_vendedor || []).map(v => <tr key={v.ID}><td>{v.NOME}</td><td>{number(v.QTD)}</td><td className="money-cell">{money(v.TOTAL)}</td></tr>)}
+        {[...(data.por_vendedor || [])].sort((a, b) => (a.TOTAL == null) - (b.TOTAL == null) || Number(b.TOTAL) - Number(a.TOTAL)).map(v => <tr key={v.ID}><td>{v.NOME}</td><td>{number(v.QTD)}</td><td className="money-cell">{money(v.TOTAL)}</td></tr>)}
       </tbody></table></article>
     </section>
   </>;

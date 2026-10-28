@@ -41,6 +41,7 @@ import { readJsonConfig } from "../lib/json-config.js";
 import { parseFinancialDate } from "../lib/finance-assistant.js";
 import { buildExcel, buildPdf, fileSlug, normalizeTableExport } from "../lib/table-export.js";
 import { planCharlieTask, looksLikeTask, acceptModelSelection, selectTaskWithOllama } from "../lib/charlie-task-plan.js";
+import { responderLeads } from "../lib/charlie-leads-nl.js";
 import { runCharlieTask, confirmCharlieTask, cancelCharlieTask, exportCharlieTask } from "../lib/charlie-task-engine.js";
 import { acceptCompositeModelPlan, looksLikeCompositeTask, planCompositeTask, selectCompositeWithOllama } from "../lib/charlie-composite-plan.js";
 import { retryCompositeTask, runCompositeTask } from "../lib/charlie-composite-engine.js";
@@ -89,6 +90,8 @@ import {
   updateExecutivePlanStatus,
   verifyExecutiveAction,
 } from "../lib/charlie-executive-service.js";
+import { answerUpdateQuestion, updateFleetSnapshot } from "../lib/update-center-client.js";
+import { ITEM_SEM_SQL, ITEM_VALOR_SQL, VALOR_AUSENTE, valorJanela, valorLido } from "../lib/charlie-sale-value.js";
 
 const router = express.Router();
 const knowledgeUpload = multer({ storage: multer.memoryStorage(), limits: { files: 1, fileSize: MAX_DOCUMENT_BYTES } });
@@ -97,6 +100,7 @@ const money = (value) =>
     style: "currency",
     currency: "BRL",
   });
+const textoVenda = (value) => value == null || !Number.isFinite(Number(value)) ? "não informado" : money(value);
 const normalize = (value) =>
   String(value || "")
     .normalize("NFD")
@@ -300,7 +304,7 @@ async function answer(db, question, selectedIntent) {
   } else if (intent.type === "abertura_dia") {
     const sales = await query(
       db,
-      "SELECT COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) AS TOTAL FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA WHERE CAST(se.DTSAIDA AS DATE)=CURRENT_DATE AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0",
+      `SELECT COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(${ITEM_VALOR_SQL}) AS TOTAL,SUM(${ITEM_SEM_SQL}) AS SEM FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA WHERE CAST(se.DTSAIDA AS DATE)=CURRENT_DATE AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0`,
     );
     const receivable = await query(
       db,
@@ -314,11 +318,12 @@ async function answer(db, question, selectedIntent) {
       db,
       "SELECT COUNT(*) AS QTD FROM MOVIMENTO m JOIN PRODUTO p ON p.CDPRODUTO=m.CDPRODUTO WHERE m.QTDEATUAL<=m.QTDEMINIMA AND m.QTDEMINIMA>0 AND COALESCE(p.INATIVO,0)=0",
     );
+    const vendasHoje = valorJanela(sales[0]?.TOTAL, sales[0]?.SEM);
     data = [
       {
         INDICADOR: "Vendas de hoje",
         QTD: sales[0]?.QTD || 0,
-        TOTAL: sales[0]?.TOTAL || 0,
+        TOTAL: vendasHoje,
       },
       {
         INDICADOR: "Contas a receber vencidas",
@@ -336,7 +341,7 @@ async function answer(db, question, selectedIntent) {
         TOTAL: null,
       },
     ];
-    response = `Abertura do dia: ${Number(sales[0]?.QTD || 0)} venda(s), ${money(sales[0]?.TOTAL)} faturados; ${Number(receivable[0]?.QTD || 0)} conta(s) a receber vencida(s), somando ${money(receivable[0]?.TOTAL)}; ${Number(payable[0]?.QTD || 0)} conta(s) a pagar vencida(s), somando ${money(payable[0]?.TOTAL)}; ${Number(stock[0]?.QTD || 0)} produto(s) com estoque baixo.`;
+    response = `Abertura do dia: ${Number(sales[0]?.QTD || 0)} venda(s), ${textoVenda(vendasHoje)} faturados; ${Number(receivable[0]?.QTD || 0)} conta(s) a receber vencida(s), somando ${money(receivable[0]?.TOTAL)}; ${Number(payable[0]?.QTD || 0)} conta(s) a pagar vencida(s), somando ${money(payable[0]?.TOTAL)}; ${Number(stock[0]?.QTD || 0)} produto(s) com estoque baixo.${vendasHoje == null ? ` ${VALOR_AUSENTE}` : ""}`;
   } else if (intent.type === "estoque_negativo") {
     data = await query(
       db,
@@ -422,17 +427,17 @@ async function answer(db, question, selectedIntent) {
   } else {
     const dimensions = {
       produtos: [
-        "sp.CDPRODUTO AS CODIGO,COALESCE(p.PRODUTO,sp.DESCRICAO) AS NOME,SUM(sp.QTDPRODUTO) AS QTD,SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) AS TOTAL",
+        `sp.CDPRODUTO AS CODIGO,COALESCE(p.PRODUTO,sp.DESCRICAO) AS NOME,SUM(sp.QTDPRODUTO) AS QTD,SUM(${ITEM_VALOR_SQL}) AS TOTAL,SUM(${ITEM_SEM_SQL}) AS SEM`,
         "LEFT JOIN PRODUTO p ON p.CDPRODUTO=sp.CDPRODUTO",
         "sp.CDPRODUTO,p.PRODUTO,sp.DESCRICAO",
       ],
       vendedores: [
-        "se.CDVENDEDOR AS CODIGO,v.VENDEDOR AS NOME,COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) AS TOTAL",
+        `se.CDVENDEDOR AS CODIGO,v.VENDEDOR AS NOME,COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(${ITEM_VALOR_SQL}) AS TOTAL,SUM(${ITEM_SEM_SQL}) AS SEM`,
         "LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=se.CDVENDEDOR",
         "se.CDVENDEDOR,v.VENDEDOR",
       ],
       clientes: [
-        "se.CDCLIENTE AS CODIGO,COALESCE(c.CLIENTE,se.CLIENTE) AS NOME,COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) AS TOTAL",
+        `se.CDCLIENTE AS CODIGO,COALESCE(c.CLIENTE,se.CLIENTE) AS NOME,COUNT(DISTINCT se.NRPEDIDO) AS QTD,SUM(${ITEM_VALOR_SQL}) AS TOTAL,SUM(${ITEM_SEM_SQL}) AS SEM`,
         "LEFT JOIN CLIENTE c ON c.CDCLIENTE=se.CDCLIENTE",
         "se.CDCLIENTE,c.CLIENTE,se.CLIENTE",
       ],
@@ -444,20 +449,24 @@ async function answer(db, question, selectedIntent) {
         db,
         `SELECT FIRST ${intent.limit} ${dims} FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA ${join} WHERE ${when} AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0 GROUP BY ${group} ORDER BY TOTAL DESC`,
       );
+      data = data.map(({ SEM, ...row }) => ({ ...row, TOTAL: valorLido(row.TOTAL, SEM) }));
       const label = intent.date?.label || "nos últimos 30 dias";
+      const incompleto = data.some((row) => row.TOTAL == null);
       response = data.length
-        ? `Ranking ${label}: ${data.map((row, index) => `${index + 1}. ${row.NOME} - ${money(row.TOTAL)}`).join("; ")}.`
+        ? `Ranking ${label}: ${data.map((row, index) => `${index + 1}. ${row.NOME} - ${textoVenda(row.TOTAL)}`).join("; ")}.${incompleto ? ` ${VALOR_AUSENTE}` : ""}`
         : `Não encontrei vendas ${label}.`;
     } else {
       const when = periodPredicate(intent, "se.DTSAIDA", "CAST(se.DTSAIDA AS DATE)=CURRENT_DATE");
       data = await query(
         db,
-        `SELECT COUNT(DISTINCT se.NRPEDIDO) AS QTD_VENDAS,SUM(COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) AS TOTAL FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA WHERE ${when} AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0`,
+        `SELECT COUNT(DISTINCT se.NRPEDIDO) AS QTD_VENDAS,SUM(${ITEM_VALOR_SQL}) AS TOTAL,SUM(${ITEM_SEM_SQL}) AS SEM FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA WHERE ${when} AND se.DTCANCELAMENTO IS NULL AND COALESCE(sp.STATUSSE,0)=0`,
       );
       const label = intent.date?.label || "hoje";
       const qty = Number(data[0]?.QTD_VENDAS || 0);
+      const total = valorJanela(data[0]?.TOTAL, data[0]?.SEM);
+      data = [{ QTD_VENDAS: qty, TOTAL: total }];
       response = qty
-        ? `Vendas ${label}: ${money(data[0]?.TOTAL)} em ${qty} pedido(s).`
+        ? `Vendas ${label}: ${textoVenda(total)} em ${qty} pedido(s).${total == null ? ` ${VALOR_AUSENTE}` : ""}`
         : `Não encontrei vendas ${label}.`;
     }
   }
@@ -1412,6 +1421,13 @@ router.post("/executivo/decisoes", (req, res) => {
   try { res.status(201).json({ ok: true, decisao: recordExecutiveDecision(taskActor(req), req.body || {}) }); }
   catch (error) { res.status(error.status || 400).json({ ok: false, erro: error.message }); }
 });
+router.get("/atualizacoes", async (req, res) => {
+  try {
+    const actor = taskActor(req);
+    if (!actor.gerencial) return res.status(403).json({ ok: false, erro: "Somente administradores podem consultar a frota de atualizações." });
+    res.json({ ok: true, ...(await updateFleetSnapshot(req.query)) });
+  } catch (error) { res.status(error.status || 500).json({ ok: false, erro: error.message }); }
+});
 router.post("/perguntar", async (req, res) => {
   const question = String(
     req.body?.pergunta || req.body?.mensagem || "",
@@ -1428,6 +1444,14 @@ router.post("/perguntar", async (req, res) => {
       ? getCharlieConversation(user, req.body.contexto.conversaId)
       : null;
     const actor = taskActor(req);
+    if (actor.gerencial) {
+      const updateAnswer = await answerUpdateQuestion(question);
+      if (updateAnswer) return finishTask(req, res, actor, question, updateAnswer, started);
+    }
+    const leadsAnswer = await responderLeads(question, actor, {
+      query: (sql, params) => withReadOnlyDatabase((db) => query(db, sql, params, { timeoutMs: 20000 })),
+    }, taskContext(actor, conversation));
+    if (leadsAnswer) return finishTask(req, res, actor, question, leadsAnswer, started);
     const normalizedPredictive = normalize(question);
     const horizonMatch = normalizedPredictive.match(/(?:proxim(?:os|as)|daqui a|em)\s+(\d+)\s+dias?/);
     const predictiveHorizon = horizonMatch ? Math.min(366, Number(horizonMatch[1])) : /seis meses/.test(normalizedPredictive) ? 180 : /tres meses/.test(normalizedPredictive) ? 90 : /15 dias/.test(normalizedPredictive) ? 15 : /7 dias|uma semana/.test(normalizedPredictive) ? 7 : 30;

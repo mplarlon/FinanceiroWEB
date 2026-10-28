@@ -1,15 +1,17 @@
 <service>
   <id>ErpAutoUpdater</id>
-  <name>ERP Auto Updater</name>
+  <name>Dashboard Gerencial Update</name>
   <description>Agente independente de atualizacao segura do Dashboard Gerencial</description>
   <executable>%BASE%\UpdaterNode.exe</executable>
   <arguments>&quot;%BASE%\agent.mjs&quot;</arguments>
   <workingdirectory>%BASE%</workingdirectory>
   <env name="DASHBOARD_DATA_DIR" value="%SystemDrive%\Administracao\Dashboard" />
-  <env name="ERP_INSTALL_ROOT" value="%ProgramFiles%\Dashboard" />
+  <env name="ERP_INSTALL_ROOT" value="%SystemDrive%\Administracao" />
+  <env name="ERP_UPDATE_CENTER_URL" value="https://financeiroweb.nuvempontual.com" />
   <env name="ERP_UPDATE_PUBLIC_KEY_FILE" value="%BASE%\release-public.pem" />
-  <env name="ERP_CURRENT_VERSION" value="2.4.5" />
-  <env name="ERP_UPDATE_WINDOW" value="22:00-05:00" />
+  <env name="ERP_CURRENT_VERSION" value="1.0.2" />
+  <env name="ERP_UPDATE_WINDOW" value="imediata" />
+  <env name="ERP_UPDATE_INTERVAL_MS" value="300000" />
   <startmode>Automatic</startmode><delayedAutoStart>true</delayedAutoStart>
   <onfailure action="restart" delay="30 sec"/><onfailure action="restart" delay="2 min"/>
   <resetfailure>1 hour</resetfailure><stoptimeout>30 sec</stoptimeout>

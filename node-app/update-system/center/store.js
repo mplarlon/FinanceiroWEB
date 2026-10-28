@@ -30,7 +30,8 @@ export class UpdateStore {
     if (!grant || grant.usedAt || grant.expiresAt < Date.now()) throw Object.assign(new Error("Token de registro invalido ou expirado."), { status: 401 });
     if (this.state.installations[installation.installationId]) throw Object.assign(new Error("Instalacao ja registrada."), { status: 409 });
     grant.usedAt = Date.now();
-    this.state.installations[installation.installationId] = { ...installation, ...grant, status: "registered", enrolledAt: new Date().toISOString(), revokedAt: null };
+    const companyName = String(installation.companyName || grant.companyName || "").slice(0, 160);
+    this.state.installations[installation.installationId] = { ...installation, clientId: grant.clientId, group: grant.group, companyName, status: "registered", enrolledAt: new Date().toISOString(), revokedAt: null };
     this.save();
     return this.state.installations[installation.installationId];
   }
@@ -47,6 +48,15 @@ export class UpdateStore {
     this.state.releases[manifest.version] = { manifest, signature, packagePath, status: "draft", createdAt: new Date().toISOString() };
     this.save();
     return this.state.releases[manifest.version];
+  }
+
+  removeRelease(version) {
+    const release = this.state.releases[version];
+    if (!release) throw Object.assign(new Error("Versao inexistente."), { status: 404 });
+    if (release.packagePath) fs.rmSync(release.packagePath, { force: true });
+    delete this.state.releases[version];
+    this.state.authorizations = this.state.authorizations.filter((item) => item.version !== version);
+    this.save();
   }
 
   authorize({ version, installationId = null, group = null, percentage = 100, actor }) {

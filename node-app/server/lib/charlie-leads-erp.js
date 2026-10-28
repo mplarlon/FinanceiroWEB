@@ -22,7 +22,9 @@ export async function localizarCliente(query, cnpj) {
   if (!row) return { verificado: true, documento, existe: false };
   const clienteId = Number(row.CDCLIENTE);
   const vendas = await optional(query, `
-    SELECT COUNT(*) QTD, MAX(DTSAIDA) ULTIMA, SUM(COALESCE(VLTOTAL, SUBTOTAL, 0)) TOTAL
+    SELECT COUNT(*) QTD, MAX(DTSAIDA) ULTIMA,
+      SUM(CASE WHEN COALESCE(VLTOTAL, SUBTOTAL) IS NOT NULL THEN COALESCE(VLTOTAL, SUBTOTAL) ELSE 0 END) TOTAL,
+      SUM(CASE WHEN VLTOTAL IS NULL AND SUBTOTAL IS NULL THEN 1 ELSE 0 END) SEM
     FROM SAIDAESTOQUE WHERE CDCLIENTE = ? AND DTCANCELAMENTO IS NULL
   `, [clienteId]);
   const orcamentos = await optional(query, `
@@ -46,7 +48,7 @@ export async function localizarCliente(query, cnpj) {
     vendedorId: row.CDVENDEDOR == null ? null : Number(row.CDVENDEDOR),
     vendas: quantidadeVendas,
     ultimaCompra: ultima ? ultima.toISOString() : null,
-    faturamentoRegistrado: vendas?.[0]?.TOTAL == null ? null : Number(vendas[0].TOTAL),
+    faturamentoRegistrado: vendas == null || Number(vendas[0]?.SEM) > 0 || vendas[0]?.TOTAL == null ? null : Number(vendas[0].TOTAL),
     orcamentosAbertos: orcamentos == null ? null : Number(orcamentos[0]?.QTD || 0),
     situacao,
   };
@@ -69,8 +71,10 @@ export async function contextoGeografico(query, uf, municipio) {
       AND UPPER(TRIM(COALESCE(m.MUNICIPIO, ''))) = ?
   `, [String(uf).toUpperCase(), String(municipio).toUpperCase()]) : null;
   const ticket = uf ? await optional(query, `
-    SELECT AVG(TOTAL) MEDIA FROM (
-      SELECT SUM(COALESCE(se.VLTOTAL, se.SUBTOTAL, 0)) TOTAL
+    SELECT AVG(TOTAL) MEDIA, SUM(OMITIDO) OMITIDOS FROM (
+      SELECT
+        CASE WHEN SUM(CASE WHEN se.VLTOTAL IS NULL AND se.SUBTOTAL IS NULL THEN 1 ELSE 0 END) = 0 THEN SUM(COALESCE(se.VLTOTAL, se.SUBTOTAL)) ELSE NULL END TOTAL,
+        CASE WHEN SUM(CASE WHEN se.VLTOTAL IS NULL AND se.SUBTOTAL IS NULL THEN 1 ELSE 0 END) > 0 THEN 1 ELSE 0 END OMITIDO
       FROM SAIDAESTOQUE se
       JOIN CLIENTE c ON c.CDCLIENTE = se.CDCLIENTE
       WHERE se.DTCANCELAMENTO IS NULL AND UPPER(TRIM(c.UF)) = ?
@@ -82,6 +86,7 @@ export async function contextoGeografico(query, uf, municipio) {
     compradoresUf: compradoresUf == null ? null : Number(compradoresUf[0]?.QTD || 0),
     clientesMesmaCidade: mesmaCidade == null ? null : Number(mesmaCidade[0]?.QTD || 0),
     ticketMedioUf: ticket?.[0]?.MEDIA == null ? null : Number(ticket[0].MEDIA),
+    ticketMedioOmitidos: ticket == null ? null : Number(ticket[0]?.OMITIDOS || 0),
   };
 }
 
@@ -129,7 +134,9 @@ export async function localizarOrcamento(query, numero) {
 export async function localizarPedido(query, numero) {
   if (!query || !numero) return null;
   const rows = await optional(query, `
-    SELECT NRPEDIDO, IDEMPRESA, MIN(CDCLIENTE) CDCLIENTE, SUM(COALESCE(VLTOTAL, SUBTOTAL, 0)) TOTAL
+    SELECT NRPEDIDO, IDEMPRESA, MIN(CDCLIENTE) CDCLIENTE,
+      SUM(CASE WHEN COALESCE(VLTOTAL, SUBTOTAL) IS NOT NULL THEN COALESCE(VLTOTAL, SUBTOTAL) ELSE 0 END) TOTAL,
+      SUM(CASE WHEN VLTOTAL IS NULL AND SUBTOTAL IS NULL THEN 1 ELSE 0 END) SEM
     FROM SAIDAESTOQUE
     WHERE NRPEDIDO = ? AND DTCANCELAMENTO IS NULL
     GROUP BY NRPEDIDO, IDEMPRESA
@@ -139,20 +146,22 @@ export async function localizarPedido(query, numero) {
     numero: rows[0].NRPEDIDO,
     empresa: rows[0].IDEMPRESA == null ? null : Number(rows[0].IDEMPRESA),
     clienteId: rows[0].CDCLIENTE == null ? null : Number(rows[0].CDCLIENTE),
-    valor: rows[0].TOTAL == null ? null : Number(rows[0].TOTAL),
+    valor: Number(rows[0].SEM) > 0 || rows[0].TOTAL == null ? null : Number(rows[0].TOTAL),
   };
 }
 
 export async function ufsMelhoresClientes(query) {
   if (!query) return [];
   const rows = await optional(query, `
-    SELECT FIRST 5 UPPER(TRIM(c.UF)) UF, SUM(COALESCE(se.VLTOTAL, se.SUBTOTAL, 0)) TOTAL
+    SELECT FIRST 5 UPPER(TRIM(c.UF)) UF,
+      SUM(CASE WHEN COALESCE(se.VLTOTAL, se.SUBTOTAL) IS NOT NULL THEN COALESCE(se.VLTOTAL, se.SUBTOTAL) ELSE 0 END) TOTAL
     FROM SAIDAESTOQUE se
     JOIN CLIENTE c ON c.CDCLIENTE = se.CDCLIENTE
     WHERE se.DTCANCELAMENTO IS NULL AND se.DTSAIDA >= DATEADD(-365 DAY TO CURRENT_DATE)
       AND c.UF IS NOT NULL AND TRIM(c.UF) <> ''
     GROUP BY UPPER(TRIM(c.UF))
+    HAVING SUM(CASE WHEN se.VLTOTAL IS NULL AND se.SUBTOTAL IS NULL THEN 1 ELSE 0 END) = 0
     ORDER BY 2 DESC
   `, []);
-  return (rows || []).map((row) => ({ uf: String(row.UF || "").toLowerCase(), total: Number(row.TOTAL || 0) })).filter((item) => item.uf);
+  return (rows || []).map((row) => ({ uf: String(row.UF || "").toLowerCase(), total: row.TOTAL == null ? null : Number(row.TOTAL) })).filter((item) => item.uf && item.total != null);
 }
