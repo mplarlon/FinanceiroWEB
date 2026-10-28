@@ -21,15 +21,17 @@ export class UpdateAgent {
   async initialize() {
     fs.mkdirSync(this.stateDir, { recursive: true });
     if (!this.identity) {
-      if (!this.config.enrollmentToken) throw new Error("ERP_UPDATE_ENROLLMENT_TOKEN e obrigatorio no primeiro registro.");
-      this.identity = generateInstallationIdentity();
+      if (!this.config.enrollmentToken) return false;
+      const identity = generateInstallationIdentity();
+      await this.request("/api/v1/enroll", { companyName: this.config.companyName, installationId: identity.installationId, publicKey: identity.publicKey, ...this.metadata() }, { enrollment: true });
+      this.identity = identity;
       atomicWriteJson(this.identityFile, this.identity);
-      await this.request("/api/v1/enroll", { companyName: this.config.companyName, installationId: this.identity.installationId, publicKey: this.identity.publicKey, ...this.metadata() }, { enrollment: true });
     }
     await this.engine.recoverInterrupted();
+    return true;
   }
 
-  metadata() { return { version: this.state.version, platform: process.platform, architecture: process.arch, nodeVersion: process.version, agentVersion: AGENT_VERSION, channel: this.config.channel || "stable", hostname: os.hostname() }; }
+  metadata() { return { version: this.state.version, platform: process.platform, architecture: process.arch, nodeVersion: process.version, agentVersion: AGENT_VERSION, channel: this.config.channel || "stable", companyName: this.config.companyName || "", hostname: os.hostname(), addresses: localAddresses() }; }
 
   async checkOnce() {
     try {
@@ -91,17 +93,32 @@ export function loadAgentConfig(environment = process.env) {
     companyName: environment.ERP_UPDATE_COMPANY_NAME || os.hostname(), installRoot: environment.ERP_INSTALL_ROOT || "C:\\Program Files\\Dashboard",
     dataDir: environment.DASHBOARD_DATA_DIR || "C:\\Administracao\\Dashboard", releasePublicKey: required(environment.ERP_UPDATE_PUBLIC_KEY_FILE),
     currentVersion: environment.ERP_CURRENT_VERSION || "2.4.5", healthUrl: environment.ERP_HEALTH_URL || "http://127.0.0.1:805/api/status",
-    channel: environment.ERP_UPDATE_CHANNEL || "stable", intervalMs: Number(environment.ERP_UPDATE_INTERVAL_MS || 30 * 60_000), timeoutMs: Number(environment.ERP_UPDATE_TIMEOUT_MS || 30_000),
-    updateWindow: environment.ERP_UPDATE_WINDOW || "00:00-23:59",
+    channel: environment.ERP_UPDATE_CHANNEL || "stable", intervalMs: Number(environment.ERP_UPDATE_INTERVAL_MS || 5 * 60_000), timeoutMs: Number(environment.ERP_UPDATE_TIMEOUT_MS || 30_000),
+    updateWindow: environment.ERP_UPDATE_WINDOW || "imediata",
     maxPackageBytes: Number(environment.ERP_UPDATE_MAX_PACKAGE_BYTES || 500 * 1024 * 1024), retention: Number(environment.ERP_UPDATE_RETENTION || 3), maxAttempts: Number(environment.ERP_UPDATE_MAX_ATTEMPTS || 3),
   };
 }
 
 function required(value) { if (!value) throw new Error("Configuracao obrigatoria ausente."); return value; }
 
+export function localAddresses(interfaces = os.networkInterfaces()) {
+  const found = [];
+  for (const entries of Object.values(interfaces || {})) {
+    for (const entry of entries || []) {
+      const family = entry.family === 4 || entry.family === "IPv4" ? "IPv4" : String(entry.family || "");
+      if (entry.internal || family !== "IPv4") continue;
+      if (String(entry.address || "").startsWith("169.254.")) continue;
+      found.push(entry.address);
+    }
+  }
+  return [...new Set(found)].slice(0, 8);
+}
+
 export function withinUpdateWindow(window, now = new Date()) {
-  const match = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/.exec(String(window || ""));
-  if (!match) throw new Error("ERP_UPDATE_WINDOW deve usar HH:MM-HH:MM.");
+  const texto = String(window || "").trim().toLowerCase();
+  if (!texto || texto === "imediata" || texto === "sempre") return true;
+  const match = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/.exec(texto);
+  if (!match) throw new Error("ERP_UPDATE_WINDOW deve usar HH:MM-HH:MM ou imediata.");
   const values = match.slice(1).map(Number); if (values[0] > 23 || values[2] > 23 || values[1] > 59 || values[3] > 59) throw new Error("ERP_UPDATE_WINDOW invalida.");
   const current = now.getHours() * 60 + now.getMinutes(); const start = values[0] * 60 + values[1]; const end = values[2] * 60 + values[3];
   return start <= end ? current >= start && current <= end : current >= start || current <= end;
@@ -119,8 +136,31 @@ export function activeBlockers(dataDir, now = Date.now()) {
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
-  const config = loadAgentConfig(); const agent = new UpdateAgent(config); await agent.initialize();
+  const config = loadAgentConfig();
+  const agent = new UpdateAgent(config);
+  let ready = false;
   let failures = 0;
-  const loop = async () => { try { await agent.checkOnce(); failures = 0; } catch (error) { failures += 1; console.error(`[updater] ${error.message}`); } finally { const delay = Math.min(config.intervalMs * (2 ** failures), 6 * 60 * 60_000); setTimeout(loop, delay).unref(); } };
+  let announcedWait = false;
+  const loop = async () => {
+    try {
+      if (!ready) {
+        ready = await agent.initialize();
+        if (!ready && !announcedWait) {
+          console.error("[updater] servico instalado. Aguardando token de registro.");
+          announcedWait = true;
+        }
+      }
+      if (ready) {
+        await agent.checkOnce();
+        failures = 0;
+      }
+    } catch (error) {
+      failures += 1;
+      console.error(`[updater] ${error.message}`);
+    } finally {
+      const delay = Math.min(config.intervalMs * (2 ** failures), 6 * 60 * 60_000);
+      setTimeout(loop, delay);
+    }
+  };
   await loop();
 }

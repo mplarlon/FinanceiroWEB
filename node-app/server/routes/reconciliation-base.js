@@ -1,6 +1,7 @@
 import express from "express";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
 import { readJsonConfig, writeJsonConfig } from "../lib/json-config.js";
+import { suggestForItems } from "../lib/reconciliation-match.js";
 
 const router = express.Router();
 const run = (fn) => async (req, res) => {
@@ -360,6 +361,97 @@ router.get(
     return { ok: true, dados };
   }),
 );
+
+router.get("/periodo/:controle", async (req, res) => {
+  const controle = Number(req.params.controle);
+  if (!controle)
+    return res
+      .status(400)
+      .json({ ok: false, erro: "Informe o período da conciliação." });
+  try {
+    const detail = await withDatabase(async (db) => {
+      const periodo = (
+        await query(
+          db,
+          `SELECT c.CONTROLE, c.CDBANCO, b.BANCO AS NOME_BANCO, c.AGENCIA, c.NUMCONTA,
+                  CAST(c.DTINICIAL AS DATE) AS DTINICIAL, CAST(c.DTFINAL AS DATE) AS DTFINAL,
+                  c.SALDOINICIAL, c.SALDOFINAL
+           FROM CONCILIACAO c LEFT JOIN BANCO b ON b.CDBANCO=c.CDBANCO
+           WHERE c.CONTROLE=?`,
+          [controle],
+        )
+      )[0];
+      if (!periodo) return null;
+      const rows = await query(
+        db,
+        `SELECT ei.CONTROLE AS EXTRATO_ITEM, CAST(ei.DTLANCAMENTO AS DATE) AS DATA,
+                ei.VALOR, ei.DESCRICAO AS HISTORICO, ei.MOV_BANCARIO
+         FROM EXTRATO_ITEM ei JOIN EXTRATO e ON e.CONTROLE=ei.EXTRATO
+         WHERE e.CONCILIACAO=?
+         ORDER BY ei.DTLANCAMENTO, ei.CONTROLE`,
+        [controle],
+      );
+      const receber = await query(
+        db,
+        `SELECT t.CONTROLE, t.IDEMPRESA,
+                COALESCE(NULLIF(t.VLPGLIQ,0), NULLIF(t.TOTALPG,0), t.VALOR) AS VALOR,
+                CAST(t.DTVENC AS DATE) AS DTVENC, TRIM(t.NRDOC) AS NRDOC, t.PARCELA,
+                TRIM(COALESCE(c.RAZAO, c.CLIENTE)) AS PESSOA
+         FROM CTARECEBER t LEFT JOIN CLIENTE c ON c.CDCLIENTE=t.CDCLIENTE
+         WHERE t.MOV_BANCARIA IS NULL AND t.STATUS=1`,
+      );
+      const pagar = await query(
+        db,
+        `SELECT t.CONTROLE, t.IDEMPRESA,
+                COALESCE(NULLIF(t.VLPAGTO,0), NULLIF(t.TOTAL,0), t.VALOR) AS VALOR,
+                CAST(t.DTVENC AS DATE) AS DTVENC, TRIM(t.NRDOC) AS NRDOC, t.PARCELA,
+                TRIM(f.FORNECEDOR) AS PESSOA
+         FROM CTAPAGAR t LEFT JOIN FORNECEDOR f ON f.CDFORNECEDOR=t.CDFORNECEDOR
+         WHERE t.MOV_BANCARIA IS NULL AND t.STATUS=1`,
+      );
+      const itens = suggestForItems(
+        rows.map((row) => ({
+          extrato_item: Number(row.EXTRATO_ITEM),
+          data: row.DATA,
+          valor: Number(row.VALOR) || 0,
+          historico: row.HISTORICO ? String(row.HISTORICO).trim() : "",
+          conciliado: row.MOV_BANCARIO != null,
+        })),
+        [...receber, ...pagar].map((row, index) => ({
+          tipo: index < receber.length ? "receber" : "pagar",
+          controle: Number(row.CONTROLE),
+          idempresa: Number(row.IDEMPRESA),
+          valor: Number(row.VALOR) || 0,
+          dtvenc: row.DTVENC,
+          nrdoc: row.NRDOC ? String(row.NRDOC).trim() : "",
+          parcela: row.PARCELA == null ? null : Number(row.PARCELA),
+          pessoa: row.PESSOA ? String(row.PESSOA).trim() : "",
+        })),
+      );
+      return {
+        periodo: {
+          controle: Number(periodo.CONTROLE),
+          banco: periodo.NOME_BANCO || `Banco ${periodo.CDBANCO}`,
+          agencia: periodo.AGENCIA,
+          numconta: periodo.NUMCONTA,
+          dtinicial: periodo.DTINICIAL,
+          dtfinal: periodo.DTFINAL,
+          saldo_inicial: Number(periodo.SALDOINICIAL) || 0,
+          saldo_final: Number(periodo.SALDOFINAL) || 0,
+          total_itens: itens.length,
+          conciliados: itens.filter((item) => item.conciliado).length,
+          sugestoes_unicas: itens.filter((item) => item.sugestao.status === "unico").length,
+        },
+        itens,
+      };
+    });
+    if (!detail)
+      return res.status(404).json({ ok: false, erro: "Período não encontrado." });
+    res.json({ ok: true, ...detail });
+  } catch (error) {
+    res.status(500).json({ ok: false, erro: error.message });
+  }
+});
 
 router.get(
   "/ultima-data-por-banco",

@@ -1,7 +1,8 @@
 param(
-    [string]$Version = "2.4.5",
+    [string]$Version = "1.0.2",
     [switch]$WithOllama,
-    [switch]$WithoutOllama
+    [switch]$WithoutOllama,
+    [string]$UpdatePublicKeyFile = "D:\Segredos\erp-update\release-public.pem"
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,6 +22,9 @@ $includeOllama = -not $WithoutOllama
 
 if ($WithOllama -and $WithoutOllama) {
     throw "Use somente -WithOllama ou -WithoutOllama."
+}
+if (!(Test-Path -LiteralPath $UpdatePublicKeyFile)) {
+    throw "Chave publica do atualizador nao encontrada: $UpdatePublicKeyFile"
 }
 
 function Copy-PackageRuntime([string]$name, [string[]]$paths) {
@@ -73,6 +77,18 @@ if ((Get-FileHash $winSwCache -Algorithm SHA256).Hash -ne $winSwSha256) {
 }
 Copy-Item $winSwCache (Join-Path $runtime "DashboardService.exe") -Force
 Copy-Item (Join-Path $root "installer\DashboardService.xml") (Join-Path $runtime "DashboardService.xml") -Force
+
+$updaterDir = Join-Path $runtime "Updater"
+New-Item -ItemType Directory -Force $updaterDir | Out-Null
+& node (Join-Path $nodeApp "scripts\bundle-updater.js") (Join-Path $updaterDir "agent.mjs")
+if ($LASTEXITCODE -ne 0) { throw "Falha ao consolidar o atualizador." }
+Copy-Item (Get-Command node.exe).Source (Join-Path $updaterDir "UpdaterNode.exe") -Force
+Copy-Item $winSwCache (Join-Path $updaterDir "UpdaterService.exe") -Force
+Copy-Item (Join-Path $root "installer\UpdaterService.xml") (Join-Path $updaterDir "UpdaterService.xml") -Force
+Copy-Item -LiteralPath $UpdatePublicKeyFile (Join-Path $updaterDir "release-public.pem") -Force
+Copy-Item (Join-Path $root "installer\InstallUpdater.ps1") (Join-Path $updaterDir "InstallUpdater.ps1") -Force
+& (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterNode.exe")
+& (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterService.exe")
 Copy-PackageRuntime "node-firebird-native-api" @("package.json", "dist\lib\index.js", "dist\lib\cloop-gen.js", "build\Release\addon.node")
 Copy-PackageRuntime "bindings" @("package.json", "bindings.js")
 Copy-PackageRuntime "file-uri-to-path" @("package.json", "index.js")
@@ -105,6 +121,9 @@ if (Test-Path (Join-Path $root "Firebird-5.0.4\fbclient.dll")) {
     New-Item -ItemType Directory -Force (Join-Path $runtime "Firebird-5.0.4") | Out-Null
     Copy-Item (Join-Path $root "Firebird-5.0.4\fbclient.dll") (Join-Path $runtime "Firebird-5.0.4\fbclient.dll") -Force
 }
+
+& node (Join-Path $nodeApp "scripts\bundle-query-company.js") (Join-Path $root "installer\QueryCompany.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Falha ao consolidar a consulta da empresa." }
 
 if (!(Test-Path $iscc)) { throw "Inno Setup nao encontrado em $iscc" }
 $compilerArgs = @("/DAppVersion=$Version")

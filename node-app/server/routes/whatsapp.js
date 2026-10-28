@@ -1,8 +1,10 @@
 import crypto from "node:crypto";
 import express from "express";
 import { readJsonConfig, writeJsonConfig } from "../lib/json-config.js";
-import { withDatabase } from "../db.js";
+import { withDatabase, query } from "../db.js";
 import { answer } from "./assistant.js";
+import { decidirConsulta, listarConsultas, registrarConsulta } from "../lib/charlie-whatsapp-sales-service.js";
+import { interpretarEntrada } from "../lib/charlie-smart-quotes-service.js";
 
 const router = express.Router();
 const CONFIG_FILE = "whatsapp_config.json";
@@ -236,6 +238,20 @@ router.post("/webhook", async (req, res) => {
   const responses = [];
   for (const message of messages) {
     try {
+      const comercial = await registrarConsulta(message, {
+        query: (sql, params = []) => withDatabase((db) => query(db, sql, params, { timeoutMs: 20000 })),
+      });
+      if (comercial.comercial) {
+        responses.push({ from: message.from, message_id: message.id, rascunho: true, id: comercial.item.id });
+        continue;
+      }
+      const lista = await interpretarEntrada({ texto: message.text, origem: "whatsapp" }, {
+        query: (sql, params = []) => withDatabase((db) => query(db, sql, params, { timeoutMs: 20000 })),
+      });
+      if (lista.orcamento) {
+        responses.push({ from: message.from, message_id: message.id, orcamento: true, id: lista.orcamento.id });
+        continue;
+      }
       const result = await withDatabase((db) => answer(db, message.text));
       const delivery = await sendText(
         config,
@@ -263,6 +279,25 @@ router.post("/webhook", async (req, res) => {
     mensagens: messages.length,
     respostas: responses,
   });
+});
+
+router.get("/vendas", (_req, res) => {
+  res.json({ ok: true, itens: listarConsultas(), whatsapp: { configured: publicConfig().configured } });
+});
+
+router.post("/vendas/:id/decisao", async (req, res) => {
+  try {
+    const usuario = req.dashboardSession?.user || {};
+    const item = await decidirConsulta(req.params.id, req.body?.decisao, {
+      id: usuario.idusuario,
+      gerencial: Boolean(usuario.permissao_gerencial),
+    }, {
+      sendText: (destino, corpo) => sendText(loadConfig(), destino, corpo),
+    });
+    res.json({ ok: true, item });
+  } catch (error) {
+    res.status(error.status || 500).json({ ok: false, erro: String(error.message || "Falha no WhatsApp comercial.").slice(0, 300) });
+  }
 });
 
 export function verifyWebhookSignature(

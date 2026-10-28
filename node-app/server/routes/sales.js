@@ -1,6 +1,13 @@
 import express from "express";
 import { query, withDatabase } from "../db.js";
 import { saleItemCost } from "../lib/sale-cost.js";
+import { ITEM_SEM_SQL, ITEM_VALOR_SQL, aplicarCampos, valorJanela } from "../lib/charlie-sale-value.js";
+
+const TITULO_VALOR = "CASE WHEN t.DIVIDA IS NOT NULL THEN t.DIVIDA WHEN t.VALOR IS NOT NULL THEN t.VALOR END";
+const TITULO_SEM = "CASE WHEN t.DIVIDA IS NULL AND t.VALOR IS NULL THEN 1 ELSE 0 END";
+
+const SOMA_ITEM = `SUM(${ITEM_VALOR_SQL})`;
+const SEM_ITEM = `SUM(${ITEM_SEM_SQL}) AS SEM`;
 
 const router = express.Router();
 const cache = new Map();
@@ -124,26 +131,26 @@ async function getSummary(db, req) {
   // O faturamento gerencial segue o financeiro do Automec e considera
   // os titulos de venda abertos e quitados.
   const rows = await query(db, `SELECT COUNT(DISTINCT t.NRPEDIDO) AS QTD_VENDAS,
-    SUM(COALESCE(t.DIVIDA,t.VALOR,0)) AS FATURAMENTO
+    SUM(${TITULO_VALOR}) AS FATURAMENTO, SUM(${TITULO_SEM}) AS SEM
     FROM CTARECEBER t WHERE ${financial.where}`, financial.params);
   const kpi = { ...(rows[0] || {}), CUSTO: costs.CUSTO };
-  kpi.LUCRO_BRUTO = Number(kpi.FATURAMENTO || 0) - Number(kpi.CUSTO || 0);
-  const faturamento = Number(kpi.FATURAMENTO || 0);
+  const faturamento = valorJanela(kpi.FATURAMENTO, kpi.SEM);
+  const custo = kpi.CUSTO == null || kpi.CUSTO === "" || !Number.isFinite(Number(kpi.CUSTO)) ? null : Number(kpi.CUSTO);
+  const lucro = faturamento == null || custo == null ? null : Math.round((faturamento - custo) * 100) / 100;
   const quantidade = Number(kpi.QTD_VENDAS || 0);
-  const lucro = Number(kpi.LUCRO_BRUTO || 0);
-  const margem = faturamento ? lucro / faturamento * 100 : 0;
+  const margem = faturamento == null || lucro == null ? null : faturamento ? lucro / faturamento * 100 : 0;
   const duration = Math.max(1, Math.round((f.end - f.start) / 86_400_000));
   const previousStart = new Date(f.start);
   previousStart.setDate(previousStart.getDate() - duration);
   const previousFinancial = receivablesFilters(req, previousStart, f.start);
-  const previous = await query(db, `SELECT SUM(COALESCE(t.DIVIDA,t.VALOR,0)) AS FATURAMENTO
+  const previous = await query(db, `SELECT SUM(${TITULO_VALOR}) AS FATURAMENTO, SUM(${TITULO_SEM}) AS SEM
     FROM CTARECEBER t WHERE ${previousFinancial.where}`, previousFinancial.params);
-  const previousTotal = Number(previous[0]?.FATURAMENTO || 0);
-  const variation = previousTotal ? (faturamento - previousTotal) / previousTotal * 100 : null;
+  const previousTotal = valorJanela(previous[0]?.FATURAMENTO, previous[0]?.SEM);
+  const variation = faturamento == null || previousTotal == null || !(previousTotal > 0) ? null : (faturamento - previousTotal) / previousTotal * 100;
   const minimumMargin = numberArg(req, "margem_minima", 25);
   const target = numberArg(req, "meta", 120000);
   const alertas = [];
-  if (margem < minimumMargin) alertas.push({ tipo: "margem", nivel: "danger",
+  if (margem != null && margem < minimumMargin) alertas.push({ tipo: "margem", nivel: "danger",
     titulo: "Margem abaixo do minimo", valor: margem, limite: minimumMargin });
   if (variation !== null && variation < -10) alertas.push({ tipo: "queda_vendas",
     nivel: "warning", titulo: "Queda de vendas", valor: variation, limite: -10 });
@@ -151,9 +158,9 @@ async function getSummary(db, req) {
     ok: true, cache_ttl: TTL / 1000,
     periodo: { inicio: iso(f.start), fim: iso(new Date(f.end - 1)), dias: f.days },
     kpis: {
-      faturamento_total: faturamento, ticket_medio: quantidade ? faturamento / quantidade : 0,
+      faturamento_total: faturamento, ticket_medio: faturamento == null ? null : quantidade ? faturamento / quantidade : 0,
       quantidade_vendas: quantidade, margem_lucro: margem, lucro_bruto: lucro, meta: target,
-      realizado_pct: target ? faturamento / target * 100 : 0,
+      realizado_pct: faturamento == null || !target ? null : faturamento / target * 100,
       variacao_periodo_pct: variation, produtos_sem_giro: null
     }, alertas
   };
@@ -167,20 +174,21 @@ async function getCharts(db, req, includeHeatmap = false) {
   // conexão. Execute cada série em sequência para manter a conexão válida.
   const diario = await query(db, `SELECT FIRST 730 CAST(se.DTSAIDA AS DATE) AS DIA,
       COUNT(DISTINCT se.NRPEDIDO) AS QTD_VENDAS,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS FATURAMENTO,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) -
-      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO_BRUTO
+      ${SOMA_ITEM} AS FATURAMENTO,
+      ${SOMA_ITEM} -
+      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO_BRUTO,
+      ${SEM_ITEM}
       ${salesFrom} WHERE ${f.where} GROUP BY CAST(se.DTSAIDA AS DATE) ORDER BY DIA`, f.params);
   const por_loja = await query(db, `SELECT FIRST ${limit} se.IDEMPRESA AS ID,
       c.NOMEEMPRESA AS NOME,
       COUNT(DISTINCT CAST(se.NRPEDIDO AS VARCHAR(20)) || '-' || CAST(se.IDEMPRESA AS VARCHAR(20))) AS QTD,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL ${salesFrom}
+      ${SOMA_ITEM} AS TOTAL, ${SEM_ITEM} ${salesFrom}
       LEFT JOIN CONFIGURACAO c ON c.IDEMPRESA = se.IDEMPRESA WHERE ${f.where}
       GROUP BY se.IDEMPRESA, c.NOMEEMPRESA ORDER BY TOTAL DESC`, f.params);
   const por_vendedor = await query(db, `SELECT FIRST ${limit} se.CDVENDEDOR AS ID,
       COALESCE(v.VENDEDOR, 'Sem vendedor') AS NOME,
       COUNT(DISTINCT CAST(se.NRPEDIDO AS VARCHAR(20)) || '-' || CAST(se.IDEMPRESA AS VARCHAR(20))) AS QTD,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL ${salesFrom}
+      ${SOMA_ITEM} AS TOTAL, ${SEM_ITEM} ${salesFrom}
       LEFT JOIN VENDEDOR v ON v.CDVENDEDOR = se.CDVENDEDOR WHERE ${f.where}
       GROUP BY se.CDVENDEDOR, v.VENDEDOR ORDER BY TOTAL DESC`, f.params);
   const top_produtos = await query(db, `SELECT FIRST ${limit} sp.CDPRODUTO AS CODIGO,
@@ -188,21 +196,27 @@ async function getCharts(db, req, includeHeatmap = false) {
       COALESCE(g.GRUPOS, 'Sem grupo') AS GRUPO,
       COALESCE(fr.FORNECEDOR, fr.FANTASIA, p.FORNECEDOR, p.FORNECEDORCONV, p.MARCA, 'Sem fornecedor') AS MARCA,
       SUM(COALESCE(sp.QTDPRODUTO, 0)) AS QTD,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) -
-      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO
+      ${SOMA_ITEM} AS TOTAL,
+      ${SOMA_ITEM} -
+      SUM(COALESCE(sp.QTDPRODUTO, 0) * ${custoItem}) AS LUCRO,
+      ${SEM_ITEM}
       ${salesFrom} LEFT JOIN GRUPOS g ON g.CDGRUPO=p.CDGRUPO
       LEFT JOIN FORNECEDOR fr ON fr.CDFORNECEDOR=p.CDFORNECEDOR WHERE ${f.where}
       GROUP BY sp.CDPRODUTO,p.PRODUTO,sp.DESCRICAO,g.GRUPOS,fr.FORNECEDOR,fr.FANTASIA,
       p.FORNECEDOR,p.FORNECEDORCONV,p.MARCA ORDER BY TOTAL DESC`, f.params);
   const curva_abc = await query(db, `SELECT FIRST 100 sp.CDPRODUTO AS CODIGO,
       COALESCE(p.PRODUTO, sp.DESCRICAO, sp.CDPRODUTO) AS PRODUTO,
-      SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL ${salesFrom}
+      ${SOMA_ITEM} AS TOTAL, ${SEM_ITEM} ${salesFrom}
       WHERE ${f.where} GROUP BY sp.CDPRODUTO,p.PRODUTO,sp.DESCRICAO ORDER BY TOTAL DESC`, f.params);
   const payload = {
     ok: true, cache_ttl: TTL / 1000,
     periodo: { inicio: iso(f.start), fim: iso(new Date(f.end - 1)), dias: f.days },
-    diario, por_loja, por_vendedor, top_produtos, curva_abc, heatmap: [], produtos_sem_giro: []
+    diario: diario.map((row) => aplicarCampos(row, ["FATURAMENTO", "LUCRO_BRUTO"])),
+    por_loja: por_loja.map((row) => aplicarCampos(row, ["TOTAL"])),
+    por_vendedor: por_vendedor.map((row) => aplicarCampos(row, ["TOTAL"])),
+    top_produtos: top_produtos.map((row) => aplicarCampos(row, ["TOTAL", "LUCRO"])),
+    curva_abc: curva_abc.map((row) => aplicarCampos(row, ["TOTAL"])),
+    heatmap: [], produtos_sem_giro: []
   };
   if (includeHeatmap) payload.heatmap = await getHeatmap(db, req);
   return payload;
@@ -210,12 +224,13 @@ async function getCharts(db, req, includeHeatmap = false) {
 
 async function getHeatmap(db, req) {
   const f = filters(req);
-  return query(db, `SELECT EXTRACT(WEEKDAY FROM se.DTSAIDA) AS DIA_SEMANA,
+  const rows = await query(db, `SELECT EXTRACT(WEEKDAY FROM se.DTSAIDA) AS DIA_SEMANA,
     EXTRACT(HOUR FROM se.HORAPED) AS HORA,
-    SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+    ${SOMA_ITEM} AS TOTAL, ${SEM_ITEM}
     ${salesFrom} WHERE ${f.where}
     GROUP BY EXTRACT(WEEKDAY FROM se.DTSAIDA),EXTRACT(HOUR FROM se.HORAPED)
     ORDER BY DIA_SEMANA,HORA`, f.params);
+  return rows.map((row) => aplicarCampos(row, ["TOTAL"]));
 }
 
 // Cadastros antigos estão em NONE. Um byte inválido para o charset da conexão
@@ -242,12 +257,12 @@ async function getOverviewCharts(db, req) {
   const limit = numberArg(req, "limite", 5, 3, 10);
   const diario = await query(db, `SELECT FIRST 730 CAST(COALESCE(t.DTMOV,t.DTLOG) AS DATE) AS DIA,
     COUNT(DISTINCT t.NRPEDIDO) AS QTD_VENDAS,
-    SUM(COALESCE(t.DIVIDA,t.VALOR,0)) AS FATURAMENTO
+    SUM(${TITULO_VALOR}) AS FATURAMENTO, SUM(${TITULO_SEM}) AS SEM
     FROM CTARECEBER t WHERE ${financial.where}
     GROUP BY CAST(COALESCE(t.DTMOV,t.DTLOG) AS DATE) ORDER BY DIA`, financial.params);
   const products = await query(db, `SELECT FIRST ${limit} sp.CDPRODUTO AS CODIGO,
     SUM(COALESCE(sp.QTDPRODUTO, 0)) AS QTD,
-    SUM(COALESCE(sp.TOTAL, sp.QTDPRODUTO * sp.VLUNIT, 0)) AS TOTAL
+    ${SOMA_ITEM} AS TOTAL, ${SEM_ITEM}
     ${salesFrom} WHERE ${f.where}
     GROUP BY sp.CDPRODUTO ORDER BY TOTAL DESC`, f.params);
   let names = new Map();
@@ -258,12 +273,12 @@ async function getOverviewCharts(db, req) {
   }
   return {
     ok: true,
-    diario,
+    diario: diario.map((row) => aplicarCampos(row, ["FATURAMENTO"])),
     top_produtos: products.map(item => {
       const code = String(item.CODIGO ?? "").trim();
       const name = names.get(code) || "";
       return {
-        ...item,
+        ...aplicarCampos(item, ["TOTAL"]),
         NOME: name,
         PRODUTO: name || `Produto ${code}`,
       };

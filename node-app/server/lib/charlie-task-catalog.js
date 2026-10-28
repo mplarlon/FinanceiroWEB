@@ -1,3 +1,5 @@
+import { LEAD_ACTIONS } from "./charlie-leads-actions.js";
+
 export const TASK_STATUS = {
   PREPARANDO: "preparando",
   AGUARDANDO_INFORMACOES: "aguardando_informacoes",
@@ -12,7 +14,7 @@ export const TASK_STATUS = {
 const texto = (rotulo, extra = {}) => ({ tipo: "texto", rotulo, maximo: 80, ...extra });
 const inteiro = (rotulo, extra = {}) => ({ tipo: "inteiro", rotulo, minimo: 1, maximo: 500, ...extra });
 
-const ACTIONS = [
+const BASE_ACTIONS = [
   {
     id: "financeiro.titulos_vencidos",
     nome: "Consultar títulos vencidos",
@@ -706,6 +708,8 @@ const ACTIONS = [
     parametros: {},
   },
 ];
+
+const ACTIONS = BASE_ACTIONS.concat(LEAD_ACTIONS);
 
 const BY_ID = new Map(ACTIONS.map((action) => [action.id, action]));
 

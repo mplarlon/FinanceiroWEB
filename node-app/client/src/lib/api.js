@@ -36,8 +36,8 @@ async function request(path, options = {}) {
     catch { throw new Error(error?.name === "AbortError" ? "A consulta demorou mais de 60 segundos. Reduza o período e tente novamente." : "Não foi possível conectar ao servidor. Atualize a página e tente novamente."); }
   }
   const data = await response.json().catch(() => ({}));
-  if (response.status === 401 && typeof window !== "undefined")
-    window.dispatchEvent(new CustomEvent("dashboard:unauthorized"));
+  if (response.status === 401 && data?.auth_required && typeof window !== "undefined")
+    window.dispatchEvent(new CustomEvent("dashboard:unauthorized", { detail: data.expirado ? data.erro : "" }));
   if (!response.ok || data?.ok === false) throw new Error(data.erro || `Falha na requisicao (${response.status})`);
   return data;
 }

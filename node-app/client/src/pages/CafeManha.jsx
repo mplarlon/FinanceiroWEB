@@ -249,7 +249,7 @@ export default function CafeManha({ open = false, onClose, token = "", embedded 
 
   const report = linked || data?.relatorio;
   const conversao = conversionOf(report?.orcamentos);
-  const max = Math.max(1, ...(report?.evolucao || []).map((item) => Number(item.revenue || 0)));
+  const max = Math.max(1, ...(report?.evolucao || []).map((item) => item.revenue).filter((value) => value != null).map(Number));
   const sellers = [...new Map([...(report?.ranking || []), ...(report?.rankingMes || []), ...(report?.orcamentos?.porVendedor || [])].map((item) => [item.id || item.vendedorId, item])).values()];
   const rankingDia = report?.ranking || [];
   const rankingTabela = rankingDia.length ? rankingDia : (report?.rankingMes || []);
@@ -306,7 +306,7 @@ export default function CafeManha({ open = false, onClose, token = "", embedded 
     {!settingsOnly && report && <>
       <section className="grid">
         <article className="metric"><small>Vendas do dia</small><strong>{money(report.vendas?.ontem)}</strong></article>
-        <article className="metric"><small>Vendas no mês</small><strong>{money(report.vendas?.mes)}</strong></article>
+        <article className="metric"><small>Vendas no mês</small><strong>{money(report.vendas?.mes)}</strong>{(report.vendas?.ontem == null || report.vendas?.mes == null) && <span>Há venda sem valor. Esse período não foi somado.</span>}</article>
         <Goal label="Meta mensal" goal={report.meta} />
         <Goal label="Meta diária" goal={report.metaDiaria} />
         <Goal label="Meta semanal" goal={report.metaSemanal} />
@@ -327,15 +327,16 @@ export default function CafeManha({ open = false, onClose, token = "", embedded 
       <section className="panel">
         <h2>Evolução recente</h2>
         <div className="cafe-bars">
-          {(report.evolucao || []).map((item) => <div key={item.date}><span>{evolutionDate(item)}</span><i style={{ width: `${Math.max(4, (Number(item.revenue || 0) / max) * 100)}%` }} /><b>{money(item.revenue)}</b></div>)}
+          {(report.evolucao || []).map((item) => <div key={item.date}><span>{evolutionDate(item)}</span><i style={{ width: `${item.revenue == null ? 0 : Math.max(4, (Number(item.revenue) / max) * 100)}%` }} /><b>{money(item.revenue)}</b></div>)}
           {!report.evolucao?.length && <p>Dado indisponível para esta análise.</p>}
         </div>
       </section>
       <section className="panel">
         <h2>Ranking de vendedores</h2>
         {rankingDoMes && <p>Nenhuma venda em {brDate(report.referencia)}. Ranking acumulado do mês.</p>}
+        {rankingTabela.some((item) => item.faturamento == null) && <p>Há venda sem valor. Esse vendedor não entra na posição.</p>}
         <div className="table-scroll"><table className="tabela"><thead><tr><th>Posição</th><th>Vendedor</th><th>Vendas</th><th>Pedidos</th><th>Ticket</th><th>Orçamentos</th><th>Conversão</th><th>Variação</th></tr></thead><tbody>
-          {rankingTabela.map((item) => <tr key={item.id}><td>{item.posicao}</td><td>{item.nome}</td><td>{money(item.faturamento)}</td><td>{item.pedidos}</td><td>{money(item.ticket)}</td><td>{item.orcamentos || 0}</td><td>{percent(item.taxaConversao)}</td><td>{item.variacao?.texto || "sem base comparável"}</td></tr>)}
+          {rankingTabela.map((item) => <tr key={item.id}><td>{item.posicao ?? "—"}</td><td>{item.nome}</td><td>{money(item.faturamento)}</td><td>{item.pedidos}</td><td>{money(item.ticket)}</td><td>{item.orcamentos || 0}</td><td>{percent(item.taxaConversao)}</td><td>{item.variacao?.texto || "sem base comparável"}</td></tr>)}
           {!rankingTabela.length && <tr><td colSpan="8">{report?.referencia ? `Nenhuma venda em ${brDate(report.referencia)}.` : "Nenhuma venda no período."}</td></tr>}
         </tbody></table></div>
       </section>

@@ -43,6 +43,7 @@ export function createUpdateCenter(options = {}) {
         installationId: String(body.installationId), publicKey: String(body.publicKey),
         version: assertSemver(body.version), platform: String(body.platform), architecture: String(body.architecture),
         nodeVersion: String(body.nodeVersion || ""), agentVersion: assertSemver(body.agentVersion, "agentVersion"), channel: String(body.channel || "stable"),
+        companyName: text(body.companyName, 160), hostname: text(body.hostname, 120), addresses: addressesOf(body.addresses), remoteAddress: seenAddress(req),
       });
       res.status(201).json({ ok: true, installation: publicInstallation(installation) });
     } catch (error) { next(error); }
@@ -52,10 +53,15 @@ export function createUpdateCenter(options = {}) {
   app.post("/api/v1/check", ...signedJson, (req, res, next) => {
     try {
       const input = JSON.parse(req.body.toString("utf8") || "{}");
-      const installation = store.heartbeat(req.installation.installationId, {
+      const patch = {
         version: assertSemver(input.version), status: String(input.status || "online"),
         platform: String(input.platform), architecture: String(input.architecture), nodeVersion: String(input.nodeVersion || ""), agentVersion: String(input.agentVersion || ""),
-      });
+        remoteAddress: seenAddress(req),
+      };
+      if (input.hostname) patch.hostname = text(input.hostname, 120);
+      if (input.companyName) patch.companyName = text(input.companyName, 160);
+      if (Array.isArray(input.addresses)) patch.addresses = addressesOf(input.addresses);
+      const installation = store.heartbeat(req.installation.installationId, patch);
       const release = store.eligible(installation);
       res.json({ ok: true, update: release ? { manifest: release.manifest, signature: release.signature, downloadUrl: `/api/v1/packages/${encodeURIComponent(release.manifest.version)}` } : null, suspended: store.state.suspended });
     } catch (error) { next(error); }
@@ -81,9 +87,13 @@ export function createUpdateCenter(options = {}) {
   app.get("/api/admin/summary", (_req, res) => {
     const installations = Object.values(store.state.installations);
     const latest = Object.values(store.state.releases).filter((item) => item.status === "published").sort((a, b) => compareSemver(b.manifest.version, a.manifest.version))[0]?.manifest.version || null;
-    res.json({ ok: true, suspended: store.state.suspended, latestVersion: latest, totals: { installations: installations.length, recent: installations.filter((item) => Date.now() - Date.parse(item.lastSeenAt || 0) < 60 * 60_000).length, failed: installations.filter((item) => item.status === "failed" || item.status === "rollback").length, current: installations.filter((item) => item.version === latest).length } });
+    const outdated = installations.filter((item) => isOutdated(item, latest)).length;
+    res.json({ ok: true, suspended: store.state.suspended, latestVersion: latest, totals: { installations: installations.length, recent: installations.filter((item) => Date.now() - Date.parse(item.lastSeenAt || 0) < 60 * 60_000).length, failed: installations.filter((item) => item.status === "failed" || item.status === "rollback").length, current: installations.filter((item) => item.version === latest).length, outdated } });
   });
-  app.get("/api/admin/installations", (_req, res) => res.json({ ok: true, installations: Object.values(store.state.installations).map(publicInstallation) }));
+  app.get("/api/admin/installations", (_req, res) => {
+    const latest = latestPublished(store);
+    res.json({ ok: true, installations: Object.values(store.state.installations).map((item) => ({ ...publicInstallation(item), outdated: isOutdated(item, latest) })) });
+  });
   app.get("/api/admin/releases", (_req, res) => res.json({ ok: true, releases: Object.values(store.state.releases).map(({ packagePath: _omit, ...item }) => item) }));
   app.get("/api/admin/events", (req, res) => {
     let events = store.state.events;
@@ -105,6 +115,7 @@ export function createUpdateCenter(options = {}) {
   });
   app.post("/api/admin/authorizations", express.json({ limit: "16kb" }), (req, res, next) => { try { const authorization = store.authorize({ ...req.body, actor: req.adminActor }); store.event("__admin__", { type: "authorization_created", version: authorization.version, detail: `${req.adminActor}:${authorization.id}` }); res.status(201).json({ ok: true, authorization }); } catch (error) { next(error); } });
   app.patch("/api/admin/releases/:version", express.json({ limit: "8kb" }), (req, res, next) => { try { const release = store.state.releases[req.params.version]; if (!release) throw Object.assign(new Error("Versao inexistente."), { status: 404 }); if (!["draft", "published", "blocked"].includes(req.body.status)) throw Object.assign(new Error("Status invalido."), { status: 400 }); release.status = req.body.status; store.save(); store.event("__admin__", { type: "release_status_changed", version: req.params.version, detail: `${req.adminActor}:${req.body.status}` }); res.json({ ok: true, release: { ...release, packagePath: undefined } }); } catch (error) { next(error); } });
+  app.delete("/api/admin/releases/:version", (req, res, next) => { try { store.removeRelease(assertSemver(req.params.version)); store.event("__admin__", { type: "release_deleted", version: req.params.version, detail: req.adminActor }); res.json({ ok: true }); } catch (error) { next(error); } });
   app.post("/api/admin/suspension", express.json({ limit: "8kb" }), (req, res) => { store.state.suspended = Boolean(req.body.suspended); store.save(); store.event("__admin__", { type: "distribution_suspension", detail: `${req.adminActor}:${store.state.suspended}` }); res.json({ ok: true, suspended: store.state.suspended }); });
   app.post("/api/admin/installations/:id/revoke", (req, res, next) => { try { const item = store.state.installations[req.params.id]; if (!item) throw Object.assign(new Error("Instalacao inexistente."), { status: 404 }); item.revokedAt = new Date().toISOString(); store.save(); store.event("__admin__", { type: "installation_revoked", detail: `${req.adminActor}:${req.params.id}` }); res.json({ ok: true }); } catch (error) { next(error); } });
 
@@ -161,6 +172,31 @@ function signed(store, nonces) {
 }
 
 function publicInstallation({ publicKey: _key, ...installation }) { return installation; }
+
+function text(value, max) { return String(value || "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, max); }
+
+function cleanAddress(value) {
+  const raw = String(value || "").trim().replace(/^::ffff:/i, "");
+  if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(raw) && raw.split(".").every((part) => Number(part) <= 255)) return raw;
+  if (/^[0-9a-f:]{2,45}$/i.test(raw) && raw.includes(":")) return raw.slice(0, 45);
+  return "";
+}
+
+function addressesOf(value) { return [...new Set((Array.isArray(value) ? value : []).map(cleanAddress).filter(Boolean))].slice(0, 8); }
+
+function seenAddress(req) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  return cleanAddress(forwarded || req.socket?.remoteAddress || "");
+}
+
+function latestPublished(store) {
+  return Object.values(store.state.releases).filter((item) => item.status === "published").sort((a, b) => compareSemver(b.manifest.version, a.manifest.version))[0]?.manifest.version || null;
+}
+
+function isOutdated(installation, latest) {
+  if (!latest || installation.revokedAt || !installation.version) return false;
+  try { return compareSemver(latest, installation.version) > 0; } catch { return false; }
+}
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename)) {
   if (!process.env.UPDATE_SIGNING_PUBLIC_KEY_FILE) throw new Error("UPDATE_SIGNING_PUBLIC_KEY_FILE e obrigatorio.");

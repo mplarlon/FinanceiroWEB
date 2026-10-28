@@ -14,11 +14,12 @@ import {
   readMonitorSnapshot,
   updateAlertNarrative,
 } from "./charlie-monitor-store.js";
+import { ITEM_SEM_SQL, ITEM_VALOR_SQL, valorJanela, valorLido } from "./charlie-sale-value.js";
 
 const RECEBER_SALDO = `CASE WHEN t.STATUS=1 AND COALESCE(t.TOTALPG,t.VLPGLIQ,0)>0 AND COALESCE(t.TOTALPG,t.VLPGLIQ,0)<COALESCE(t.VALOR,t.DIVIDA,0) THEN COALESCE(t.VALOR,t.DIVIDA,0)-COALESCE(t.TOTALPG,t.VLPGLIQ,0) ELSE COALESCE(t.VALOR,t.DIVIDA,0) END`;
 const PAGAR_SALDO = `CASE WHEN t.STATUS=1 AND COALESCE(t.VLPAGTO,0)>0 AND COALESCE(t.VLPAGTO,0)<COALESCE(t.VALOR,t.TOTAL,0) THEN COALESCE(t.VALOR,t.TOTAL,0)-COALESCE(t.VLPAGTO,0) ELSE COALESCE(t.VALOR,t.TOTAL,0) END`;
 export const PAYABLE_EXCLUDES_VALE = "COALESCE(t.STATUSVALE,0) NOT IN (1,2)";
-const VENDA_VALOR = "COALESCE(sp.SUBTOTAL,sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)";
+const VENDA_VALOR = ITEM_VALOR_SQL;
 const VENDA_OK = "se.DTCANCELAMENTO IS NULL AND COALESCE(se.STATUS,0) IN (1,3) AND (se.STATUS_ORC IS NULL OR se.STATUS_ORC<>0) AND COALESCE(sp.STATUSSE,0)=0";
 
 const FORBIDDEN = /\b(insert|update|delete|merge|alter|drop|create|execute|grant|revoke)\b/i;
@@ -184,31 +185,37 @@ async function collectVendas(db, settings) {
   const p = periods(periodo);
   const [totals] = await read(db, `
     SELECT
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ATUAL,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ANTERIOR,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ANTERIOR,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ANTERIOR,
       COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN COALESCE(sp.DESCONTO,0) ELSE 0 END),0) DESCONTO,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR}+COALESCE(sp.DESCONTO,0) ELSE 0 END),0) BRUTO
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR}+COALESCE(sp.DESCONTO,0) END) BRUTO
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${VENDA_OK}`,
-  [p.start, p.end, p.previousStart, p.previousEnd, p.start, p.end, p.start, p.end, p.previousStart, p.end]);
+  [p.start, p.end, p.start, p.end, p.previousStart, p.previousEnd, p.previousStart, p.previousEnd, p.start, p.end, p.start, p.end, p.previousStart, p.end]);
   const vendedores = await read(db, `
     SELECT FIRST 40 se.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ATUAL,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ANTERIOR
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ANTERIOR,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ANTERIOR
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=se.CDVENDEDOR
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${VENDA_OK}
-    GROUP BY se.CDVENDEDOR, v.VENDEDOR ORDER BY 4 DESC`,
-  [p.start, p.end, p.previousStart, p.previousEnd, p.previousStart, p.end]);
+    GROUP BY se.CDVENDEDOR, v.VENDEDOR ORDER BY 5 DESC`,
+  [p.start, p.end, p.start, p.end, p.previousStart, p.previousEnd, p.previousStart, p.previousEnd, p.previousStart, p.end]);
   const produtos = await read(db, `
     SELECT FIRST 80 sp.CDPRODUTO ID, COALESCE(pr.PRODUTO,sp.DESCRICAO) NOME,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ATUAL,
-      COALESCE(SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} ELSE 0 END),0) ANTERIOR
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ATUAL,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${VENDA_VALOR} END) ANTERIOR,
+      SUM(CASE WHEN se.DTSAIDA>=? AND se.DTSAIDA<? THEN ${ITEM_SEM_SQL} ELSE 0 END) SEM_ANTERIOR
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO pr ON pr.CDPRODUTO=sp.CDPRODUTO
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${VENDA_OK}
-    GROUP BY sp.CDPRODUTO, pr.PRODUTO, sp.DESCRICAO ORDER BY 4 DESC`,
-  [p.start, p.end, p.previousStart, p.previousEnd, p.previousStart, p.end]);
+    GROUP BY sp.CDPRODUTO, pr.PRODUTO, sp.DESCRICAO ORDER BY 5 DESC`,
+  [p.start, p.end, p.start, p.end, p.previousStart, p.previousEnd, p.previousStart, p.previousEnd, p.previousStart, p.end]);
   const descontosProdutos = await read(db, `
     SELECT FIRST 8 sp.CDPRODUTO CODIGO, COALESCE(pr.PRODUTO,sp.DESCRICAO) NOME,
       COALESCE(SUM(sp.DESCONTO),0) VALOR
@@ -218,7 +225,8 @@ async function collectVendas(db, settings) {
     GROUP BY sp.CDPRODUTO, pr.PRODUTO, sp.DESCRICAO ORDER BY 3 DESC`, [p.start, p.end]);
   const margem = await read(db, `
     SELECT FIRST 80 sp.CDPRODUTO ID, COALESCE(pr.PRODUTO,sp.DESCRICAO) NOME,
-      COALESCE(SUM(${VENDA_VALOR}),0) FATURAMENTO,
+      SUM(${VENDA_VALOR}) FATURAMENTO,
+      SUM(${ITEM_SEM_SQL}) SEM,
       COALESCE(SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}),0) CUSTO
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO pr ON pr.CDPRODUTO=sp.CDPRODUTO
@@ -236,17 +244,26 @@ async function collectVendas(db, settings) {
     GROUP BY se.CDCLIENTE, c.CLIENTE, c.RAZAO
     HAVING COUNT(DISTINCT se.NRPEDIDO)>=3
     ORDER BY 5 DESC`);
-  const margemBaixa = margem.map((row) => ({
+  const comparar = (rows) => (rows || []).map((row) => ({
     ...row,
-    MARGEM: Number(row.FATURAMENTO) > 0 ? ((Number(row.FATURAMENTO) - Number(row.CUSTO)) / Number(row.FATURAMENTO)) * 100 : 0,
-  })).filter((row) => Number(row.FATURAMENTO) > 0 && row.MARGEM < Number(lim.margemMinima));
+    ATUAL: valorJanela(row.ATUAL, row.SEM_ATUAL),
+    ANTERIOR: valorJanela(row.ANTERIOR, row.SEM_ANTERIOR),
+  }));
+  const margemBaixa = margem.map((row) => {
+    const faturamento = valorLido(row.FATURAMENTO, row.SEM);
+    return {
+      ...row,
+      FATURAMENTO: faturamento,
+      MARGEM: faturamento > 0 ? ((faturamento - Number(row.CUSTO)) / faturamento) * 100 : 0,
+    };
+  }).filter((row) => row.FATURAMENTO > 0 && row.MARGEM < Number(lim.margemMinima));
   return {
-    atual: Number(totals?.ATUAL || 0),
-    anterior: Number(totals?.ANTERIOR || 0),
+    atual: valorJanela(totals?.ATUAL, totals?.SEM_ATUAL),
+    anterior: valorJanela(totals?.ANTERIOR, totals?.SEM_ANTERIOR),
     desconto: Number(totals?.DESCONTO || 0),
-    bruto: Number(totals?.BRUTO || 0),
-    vendedores,
-    produtos,
+    bruto: valorJanela(totals?.BRUTO, totals?.SEM_ATUAL),
+    vendedores: comparar(vendedores),
+    produtos: comparar(produtos),
     descontosProdutos,
     margemBaixa,
     clientesSumidos: silentCustomers(clientes, settings),

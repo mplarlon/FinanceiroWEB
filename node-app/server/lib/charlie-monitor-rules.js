@@ -129,8 +129,14 @@ export function normalizeMonitorSettings(input = {}) {
 }
 
 function variation(current, previous) {
-  if (!(previous > 0)) return null;
+  if (current == null || previous == null || !(previous > 0)) return null;
   return ((current - previous) / previous) * 100;
+}
+
+function vendaNumero(value) {
+  if (value == null || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function people(rows) {
@@ -318,7 +324,9 @@ export function buildFindings(facts = {}, settings = DEFAULT_MONITOR_SETTINGS) {
 
   const vendas = facts.vendas || null;
   if (vendas) {
-    const delta = variation(num(vendas.atual), num(vendas.anterior));
+    const atual = vendaNumero(vendas.atual);
+    const anterior = vendaNumero(vendas.anterior);
+    const delta = variation(atual, anterior);
     push(out, on.vendas_queda && delta !== null && delta <= -num(lim.quedaVendasPercentual) && num(vendas.anterior) > num(lim.quedaValorMinimo), {
       regra: "vendas_queda",
       categoria: "comercial",
@@ -340,8 +348,8 @@ export function buildFindings(facts = {}, settings = DEFAULT_MONITOR_SETTINGS) {
       evidencias: { atual: num(vendas.atual), anterior: num(vendas.anterior), variacao: delta },
     });
     const vendedores = (vendas.vendedores || []).filter((row) => {
-      const change = variation(num(row.ATUAL), num(row.ANTERIOR));
-      return change !== null && change <= -num(lim.quedaVendasPercentual) && num(row.ANTERIOR) > num(lim.quedaValorMinimo);
+      const change = variation(vendaNumero(row.ATUAL), vendaNumero(row.ANTERIOR));
+      return change !== null && change <= -num(lim.quedaVendasPercentual) && vendaNumero(row.ANTERIOR) > num(lim.quedaValorMinimo);
     });
     push(out, on.vendedores_queda && vendedores.length > 0, {
       regra: "vendedores_queda",
@@ -353,15 +361,15 @@ export function buildFindings(facts = {}, settings = DEFAULT_MONITOR_SETTINGS) {
       registros: vendedores.slice(0, 15).map((row) => ({
         CODIGO: row.ID,
         NOME: row.NOME || "Sem vendedor",
-        ATUAL: num(row.ATUAL),
-        ANTERIOR: num(row.ANTERIOR),
-        VARIACAO: variation(num(row.ATUAL), num(row.ANTERIOR)),
+        ATUAL: vendaNumero(row.ATUAL),
+        ANTERIOR: vendaNumero(row.ANTERIOR),
+        VARIACAO: variation(vendaNumero(row.ATUAL), vendaNumero(row.ANTERIOR)),
       })),
       evidencias: { vendedores: vendedores.length },
     });
     const produtos = (vendas.produtos || []).filter((row) => {
-      const change = variation(num(row.ATUAL), num(row.ANTERIOR));
-      return change !== null && change <= -num(lim.quedaVendasPercentual) && num(row.ANTERIOR) > num(lim.quedaValorMinimo);
+      const change = variation(vendaNumero(row.ATUAL), vendaNumero(row.ANTERIOR));
+      return change !== null && change <= -num(lim.quedaVendasPercentual) && vendaNumero(row.ANTERIOR) > num(lim.quedaValorMinimo);
     });
     push(out, on.produtos_queda && produtos.length > 0, {
       regra: "produtos_queda",
@@ -373,9 +381,9 @@ export function buildFindings(facts = {}, settings = DEFAULT_MONITOR_SETTINGS) {
       registros: produtos.slice(0, 15).map((row) => ({
         CODIGO: row.ID,
         NOME: row.NOME || "Produto",
-        ATUAL: num(row.ATUAL),
-        ANTERIOR: num(row.ANTERIOR),
-        VARIACAO: variation(num(row.ATUAL), num(row.ANTERIOR)),
+        ATUAL: vendaNumero(row.ATUAL),
+        ANTERIOR: vendaNumero(row.ANTERIOR),
+        VARIACAO: variation(vendaNumero(row.ATUAL), vendaNumero(row.ANTERIOR)),
       })),
       evidencias: { produtos: produtos.length },
     });

@@ -60,7 +60,8 @@ async function salesBySeller(db, range, companyId) {
   const custoItem = await saleItemCost(db, "sp", "p");
   const data = await optional(db, `SELECT se.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
     COUNT(DISTINCT se.NRPEDIDO) PEDIDOS,
-    SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) FATURAMENTO,
+    SUM(CASE WHEN sp.TOTAL IS NOT NULL THEN sp.TOTAL WHEN sp.QTDPRODUTO IS NOT NULL AND sp.VLUNIT IS NOT NULL THEN sp.QTDPRODUTO * sp.VLUNIT ELSE 0 END) FATURAMENTO,
+    SUM(CASE WHEN sp.TOTAL IS NULL AND (sp.QTDPRODUTO IS NULL OR sp.VLUNIT IS NULL) THEN 1 ELSE 0 END) SEM,
     SUM(COALESCE(sp.QTDPRODUTO,0)*${custoItem}) CUSTO
     FROM SAIDAESTOQUE se
     JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
@@ -69,11 +70,13 @@ async function salesBySeller(db, range, companyId) {
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${salesWhere("se", companyId)}
     GROUP BY se.CDVENDEDOR, v.VENDEDOR`, companyParams(range, companyId));
   if (data.erro) return [];
-  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, orders: Number(row.PEDIDOS || 0), revenue: Number(row.FATURAMENTO || 0), cost: Number(row.CUSTO || 0) }));
+  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, orders: Number(row.PEDIDOS || 0), revenue: Number(row.SEM) > 0 ? null : Number(row.FATURAMENTO), cost: Number(row.CUSTO || 0) }));
 }
 
 async function series(db, range, companyId) {
-  const data = await optional(db, `SELECT CAST(se.DTSAIDA AS DATE) DIA, SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) TOTAL
+  const data = await optional(db, `SELECT CAST(se.DTSAIDA AS DATE) DIA,
+    SUM(CASE WHEN sp.TOTAL IS NOT NULL THEN sp.TOTAL WHEN sp.QTDPRODUTO IS NOT NULL AND sp.VLUNIT IS NOT NULL THEN sp.QTDPRODUTO * sp.VLUNIT ELSE 0 END) TOTAL,
+    SUM(CASE WHEN sp.TOTAL IS NULL AND (sp.QTDPRODUTO IS NULL OR sp.VLUNIT IS NULL) THEN 1 ELSE 0 END) SEM
     FROM SAIDAESTOQUE se
     JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${salesWhere("se", companyId)}
@@ -81,7 +84,7 @@ async function series(db, range, companyId) {
   if (data.erro) return [];
   return data.map((row) => {
     const date = isoDay(row.DIA);
-    return { date, label: chartDateLabel(date), revenue: Number(row.TOTAL || 0) };
+    return { date, label: chartDateLabel(date), revenue: Number(row.SEM) > 0 ? null : Number(row.TOTAL) };
   });
 }
 
@@ -89,10 +92,12 @@ async function quoteStatus(db, range, companyId) {
   const params = [range.start, range.end];
   const company = companyId ? " AND IDEMPRESA=?" : "";
   if (companyId) params.push(companyId);
-  const data = await optional(db, `SELECT STATUS, COUNT(*) QTD, SUM(COALESCE(VLTOTAL,0)) TOTAL
+  const data = await optional(db, `SELECT STATUS, COUNT(*) QTD,
+    SUM(CASE WHEN VLTOTAL IS NOT NULL THEN VLTOTAL ELSE 0 END) TOTAL,
+    SUM(CASE WHEN VLTOTAL IS NULL THEN 1 ELSE 0 END) SEM
     FROM ORCAMENTO WHERE DTORC>=? AND DTORC<? AND DTCANCELAMENTO IS NULL${company} GROUP BY STATUS`, params);
   if (data.erro) return [];
-  return data.map((row) => ({ status: Number(row.STATUS), count: Number(row.QTD || 0), value: Number(row.TOTAL || 0), companyId }));
+  return data.map((row) => ({ status: Number(row.STATUS), count: Number(row.QTD || 0), value: Number(row.SEM) > 0 ? null : Number(row.TOTAL), companyId }));
 }
 
 export async function buildBreakfastReport(db, options = {}) {
@@ -218,34 +223,41 @@ async function quoteSellers(db, range, companyId) {
   if (companyId) params.push(companyId);
   const data = await optional(db, `SELECT o.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME,
     SUM(CASE WHEN o.STATUS IN (0,1) THEN 1 ELSE 0 END) QTD,
-    SUM(CASE WHEN o.STATUS IN (0,1) THEN COALESCE(o.VLTOTAL,0) ELSE 0 END) TOTAL,
+    SUM(CASE WHEN o.STATUS IN (0,1) AND o.VLTOTAL IS NOT NULL THEN o.VLTOTAL ELSE 0 END) TOTAL,
+    SUM(CASE WHEN o.STATUS IN (0,1) AND o.VLTOTAL IS NULL THEN 1 ELSE 0 END) SEM,
     SUM(CASE WHEN o.STATUS=1 THEN 1 ELSE 0 END) CONVERTIDOS
     FROM ORCAMENTO o LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=o.CDVENDEDOR
     WHERE o.DTORC>=? AND o.DTORC<? AND o.DTCANCELAMENTO IS NULL${company}
     GROUP BY o.CDVENDEDOR, v.VENDEDOR`, params);
   if (data.erro) return [];
-  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, count: Number(row.QTD || 0), value: Number(row.TOTAL || 0), converted: Number(row.CONVERTIDOS || 0) }));
+  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, count: Number(row.QTD || 0), value: Number(row.SEM) > 0 ? null : Number(row.TOTAL), converted: Number(row.CONVERTIDOS || 0) }));
 }
 
 async function openTotal(db, companyId) {
   const params = [];
   const company = companyId ? " AND IDEMPRESA=?" : "";
   if (companyId) params.push(companyId);
-  const data = await optional(db, `SELECT COUNT(*) QTD, SUM(COALESCE(VLTOTAL,0)) TOTAL FROM ORCAMENTO WHERE STATUS=0 AND DTCANCELAMENTO IS NULL${company}`, params);
+  const data = await optional(db, `SELECT COUNT(*) QTD,
+    SUM(CASE WHEN VLTOTAL IS NOT NULL THEN VLTOTAL ELSE 0 END) TOTAL,
+    SUM(CASE WHEN VLTOTAL IS NULL THEN 1 ELSE 0 END) SEM
+    FROM ORCAMENTO WHERE STATUS=0 AND DTCANCELAMENTO IS NULL${company}`, params);
   if (data.erro) return null;
-  return { count: Number(data[0]?.QTD || 0), value: Number(data[0]?.TOTAL || 0) };
+  const count = Number(data[0]?.QTD || 0);
+  return { count, value: count > 0 && Number(data[0]?.SEM) > 0 ? null : Number(data[0]?.TOTAL || 0) };
 }
 
 async function openSellers(db, companyId) {
   const params = [];
   const company = companyId ? " AND o.IDEMPRESA=?" : "";
   if (companyId) params.push(companyId);
-  const data = await optional(db, `SELECT o.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME, COUNT(*) QTD, SUM(COALESCE(o.VLTOTAL,0)) TOTAL
+  const data = await optional(db, `SELECT o.CDVENDEDOR ID, COALESCE(v.VENDEDOR,'Sem vendedor') NOME, COUNT(*) QTD,
+    SUM(CASE WHEN o.VLTOTAL IS NOT NULL THEN o.VLTOTAL ELSE 0 END) TOTAL,
+    SUM(CASE WHEN o.VLTOTAL IS NULL THEN 1 ELSE 0 END) SEM
     FROM ORCAMENTO o LEFT JOIN VENDEDOR v ON v.CDVENDEDOR=o.CDVENDEDOR
     WHERE o.STATUS=0 AND o.DTCANCELAMENTO IS NULL${company}
     GROUP BY o.CDVENDEDOR, v.VENDEDOR ORDER BY 4 DESC`, params);
   if (data.erro) return [];
-  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, count: Number(row.QTD || 0), value: Number(row.TOTAL || 0) }));
+  return data.map((row) => ({ companyId, sellerId: Number(row.ID || 0), seller: row.NOME, count: Number(row.QTD || 0), value: Number(row.SEM) > 0 ? null : Number(row.TOTAL) }));
 }
 
 async function openList(db, companyId) {
@@ -260,7 +272,7 @@ async function openList(db, companyId) {
     WHERE o.STATUS=0 AND o.DTCANCELAMENTO IS NULL${company}
     ORDER BY o.VLTOTAL DESC`, params);
   if (data.erro) return [];
-  return data.map((row) => ({ companyId: Number(row.IDEMPRESA), number: row.NRORCAMENTO, customerId: Number(row.CDCLIENTE || 0), sellerId: Number(row.CDVENDEDOR || 0), seller: row.VENDEDOR, customer: row.CLIENTE, date: row.DTORC, value: Number(row.VLTOTAL || 0), profit: row.TOTALLUCRO == null ? null : Number(row.TOTALLUCRO) }));
+  return data.map((row) => ({ companyId: Number(row.IDEMPRESA), number: row.NRORCAMENTO, customerId: Number(row.CDCLIENTE || 0), sellerId: Number(row.CDVENDEDOR || 0), seller: row.VENDEDOR, customer: row.CLIENTE, date: row.DTORC, value: row.VLTOTAL == null ? null : Number(row.VLTOTAL), profit: row.TOTALLUCRO == null ? null : Number(row.TOTALLUCRO) }));
 }
 
 async function stockCritical(db, companyId, depositId) {
@@ -331,13 +343,15 @@ async function stockIdle(db, companyId, days, depositId) {
 
 async function productRank(db, range, companyId, direction) {
   const data = await optional(db, `SELECT FIRST 5 sp.CDPRODUTO, MAX(COALESCE(p.PRODUTO,sp.DESCRICAO)) PRODUTO,
-    SUM(COALESCE(sp.QTDPRODUTO,0)) QTD, SUM(COALESCE(sp.TOTAL,sp.QTDPRODUTO*sp.VLUNIT,0)) TOTAL
+    SUM(COALESCE(sp.QTDPRODUTO,0)) QTD,
+    SUM(CASE WHEN sp.TOTAL IS NOT NULL THEN sp.TOTAL WHEN sp.QTDPRODUTO IS NOT NULL AND sp.VLUNIT IS NOT NULL THEN sp.QTDPRODUTO * sp.VLUNIT ELSE 0 END) TOTAL,
+    SUM(CASE WHEN sp.TOTAL IS NULL AND (sp.QTDPRODUTO IS NULL OR sp.VLUNIT IS NULL) THEN 1 ELSE 0 END) SEM
     FROM SAIDAESTOQUE se JOIN SAIDAPRODUTO sp ON sp.NRPEDIDO=se.NRPEDIDO AND sp.IDEMPRESA=se.IDEMPRESA
     LEFT JOIN PRODUTO p ON p.CDPRODUTO=sp.CDPRODUTO
     WHERE se.DTSAIDA>=? AND se.DTSAIDA<? AND ${salesWhere("se", companyId)}
     GROUP BY sp.CDPRODUTO ORDER BY QTD ${direction === "ASC" ? "ASC" : "DESC"}`, companyParams(range, companyId));
   if (data.erro) return [];
-  return data.map((row) => ({ product: row.PRODUTO, quantity: Number(row.QTD || 0), revenue: Number(row.TOTAL || 0) }));
+  return data.map((row) => ({ product: row.PRODUTO, quantity: Number(row.QTD || 0), revenue: Number(row.SEM) > 0 ? null : Number(row.TOTAL) }));
 }
 
 async function stockNegative(db, companyId, depositId) {

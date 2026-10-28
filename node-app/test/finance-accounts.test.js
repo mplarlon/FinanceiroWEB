@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {
   accountPaymentNumber,
@@ -7,6 +8,8 @@ import {
   agreementStatusSql,
   agreementUndoHistory,
   buildAccountFilters,
+  addCalendarDays,
+  agreementPayableIdentity,
   calendarDate,
   cashMovementSubject,
   completeAccountInput,
@@ -18,8 +21,11 @@ import {
   manualReceivableInsert,
   newAccountInput,
   overdueDays,
+  generatorAdvance,
+  sqlDate,
   paymentFormAllowed,
   paymentFormSettlesPayable,
+  payableDocumentNumber,
   manualReceivablePlan,
   creditHistory,
   accountLaunchValue,
@@ -55,11 +61,20 @@ test("lancamento manual envia um valor para cada coluna", () => {
   for (const sql of [manualReceivableInsert, manualPayableInsert]) {
     const shape = insertShape(sql);
     assert.equal(shape.columns, shape.values);
-    assert.equal(shape.placeholders, 26);
+    assert.equal(
+      shape.placeholders,
+      sql === manualPayableInsert ? 27 : 26,
+    );
   }
   assert.equal(manualPayableInsert.includes("VLPAGTO"), true);
   assert.match(manualPayableInsert, /HISTORICO,VALOR,TOTAL,VLPAGTO,JUROS/);
   assert.match(manualPayableInsert, /\?,\?,\?,\?,0,0,0,0,0,\?/);
+});
+
+test("documento de conta a pagar identifica a parcela da nota", () => {
+  assert.equal(payableDocumentNumber("60361", 1), "60361-1");
+  assert.equal(payableDocumentNumber("60361", 2), "60361-2");
+  assert.equal(payableDocumentNumber("60361-1", 2), "60361-2");
 });
 
 test("numero automatico segue maquina, sequencia do dia e data", () => {
@@ -328,10 +343,19 @@ test("forma de pagamento segue a liberacao do Automec em receber e pagar", () =>
   );
 });
 
-test("acordo preserva a data operacional usada pelo Automec", () => {
-  assert.match(agreementStatusSql("receber"), /DTCOB=\?/);
-  assert.match(agreementStatusSql("pagar"), /DTPAGTO=\?/);
-  assert.match(agreementStatusSql("receber"), /STATUS=6/);
+test("acordo grava a data civil, sem depender do fuso do driver", () => {
+  assert.match(agreementStatusSql("receber", "2026-10-01"), /DTCOB=DATE '2026-10-01'/);
+  assert.match(agreementStatusSql("pagar", "2026-10-01"), /DTPAGTO=DATE '2026-10-01'/);
+  assert.match(agreementStatusSql("receber", "2026-10-01"), /STATUS=6/);
+  assert.equal(sqlDate("2026-10-01"), "DATE '2026-10-01'");
+  assert.equal(sqlDate(new Date(2026, 9, 1, 15, 30, 0)), "DATE '2026-10-01'");
+  assert.throws(() => sqlDate("01/10/2026"), /Data invalida/);
+});
+
+test("gerador de controle so avanca ate o maior id ja gravado", () => {
+  assert.equal(generatorAdvance(10, 15), 5);
+  assert.equal(generatorAdvance(15, 15), 0);
+  assert.equal(generatorAdvance(20, 15), 0);
 });
 
 test("realizacao e cancelamento do acordo gravam o texto do historico", () => {
@@ -385,12 +409,49 @@ test("contas a receber não traz produtos até o usuário pedir", () => {
   assert.equal(includeAccountProducts("pagar", {}), true);
 });
 
+test("vencimento do acordo fica na data civil, sem hora", () => {
+  assert.equal(addCalendarDays("2026-10-01", 0), "2026-10-01");
+  assert.equal(addCalendarDays("2026-10-01", 31), "2026-11-01");
+  const due = firebirdDate(addCalendarDays("2026-10-01", 0));
+  assert.equal(due.getHours(), 0);
+  assert.equal(due.getMinutes(), 0);
+  assert.equal(calendarDate(due), "2026-10-01");
+});
+
+test("documento do acordo a pagar segue AC: numero-parcela", () => {
+  assert.deepEqual(agreementPayableIdentity(4, 1), {
+    NOTAFISCAL: "AC: 4",
+    NRDOC: "AC: 4-1",
+  });
+  assert.equal(agreementPayableIdentity(12, 3).NRDOC, "AC: 12-3");
+});
+
+test("cancelamento da quitacao a receber zera juros, desconto e retencao", () => {
+  const source = fs.readFileSync(new URL("../server/routes/finance-accounts.js", import.meta.url), "utf8");
+  assert.match(
+    source,
+    /UPDATE CTARECEBER SET STATUS=1,DTCOB=NULL,TPPAGTO=NULL,CDBANCO=NULL,CAIXA=NULL,NUMCONTA=NULL,AGENCIA=NULL,JUROS=0,DESCONTO=0,RETENCAO=0,TOTALPG=0/,
+  );
+  assert.match(
+    source,
+    /UPDATE CTAPAGAR SET STATUS=1,DTPAGTO=NULL,TPPAGTO=NULL,CDBANCO=NULL,CDCAIXA=NULL,CONTA=NULL,AGENCIA=NULL,VLPAGTO=0,MOV_BANCARIA=NULL/,
+  );
+});
+
 test("data civil evita NaN no valor pago quando o vencimento chega como Date", () => {
   const due = new Date(2026, 9, 1, 0, 0, 0);
   assert.equal(calendarDate(due), "2026-10-01");
   assert.equal(overdueDays(due, "2026-10-20"), 19);
   assert.equal(overdueDays(due, "2026-09-15"), 0);
   assert.equal(Number.isFinite(overdueDays(due, "2026-10-20")), true);
+});
+
+test("juros usam a hora do vencimento, como a baixa do Automec", () => {
+  const midnight = new Date(2026, 9, 1, 0, 0, 0);
+  const noon = new Date(2026, 9, 1, 12, 0, 0);
+  assert.equal(overdueDays(midnight, "2026-10-27"), 26);
+  assert.equal(overdueDays(noon, "2026-10-27"), 25.5);
+  assert.equal(overdueDays("2026-10-01T12:00:00", "2026-10-27"), 25.5);
 });
 
 test("parcela em aberto nao recebe numero de pagamento e forma quitada liquida", () => {
@@ -405,7 +466,8 @@ test("parcela em aberto nao recebe numero de pagamento e forma quitada liquida",
   assert.equal(paymentFormSettlesPayable({ STATUS: 1, STATUS_PAGTO: 1 }), false);
   assert.deepEqual(manualReceivablePlan({ STATUS: 1 }), { status: 1, settled: false, credit: false });
   assert.deepEqual(manualReceivablePlan({ STATUS: 2 }), { status: 2, settled: true, credit: false });
-  assert.deepEqual(manualReceivablePlan({ STATUS: 2 }, true), { status: 3, settled: false, credit: true });
+  assert.deepEqual(manualReceivablePlan({ STATUS: 3 }, true), { status: 3, settled: false, credit: true });
+  assert.deepEqual(manualReceivablePlan({ STATUS: 2 }, true), { status: 2, settled: true, credit: true });
   assert.equal(creditHistory("devolução do cliente", true), "Crédito devolução do cliente");
   assert.equal(creditHistory("Crédito já informado", true), "Crédito já informado");
   assert.equal(
@@ -415,7 +477,7 @@ test("parcela em aberto nao recebe numero de pagamento e forma quitada liquida",
     }).credit,
     true,
   );
-  assert.equal(accountLaunchValue(10, "receber", true), 10);
+  assert.equal(accountLaunchValue(10, "receber", true), -10);
   assert.equal(accountLaunchValue(10, "pagar", false), 10);
   assert.equal(accountLaunchValue(10.126, "pagar", true), -10.13);
   const payableCredit = newAccountInput({
@@ -431,6 +493,17 @@ test("parcela em aberto nao recebe numero de pagamento e forma quitada liquida",
   assert.equal(payableCredit.paymentNumber, null);
   assert.equal(payableCredit.history, "Crédito devolução");
   assert.equal(completeAccountInput(payableCredit, { CCUSTO: 3 }).cash, null);
+  const receivableCredit = completeAccountInput(
+    newAccountInput({
+      tipo: "receber", idempresa: 1, pessoa_id: 2, documento: "CR2",
+      vencimento: "2026-10-31", valor: 10, gerar_credito: true,
+      forma_pagamento: 4, caixa: 8,
+    }),
+    { STATUS: 3 },
+  );
+  assert.equal(receivableCredit.amount, -10);
+  assert.equal(receivableCredit.payment, 4);
+  assert.equal(receivableCredit.cash, 8);
   assert.equal(
     cashMovementSubject("Fornecedor Alfa", "BAIXA DA CONTA Nº", "NF1"),
     "Fornecedor Alfa BAIXA DA CONTA Nº NF1",
@@ -460,6 +533,7 @@ test("busca de pessoa encontra pelo nome sem travar o parametro em texto vazio",
   const cliente = personSearch("receber", " carol ");
   assert.deepEqual(cliente.params, ["CAROL", "CAROL", "CAROL", "CAROL", "CAROL"]);
   assert.equal(cliente.sql.includes("?=''"), false);
+  assert.match(cliente.sql, /SELECT FIRST 40/);
   assert.match(cliente.sql, /CLIENTE CONTAINING \?/);
   assert.match(cliente.sql, /RAZAO CONTAINING \?/);
   assert.equal((cliente.sql.match(/\?/g) || []).length, cliente.params.length);

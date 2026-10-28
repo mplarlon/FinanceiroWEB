@@ -66,6 +66,31 @@ test("valida CNPJ, filtros oficiais e pontuação reproduzível", () => {
   const pagina = cnpjMod.buildPesquisaBody({ uf: ["rj"], limite: 10, pagina: 2 });
   assert.equal(pagina.body.pagina, 2);
   assert.equal(cnpjMod.buildPesquisaBody({ limite: 10 }).erros.length > 0, true);
+  const completo = cnpjMod.buildPesquisaBody({
+    uf: ["rj"], naturezaJuridica: ["206-2"], cep: ["07115-000"], bairro: "Centro", ddd: ["21"],
+    telefone: ["21 3333-4444"], cnpj: [cnpjNovo, "11111111111111"], cnpjRaiz: ["11444777"],
+    enderecoNumero: ["109B"], meiExcluir: true, meiExclusaoInicio: "2020-01-01", simplesOptante: true,
+    somenteCelular: true, excluirEmailContabil: true, excluirCnpj: ["00000000000191"],
+    capitalMinimo: 1000, capitalMaximo: 5000, nomeSocio: true, razaoSocial: "exemplo",
+  });
+  assert.deepEqual(completo.erros, []);
+  assert.deepEqual(completo.body.capital_social, { minimo: 1000, maximo: 5000 });
+  assert.deepEqual(completo.body.codigo_natureza_juridica, ["2062"]);
+  assert.deepEqual(completo.body.cep, ["07115000"]);
+  assert.deepEqual(completo.body.bairro, ["centro"]);
+  assert.deepEqual(completo.body.ddd, ["21"]);
+  assert.deepEqual(completo.body.telefone, ["2133334444"]);
+  assert.deepEqual(completo.body.cnpj, [cnpjNovo]);
+  assert.deepEqual(completo.body.cnpj_raiz, ["11444777"]);
+  assert.deepEqual(completo.body.endereco_numero, ["109B"]);
+  assert.deepEqual(completo.body.mei, { excluir_optante: true, data_exclusao: { inicio: "2020-01-01" } });
+  assert.deepEqual(completo.body.simples, { optante: true });
+  assert.equal(completo.body.mais_filtros.somente_celular, true);
+  assert.equal(completo.body.mais_filtros.excluir_email_contab, true);
+  assert.equal(completo.body.busca_textual[0].nome_socio, false);
+  assert.equal(cnpjMod.pesquisaCompleta(completo.body), true);
+  assert.equal(cnpjMod.buildPesquisaBody({ uf: ["rj"], somenteFixo: true, somenteCelular: true }).erros[0], "Escolha somente telefone fixo ou somente celular.");
+  assert.equal(cnpjMod.buildPesquisaBody({ cnpj: ["11111111111111"] }).erros[0], "Nenhum CNPJ informado é válido.");
   const base = { cnpj: cnpjNovo, cnae: "4120400", cnaeConfirmado: true, uf: "RJ", porteCodigo: "05", telefone: "1", capitalSocial: 1000000 };
   const contexto = { cnaesConfigurados: ["4120400"], regioesAtendidas: ["RJ"], compradoresUf: 20, clientesMesmaCidade: 10 };
   const alta = qualify.pontuarLead(base, contexto);
@@ -107,6 +132,20 @@ test("fluxo de configuração, API, leads, CRM, webhook, créditos e permissões
   const repetida = await service.pesquisarEmpresas({ cnae: ["4120400"], situacao: ["ATIVA"], uf: ["rj"], comTelefone: true, limite: 10, pagina: 1 }, gestor, deps);
   assert.equal(repetida.reutilizado, true);
   assert.equal(chamadas.filter((item) => item === "POST /v5/cnpj/pesquisa").length, 1);
+  const locais = service.listarPesquisasLocais(gestor);
+  assert.equal(locais.length, 1);
+  assert.equal(locais[0].pagina, 1);
+  assert.equal(locais[0].total, 1);
+  assert.match(locais[0].resumo, /RJ/);
+  assert.equal(JSON.stringify(locais).includes("chave"), false);
+  await assert.rejects(async () => service.listarPesquisasLocais(vendedor), /gerencial/);
+  const httpAntes = chamadas.filter((item) => item.startsWith("GET /") || item.startsWith("POST /")).length;
+  const aberta = await service.abrirPesquisaLocal(locais[0].id, gestor, deps);
+  assert.equal(aberta.local, true);
+  assert.equal(aberta.empresas[0].cnpj, cnpjNovo);
+  assert.equal(aberta.empresas[0].vinculo.existe, false);
+  assert.equal(chamadas.filter((item) => item.startsWith("GET /") || item.startsWith("POST /")).length, httpAntes);
+  await assert.rejects(() => service.abrirPesquisaLocal("inexistente", gestor, deps), /não encontrada/);
 
   const individual = await service.consultarCnpj(cnpjNovo, gestor, deps);
   assert.equal(individual.cnpj, cnpjNovo);
@@ -121,6 +160,12 @@ test("fluxo de configuração, API, leads, CRM, webhook, créditos e permissões
   const deNovo = await service.criarLead(pesquisa.empresas[0], gestor, deps);
   assert.equal(deNovo.duplicado, true);
   assert.equal(deNovo.lead.id, criado.lead.id);
+  assert.equal(service.listarLeads({ desde: "2099-01-01" }, gestor).length, 0);
+  assert.equal(service.listarLeads({ ate: "2000-01-01" }, gestor).length, 0);
+  assert.equal(service.listarLeads({ cidade: "rio de janeiro" }, gestor).length, 1);
+  assert.equal(service.listarLeads({ semCidade: "1" }, gestor).length, 0);
+  assert.equal(service.indicadores({}, gestor).porCidade[0].valor, "Rio de Janeiro");
+  assert.equal(service.indicadores({}, gestor).porVendedor[0].vendedorId, null);
   const existente = await service.criarLead({ cnpj: cnpjCliente, razaoSocial: "Não sobrescrever", uf: "RJ" }, gestor, deps);
   assert.equal(existente.lead.clienteId, 10);
   assert.equal(chamadas.some((sql) => /insert\s+into\s+cliente/i.test(sql)), false);
@@ -148,6 +193,9 @@ test("fluxo de configuração, API, leads, CRM, webhook, créditos e permissões
   assert.equal(lead.orcamentos[0].valor, 320);
   lead = await service.vincularPedido(lead.id, 88, gestor, deps);
   assert.equal(lead.status, "CONVERTIDO");
+  lead = await service.atualizarLead(lead.id, { retorno: "2026-11-02" }, gestor);
+  assert.equal(lead.status, "CONVERTIDO");
+  assert.equal(lead.atividades.some((item) => item.tipo === "retorno" && item.quando === "2026-11-02"), true);
   assert.equal(lead.clienteId, null);
   assert.equal(lead.pedidos[0].valor, 900);
   const relatorio = service.relatorio({}, gestor);
@@ -164,6 +212,9 @@ test("fluxo de configuração, API, leads, CRM, webhook, créditos e permissões
   const repetido = await service.receberWebhook(evento, "token-webhook", { query: consulta });
   assert.equal(repetido.duplicado, true);
   assert.equal(service.listarLeads({}, gestor).some((item) => item.origem === "webhook"), true);
+  const publica = store.configPublica();
+  assert.equal(publica.fila.recentes.some((item) => item.cnpj === "27865757000102" && item.situacaoFila === "lead_criado"), true);
+  assert.equal(JSON.stringify(publica).includes("token-webhook"), false);
 
   await service.salvarConfiguracao({ limiteDiario: 1, bloquearAoAtingir: true }, gestor);
   await assert.rejects(() => service.pesquisarEmpresas({ uf: ["sp"], limite: 5, pagina: 3, forcar: true }, gestor, deps), /limite diário/);

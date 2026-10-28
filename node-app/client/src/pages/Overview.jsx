@@ -1,19 +1,24 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api.js";
 
+const ausente = (value) => value == null || value === "" || !Number.isFinite(Number(value));
 const money = (value) =>
-  Number(value || 0).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 0,
-  });
+  ausente(value)
+    ? "não informado"
+    : Number(value).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      maximumFractionDigits: 0,
+    });
 const compactMoney = (value) =>
-  new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(Number(value || 0));
+  ausente(value)
+    ? "não informado"
+    : new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(Number(value));
 const number = (value) =>
   Number(value || 0).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 const percent = (value) => `${number(value)}%`;
@@ -32,26 +37,32 @@ function Kpi({ label, value, detail, tone = "neutral", icon }) {
 }
 
 function SalesTrend({ rows = [] }) {
+  const incompleto = rows.some((row) => row.FATURAMENTO === null);
   const points = useMemo(() => {
-    if (!rows.length) return "";
-    const values = rows.map((row) => Number(row.FATURAMENTO || 0));
-    const max = Math.max(...values, 1);
-    return values
-      .map(
-        (value, index) =>
-          `${rows.length === 1 ? 50 : (index / (rows.length - 1)) * 100},${92 - (value / max) * 78}`,
-      )
-      .join(" ");
+    if (!rows.length) return [];
+    const values = rows.map((row) => ausente(row.FATURAMENTO) ? null : Number(row.FATURAMENTO));
+    const max = Math.max(...values.filter((value) => value != null), 1);
+    const partes = [];
+    let atual = [];
+    values.forEach((value, index) => {
+      if (value == null) {
+        if (atual.length) partes.push(atual.join(" "));
+        atual = [];
+        return;
+      }
+      const x = rows.length === 1 ? 50 : (index / (rows.length - 1)) * 100;
+      atual.push(`${x},${92 - (value / max) * 78}`);
+    });
+    if (atual.length) partes.push(atual.join(" "));
+    return partes;
   }, [rows]);
-  const total = rows.reduce(
-    (sum, row) => sum + Number(row.FATURAMENTO || 0),
-    0,
-  );
+  const total = !rows.length ? 0 : incompleto ? null : rows.reduce((sum, row) => sum + Number(row.FATURAMENTO), 0);
   const best = rows.reduce(
-    (current, row) =>
-      Number(row.FATURAMENTO || 0) > Number(current?.FATURAMENTO || 0)
-        ? row
-        : current,
+    (current, row) => {
+      if (ausente(row.FATURAMENTO)) return current;
+      if (!current || ausente(current.FATURAMENTO) || Number(row.FATURAMENTO) > Number(current.FATURAMENTO)) return row;
+      return current;
+    },
     null,
   );
   const date = (value) =>
@@ -91,16 +102,16 @@ function SalesTrend({ rows = [] }) {
                 y2="92"
                 className="chart-grid-line"
               />
-              <polygon
-                points={`0,92 ${points} 100,92`}
-                fill="url(#salesFill)"
-              />
-              <polyline points={points} className="chart-line" />
+              {!incompleto && points[0] ? (
+                <polygon points={`0,92 ${points[0]} 100,92`} fill="url(#salesFill)" />
+              ) : null}
+              {points.map((pontos, index) => <polyline key={index} points={pontos} className="chart-line" />)}
             </svg>
           </div>
           <div className="chart-caption">
             <span>{date(rows[0]?.DIA)}</span>
             <span>Melhor dia: {compactMoney(best?.FATURAMENTO)}</span>
+            {incompleto ? <span>Há título sem valor. Esse período não foi somado.</span> : null}
             <span>{date(rows.at(-1)?.DIA)}</span>
           </div>
         </>
@@ -356,9 +367,11 @@ export default function Overview({ status, onNavigate }) {
           label="Faturamento"
           value={money(k.faturamento_total)}
           detail={
-            variation == null
-              ? `${number(k.quantidade_vendas)} vendas no período`
-              : `${variation >= 0 ? "↑" : "↓"} ${percent(Math.abs(variation))} vs. período anterior`
+            k.faturamento_total === null
+              ? "Há título sem valor. O faturamento não foi somado."
+              : variation == null
+                ? `${number(k.quantidade_vendas)} vendas no período`
+                : `${variation >= 0 ? "↑" : "↓"} ${percent(Math.abs(variation))} vs. período anterior`
           }
           tone={
             variation == null
@@ -372,8 +385,8 @@ export default function Overview({ status, onNavigate }) {
         <Kpi
           label="Lucro bruto"
           value={money(k.lucro_bruto)}
-          detail={`Margem de ${percent(k.margem_lucro)}`}
-          tone={(k.margem_lucro || 0) >= 25 ? "positive" : "warning"}
+          detail={k.margem_lucro === null ? "Há título sem valor. A margem não foi calculada." : `Margem de ${percent(k.margem_lucro)}`}
+          tone={k.margem_lucro === null ? "neutral" : k.margem_lucro >= 25 ? "positive" : "warning"}
           icon="◎"
         />
         <Kpi
@@ -408,7 +421,12 @@ export default function Overview({ status, onNavigate }) {
             </div>
           </div>
           <div className="product-ranking">
-            {(sales.top_produtos || []).slice(0, 5).map((product, index) => {
+            {[...(sales.top_produtos || [])].sort((a, b) => {
+              if (a.TOTAL == null && b.TOTAL == null) return 0;
+              if (a.TOTAL == null) return 1;
+              if (b.TOTAL == null) return -1;
+              return Number(b.TOTAL) - Number(a.TOTAL);
+            }).slice(0, 5).map((product, index) => {
               const code = String(product.CODIGO ?? "").trim();
               const name = String(product.NOME || "").trim();
               const title = name || product.PRODUTO || code;

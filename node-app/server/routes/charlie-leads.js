@@ -3,8 +3,8 @@ import { query, withReadOnlyDatabase, withWriteTransaction } from "../db.js";
 import { buildCsv, buildExcel } from "../lib/table-export.js";
 import { espelharLeads } from "../lib/charlie-leads-schema.js";
 import { listarVendedores } from "../lib/charlie-leads-erp.js";
-import { loadState } from "../lib/charlie-leads-store.js";
-import { configPublica } from "../lib/charlie-leads-store.js";
+import { loadState, configPublica } from "../lib/charlie-leads-store.js";
+import { classificarCaca, planoDeCaca } from "../lib/charlie-sales-hunter.js";
 import { receberWebhook } from "../lib/charlie-leads-service.js";
 import {
   analisarLead,
@@ -20,8 +20,11 @@ import {
   gerarArquivo,
   indicadores,
   listarLeads,
+  abrirPesquisaLocal,
+  listarPesquisasLocais,
   pesquisarEmpresas,
   prepararMensagem,
+  processarFila,
   relatorio,
   salvarConfiguracao,
   sugerirProdutos,
@@ -54,7 +57,7 @@ function deps() {
 function enviar(res, promessa) {
   return Promise.resolve(promessa).then(
     (dados) => res.json({ ok: true, ...(dados && typeof dados === "object" && !Array.isArray(dados) ? dados : { dados }) }),
-    (error) => res.status(error.status || 500).json({ ok: false, erro: String(error.message || "Falha no Charlie Leads.").slice(0, 300) }),
+    (error) => res.status(error.status || 500).json({ ok: false, erro: String(error.message || "Falha ao buscar contatos.").slice(0, 300) }),
   );
 }
 
@@ -63,6 +66,57 @@ router.put("/charlie-leads/config", (req, res) => enviar(res, salvarConfiguracao
 router.post("/charlie-leads/testar", (req, res) => enviar(res, testarConexao(ator(req), deps())));
 router.get("/charlie-leads/saldo", (req, res) => enviar(res, consultarSaldo(ator(req), deps())));
 router.post("/charlie-leads/pesquisar", (req, res) => enviar(res, pesquisarEmpresas(req.body || {}, ator(req), deps()).then((dados) => ({ pesquisa: dados }))));
+router.get("/charlie-leads/pesquisas", (req, res) => enviar(res, Promise.resolve().then(() => ({ pesquisas: listarPesquisasLocais(ator(req)) }))));
+router.get("/charlie-leads/pesquisas/:id", (req, res) => enviar(res, abrirPesquisaLocal(req.params.id, ator(req), deps()).then((pesquisa) => ({ pesquisa }))));
+router.post("/charlie-leads/hunter", (req, res) => enviar(res, (async () => {
+  const plano = planoDeCaca(req.body || {}, loadState().segmentos);
+  if (plano.erros.length) throw Object.assign(new Error(plano.erros[0]), { status: 400 });
+  const pesquisa = await pesquisarEmpresas(plano.pesquisa, ator(req), deps());
+  return {
+    segmento: plano.segmento,
+    aviso: "A pontuação ordena a prioridade comercial e não é probabilidade de compra. A consulta usa a Casa dos Dados já configurada em Contatos.",
+    total: pesquisa.total,
+    reutilizado: pesquisa.reutilizado,
+    alerta: pesquisa.alerta,
+    debito: pesquisa.debito,
+    empresas: classificarCaca(pesquisa.empresas || [], { scoreMinimo: Number(req.body?.scoreMinimo) || 0, segmento: plano.segmento }),
+  };
+})()));
+router.post("/charlie-leads/hunter/gravar", (req, res) => enviar(res, (async () => {
+  const selecionadas = Array.isArray(req.body?.empresas) ? req.body.empresas.slice(0, 20) : [];
+  const resultados = [];
+  for (const empresa of selecionadas) {
+    if (empresa?.destino !== "elegivel") {
+      resultados.push({ cnpj: empresa.cnpj, gravado: false, motivo: empresa.destino });
+      continue;
+    }
+    let criado;
+    try {
+      criado = await criarLead({ ...empresa, origem: "sales-hunter" }, ator(req), deps());
+    } catch (error) {
+      resultados.push({ cnpj: empresa.cnpj, gravado: false, motivo: String(error.message || "O lead não foi gravado.").slice(0, 200) });
+      continue;
+    }
+    let produtos = 0;
+    if (!criado.duplicado && criado.lead?.id) {
+      try {
+        const sugestao = await sugerirProdutos(criado.lead.id, ator(req), deps());
+        produtos = sugestao.produtos?.length || 0;
+      } catch { /* a sugestão de produto não impede o lead */ }
+    }
+    resultados.push({ cnpj: empresa.cnpj, gravado: !criado.duplicado, duplicado: Boolean(criado.duplicado), leadId: criado.lead?.id || null, produtos });
+  }
+  let distribuicao = null;
+  let distribuicaoErro = null;
+  if (req.body?.distribuir === true) {
+    try {
+      distribuicao = await distribuirLeads({ quantidade: Math.max(selecionadas.length, 1), scoreMinimo: Number(req.body?.scoreMinimo) || 0 }, ator(req));
+    } catch (error) {
+      distribuicaoErro = String(error.message || "A distribuição não foi feita.").slice(0, 200);
+    }
+  }
+  return { resultados, distribuicao, distribuicaoErro };
+})()));
 router.get("/charlie-leads/cnpj/:cnpj", (req, res) => enviar(res, consultarCnpj(req.params.cnpj, ator(req), deps()).then((empresa) => ({ empresa }))));
 router.get("/charlie-leads/leads", (req, res) => res.json({ ok: true, leads: listarLeads(req.query || {}, ator(req)) }));
 router.post("/charlie-leads/leads", (req, res) => enviar(res, criarLead(req.body || {}, ator(req), deps())));
@@ -96,6 +150,10 @@ router.get("/charlie-leads/exportar", async (req, res) => {
   } catch (error) {
     res.status(error.status || 500).json({ ok: false, erro: error.message });
   }
+});
+router.post("/charlie-leads/fila/processar", (req, res) => {
+  if (!ator(req).gerencial) return res.status(403).json({ ok: false, erro: "Esta operação exige permissão gerencial." });
+  enviar(res, processarFila(deps()).then(() => ({ fila: configPublica().fila })));
 });
 router.post("/charlie-leads/migrar", async (req, res) => {
   if (!ator(req).gerencial) return res.status(403).json({ ok: false, erro: "Esta operação exige permissão gerencial." });

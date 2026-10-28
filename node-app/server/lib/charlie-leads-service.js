@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { createCasaDadosClient, CasaDadosError } from "./casa-dados-client.js";
-import { buildPesquisaBody, normalizarEmpresa, normalizeCnpj, semAcento, textoLimpo, validarCnpj } from "./charlie-leads-cnpj.js";
+import { buildPesquisaBody, normalizarEmpresa, normalizeCnpj, pesquisaCompleta, semAcento, textoLimpo, validarCnpj } from "./charlie-leads-cnpj.js";
 import { contextoGeografico, listarVendedores, localizarCliente, localizarOrcamento, localizarPedido, sugerirProdutosErp, ufsMelhoresClientes } from "./charlie-leads-erp.js";
 import { LEAD_STATUS, pontuarLead, rotuloPotencial, validarPesos } from "./charlie-leads-qualify.js";
 import { auditar, configPublica, consumoDesde, inicioDia, inicioMes, leadVisivel, loadState, registrarErro, updateState } from "./charlie-leads-store.js";
@@ -227,7 +227,7 @@ export async function pesquisarEmpresas(entrada, ator, deps = {}) {
     reservar(estado);
     let resposta;
     try {
-      resposta = await api.pesquisar(montado.body, entrada.comTelefone || entrada.comEmail ? "completo" : "simples");
+      resposta = await api.pesquisar(montado.body, pesquisaCompleta(montado.body) ? "completo" : "simples");
     } catch (error) {
       registrarErro(estado, "pesquisa", error);
       throw error;
@@ -268,6 +268,54 @@ export async function pesquisarEmpresas(entrada, ator, deps = {}) {
   });
 }
 
+function resumoFiltro(filtros = {}) {
+  const juntar = (valor, limite = 3) => (Array.isArray(valor) ? valor : []).slice(0, limite).map((item) => textoLimpo(item, 40)).filter(Boolean);
+  const partes = [];
+  const ufs = juntar(filtros.uf);
+  if (ufs.length) partes.push(ufs.map((item) => item.toUpperCase()).join(", "));
+  const cnaes = juntar(filtros.codigo_atividade_principal);
+  if (cnaes.length) partes.push(`CNAE ${cnaes.join(", ")}`);
+  const municipios = juntar(filtros.municipio, 2);
+  if (municipios.length) partes.push(municipios.join(", "));
+  const situacoes = juntar(filtros.situacao_cadastral);
+  if (situacoes.length) partes.push(situacoes.join(", "));
+  return partes.join(" · ") || "Pesquisa sem filtros nomeados";
+}
+
+export function listarPesquisasLocais(ator) {
+  exigirGestor(ator);
+  return (loadState().pesquisas || []).slice(-20).reverse().map((item) => ({
+    id: item.id,
+    em: item.em,
+    total: Number.isFinite(Number(item.total)) ? Number(item.total) : null,
+    pagina: item.filtros?.pagina ?? null,
+    limite: item.filtros?.limite ?? null,
+    validos: Number.isFinite(item.validos) ? item.validos : (item.empresas || []).length,
+    debito: Number.isFinite(item.debito) ? item.debito : null,
+    resumo: resumoFiltro(item.filtros),
+  }));
+}
+
+export async function abrirPesquisaLocal(id, ator, deps = {}) {
+  exigirGestor(ator);
+  const estado = loadState();
+  const item = (estado.pesquisas || []).find((pesquisa) => pesquisa.id === id);
+  if (!item) throw falha("Pesquisa local não encontrada.", 404);
+  const empresas = await enriquecer(item.empresas || [], ator, deps, estado);
+  return {
+    reutilizado: true,
+    local: true,
+    pesquisaId: item.id,
+    total: Number.isFinite(Number(item.total)) ? Number(item.total) : null,
+    pagina: item.filtros?.pagina || 1,
+    limite: item.filtros?.limite || empresas.length || 10,
+    empresas,
+    debito: Number.isFinite(item.debito) ? item.debito : null,
+    em: item.em,
+    resumo: resumoFiltro(item.filtros),
+  };
+}
+
 async function enriquecer(empresas, ator, deps, estado) {
   const saida = [];
   for (const empresa of empresas) {
@@ -293,6 +341,7 @@ async function enriquecer(empresas, ator, deps, estado) {
       criterios: analise.criterios,
       potencialEstimado: geo.ticketMedioUf ?? null,
       potencialEhEstimativa: geo.ticketMedioUf != null,
+      potencialObservacao: Number(geo.ticketMedioOmitidos) > 0 ? "A média deixou de fora clientes com pedido sem valor." : null,
     });
   }
   return saida.filter((item) => leadVisivel({ vendedorId: item.vendedorId }, ator) || !item.vendedorId || ator.gerencial);
@@ -393,9 +442,11 @@ export async function criarLead(entrada, ator, deps = {}) {
       compradoresUf: geo.compradoresUf ?? null,
       clientesMesmaCidade: geo.clientesMesmaCidade ?? null,
     }, estado.pesos);
+    const segmento = estado.segmentos.find((item) => item.cnaes.includes(empresa.cnae) || item.cnaes.includes(empresa.cnaeFiltro));
     const lead = {
       id: crypto.randomUUID(),
       ...empresa,
+      segmento: segmento?.id || null,
       status: analise.score >= 50 ? "QUALIFICADO" : "NOVO",
       score: analise.score,
       classificacao: analise.classificacao,
@@ -410,6 +461,7 @@ export async function criarLead(entrada, ator, deps = {}) {
       atualizadoEm: agora(),
       potencialEstimado: geo.ticketMedioUf ?? null,
       potencialEhEstimativa: geo.ticketMedioUf != null,
+      potencialObservacao: Number(geo.ticketMedioOmitidos) > 0 ? "A média deixou de fora clientes com pedido sem valor." : null,
       contatos: [],
       atividades: [],
       historico: [{ em: agora(), acao: "cadastro", usuarioId: ator.id ?? null, origem: entrada.origem || "pesquisa" }],
@@ -436,13 +488,17 @@ export function listarLeads(filtro = {}, ator = {}) {
   const estado = loadState();
   return estado.leads.filter((lead) => leadVisivel(lead, ator)).filter((lead) => {
     if (filtro.status && lead.status !== filtro.status) return false;
+    if (filtro.semVendedor && lead.vendedorId) return false;
     if (filtro.vendedorId && Number(lead.vendedorId) !== Number(filtro.vendedorId)) return false;
     if (filtro.uf && String(lead.uf || "").toUpperCase() !== String(filtro.uf).toUpperCase()) return false;
+    if (filtro.semCidade && semAcento(lead.municipio)) return false;
     if (filtro.cidade && semAcento(lead.municipio) !== semAcento(filtro.cidade)) return false;
+    if (filtro.semSegmento && lead.segmento) return false;
     if (filtro.segmento && lead.segmento !== filtro.segmento) return false;
     if (filtro.naoAtendidos && !["NOVO", "QUALIFICADO", "ATRIBUIDO", "CONTATO_PENDENTE"].includes(lead.status)) return false;
     if (filtro.clientes && !lead.clienteId) return false;
-    if (filtro.desde && lead.obtidoEm < filtro.desde) return false;
+    if (filtro.desde && String(lead.obtidoEm || "").slice(0, 10) < String(filtro.desde).slice(0, 10)) return false;
+    if (filtro.ate && String(lead.obtidoEm || "").slice(0, 10) > String(filtro.ate).slice(0, 10)) return false;
     return true;
   }).sort((a, b) => (filtro.ordem === "score" ? b.score - a.score : String(b.atualizadoEm).localeCompare(String(a.atualizadoEm))));
 }
@@ -494,13 +550,16 @@ export async function sugerirProdutos(id, ator, deps = {}) {
   return updateState(async (estado) => {
     const lead = exigirLead(estado, id, ator);
     const segmento = estado.segmentos.find((item) => item.cnaes.includes(lead.cnae) || item.cnaes.includes(lead.cnaeFiltro));
-    const termos = segmento?.termosProduto || [];
+    const configurados = (segmento?.termosProduto || []).map((item) => String(item || "").trim()).filter(Boolean);
+    const termos = configurados.length
+      ? configurados
+      : String(segmento?.nome || "").split(/\s+/).map((item) => item.trim()).filter((item) => item.length >= 5).slice(0, 3);
     const consulta = await sugerirProdutosErp(deps.query, termos);
     lead.produtosSugeridos = consulta.produtos || [];
     lead.segmento = segmento?.id || lead.segmento || null;
     lead.atualizadoEm = agora();
     lead.historico.push({ em: agora(), acao: "produtos", usuarioId: ator.id ?? null, quantidade: lead.produtosSugeridos.length });
-    return { produtos: lead.produtosSugeridos, disponivel: consulta.disponivel !== false, aviso: "Correspondência de CNAE não comprova intenção de compra. Os produtos saíram do cadastro do ERP." };
+    return { produtos: lead.produtosSugeridos, disponivel: consulta.disponivel !== false, aviso: "Correspondência de CNAE não comprova intenção de compra. Os produtos saíram do cadastro do ERP.", lead: publico(lead) };
   });
 }
 
@@ -540,7 +599,7 @@ export async function atualizarLead(id, entrada, ator) {
     }
     if (entrada.retorno) {
       lead.atividades.push({ id: crypto.randomUUID(), em: agora(), tipo: "retorno", quando: textoLimpo(entrada.retorno, 30), usuarioId: ator.id ?? null, status: "aberta" });
-      lead.status = "CONTATO_PENDENTE";
+      if (["NOVO", "QUALIFICADO", "ATRIBUIDO"].includes(lead.status)) lead.status = "CONTATO_PENDENTE";
       lead.historico.push({ em: agora(), acao: "retorno", usuarioId: ator.id ?? null });
     }
     if (entrada.exclusao) {
@@ -668,20 +727,29 @@ export function indicadores(filtro = {}, ator = {}) {
   const contar = (status) => leads.filter((lead) => lead.status === status).length;
   const negociacao = leads.filter((lead) => ["INTERESSADO", "ORCAMENTO", "NEGOCIACAO"].includes(lead.status)).length;
   const convertidos = contar("CONVERTIDO");
-  const faturamento = leads.reduce((soma, lead) => soma + lead.pedidos.filter((pedido) => pedido.localizado && pedido.valor != null).reduce((total, pedido) => total + Number(pedido.valor), 0), 0);
+  const pedidosLocalizados = leads.flatMap((lead) => (lead.pedidos || []).filter((pedido) => pedido.localizado));
+  const faturamentoIncompleto = pedidosLocalizados.some((pedido) => pedido.valor == null);
+  const faturamento = faturamentoIncompleto ? null : pedidosLocalizados.reduce((soma, pedido) => soma + Number(pedido.valor), 0);
   const potencial = leads.some((lead) => lead.potencialEhEstimativa) ? leads.reduce((soma, lead) => soma + (lead.potencialEhEstimativa ? Number(lead.potencialEstimado) || 0 : 0), 0) : null;
-  const creditos = estado.consumo.filter((item) => item.paga && item.status === "sucesso").reduce((soma, item) => soma + (Number.isFinite(item.debito) ? item.debito : 0), 0);
-  const debitoConhecido = estado.consumo.some((item) => item.paga && item.status === "sucesso" && Number.isFinite(item.debito));
+  const consumo = estado.consumo.filter((item) => {
+    const dia = String(item.em || "").slice(0, 10);
+    if (filtro.desde && dia < String(filtro.desde).slice(0, 10)) return false;
+    if (filtro.ate && dia > String(filtro.ate).slice(0, 10)) return false;
+    return true;
+  });
+  const creditos = consumo.filter((item) => item.paga && item.status === "sucesso").reduce((soma, item) => soma + (Number.isFinite(item.debito) ? item.debito : 0), 0);
+  const debitoConhecido = consumo.some((item) => item.paga && item.status === "sucesso" && Number.isFinite(item.debito));
   const custoUnitario = estado.config.custoPorCredito;
   const custo = debitoConhecido && custoUnitario != null ? creditos * custoUnitario : null;
-  const grupo = (chave) => {
+  const grupo = (chave, rotuloDe = (valor) => valor || "Não informado") => {
     const mapa = new Map();
     for (const lead of leads) {
-      const nome = lead[chave] || "Não informado";
-      mapa.set(nome, (mapa.get(nome) || 0) + 1);
+      const valor = lead[chave] || "";
+      mapa.set(valor, (mapa.get(valor) || 0) + 1);
     }
-    return [...mapa.entries()].map(([rotulo, total]) => ({ rotulo, total })).sort((a, b) => b.total - a.total).slice(0, 12);
+    return [...mapa.entries()].map(([valor, total]) => ({ rotulo: rotuloDe(valor), valor, total })).sort((a, b) => b.total - a.total).slice(0, 12);
   };
+  const nomeSegmento = (id) => (id ? estado.segmentos.find((item) => item.id === id)?.nome || id : "Não informado");
   const evolucao = new Map();
   const conversaoPeriodo = new Map();
   for (const lead of leads) {
@@ -710,18 +778,19 @@ export function indicadores(filtro = {}, ator = {}) {
     potencialEstimado: potencial,
     potencialEhEstimativa: potencial != null,
     creditos: debitoConhecido ? creditos : null,
-    consultasPagas: estado.consumo.filter((item) => item.paga && item.status === "sucesso").length,
+    consultasPagas: consumo.filter((item) => item.paga && item.status === "sucesso").length,
     custo,
     custoPorLead: custo != null && leads.length ? custo / leads.length : null,
     custoPorConvertido: custo != null && convertidos ? custo / convertidos : null,
     faturamentoVinculado: faturamento,
+    faturamentoObservacao: faturamentoIncompleto ? "Há pedido localizado sem valor. O faturamento não foi somado." : null,
     orcamentos: leads.filter((lead) => lead.orcamentos.some((item) => item.localizado)).length,
     pedidos: leads.filter((lead) => lead.pedidos.some((item) => item.localizado)).length,
     evolucao: [...evolucao.entries()].map(([rotulo, total]) => ({ rotulo, total })).sort((a, b) => a.rotulo.localeCompare(b.rotulo)),
     conversaoPeriodo: [...conversaoPeriodo.entries()].map(([rotulo, total]) => ({ rotulo, total })).sort((a, b) => a.rotulo.localeCompare(b.rotulo)),
     desempenho,
     porCidade: grupo("municipio"),
-    porSegmento: grupo("segmento"),
+    porSegmento: grupo("segmento", nomeSegmento),
     porOrigem: grupo("origem"),
     funil: LEAD_STATUS.map((status) => ({ status, total: contar(status) })),
   };
@@ -730,13 +799,13 @@ export function indicadores(filtro = {}, ator = {}) {
 function agruparVendedor(leads) {
   const mapa = new Map();
   for (const lead of leads) {
-    const nome = lead.vendedorNome || "Sem vendedor";
-    const atual = mapa.get(nome) || { rotulo: nome, total: 0, convertidos: 0 };
+    const id = lead.vendedorId ? String(lead.vendedorId) : "";
+    const atual = mapa.get(id) || { rotulo: lead.vendedorNome || "Sem vendedor", vendedorId: lead.vendedorId || null, total: 0, convertidos: 0 };
     atual.total += 1;
     if (lead.status === "CONVERTIDO") atual.convertidos += 1;
-    mapa.set(nome, atual);
+    mapa.set(id, atual);
   }
-  return [...mapa.values()];
+  return [...mapa.values()].sort((a, b) => b.total - a.total);
 }
 
 export function prepararMensagem(id, ator) {
