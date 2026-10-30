@@ -30,6 +30,10 @@ import {
   creditHistory,
   accountLaunchValue,
   settlementInput,
+  legacyOctets,
+  receivableSettlementSql,
+  payableSettlementSql,
+  bankMovementInsertSql,
   includeAccountProducts,
   personSearch,
 } from "../server/routes/finance-accounts.js";
@@ -543,4 +547,18 @@ test("busca de pessoa encontra pelo nome sem travar o parametro em texto vazio",
   assert.match(fornecedor.sql, /FANTASIA CONTAINING \?/);
   assert.equal(fornecedor.params[0], "SILVA");
   assert.throws(() => personSearch("outro", "a"), /invalido/);
+});
+
+test("baixa com banco grava texto legado em octetos", () => {
+  for (const sql of [receivableSettlementSql, payableSettlementSql, bankMovementInsertSql]) {
+    assert.match(sql, /CHARACTER SET OCTETS/);
+    assert.equal(sql.includes("NULLIF"), false);
+    assert.equal(sql.includes("'LOCAL'"), false);
+  }
+  assert.match(payableSettlementSql, /CONTA=CAST\(\? AS VARCHAR\(15\)/);
+  assert.match(receivableSettlementSql, /NUMCONTA=CAST\(\? AS VARCHAR\(20\)/);
+  const bytes = legacyOctets("Baixa contas a receber", 255);
+  assert.ok(Buffer.isBuffer(bytes));
+  assert.equal(bytes.toString("latin1"), "Baixa contas a receber");
+  assert.equal(legacyOctets("ação", 2).toString("latin1"), "aç");
 });

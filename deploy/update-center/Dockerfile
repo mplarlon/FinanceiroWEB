@@ -12,6 +12,7 @@ WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/center ./center
 COPY --from=build /app/shared.js ./shared.js
+COPY node-app/update-system/start-ini.js ./start-ini.js
 RUN mkdir -p /var/lib/erp-update-center && chown -R node:node /var/lib/erp-update-center /app
 USER node
 EXPOSE 8443

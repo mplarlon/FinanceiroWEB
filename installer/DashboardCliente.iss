@@ -27,60 +27,62 @@ SolidCompression=yes
 WizardStyle=modern
 
 [Dirs]
-Name: "{sd}\Administracao\Dashboard"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\logs"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\certificados"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\certificados_ct"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\boletos_caixa"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\boletos_caixa\pdf"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\boletos_caixa\remessas"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\acbr"; Permissions: users-modify
-Name: "{sd}\Administracao\Dashboard\acbr\temporarios"; Permissions: users-modify
-Name: "{sd}\ACBrMonitorPLUS"; Permissions: users-modify
-Name: "{sd}\ACBrMonitorPLUS\Logs"; Permissions: users-modify
-Name: "{sd}\ACBrMonitorPLUS\PDF"; Permissions: users-modify
-Name: "{sd}\ACBrMonitorPLUS\Arqs"; Permissions: users-modify
+Name: "{app}\Dashboard"; Permissions: users-modify
+Name: "{app}\Dashboard\logs"; Permissions: users-modify
+Name: "{app}\Dashboard\certificados"; Permissions: users-modify
+Name: "{app}\Dashboard\certificados_ct"; Permissions: users-modify
+Name: "{app}\Dashboard\boletos_caixa"; Permissions: users-modify
+Name: "{app}\Dashboard\boletos_caixa\pdf"; Permissions: users-modify
+Name: "{app}\Dashboard\boletos_caixa\remessas"; Permissions: users-modify
+Name: "{app}\Dashboard\acbr"; Permissions: users-modify
+Name: "{app}\Dashboard\acbr\temporarios"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS\Logs"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS\PDF"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS\Arqs"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS\TXT"; Permissions: users-modify
+Name: "{app}\ACBrMonitorPLUS\Logos"; Permissions: users-modify
 
 [Files]
 Source: "..\build\cliente-sem-fontes\runtime\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\build\cliente-sem-fontes\acbr\*"; DestDir: "{sd}\ACBrMonitorPLUS"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{commonappdata}\Dashboard\database_config.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "start.ini"; Flags: external skipifsourcedoesntexist onlyifdoesntexist
-Source: "..\database_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "start.ini"; Flags: onlyifdoesntexist
-Source: "..\credito_trabalhador_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "credito_trabalhador_config.json"; Flags: onlyifdoesntexist
-Source: "..\email_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "email_config.json"; Flags: onlyifdoesntexist
-Source: "..\nfe_sefaz_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "nfe_sefaz_config.json"; Flags: onlyifdoesntexist
-Source: "..\boletos_caixa_config.example.json"; DestDir: "{sd}\Administracao\Dashboard"; DestName: "boletos_caixa_config.json"; Flags: onlyifdoesntexist
-Source: "..\cartao_depara.json"; DestDir: "{sd}\Administracao\Dashboard"; Flags: onlyifdoesntexist
+Source: "..\build\cliente-sem-fontes\acbr\*"; DestDir: "{app}\ACBrMonitorPLUS"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\database_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "start.ini"; Flags: onlyifdoesntexist
+Source: "..\credito_trabalhador_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "credito_trabalhador_config.json"; Flags: onlyifdoesntexist
+Source: "..\email_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "email_config.json"; Flags: onlyifdoesntexist
+Source: "..\nfe_sefaz_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "nfe_sefaz_config.json"; Flags: onlyifdoesntexist
+Source: "..\boletos_caixa_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "boletos_caixa_config.json"; Flags: onlyifdoesntexist
+Source: "..\cartao_depara.json"; DestDir: "{app}\Dashboard"; Flags: onlyifdoesntexist
 #ifdef WithOllama
-Source: "InstallOllama.ps1"; DestDir: "{sd}\Administracao\Ollama"; Flags: ignoreversion
-Source: "InstalarModelo.cmd"; DestDir: "{sd}\Administracao\Ollama"; Flags: ignoreversion
+Source: "InstallOllama.ps1"; DestDir: "{app}\Ollama"; Flags: ignoreversion
+Source: "InstalarModelo.cmd"; DestDir: "{app}\Ollama"; Flags: ignoreversion
 #endif
 Source: "QueryCompany.cjs"; Flags: dontcopy
 Source: "QueryCompany.ps1"; Flags: dontcopy
 
 [Icons]
 Name: "{group}\Abrir Dashboard"; Filename: "http://localhost:805"
-Name: "{group}\Configuração do banco"; Filename: "notepad.exe"; Parameters: """{sd}\Administracao\Dashboard\start.ini"""
-Name: "{group}\Configuração NF-e"; Filename: "notepad.exe"; Parameters: """{sd}\Administracao\Dashboard\nfe_sefaz_config.json"""
-Name: "{group}\ACBr NF-e"; Filename: "{sd}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{sd}\ACBrMonitorPLUS"
-Name: "{commonstartup}\ACBrMonitorPLUS"; Filename: "{sd}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{sd}\ACBrMonitorPLUS"
-Name: "{group}\Configuração boleto CAIXA"; Filename: "notepad.exe"; Parameters: """{sd}\Administracao\Dashboard\boletos_caixa_config.json"""
-Name: "{group}\Logs do serviço"; Filename: "{sd}\Administracao\Dashboard\logs"
+Name: "{group}\Configuração do banco"; Filename: "notepad.exe"; Parameters: """{app}\Dashboard\start.ini"""
+Name: "{group}\Configuração NF-e"; Filename: "notepad.exe"; Parameters: """{app}\Dashboard\nfe_sefaz_config.json"""
+Name: "{group}\ACBr NF-e"; Filename: "{app}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{app}\ACBrMonitorPLUS"
+Name: "{commonstartup}\ACBrMonitorPLUS"; Filename: "{app}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{app}\ACBrMonitorPLUS"
+Name: "{group}\Configuração boleto CAIXA"; Filename: "notepad.exe"; Parameters: """{app}\Dashboard\boletos_caixa_config.json"""
+Name: "{group}\Logs do serviço"; Filename: "{app}\Dashboard\logs"
 
 [Run]
 Filename: "{app}\DashboardService.exe"; Parameters: "install"; WorkingDir: "{app}"; StatusMsg: "Instalando serviço..."; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Dashboard Gerencial 805"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Dashboard Gerencial 805"" dir=in action=allow protocol=TCP localport=805"; Flags: runhidden waituntilterminated
 Filename: "{app}\DashboardService.exe"; Parameters: "start"; WorkingDir: "{app}"; StatusMsg: "Iniciando serviço..."; Flags: runhidden waituntilterminated
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Updater\InstallUpdater.ps1"" -CenterUrl ""https://financeiroweb.nuvempontual.com"" -InstallRoot ""{app}"" -DataDir ""{sd}\Administracao\Dashboard"" -CurrentVersion ""{#AppVersion}"" -ParamsFile ""{app}\Updater\enrollment.json"" -PreviousXml ""{tmp}\UpdaterService.anterior.xml"""; StatusMsg: "Instalando atualização automática..."; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""ACBrMonitor NF-e 3434"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""ACBrMonitor NF-e 3434"" dir=in action=allow protocol=TCP localport=3434 remoteip=127.0.0.1"; Flags: runhidden waituntilterminated
-Filename: "{sd}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{sd}\ACBrMonitorPLUS"; StatusMsg: "Iniciando o ACBr para emissão de nota..."; Flags: nowait
+Filename: "{app}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{app}\ACBrMonitorPLUS"; StatusMsg: "Iniciando o ACBr para emissão de nota..."; Flags: nowait
 #ifdef WithOllama
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -File ""{sd}\Administracao\Ollama\InstallOllama.ps1"" -Step Completo"; StatusMsg: "Baixando o Ollama e o modelo qwen3:8b. A janela da frente mostra cada etapa."; Flags: waituntilterminated; AfterInstall: AvisarModeloOllama
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -File ""{app}\Ollama\InstallOllama.ps1"" -Step Completo"; StatusMsg: "Baixando o Ollama e o modelo qwen3:8b. A janela da frente mostra cada etapa."; Flags: waituntilterminated; AfterInstall: AvisarModeloOllama
 #endif
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Updater\InstallUpdater.ps1"" -CenterUrl ""https://financeiroweb.nuvempontual.com"" -InstallRoot ""{app}"" -DataDir ""{app}\Dashboard"" -CurrentVersion ""{#AppVersion}"" -ParamsFile ""{app}\Updater\enrollment.json"" -PreviousXml ""{tmp}\UpdaterService.anterior.xml"""; StatusMsg: "Instalando atualização automática..."; Flags: runhidden waituntilterminated; AfterInstall: ConfirmarServicoAtualizacao
 
 [UninstallRun]
+Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM ACBrMonitor64.exe"; Flags: runhidden waituntilterminated; RunOnceId: StopAcbr
 Filename: "{app}\Updater\UpdaterService.exe"; Parameters: "stop"; WorkingDir: "{app}\Updater"; Flags: runhidden waituntilterminated; RunOnceId: StopUpdater
 Filename: "{app}\Updater\UpdaterService.exe"; Parameters: "uninstall"; WorkingDir: "{app}\Updater"; Flags: runhidden waituntilterminated; RunOnceId: RemoveUpdater
 Filename: "{app}\DashboardService.exe"; Parameters: "stop"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; RunOnceId: StopService
@@ -91,6 +93,7 @@ var
   DatabasePage, UpdaterPage: TWizardPage;
   HostEdit, PortEdit, DatabaseEdit, UserEdit, PasswordEdit, CompanyEdit, TokenEdit: TNewEdit;
   AmbienteProducao, AmbienteHomologacao: TNewRadioButton;
+  ConfigCarregadaDe: String;
 
 function JsonEscape(Value: String): String;
 begin
@@ -246,10 +249,119 @@ begin
     CompanyEdit.Text := ConsultarEmpresa;
 end;
 
+function MesmoDiretorio(Esquerda, Direita: String): Boolean;
+begin
+  Result := CompareText(RemoveBackslash(Esquerda), RemoveBackslash(Direita)) = 0;
+end;
+
+procedure CopiarPastaLegada(Origem, Destino: String);
+var
+  ResultCode: Integer;
+begin
+  if MesmoDiretorio(Origem, Destino) or (not DirExists(Origem)) then Exit;
+  Exec(ExpandConstant('{sys}\robocopy.exe'),
+    '"' + Origem + '" "' + Destino + '" /E /XD logs /NFL /NDL /NJH /NJS /NC /NS /NP',
+    '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+procedure MigrarInstalacaoAnterior;
+var
+  DadosNovos, DadosAntigos, OllamaNovo, OllamaAntigo: String;
+begin
+  DadosNovos := ExpandConstant('{app}\Dashboard');
+  DadosAntigos := ExpandConstant('{sd}\Administracao\Dashboard');
+  if (not MesmoDiretorio(DadosNovos, DadosAntigos)) and
+     FileExists(DadosAntigos + '\start.ini') and
+     (not FileExists(DadosNovos + '\updater\identity.json')) then
+    CopiarPastaLegada(DadosAntigos, DadosNovos);
+
+  OllamaNovo := ExpandConstant('{app}\Ollama');
+  OllamaAntigo := ExpandConstant('{sd}\Administracao\Ollama');
+  if (not FileExists(OllamaNovo + '\ollama.exe')) and FileExists(OllamaAntigo + '\ollama.exe') then
+    CopiarPastaLegada(OllamaAntigo, OllamaNovo);
+end;
+
+procedure TrocarPrefixoAcbr(var Texto: String; Prefixo, Novo: String);
+begin
+  if (Prefixo = '') or MesmoDiretorio(Prefixo, Novo) then Exit;
+  if (Length(Novo) >= Length(Prefixo)) and (CompareText(Copy(Novo, 1, Length(Prefixo)), Prefixo) = 0) then Exit;
+  StringChangeEx(Texto, Prefixo, Novo, True);
+end;
+
+procedure AjustarCaminhosAcbr;
+var
+  AcbrDir, Legado, Anterior, IniText: String;
+  Raw: AnsiString;
+begin
+  AcbrDir := ExpandConstant('{app}\ACBrMonitorPLUS');
+  Legado := ExpandConstant('{sd}\ACBrMonitorPLUS');
+  Anterior := ExpandConstant('{tmp}\ACBrMonitor.anterior.ini');
+  if FileExists(Anterior) then
+    FileCopy(Anterior, AcbrDir + '\ACBrMonitor.ini', False)
+  else if (not MesmoDiretorio(AcbrDir, Legado)) and FileExists(Legado + '\ACBrMonitor.ini') then
+  begin
+    FileCopy(Legado + '\ACBrMonitor.ini', AcbrDir + '\ACBrMonitor.ini', False);
+    CopiarPastaLegada(Legado + '\Logs', AcbrDir + '\Logs');
+    CopiarPastaLegada(Legado + '\PDF', AcbrDir + '\PDF');
+    CopiarPastaLegada(Legado + '\Arqs', AcbrDir + '\Arqs');
+    CopiarPastaLegada(Legado + '\TXT', AcbrDir + '\TXT');
+    CopiarPastaLegada(Legado + '\Logos', AcbrDir + '\Logos');
+  end;
+  if not LoadStringFromFile(AcbrDir + '\ACBrMonitor.ini', Raw) then Exit;
+  IniText := String(Raw);
+  TrocarPrefixoAcbr(IniText, 'C:\ACBrMonitorPLUS', AcbrDir);
+  TrocarPrefixoAcbr(IniText, Legado, AcbrDir);
+  if not SaveStringToFile(AcbrDir + '\ACBrMonitor.ini', IniText, False) then
+    MsgBox('Não foi possível ajustar os caminhos do ACBr em ' + AcbrDir + '.', mbError, MB_OK);
+end;
+
+procedure CarregarConfigExistente;
+var
+  Origem, ConfigPath, NfePath, AmbienteAtual: String;
+  ExistingConfig, NfeConfig: AnsiString;
+begin
+  // {app} ainda não existe aqui: esta rotina roda ao abrir o assistente.
+  Origem := WizardDirValue;
+  if (Origem = '') or (CompareText(Origem, ConfigCarregadaDe) = 0) then Exit;
+  ConfigCarregadaDe := Origem;
+
+  HostEdit.Text := 'localhost';
+  PortEdit.Text := '3051';
+  DatabaseEdit.Text := 'C:\Administracao\db\MIAUTOMEC.FDB';
+  UserEdit.Text := 'SYSDBA';
+  PasswordEdit.Text := 'masterkey';
+  AmbienteProducao.Checked := True;
+
+  ConfigPath := Origem + '\Dashboard\start.ini';
+  if not FileExists(ConfigPath) then
+    ConfigPath := ExpandConstant('{sd}\Administracao\Dashboard\start.ini');
+  if LoadStringFromFile(ConfigPath, ExistingConfig) then
+  begin
+    HostEdit.Text := JsonStringValue(String(ExistingConfig), 'host', HostEdit.Text);
+    PortEdit.Text := JsonNumberValue(String(ExistingConfig), 'port', PortEdit.Text);
+    DatabaseEdit.Text := JsonStringValue(String(ExistingConfig), 'database', DatabaseEdit.Text);
+    UserEdit.Text := JsonStringValue(String(ExistingConfig), 'user', UserEdit.Text);
+    PasswordEdit.Text := JsonStringValue(String(ExistingConfig), 'password', PasswordEdit.Text);
+  end;
+
+  NfePath := ExtractFilePath(ConfigPath) + 'nfe_sefaz_config.json';
+  if not FileExists(NfePath) then
+    NfePath := ExpandConstant('{sd}\Administracao\Dashboard\nfe_sefaz_config.json');
+  if LoadStringFromFile(NfePath, NfeConfig) then
+  begin
+    AmbienteAtual := JsonStringValue(String(NfeConfig), 'ambiente', 'producao');
+    if AmbienteAtual = 'homologacao' then
+      AmbienteHomologacao.Checked := True
+    else
+      AmbienteProducao.Checked := True;
+  end;
+end;
+
 procedure AjustarCamposBanco(Sender: TWizardPage);
 var
   Largura: Integer;
 begin
+  CarregarConfigExistente;
   Largura := DatabasePage.SurfaceWidth - HostEdit.Left;
   if Largura < ScaleX(80) then Exit;
   HostEdit.Width := Largura;
@@ -261,8 +373,6 @@ end;
 
 procedure InitializeWizard;
 var
-  ExistingConfig, NfeConfig: AnsiString;
-  ConfigPath, NfePath, AmbienteAtual: String;
   LabelWidth, TopPos: Integer;
   AmbienteLabel: TNewStaticText;
 begin
@@ -288,16 +398,6 @@ begin
   DatabaseEdit.Text := 'C:\Administracao\db\MIAUTOMEC.FDB';
   UserEdit.Text := 'SYSDBA';
   PasswordEdit.Text := 'masterkey';
-
-  ConfigPath := ExpandConstant('{sd}\Administracao\Dashboard\start.ini');
-  if LoadStringFromFile(ConfigPath, ExistingConfig) then
-  begin
-    HostEdit.Text := JsonStringValue(String(ExistingConfig), 'host', HostEdit.Text);
-    PortEdit.Text := JsonNumberValue(String(ExistingConfig), 'port', PortEdit.Text);
-    DatabaseEdit.Text := JsonStringValue(String(ExistingConfig), 'database', DatabaseEdit.Text);
-    UserEdit.Text := JsonStringValue(String(ExistingConfig), 'user', UserEdit.Text);
-    PasswordEdit.Text := JsonStringValue(String(ExistingConfig), 'password', PasswordEdit.Text);
-  end;
 
   TopPos := TopPos + ScaleY(36);
   AmbienteLabel := TNewStaticText.Create(DatabasePage);
@@ -325,22 +425,13 @@ begin
   AmbienteHomologacao.Width := ScaleX(150);
   AmbienteHomologacao.Height := ScaleY(17);
 
-  NfePath := ExpandConstant('{sd}\Administracao\Dashboard\nfe_sefaz_config.json');
-  if LoadStringFromFile(NfePath, NfeConfig) then
-  begin
-    AmbienteAtual := JsonStringValue(String(NfeConfig), 'ambiente', 'producao');
-    if AmbienteAtual = 'homologacao' then
-      AmbienteHomologacao.Checked := True
-    else
-      AmbienteProducao.Checked := True;
-  end;
-
   UpdaterPage := CreateCustomPage(DatabasePage.ID,
     'Atualização automática',
     'O nome da empresa é lido do cadastro no banco. Ao terminar, o computador se registra na central. Preencha o token somente se a Pontual informar um.');
   UpdaterPage.OnActivate := @AtivarPaginaAtualizador;
   CompanyEdit := AddLabeledEdit(UpdaterPage, 'Nome da empresa:', 0, LabelWidth, False);
   TokenEdit := AddLabeledEdit(UpdaterPage, 'Token de registro:', ScaleY(28), LabelWidth, False);
+  CarregarConfigExistente;
 end;
 
 function NextButtonClick(CurPageID: Integer): Boolean;
@@ -373,15 +464,43 @@ begin
   end;
 end;
 
+procedure ConfirmarServicoAtualizacao;
+var
+  Motivo: String;
+  Linhas: TArrayOfString;
+  I: Integer;
+begin
+  if FileExists(ExpandConstant('{app}\Dashboard\logs\updater-install.ok')) and
+     RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\ErpAutoUpdater') then Exit;
+  Motivo := 'O serviço não chegou a ficar em execução.';
+  if LoadStringsFromFile(ExpandConstant('{app}\Dashboard\logs\updater-install.log'), Linhas) then
+  begin
+    for I := GetArrayLength(Linhas) - 1 downto 0 do
+      if Trim(Linhas[I]) <> '' then
+      begin
+        Motivo := Trim(Linhas[I]);
+        Break;
+      end;
+  end
+  else
+    Motivo := 'O instalador do serviço encerrou antes de gravar o log.';
+  if Length(Motivo) > 500 then
+    Motivo := Copy(Motivo, 1, 500);
+  MsgBox('O Dashboard foi instalado. O serviço de atualização não ficou ativo.' + #13#10 + #13#10 +
+    Motivo + #13#10 + #13#10 +
+    'Essa falha não cancela o Ollama nem o modelo. Consulte ' +
+    ExpandConstant('{app}\Dashboard\logs\updater-install.log') + '.', mbError, MB_OK);
+end;
+
 procedure AvisarModeloOllama;
 var
   Motivo: String;
   Linhas: TArrayOfString;
   I: Integer;
 begin
-  if FileExists(ExpandConstant('{sd}\Administracao\Ollama\modelo-qwen3-8b.ok')) then Exit;
+  if FileExists(ExpandConstant('{app}\Ollama\modelo-qwen3-8b.ok')) then Exit;
   Motivo := 'A etapa do Ollama terminou sem registrar o modelo.';
-  if LoadStringsFromFile(ExpandConstant('{sd}\Administracao\Ollama\instalacao.log'), Linhas) then
+  if LoadStringsFromFile(ExpandConstant('{app}\Ollama\instalacao.log'), Linhas) then
   begin
     for I := GetArrayLength(Linhas) - 1 downto 0 do
       if Pos('Falha', Linhas[I]) > 0 then
@@ -401,19 +520,40 @@ begin
     Motivo := Copy(Motivo, 1, 500);
   MsgBox('O Dashboard foi instalado, mas o modelo qwen3:8b não ficou disponível.' + #13#10 + #13#10 +
     Motivo + #13#10 + #13#10 +
-    'O Charlie continua respondendo pelas regras do sistema. Para baixar o modelo quando a internet estiver disponível, execute C:\Administracao\Ollama\InstalarModelo.cmd.' + #13#10 + #13#10 +
-    'O registro completo fica em C:\Administracao\Ollama\instalacao.log.', mbError, MB_OK);
+    'O Charlie continua respondendo pelas regras do sistema. Para baixar o modelo quando a internet estiver disponível, execute ' + ExpandConstant('{app}\Ollama\InstalarModelo.cmd') + '.' + #13#10 + #13#10 +
+    'O registro completo fica em ' + ExpandConstant('{app}\Ollama\instalacao.log') + '.', mbError, MB_OK);
+end;
+
+procedure ImportarConfiguracaoAntiga;
+var
+  Origem, Destino: String;
+begin
+  Origem := ExpandConstant('{commonappdata}\Dashboard\database_config.json');
+  Destino := ExpandConstant('{app}\Dashboard\start.ini');
+  if FileExists(Origem) and (not FileExists(Destino)) then
+  begin
+    ForceDirectories(ExtractFileDir(Destino));
+    FileCopy(Origem, Destino, False);
+  end;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  Config, ConfigPath, NfePath, NfeText, AmbienteNome, AcbrIni, UpdaterParams, UpdaterJson: String;
+  Config, ConfigPath, NfePath, NfeText, AmbienteNome, AcbrIni, UpdaterParams, UpdaterJson, WorkDirAtual, WorkDirNovo, LogsAtuais, LogsNovos: String;
   NfeRaw: AnsiString;
   AcbrAmbiente, ResultCode: Integer;
 begin
+  if CurStep = ssInstall then
+  begin
+    ImportarConfiguracaoAntiga;
+    if FileExists(ExpandConstant('{app}\ACBrMonitorPLUS\ACBrMonitor.ini')) then
+      FileCopy(ExpandConstant('{app}\ACBrMonitorPLUS\ACBrMonitor.ini'), ExpandConstant('{tmp}\ACBrMonitor.anterior.ini'), False);
+    Exit;
+  end;
   if CurStep <> ssPostInstall then Exit;
 
-  ConfigPath := ExpandConstant('{sd}\Administracao\Dashboard\start.ini');
+  MigrarInstalacaoAnterior;
+  ConfigPath := ExpandConstant('{app}\Dashboard\start.ini');
   Config := '{' + #13#10 +
     '  "type": "firebird",' + #13#10 +
     '  "name": "Banco principal",' + #13#10 +
@@ -441,10 +581,19 @@ begin
     AcbrAmbiente := 0;
   end;
 
-  NfePath := ExpandConstant('{sd}\Administracao\Dashboard\nfe_sefaz_config.json');
+  NfePath := ExpandConstant('{app}\Dashboard\nfe_sefaz_config.json');
   if LoadStringFromFile(NfePath, NfeRaw) then
   begin
     NfeText := SetJsonStringValue(String(NfeRaw), 'ambiente', AmbienteNome);
+    WorkDirAtual := JsonStringValue(NfeText, 'work_dir', '');
+    WorkDirNovo := ExpandConstant('{app}\Dashboard\acbr\temporarios');
+    if (WorkDirAtual = '') or (Pos('\Administracao\Dashboard\acbr\temporarios', WorkDirAtual) > 0) or (not DirExists(WorkDirAtual)) then
+      NfeText := SetJsonStringValue(NfeText, 'work_dir', JsonEscape(WorkDirNovo));
+    LogsAtuais := JsonStringValue(NfeText, 'acbr_logs_dir', '');
+    LogsNovos := ExpandConstant('{app}\ACBrMonitorPLUS\Logs');
+    if (not MesmoDiretorio(LogsAtuais, LogsNovos)) and
+       ((LogsAtuais = '') or (Pos('\ACBrMonitorPLUS\Logs', LogsAtuais) > 0) or (not DirExists(LogsAtuais))) then
+      NfeText := SetJsonStringValue(NfeText, 'acbr_logs_dir', JsonEscape(LogsNovos));
     if not SaveStringToFile(NfePath, NfeText, False) then
       MsgBox('Não foi possível salvar o ambiente da NF-e em ' + NfePath + '.', mbError, MB_OK);
   end
@@ -463,7 +612,8 @@ begin
     MsgBox('Não foi possível salvar o registro da atualização automática em ' + UpdaterParams + '.', mbError, MB_OK);
 
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM ACBrMonitor64.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  AcbrIni := ExpandConstant('{sd}\ACBrMonitorPLUS\ACBrMonitor.ini');
+  AjustarCaminhosAcbr;
+  AcbrIni := ExpandConstant('{app}\ACBrMonitorPLUS\ACBrMonitor.ini');
   if FileExists(AcbrIni) then
   begin
     if not SetIniInt('WebService', 'Ambiente', AcbrAmbiente, AcbrIni) then

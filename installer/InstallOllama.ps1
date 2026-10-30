@@ -1,12 +1,19 @@
 param(
     [ValidateSet("Install", "Model", "Completo")]
-    [string]$Step = "Completo"
+    [string]$Step = "Completo",
+    [string]$Home = ""
 )
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-$ollamaHome = "C:\Administracao\Ollama"
+if ($Home) {
+    $ollamaHome = $Home
+} elseif ($PSScriptRoot -and ((Split-Path -Leaf $PSScriptRoot) -eq "Ollama")) {
+    $ollamaHome = $PSScriptRoot
+} else {
+    $ollamaHome = "C:\Administracao\Ollama"
+}
 $models = Join-Path $ollamaHome "models"
 $serviceExe = Join-Path $ollamaHome "ollama.exe"
 $runner = Join-Path $ollamaHome "start-ollama.cmd"
@@ -356,7 +363,7 @@ function Copy-OllamaHome([string]$sourceExe) {
         foreach ($arquivo in $arquivos) {
             $i++
             $relativo = $arquivo.FullName.Substring($origem.Length).TrimStart('\')
-            Update-Progresso "Copiando o Ollama para C:\Administracao\Ollama" $i $arquivos.Count $relativo
+            Update-Progresso "Copiando o Ollama para $ollamaHome" $i $arquivos.Count $relativo
             if ($i -eq 1 -or $i -eq $arquivos.Count -or ($i % 25) -eq 0) { Add-Tela ("Copiando {0} de {1}: {2}" -f $i, $arquivos.Count, $relativo) }
             Copy-ArquivoComTentativa $arquivo.FullName (Join-Path $ollamaHome $relativo)
         }
@@ -368,11 +375,11 @@ function Copy-OllamaHome([string]$sourceExe) {
     @"
 @echo off
 set OLLAMA_HOST=127.0.0.1:11434
-set OLLAMA_MODELS=C:\Administracao\Ollama\models
+set OLLAMA_MODELS=$models
 set OLLAMA_KEEP_ALIVE=10m
 set NO_PROXY=127.0.0.1,localhost,::1
 set no_proxy=127.0.0.1,localhost,::1
-cd /d C:\Administracao\Ollama
+cd /d "$ollamaHome"
 ollama.exe serve
 "@ | Set-Content -LiteralPath $runner -Encoding ASCII
 }
@@ -658,7 +665,7 @@ try { $host.UI.RawUI.WindowTitle = "Ollama e qwen3:8b - nao feche esta janela" }
 Write-Log "Inicio da instalacao do Ollama. Etapa $Step."
 Start-Progresso
 Write-Host ""
-Write-Host "Ordem: 1) programa Ollama  2) copia para C:\Administracao\Ollama  3) modelo qwen3:8b." -ForegroundColor Cyan
+Write-Host "Ordem: 1) programa Ollama  2) copia para $ollamaHome  3) modelo qwen3:8b." -ForegroundColor Cyan
 Write-Host "A janela da frente lista o que esta sendo baixado ou instalado." -ForegroundColor Cyan
 Write-Host "Nao feche esta janela. O modelo tem cerca de 5,2 GB." -ForegroundColor Cyan
 Write-Host ""

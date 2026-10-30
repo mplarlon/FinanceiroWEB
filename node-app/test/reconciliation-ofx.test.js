@@ -35,3 +35,37 @@ test("recusa lançamento fora do período mesmo com cabeçalho igual", () => {
   }, selecionada);
   assert.match(messages.join(" "), /fora do período informado/);
 });
+
+test("aceita OFX do Bradesco sem agência quando a conta é a mesma", () => {
+  const parsed = parseOfx("<OFX><BANKACCTFROM><BANKID>0237<ACCTID>9<ACCTTYPE>CHECKING</BANKACCTFROM><BANKTRANLIST><DTSTART>20261027120000<DTEND>20261027120000<STMTTRN><TRNTYPE>CREDIT<DTPOSTED>20260901120000<TRNAMT>10,00<FITID>1<MEMO>PIX</STMTTRN><STMTTRN><TRNTYPE>CREDIT<DTPOSTED>20261027120000<TRNAMT>5,00<FITID>2<MEMO>PIX</STMTTRN></BANKTRANLIST></OFX>");
+  assert.equal(parsed.agencia, null);
+  assert.equal(parsed.conta, "9");
+  const messages = divergenciasDoExtrato(parsed, {
+    cdbanco: "237", agencia: "2143-1", numconta: "000009-4",
+    data_ini: "2026-09-01", data_fim: "2026-10-27",
+  });
+  assert.deepEqual(messages, []);
+});
+
+test("recusa OFX do Bradesco sem agência quando a conta é outra", () => {
+  const messages = divergenciasDoExtrato({
+    bankid: "0237", agencia: null, conta: "9",
+    dt_inicial: "2026-10-27", dt_final: "2026-10-27",
+    itens: [{ data: "2026-09-01" }, { data: "2026-10-27" }],
+  }, {
+    cdbanco: "237", agencia: "0991", numconta: "18516-7",
+    data_ini: "2026-09-01", data_fim: "2026-10-27",
+  });
+  assert.match(messages.join(" "), /sem agência\/9/);
+  assert.match(messages.join(" "), /0991\/18516-7/);
+});
+
+test("usa o período dos lançamentos quando o cabeçalho é só a data do download", () => {
+  const messages = divergenciasDoExtrato({
+    bankid: "237", agencia: "2143-1", conta: "000009-4",
+    dt_inicial: "2026-10-27", dt_final: "2026-10-27",
+    itens: [{ data: "2026-09-01" }, { data: "2026-10-27" }],
+  }, selecionada);
+  assert.match(messages.join(" "), /01\/09\/2026 a 27\/10\/2026/);
+  assert.doesNotMatch(messages.join(" "), /27\/10\/2026 a 27\/10\/2026/);
+});

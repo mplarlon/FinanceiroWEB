@@ -32,6 +32,24 @@ function toTimestamp(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
+// O driver recusa string em coluna BLOB. O texto legado fica em bytes latin1,
+// o mesmo conjunto que o Automec grava em OBSERVACAO.
+export function valorParaColuna(coluna, valor, blobs) {
+  if (valor == null || !blobs?.has?.(String(coluna).toUpperCase())) return valor;
+  if (Buffer.isBuffer(valor) || valor instanceof Date) return valor;
+  return Buffer.from(String(valor), "latin1");
+}
+
+async function blobColumns(tx, table) {
+  const rows = await tx.query(
+    "SELECT TRIM(rf.RDB$FIELD_NAME) AS COL FROM RDB$RELATION_FIELDS rf" +
+    " JOIN RDB$FIELDS f ON f.RDB$FIELD_NAME = rf.RDB$FIELD_SOURCE" +
+    " WHERE TRIM(rf.RDB$RELATION_NAME) = ? AND f.RDB$FIELD_TYPE = 261",
+    [table]
+  );
+  return new Set(rows.map((row) => String(row.COL || "").trim().toUpperCase()));
+}
+
 function periodo(req) {
   let dataIni = String(req.query?.data_inicio || "").trim().slice(0, 10);
   let dataFim = String(req.query?.data_fim || "").trim().slice(0, 10);
@@ -322,6 +340,9 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
       const nfpCols = await tableColumns(tx, "NOTAFIS_PRODUTO");
       const spCols = await tableColumns(tx, "SAIDAPRODUTO");
       const ctaCols = await tableColumns(tx, "CTA_NF");
+      const nfBlobs = await blobColumns(tx, "NOTAFISCAL");
+      const nfpBlobs = await blobColumns(tx, "NOTAFIS_PRODUTO");
+      const ctaBlobs = await blobColumns(tx, "CTA_NF");
       const geradas = [];
 
       let nextIdnf = await nextNumericId(tx, "NOTAFISCAL", "IDNF");
@@ -385,7 +406,7 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
         const nfColumns = Object.keys(nfData).filter(c => nfCols.has(c));
         await tx.execute(
           `INSERT INTO NOTAFISCAL (${nfColumns.join(", ")}) VALUES (${nfColumns.map(() => "?").join(", ")})`,
-          nfColumns.map(c => nfData[c])
+          nfColumns.map(c => valorParaColuna(c, nfData[c], nfBlobs))
         );
 
         let itemRows = [];
@@ -468,7 +489,7 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
           const nfpColumns = Object.keys(nfpData).filter(c => nfpCols.has(c));
           await tx.execute(
             `INSERT INTO NOTAFIS_PRODUTO (${nfpColumns.join(", ")}) VALUES (${nfpColumns.map(() => "?").join(", ")})`,
-            nfpColumns.map(c => nfpData[c])
+            nfpColumns.map(c => valorParaColuna(c, nfpData[c], nfpBlobs))
           );
           posic += 1;
         }
@@ -487,19 +508,19 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
         // Atualizar SAIDAPRODUTO.NRDOC para todos os pedidos do fechamento (o
         // ERP desktop filtra "NF nao emitida" por SAIDAPRODUTO.NRDOC preenchido).
         await tx.execute(
-          `UPDATE SAIDAPRODUTO SET NRDOC = ?, DTALTER = CURRENT_TIMESTAMP, SIST_ALT = 'LOCAL'` +
+          `UPDATE SAIDAPRODUTO SET NRDOC = ?, DTALTER = CURRENT_TIMESTAMP, SIST_ALT = CAST(? AS VARCHAR(7) CHARACTER SET OCTETS)` +
           ` WHERE NRPEDIDO IN (${pedidos.map(() => "?").join(",")}) AND IDEMPRESA = ? AND COALESCE(STATUSSE, 0) <> 9`,
-          [nrdoc, ...pedidos, idempresa]
+          [nrdoc, Buffer.from("LOCAL"), ...pedidos, idempresa]
         );
 
         const controles = cliente.TITULOS.map(t => t.CONTROLE).filter(c => c !== null && c !== undefined).map(Number);
         for (const controle of controles) {
           await tx.execute(
             "UPDATE CTARECEBER SET NRDOC = ?, ACORDO_NF = ?, VALOR_ACORDO_NF = COALESCE(VALOR, DIVIDA, 0)," +
-            " CDUSR = ?, DTALTER = CURRENT_TIMESTAMP, SIST_ALT = 'LOCAL'" +
+            " CDUSR = ?, DTALTER = CURRENT_TIMESTAMP, SIST_ALT = CAST(? AS VARCHAR(7) CHARACTER SET OCTETS)" +
             " WHERE CONTROLE = ? AND IDEMPRESA = ? AND STATUS = 1" +
-            "   AND COALESCE(TRIM(NRDOC), '') = CAST(NRPEDIDO AS VARCHAR(20))",
-            [nrdoc, 1, idusuario, controle, idempresa]
+            "   AND CAST(CAST(TRIM(NRDOC) AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE) = CAST(CAST(NRPEDIDO AS VARCHAR(20)) AS VARCHAR(20) CHARACTER SET OCTETS)",
+            [nrdoc, 1, idusuario, Buffer.from("LOCAL"), controle, idempresa]
           );
         }
 
@@ -518,7 +539,7 @@ router.post("/fechamento-carteira/gerar", async (req, res) => {
           const ctaColumns = Object.keys(ctaData).filter(c => ctaCols.has(c) && ctaData[c] !== null && ctaData[c] !== undefined);
           await tx.execute(
             `INSERT INTO CTA_NF (${ctaColumns.join(", ")}) VALUES (${ctaColumns.map(() => "?").join(", ")})`,
-            ctaColumns.map(c => ctaData[c])
+            ctaColumns.map(c => valorParaColuna(c, ctaData[c], ctaBlobs))
           );
           if (ctaCols.has("NFCE")) {
             await tx.execute("UPDATE CTA_NF SET NFCE = 0 WHERE IDNF = ? AND IDEMPRESA = ? AND NFCE IS NULL", [idnf, idempresa]);

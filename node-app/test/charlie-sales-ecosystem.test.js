@@ -19,13 +19,14 @@ import {
 test("o menu do Charlie Sales reserva os módulos pedidos e aponta os que já funcionam", () => {
   const items = salesMenuItems();
   assert.equal(new Set(items.map((item) => item.id)).size, items.length);
-  assert.equal(items.length, 31);
+  assert.equal(items.length, 32);
   assert.deepEqual(SALES_MENU.map((group) => group.label), ["Visão geral", "Vendas", "Loja online", "Novos clientes", "Gestão", "Administração"]);
   assert.equal(findSalesMenuItem("intelligence").kind, "intelligence");
   assert.equal(findSalesMenuItem("loja").kind, "store");
   assert.equal(findSalesMenuItem("leads").kind, "leads");
   assert.equal(findSalesMenuItem("dashboard").kind, "dashboard");
   assert.equal(findSalesMenuItem("booster").kind, "booster");
+  assert.equal(findSalesMenuItem("revisao-hub").kind, "tecnospeed");
   assert.equal(findSalesMenuItem("hunter").kind, "hunter");
   assert.equal(findSalesMenuItem("whatsapp").kind, "whatsapp");
   assert.equal(findSalesMenuItem("quotes").kind, "quotes");

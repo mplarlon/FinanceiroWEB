@@ -5,8 +5,8 @@
   <executable>%BASE%\UpdaterNode.exe</executable>
   <arguments>&quot;%BASE%\agent.mjs&quot;</arguments>
   <workingdirectory>%BASE%</workingdirectory>
-  <env name="DASHBOARD_DATA_DIR" value="%SystemDrive%\Administracao\Dashboard" />
-  <env name="ERP_INSTALL_ROOT" value="%SystemDrive%\Administracao" />
+  <env name="DASHBOARD_DATA_DIR" value="%BASE%\..\Dashboard" />
+  <env name="ERP_INSTALL_ROOT" value="%BASE%\.." />
   <env name="ERP_UPDATE_CENTER_URL" value="https://financeiroweb.nuvempontual.com" />
   <env name="ERP_UPDATE_PUBLIC_KEY_FILE" value="%BASE%\release-public.pem" />
   <env name="ERP_CURRENT_VERSION" value="1.0.2" />
@@ -15,5 +15,5 @@
   <startmode>Automatic</startmode><delayedAutoStart>true</delayedAutoStart>
   <onfailure action="restart" delay="30 sec"/><onfailure action="restart" delay="2 min"/>
   <resetfailure>1 hour</resetfailure><stoptimeout>30 sec</stoptimeout>
-  <logpath>%SystemDrive%\Administracao\Dashboard\logs</logpath><log mode="roll-by-size"><sizeThreshold>10240</sizeThreshold><keepFiles>8</keepFiles></log>
+  <logpath>%BASE%\..\Dashboard\logs</logpath><log mode="roll-by-size"><sizeThreshold>10240</sizeThreshold><keepFiles>8</keepFiles></log>
 </service>

@@ -1158,7 +1158,7 @@ export default function FinanceAccounts() {
           </label>
           <label className="filtro-pessoa">
             {type === "receber" ? "Cliente" : "Fornecedor"}
-            <PersonField type={type} allowEmpty value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite nome ou código" hint="A lista inicial mostra 40 nomes. Digite para localizar outro." />
+            <PersonField type={type} allowEmpty value={filters[type === "receber" ? "cliente" : "fornecedor"] || ""} onChange={(value) => setFilter(type === "receber" ? "cliente" : "fornecedor", value)} placeholder="Digite nome ou código" />
           </label>
           <button onClick={() => load()} disabled={loading}>{loading ? "Atualizando..." : "Buscar / atualizar"}</button>
           <button className="secondary" onClick={clearFilters}>Limpar</button>

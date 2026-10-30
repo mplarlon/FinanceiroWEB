@@ -19,6 +19,8 @@ Copy-Item (Join-Path $root "installer\UpdaterService.xml") (Join-Path $OutputDir
 Set-UpdaterEnrollmentKey (Join-Path $OutputDir "UpdaterService.xml") $EnrollmentKeyFile
 Copy-Item -LiteralPath $PublicKeyFile (Join-Path $OutputDir "release-public.pem") -Force
 Copy-Item (Join-Path $root "installer\InstallUpdater.ps1") $OutputDir -Force
+Copy-Item (Join-Path $root "installer\query-company.js") $OutputDir -Force
+Copy-Item (Join-Path $root "installer\Instalar-Atualizador.bat") $OutputDir -Force
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $OutputDir "UpdaterNode.exe")
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $OutputDir "UpdaterService.exe")
 Write-Host "Agente preparado em $OutputDir"
