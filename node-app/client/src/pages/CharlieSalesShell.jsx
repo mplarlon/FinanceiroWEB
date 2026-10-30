@@ -3,6 +3,7 @@ import CharlieLeads from "./CharlieLeads.jsx";
 import EcommerceIntelligence from "./EcommerceIntelligence.jsx";
 import CharlieSalesDashboard from "./CharlieSalesDashboard.jsx";
 import CharlieMarketplaceBooster from "./CharlieMarketplaceBooster.jsx";
+import CharlieTecnospeedReview from "./CharlieTecnospeedReview.jsx";
 import CharlieSalesHunter from "./CharlieSalesHunter.jsx";
 import CharlieWhatsAppSales from "./CharlieWhatsAppSales.jsx";
 import CharlieSmartQuotes from "./CharlieSmartQuotes.jsx";
@@ -70,6 +71,7 @@ export default function CharlieSalesShell({ connected, onSynchronized, children 
   else if (current.kind === "store") content = <div className="charlie-sales-store">{children}</div>;
   else if (current.kind === "leads") content = <CharlieLeads />;
   else if (current.kind === "booster") content = <CharlieMarketplaceBooster connected={connected} />;
+  else if (current.kind === "tecnospeed") content = <CharlieTecnospeedReview connected={connected} />;
   else if (current.kind === "hunter") content = <CharlieSalesHunter onOpen={open} />;
   else if (current.kind === "whatsapp") content = <CharlieWhatsAppSales />;
   else if (current.kind === "quotes") content = <CharlieSmartQuotes />;

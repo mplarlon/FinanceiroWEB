@@ -150,9 +150,66 @@ export function movePath(source, destination, fsImpl = fs) {
 }
 
 function windowsService(installRoot) {
+  return createServiceController(installRoot);
+}
+
+export function createServiceController(installRoot, options = {}) {
   const executable = path.join(installRoot, "DashboardService.exe");
-  const run = (command) => execFile(executable, [command], { cwd: installRoot, windowsHide: true, timeout: 60_000 });
-  return { stop: () => run("stop"), start: () => run("start") };
+  const run = options.run || ((args) => execFile(executable, args, { cwd: installRoot, windowsHide: true, timeout: 60_000 }));
+  const pause = options.pause || ((milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)));
+  const probe = options.probe || (() => portResponding(options.healthUrl || "http://127.0.0.1:805/api/status"));
+  const waits = options.waits ?? 40;
+
+  async function waitUntilQuiet() {
+    for (let attempt = 0; attempt < waits; attempt += 1) {
+      if (!(await probe())) return;
+      await pause(250);
+    }
+    throw new Error("O serviço não liberou a porta.");
+  }
+
+  return {
+    async stop() {
+      try {
+        await run(["stop"]);
+      } catch (error) {
+        const text = commandOutput(error);
+        if (!/already stopped|not been started|n[aã]o foi iniciado|n[aã]o est[aá] em execu[cç][aã]o/i.test(text)) throw error;
+      }
+      await waitUntilQuiet();
+    },
+    async start() {
+      await waitUntilQuiet();
+      await pause(500);
+      let lastError;
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        try {
+          await run(["start"]);
+        } catch (error) {
+          const text = commandOutput(error);
+          if (!/already started|j[aá] foi iniciado|j[aá] est[aá]/i.test(text)) lastError = error;
+        }
+        for (let check = 0; check < 8; check += 1) {
+          if (await probe()) return;
+          await pause(500);
+        }
+      }
+      throw lastError || new Error("O serviço não voltou a responder.");
+    },
+  };
+}
+
+function commandOutput(error) {
+  return `${error?.stdout || ""}\n${error?.stderr || ""}\n${error?.message || ""}`;
+}
+
+export async function portResponding(url, timeoutMs = 800) {
+  try {
+    const response = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
+    return response.status > 0;
+  } catch {
+    return false;
+  }
 }
 
 async function waitForHealth(url, attempts = 20) {
@@ -161,5 +218,5 @@ async function waitForHealth(url, attempts = 20) {
     try { const response = await fetch(url, { signal: AbortSignal.timeout(5_000) }); if (response.ok) return true; lastError = new Error(`Health check HTTP ${response.status}.`); } catch (error) { lastError = error; }
     await new Promise((resolve) => setTimeout(resolve, 1_500));
   }
-  throw lastError || new Error("Health check falhou.");
+  throw new Error(`O painel não respondeu depois da atualização. ${lastError?.message || ""}`.trim());
 }

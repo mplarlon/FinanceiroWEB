@@ -1,5 +1,5 @@
 import express from "express";
-import { query, withDatabase } from "../db.js";
+import { query, withDatabase, withWriteTransaction } from "../db.js";
 import { readJsonConfig, writeJsonConfig } from "../lib/json-config.js";
 import { ollamaChat } from "../lib/ollama.js";
 import { suggestTrayProduct } from "../lib/tray-product-ai.js";
@@ -22,6 +22,24 @@ import {
   recordBoosterSuggestion,
   saveMarketplaceBooster,
 } from "../lib/marketplace-booster.js";
+import {
+  TECNOSPEED_TRAY_ID_SQL,
+  TECNOSPEED_VIEW_SQL,
+  aggregateTecnospeedRows,
+  analyzeTecnospeedProducts,
+  buildTrayPayloadFromTecnospeed,
+  decideTecnospeedItem,
+  markTecnospeedBlocked,
+  markTecnospeedFailed,
+  markTecnospeedUploaded,
+  mergeTecnospeedState,
+  publicTecnospeedReview,
+  readTecnospeedReview,
+  recordTecnospeedSuggestion,
+  reviewTecnospeedWithOllama,
+  saveTecnospeedReview,
+  tecnospeedFacts,
+} from "../lib/charlie-tecnospeed-review.js";
 import {
   definirCanal,
   definirPiso,
@@ -598,6 +616,145 @@ router.post("/webhook", express.urlencoded({ extended: true }), async (req, res)
 });
 
 router.get("/eventos", (_req, res) => res.json({ ok: true, eventos: readJsonConfig("tray_webhooks.json", []).slice(0, 100) }));
+
+async function loadTecnospeedProducts() {
+  const rows = await withDatabase((db) => query(db, TECNOSPEED_VIEW_SQL, [], { timeoutMs: 30000 }));
+  return aggregateTecnospeedRows(rows);
+}
+
+async function resolveTrayId(productId, sku, store = readEcommerceStore()) {
+  const products = Object.values(store.products || {});
+  const wanted = new Set([String(productId || ""), String(sku || "")].map((value) => value.trim().toUpperCase()).filter(Boolean));
+  const matched = products.find((item) => wanted.has(String(item.reference || "").trim().toUpperCase())
+    || wanted.has(String(item.externalId || "").trim().toUpperCase()));
+  if (matched?.externalId) return String(matched.externalId);
+  try {
+    const row = await withDatabase((db) => query(db, TECNOSPEED_TRAY_ID_SQL, [productId]));
+    const id = String(row[0]?.ID_TECNOSPEED || "").trim();
+    return id || null;
+  } catch {
+    return null;
+  }
+}
+
+router.get("/revisao-hub", (_req, res) => {
+  res.json({ ok: true, ...publicTecnospeedReview(readTecnospeedReview()) });
+});
+
+router.post("/revisao-hub/analisar", async (_req, res) => {
+  try {
+    const products = await loadTecnospeedProducts();
+    const trayProducts = Object.values(readEcommerceStore().products || {});
+    const analysis = analyzeTecnospeedProducts(products, { trayProducts });
+    const state = mergeTecnospeedState(readTecnospeedReview(), analysis);
+    saveTecnospeedReview(state);
+    res.json({ ok: true, ...publicTecnospeedReview(state) });
+  } catch (error) {
+    res.status(error.status || 500).json({ ok: false, erro: error.message });
+  }
+});
+
+router.post("/revisao-hub/:id/sugerir", async (req, res) => {
+  try {
+    const { facts } = tecnospeedFacts(readTecnospeedReview(), req.params.id);
+    const suggestion = await reviewTecnospeedWithOllama(facts, ollamaChat);
+    const state = recordTecnospeedSuggestion(readTecnospeedReview(), req.params.id, suggestion, req.dashboardSession.user);
+    saveTecnospeedReview(state);
+    res.json({
+      ok: true,
+      item: state.items[req.params.id],
+      aviso: "Revisão do Ollama aceita. Conferência automática não encontrou número fora do cadastro.",
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ ok: false, erro: error.message });
+  }
+});
+
+router.post("/revisao-hub/:id/decisao", (req, res) => {
+  try {
+    if (!canEcommerce(req.dashboardSession?.user, "approve")) {
+      return res.status(403).json({ ok: false, erro: "Sem permissão específica para aprovar ações de e-commerce." });
+    }
+    if (!["approve", "reject"].includes(req.body?.decision)) {
+      return res.status(400).json({ ok: false, erro: "Decisão inválida." });
+    }
+    const state = decideTecnospeedItem(readTecnospeedReview(), req.params.id, req.body.decision, req.dashboardSession.user);
+    saveTecnospeedReview(state);
+    res.json({ ok: true, item: state.items[req.params.id] });
+  } catch (error) {
+    res.status(error.status || 400).json({ ok: false, erro: error.message });
+  }
+});
+
+router.post("/revisao-hub/:id/subir", async (req, res) => {
+  const actor = req.dashboardSession?.user;
+  try {
+    if (!canEcommerce(actor, "execute")) {
+      return res.status(403).json({ ok: false, erro: "Sem permissão específica para executar ações de e-commerce." });
+    }
+    const current = readTecnospeedReview();
+    const item = current.items[req.params.id];
+    if (!item) return res.status(404).json({ ok: false, erro: "Item não encontrado." });
+    if (item.status !== "approved") return res.status(409).json({ ok: false, erro: "A subida exige aprovação." });
+    const { payload, gaps, content } = buildTrayPayloadFromTecnospeed(item);
+    if (!payload.name) return res.status(409).json({ ok: false, erro: "A sugestão aprovada não tem título para enviar à Tray." });
+
+    let trayId = item.trayId || await resolveTrayId(item.productId, item.sku);
+    if (!trayId && gaps.length) {
+      const state = markTecnospeedBlocked(
+        current,
+        item.id,
+        actor,
+        `Não dá para criar na Tray sem: ${gaps.join(", ")}. Complete no Automec e analise de novo.`,
+      );
+      saveTecnospeedReview(state);
+      return res.status(409).json({ ok: false, erro: state.items[item.id].result.error, item: state.items[item.id] });
+    }
+
+    let result;
+    let mode;
+    if (trayId) {
+      mode = "update";
+      result = await trayRequest(`products/${encodeURIComponent(trayId)}`, {}, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Product: content }),
+      });
+    } else {
+      mode = "create";
+      result = await trayRequest("products", {}, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Product: payload }),
+      });
+      trayId = result?.id || result?.Product?.id || null;
+    }
+
+    try {
+      await withWriteTransaction(async (tx) => {
+        if (payload.name) {
+          await tx.execute("UPDATE PRODUTO SET PRODUTOWEB = ? WHERE CDPRODUTO = ?", [payload.name.slice(0, 120), item.productId]);
+        }
+        await tx.execute("UPDATE PRODUTO SET ITS_INTEGRACAO_ERRO = -1 WHERE CDPRODUTO = ?", [item.productId]);
+      });
+    } catch (error) {
+      console.error(`[revisao-hub] ERP: ${error.message}`);
+    }
+
+    const state = markTecnospeedUploaded(readTecnospeedReview(), item.id, actor, {
+      previous: { name: item.product?.name || "", description: item.product?.description || "" },
+      result: { ok: true, tray: true },
+      trayId,
+      mode,
+    });
+    saveTecnospeedReview(state);
+    res.json({ ok: true, item: state.items[item.id], modo: mode, trayId, retorno: result });
+  } catch (error) {
+    try { saveTecnospeedReview(markTecnospeedFailed(readTecnospeedReview(), req.params.id, actor, error.message)); }
+    catch { /* item ausente */ }
+    res.status(error.status || 502).json({ ok: false, erro: error.message });
+  }
+});
 
 router.get("/booster", (_req, res) => {
   res.json({ ok: true, ...publicBooster(readMarketplaceBooster()) });

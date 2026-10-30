@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+export const MANUAL_CHECK_PORT = 18055;
 
 export function assertSemver(value, label = "versao") {
   if (!SEMVER.test(String(value || ""))) throw new Error(`${label} deve usar MAJOR.MINOR.PATCH.`);

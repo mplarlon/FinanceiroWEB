@@ -5,6 +5,11 @@ import { dataDir } from "../config.js";
 
 const blockersDir = path.join(dataDir, "update-blockers");
 
+export function tracksCriticalOperation(method, pathname) {
+  if (["GET", "HEAD", "OPTIONS"].includes(String(method || "").toUpperCase())) return false;
+  return String(pathname || "") !== "/api/app-update/now";
+}
+
 export function beginCriticalOperation(type, details = {}, ttlMs = 2 * 60 * 60_000) {
   fs.mkdirSync(blockersDir, { recursive: true });
   const id = crypto.randomUUID();

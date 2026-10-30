@@ -108,6 +108,29 @@ function samePiece(left, right) {
   if (a.key === b.key) return !a.check || !b.check || a.check === b.check;
   return a.key + a.check === b.key || b.key + b.check === a.key;
 }
+function numeroInformado(value) {
+  return digits(value).replace(/^0+/, "");
+}
+function periodoEfetivo(ofx, start, end) {
+  const dates = (ofx.itens || [])
+      .map((item) => item.data)
+      .filter(Boolean)
+      .sort(),
+    txStart = dates[0] || null,
+    txEnd = dates.at(-1) || null,
+    headerStart = ofx.dt_inicial || null,
+    headerEnd = ofx.dt_final || null,
+    headerCobre =
+      headerStart &&
+      headerEnd &&
+      txStart &&
+      headerStart <= txStart &&
+      headerEnd >= txEnd,
+    headerBate = headerStart === start && headerEnd === end;
+  if (headerBate || headerCobre || !txStart)
+    return { inicio: headerStart || txStart, fim: headerEnd || txEnd };
+  return { inicio: txStart, fim: txEnd };
+}
 const sameBank = (fileBank, selectedBank) => {
   const file = digits(fileBank).replace(/^0+/, ""),
     selected = digits(selectedBank).replace(/^0+/, "");
@@ -121,24 +144,25 @@ export function divergenciasDoExtrato(ofx, form) {
     bank = String(form.cdbanco || "").trim();
   if (!bank || !agency || !account)
     messages.push("Selecione a conta bancária antes de conferir o arquivo.");
-  else if (!ofx.agencia || !ofx.conta)
+  else if (!numeroInformado(ofx.conta))
     messages.push("O arquivo OFX não informa agência e conta.");
   else {
     if (!sameBank(ofx.bankid, bank))
       messages.push(
         `O arquivo OFX é do banco ${digits(ofx.bankid)}, diferente do banco selecionado ${bank}.`,
       );
-    if (!samePiece(agency, ofx.agencia) || !samePiece(account, ofx.conta))
+    // Bradesco não manda BRANCHID e grava em ACCTID só o número, sem zeros e sem dígito.
+    const agenciaOk =
+        !numeroInformado(ofx.agencia) || samePiece(agency, ofx.agencia),
+      contaOk = samePiece(account, ofx.conta);
+    if (!agenciaOk || !contaOk)
       messages.push(
-        `O arquivo OFX é da conta ${ofx.agencia}/${ofx.conta}, diferente da conta selecionada ${agency}/${account}.`,
+        `O arquivo OFX é da conta ${ofx.agencia || "sem agência"}/${ofx.conta}, diferente da conta selecionada ${agency}/${account}.`,
       );
   }
-  const dates = ofx.itens
-      .map((item) => item.data)
-      .filter(Boolean)
-      .sort(),
-    fileStart = ofx.dt_inicial || dates[0] || null,
-    fileEnd = ofx.dt_final || dates.at(-1) || null;
+  const efetivo = periodoEfetivo(ofx, start, end),
+    fileStart = efetivo.inicio,
+    fileEnd = efetivo.fim;
   if (!fileStart || !fileEnd)
     messages.push("O arquivo OFX não informa o período do extrato.");
   else if (fileStart !== start || fileEnd !== end)

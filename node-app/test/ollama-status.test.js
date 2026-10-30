@@ -28,6 +28,24 @@ test("acha o executavel compartilhado antes do perfil do usuario", () => {
   assert.equal(seen[0], "C:\\Administracao\\Ollama\\ollama.exe");
 });
 
+test("prefere o Ollama da pasta de instalacao", () => {
+  const previousHome = process.env.OLLAMA_HOME;
+  const previousModels = process.env.OLLAMA_MODELS;
+  process.env.OLLAMA_HOME = "D:\\Cliente\\Ollama";
+  delete process.env.OLLAMA_MODELS;
+  try {
+    const exe = ollama.findOllamaExecutable((candidate) => candidate === "D:\\Cliente\\Ollama\\ollama.exe");
+    assert.equal(exe, "D:\\Cliente\\Ollama\\ollama.exe");
+    const dir = ollama.resolveOllamaModelsDir((candidate) => candidate === "D:\\Cliente\\Ollama\\models\\manifests");
+    assert.equal(dir, "D:\\Cliente\\Ollama\\models");
+  } finally {
+    if (previousHome === undefined) delete process.env.OLLAMA_HOME;
+    else process.env.OLLAMA_HOME = previousHome;
+    if (previousModels === undefined) delete process.env.OLLAMA_MODELS;
+    else process.env.OLLAMA_MODELS = previousModels;
+  }
+});
+
 test("usa a pasta de modelos que ja tem manifestos", () => {
   const dir = ollama.resolveOllamaModelsDir((candidate) => candidate.endsWith("\\models\\manifests") && candidate.includes("C:\\Administracao\\Ollama"));
   assert.equal(dir, "C:\\Administracao\\Ollama\\models");

@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import express from "express";
 import { UpdateStore } from "./store.js";
 import { assertSemver, compareSemver, safeChild, sha256, verifyManifest, verifyRequest } from "../shared.js";
+import { commandForAgent, instalacaoOnline, publicStartIni, publicStartIniCommand, startIniCommand } from "../start-ini.js";
 
 export function createUpdateCenter(options = {}) {
   const dataDir = options.dataDir || process.env.UPDATE_CENTER_DATA_DIR || path.resolve("update-center-data");
@@ -34,6 +35,27 @@ export function createUpdateCenter(options = {}) {
       `erp_update_distribution_suspended ${store.state.suspended ? 1 : 0}`, "",
     ].join("\n"));
   });
+  app.post("/api/v1/registration-requests", express.json({ limit: "64kb" }), (req, res, next) => {
+    try {
+      const body = req.body || {};
+      const result = store.requestRegistration({
+        installationId: String(body.installationId || ""),
+        publicKey: publicKeyOf(body.publicKey),
+        version: assertSemver(body.version),
+        platform: String(body.platform || ""),
+        architecture: String(body.architecture || ""),
+        nodeVersion: String(body.nodeVersion || "").slice(0, 40),
+        agentVersion: body.agentVersion ? assertSemver(body.agentVersion, "agentVersion") : "",
+        channel: String(body.channel || "stable").slice(0, 40),
+        companyName: text(body.companyName, 160),
+        hostname: text(body.hostname, 120),
+        addresses: addressesOf(body.addresses),
+        installPath: installPathOf(body.installPath),
+        remoteAddress: seenAddress(req),
+      });
+      res.status(result.alreadyRegistered ? 200 : 202).json({ ok: true, pending: !result.alreadyRegistered, alreadyRegistered: Boolean(result.alreadyRegistered) });
+    } catch (error) { next(error); }
+  });
   app.post("/api/v1/enroll", express.json({ limit: "64kb" }), (req, res, next) => {
     try {
       const token = String(req.headers.authorization || "").replace(/^Bearer\s+/i, "");
@@ -53,8 +75,10 @@ export function createUpdateCenter(options = {}) {
   app.post("/api/v1/check", ...signedJson, (req, res, next) => {
     try {
       const input = JSON.parse(req.body.toString("utf8") || "{}");
+      const reported = assertSemver(input.version);
+      const existing = store.state.installations[req.installation.installationId];
       const patch = {
-        version: assertSemver(input.version), status: String(input.status || "online"),
+        status: String(input.status || "online"),
         platform: String(input.platform), architecture: String(input.architecture), nodeVersion: String(input.nodeVersion || ""), agentVersion: String(input.agentVersion || ""),
         remoteAddress: seenAddress(req),
       };
@@ -62,9 +86,18 @@ export function createUpdateCenter(options = {}) {
       if (input.companyName) patch.companyName = text(input.companyName, 160);
       if (Array.isArray(input.addresses)) patch.addresses = addressesOf(input.addresses);
       if (input.installPath) patch.installPath = installPathOf(input.installPath);
+      if (input.startIni && typeof input.startIni === "object") patch.startIni = publicStartIni(input.startIni);
+      if (!existing?.version || compareSemver(reported, existing.version) <= 0) patch.version = reported;
       const installation = store.heartbeat(req.installation.installationId, patch);
-      const release = store.eligible(installation);
-      res.json({ ok: true, update: release ? { manifest: release.manifest, signature: release.signature, downloadUrl: `/api/v1/packages/${encodeURIComponent(release.manifest.version)}` } : null, suspended: store.state.suspended });
+      if (input.startIniResult && typeof input.startIniResult === "object") store.acknowledgeStartIni(installation.installationId, input.startIniResult);
+      const current = store.state.installations[installation.installationId];
+      const release = store.eligible(current);
+      res.json({
+        ok: true,
+        update: release ? { manifest: release.manifest, signature: release.signature, downloadUrl: `/api/v1/packages/${encodeURIComponent(release.manifest.version)}` } : null,
+        suspended: store.state.suspended,
+        startIni: commandForAgent(current.startIniCommand),
+      });
     } catch (error) { next(error); }
   });
   app.post("/api/v1/events", ...signedJson, (req, res, next) => {
@@ -90,6 +123,16 @@ export function createUpdateCenter(options = {}) {
     const latest = Object.values(store.state.releases).filter((item) => item.status === "published").sort((a, b) => compareSemver(b.manifest.version, a.manifest.version))[0]?.manifest.version || null;
     const outdated = installations.filter((item) => isOutdated(item, latest)).length;
     res.json({ ok: true, suspended: store.state.suspended, latestVersion: latest, totals: { installations: installations.length, recent: installations.filter((item) => Date.now() - Date.parse(item.lastSeenAt || 0) < 60 * 60_000).length, failed: installations.filter((item) => item.status === "failed" || item.status === "rollback").length, current: installations.filter((item) => item.version === latest).length, outdated } });
+  });
+  app.get("/api/admin/registration-requests", (_req, res) => {
+    const requests = Object.values(store.state.registrationRequests || {}).sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+    res.json({ ok: true, requests: requests.map(publicRegistrationRequest) });
+  });
+  app.post("/api/admin/registration-requests/:id/accept", (req, res, next) => {
+    try {
+      const installation = store.acceptRegistration(req.params.id, req.adminActor);
+      res.json({ ok: true, installation: publicInstallation(installation) });
+    } catch (error) { next(error); }
   });
   app.get("/api/admin/installations", (_req, res) => {
     const latest = latestPublished(store);
@@ -119,9 +162,17 @@ export function createUpdateCenter(options = {}) {
   app.delete("/api/admin/releases/:version", (req, res, next) => { try { store.removeRelease(assertSemver(req.params.version)); store.event("__admin__", { type: "release_deleted", version: req.params.version, detail: "excluida" }); res.json({ ok: true }); } catch (error) { next(error); } });
   app.post("/api/admin/suspension", express.json({ limit: "8kb" }), (req, res) => { store.state.suspended = Boolean(req.body.suspended); store.save(); store.event("__admin__", { type: "distribution_suspension", detail: store.state.suspended ? "suspensa" : "retomada" }); res.json({ ok: true, suspended: store.state.suspended }); });
   app.post("/api/admin/installations/:id/revoke", (req, res, next) => { try { const item = store.state.installations[req.params.id]; if (!item) throw Object.assign(new Error("Instalacao inexistente."), { status: 404 }); item.revokedAt = new Date().toISOString(); store.save(); store.event(req.params.id, { type: "installation_revoked", detail: "revogada" }); res.json({ ok: true }); } catch (error) { next(error); } });
+  app.post("/api/admin/installations/:id/start-ini", express.json({ limit: "16kb" }), (req, res, next) => {
+    try {
+      const command = store.queueStartIni(req.params.id, req.body || {}, req.adminActor);
+      store.event(req.params.id, { type: "start_ini_queued", detail: `${command.host}:${command.port} ${command.database}`.slice(0, 300) });
+      res.status(202).json({ ok: true, startIniCommand: publicStartIniCommand(store.state.installations[req.params.id].startIniCommand) });
+    } catch (error) { next(error); }
+  });
 
   const uiDir = options.uiDir || path.join(import.meta.dirname, "dist");
   if (fs.existsSync(uiDir)) app.use(express.static(uiDir));
+  app.use("/api", (_req, res) => res.status(404).json({ ok: false, error: "Rota nao encontrada." }));
   app.use((error, _req, res, _next) => res.status(error.status || 500).json({ ok: false, error: error.message }));
   return { app, store };
 }
@@ -140,13 +191,20 @@ const AUDIT_LABEL = {
   installed: "Instalada",
   download_started: "Download iniciado",
   deferred_critical_operation: "Adiada",
+  deferred_logged_off: "Adiada",
+  deferred_awaiting_notice: "Adiada",
   authorization_created: "Liberação",
   release_status_changed: "Status da versão",
   distribution_suspension: "Suspensão",
   installation_revoked: "Revogação",
   release_deleted: "Versão excluída",
+  start_ini_queued: "start.ini",
+  start_ini_applied: "start.ini",
+  start_ini_failed: "start.ini",
   unknown: "Desconhecido",
   registered: "Registrada",
+  registration_requested: "Pedido de registro",
+  registration_accepted: "Registro aceito",
 };
 
 export function presentAuditEvent(store, event) {
@@ -205,6 +263,10 @@ function auditSummary(event, scope) {
       return translateFailure(detail) || "A atualização foi desfeita e a versão anterior voltou.";
     case "deferred_critical_operation":
       return "A atualização foi adiada porque a máquina estava no meio de uma operação.";
+    case "deferred_logged_off":
+      return "A atualização ficou pendente porque não havia usuário logado nesta máquina.";
+    case "deferred_awaiting_notice":
+      return "A atualização ficou pendente até o aviso aparecer para o usuário.";
     case "authorization_created":
       if (scope.installation) return "A versão foi liberada para esta máquina.";
       if (scope.nota?.startsWith("Grupo ")) return `A versão foi liberada para o grupo ${scope.nota.slice(6)}.`;
@@ -222,6 +284,12 @@ function auditSummary(event, scope) {
       return "Esta máquina deixou de receber atualizações.";
     case "release_deleted":
       return "A versão foi excluída da central.";
+    case "start_ini_queued":
+      return "A alteração do start.ini foi enviada para esta máquina.";
+    case "start_ini_applied":
+      return "O start.ini desta máquina foi atualizado.";
+    case "start_ini_failed":
+      return detail ? `Não foi possível atualizar o start.ini: ${detail}` : "Não foi possível atualizar o start.ini.";
     default:
       return translateFailure(detail) || "—";
   }
@@ -305,7 +373,20 @@ function signed(store, nonces) {
   };
 }
 
-function publicInstallation({ publicKey: _key, ...installation }) { return installation; }
+function publicRegistrationRequest({ publicKey: _key, ...request }) {
+  return request;
+}
+
+function publicKeyOf(value) {
+  const text = String(value || "").trim();
+  if (text.length < 32 || text.length > 4096) throw Object.assign(new Error("Chave publica invalida."), { status: 400 });
+  try { crypto.createPublicKey(text); } catch { throw Object.assign(new Error("Chave publica invalida."), { status: 400 }); }
+  return text;
+}
+
+function publicInstallation({ publicKey: _key, startIniCommand, ...installation }) {
+  return { ...installation, startIni: publicStartIni(installation.startIni), startIniPending: Boolean(startIniCommand), startIniCommand: publicStartIniCommand(startIniCommand) };
+}
 
 function text(value, max) { return String(value || "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, max); }
 

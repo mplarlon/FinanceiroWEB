@@ -5,7 +5,14 @@ import path from "node:path";
 const DEFAULT_URL = "http://127.0.0.1:11434";
 const DEFAULT_MODEL = "qwen3:8b";
 const SHARED_HOME = "C:\\Administracao\\Ollama";
-const SHARED_MODELS = path.join(SHARED_HOME, "models");
+
+function ollamaHomes() {
+  const homes = [];
+  const configured = String(process.env.OLLAMA_HOME || "").trim();
+  if (configured) homes.push(configured);
+  if (!homes.some((home) => path.resolve(home) === path.resolve(SHARED_HOME))) homes.push(SHARED_HOME);
+  return homes;
+}
 let unavailableUntil = 0;
 let starting = null;
 
@@ -121,7 +128,7 @@ export async function readOllamaStatus() {
 
 export function findOllamaExecutable(exists = fs.existsSync) {
   const fixed = [
-    path.join(SHARED_HOME, "ollama.exe"),
+    ...ollamaHomes().map((home) => path.join(home, "ollama.exe")),
     process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, "Programs", "Ollama", "ollama.exe") : "",
     "C:\\Program Files\\Ollama\\ollama.exe",
   ].filter(Boolean);
@@ -145,7 +152,12 @@ function directoryHasModels(dir, exists = fs.existsSync) {
 }
 
 export function resolveOllamaModelsDir(exists = fs.existsSync) {
-  if (directoryHasModels(SHARED_MODELS, exists)) return SHARED_MODELS;
+  const explicit = String(process.env.OLLAMA_MODELS || "").trim();
+  if (directoryHasModels(explicit, exists)) return explicit;
+  for (const home of ollamaHomes()) {
+    const models = path.join(home, "models");
+    if (directoryHasModels(models, exists)) return models;
+  }
   const users = "C:\\Users";
   if (exists(users)) {
     let entries = [];
@@ -156,7 +168,7 @@ export function resolveOllamaModelsDir(exists = fs.existsSync) {
       if (directoryHasModels(candidate, exists)) return candidate;
     }
   }
-  return SHARED_MODELS;
+  return path.join(ollamaHomes()[0], "models");
 }
 
 function autostartAllowed() {

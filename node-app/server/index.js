@@ -5,6 +5,8 @@ import express from "express";
 import { authenticate, debugLogin } from "./auth.js";
 import {
   clientDist,
+  dataDir,
+  databaseSetupInput,
   loadDatabaseConfig,
   normalizeDatabaseConfig,
   port,
@@ -79,10 +81,14 @@ import { startCharlieLeads } from "./charlie-leads-scheduler.js";
 import { startReconciliationIntelligence } from "./reconciliation-intelligence-scheduler.js";
 import { startOpenFinance } from "./open-finance-scheduler.js";
 import { ensureOllamaServer } from "./lib/ollama.js";
-import { adHocQueryEnabled, debugLoginEnabled, isPublicApiPath } from "./security-policy.js";
+import { escolherNomeEmpresa, NOME_EMPRESA_PADRAO } from "./lib/empresa-nome.js";
+import { adHocQueryEnabled, consumeStartIniAttempt, debugLoginEnabled, isPublicApiPath } from "./security-policy.js";
 import { exigirPrazo } from "./lib/prazo-acesso.js";
-import { beginCriticalOperation } from "./lib/update-readiness.js";
-import { syncUpdaterAgent } from "./lib/sync-updater-agent.js";
+import { beginCriticalOperation, tracksCriticalOperation } from "./lib/update-readiness.js";
+import { manualCheckUrl, requestManualUpdate } from "./lib/manual-update.js";
+import { activateBundledUpdater, syncUpdaterAgent } from "./lib/sync-updater-agent.js";
+import { compareSemver } from "../update-system/shared.js";
+import { markPendingUpdateSeen, readPendingUpdate } from "../update-system/pending-update.js";
 
 const app = express();
 app.use(
@@ -121,14 +127,28 @@ app.use("/api", async (req, res, next) => {
   }
 });
 app.use("/api", (req, res, next) => {
-  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return next();
-  const operation = beginCriticalOperation(`http:${req.method}`, { path: new URL(req.originalUrl, "http://localhost").pathname });
+  const apiPath = new URL(req.originalUrl, "http://localhost").pathname;
+  if (!tracksCriticalOperation(req.method, apiPath)) return next();
+  const operation = beginCriticalOperation(`http:${req.method}`, { path: apiPath });
   let finished = false;
   const finish = () => { if (!finished) { finished = true; operation.finish(); } };
   res.once("finish", finish); res.once("close", finish);
   next();
 });
 
+app.get("/api/app-update", (_req, res) => {
+  const current = readInstalledUiVersion(clientDist);
+  const pending = readPendingUpdate(dataDir);
+  const waiting = pending && pendingIsNewer(pending.version, current) ? markPendingUpdateSeen(dataDir) : null;
+  res.set("Cache-Control", "no-store");
+  res.json({ ok: true, current, pending: waiting?.version || null });
+});
+app.post("/api/app-update/now", async (_req, res) => {
+  const { status, ...body } = await requestManualUpdate(undefined, manualCheckUrl(), {
+    awaken: () => activateBundledUpdater(import.meta.dirname),
+  });
+  res.status(status).json(body);
+});
 app.get("/api/auth/session", (req, res) =>
   res.json({
     ok: true,
@@ -164,9 +184,16 @@ app.post("/api/auth/debug-login", async (req, res) => {
       .json({ ok: false, erro: `Erro no debug de login: ${error.message}` });
   }
 });
-app.get("/api/branding", (_req, res) =>
-  res.json({ ok: true, empresa_nome: "Dashboard Gerencial" }),
-);
+app.get("/api/branding", async (_req, res) => {
+  try {
+    const rows = await withDatabase((db) =>
+      query(db, "SELECT IDEMPRESA, NOMEEMPRESA, PADRAO FROM CONFIGURACAO"),
+    );
+    res.json({ ok: true, empresa_nome: escolherNomeEmpresa(rows) });
+  } catch {
+    res.json({ ok: true, empresa_nome: NOME_EMPRESA_PADRAO });
+  }
+});
 app.get("/api/status", async (_req, res) => {
   const config = loadDatabaseConfig();
   try {
@@ -203,6 +230,39 @@ app.post("/api/database/config", (req, res) => {
     res.json({
       ok: true,
       config: publicDatabaseConfig(saveDatabaseConfig(req.body)),
+    });
+  } catch (error) {
+    res.status(400).json({ ok: false, erro: error.message });
+  }
+});
+app.post("/api/setup/start-ini", async (req, res) => {
+  const access = consumeStartIniAttempt(req.body?.senha, req.ip || "local");
+  if (!access.ok) return res.status(access.status).json({ ok: false, erro: access.erro });
+  const acao = String(req.body?.acao || "abrir");
+  try {
+    if (acao === "abrir") return res.json({ ok: true, config: publicDatabaseConfig() });
+    if (acao !== "salvar" && acao !== "testar") {
+      return res.status(400).json({ ok: false, erro: "Ação inválida." });
+    }
+    const input = databaseSetupInput(req.body);
+    if (acao === "salvar") {
+      return res.json({ ok: true, config: publicDatabaseConfig(saveDatabaseConfig(input)) });
+    }
+    const config = normalizeDatabaseConfig(input);
+    const rows = await withDatabase(
+      (db) =>
+        query(
+          db,
+          `
+      SELECT COUNT(*) AS TOTAL FROM RDB$RELATIONS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0
+    `,
+        ),
+      config,
+    );
+    res.json({
+      ok: true,
+      mensagem: "Conexão Firebird realizada com sucesso.",
+      total_tabelas: Number(rows[0]?.TOTAL || 0),
     });
   } catch (error) {
     res.status(400).json({ ok: false, erro: error.message });
@@ -363,5 +423,19 @@ startReconciliationIntelligence();
 startOpenFinance();
 syncUpdaterAgent();
 ensureOllamaServer().catch((error) => console.error(`[ollama] ${error.message}`));
+
+function pendingIsNewer(pending, current) {
+  if (!current) return true;
+  try { return compareSemver(pending, current) > 0; } catch { return true; }
+}
+
+function readInstalledUiVersion(directory) {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(directory, "version.json"), "utf8"));
+    return typeof parsed.version === "string" ? parsed.version : null;
+  } catch {
+    return null;
+  }
+}
 
 export default app;

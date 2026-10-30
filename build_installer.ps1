@@ -1,4 +1,4 @@
-param(
+﻿param(
     [string]$Version = "1.0.2",
     [switch]$WithOllama,
     [switch]$WithoutOllama,
@@ -96,6 +96,8 @@ Copy-Item (Join-Path $root "installer\query-company.js") (Join-Path $updaterDir 
 $agentPayload = Join-Path $appDir "updater"
 New-Item -ItemType Directory -Force $agentPayload | Out-Null
 Copy-Item (Join-Path $updaterDir "agent.mjs") (Join-Path $agentPayload "agent.mjs") -Force
+Copy-Item (Join-Path $updaterDir "release-public.pem") (Join-Path $agentPayload "release-public.pem") -Force
+Copy-Item (Join-Path $updaterDir "UpdaterService.xml") (Join-Path $agentPayload "UpdaterService.xml") -Force
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterNode.exe")
 & (Join-Path $root "scripts\Sign-Artifact.ps1") -Path (Join-Path $updaterDir "UpdaterService.exe")
 Copy-PackageRuntime "node-firebird-native-api" @("package.json", "dist\lib\index.js", "dist\lib\cloop-gen.js", "build\Release\addon.node")
@@ -125,6 +127,7 @@ $monitorIni = $monitorIni.Replace("C:\ACBr\Exemplos\ACBrDFe\Schemas", "C:\ACBrMo
 $monitorIni = $monitorIni.Replace("C:\ACBr\Fontes\ACBrDFe\ACBrNFe\ACBrNFeServicos.ini", "C:\ACBrMonitorPLUS\ACBrNFeServicos.ini")
 $monitorIni = $monitorIni.Replace("C:\Dashboard\acbr\", "C:\ACBrMonitorPLUS\Logs\")
 Set-Content (Join-Path $acbrStage "ACBrMonitor.ini") $monitorIni -Encoding Default
+# O instalador troca C:\ACBrMonitorPLUS pela pasta ACBrMonitorPLUS dentro do diretório escolhido.
 
 if (Test-Path (Join-Path $root "Firebird-5.0.4\fbclient.dll")) {
     New-Item -ItemType Directory -Force (Join-Path $runtime "Firebird-5.0.4") | Out-Null

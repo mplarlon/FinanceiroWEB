@@ -5,7 +5,8 @@
   <executable>%BASE%\DashboardNode.exe</executable>
   <arguments>&quot;%BASE%\node-app\server\dashboard.mjs&quot;</arguments>
   <workingdirectory>%BASE%</workingdirectory>
-  <env name="DASHBOARD_DATA_DIR" value="%SystemDrive%\Administracao\Dashboard" />
+  <env name="DASHBOARD_DATA_DIR" value="%BASE%\Dashboard" />
+  <env name="OLLAMA_HOME" value="%BASE%\Ollama" />
   <env name="DASHBOARD_PORT" value="805" />
   <env name="CHARLIE_OLLAMA_URL" value="http://127.0.0.1:11434" />
   <env name="CHARLIE_OLLAMA_MODEL" value="qwen3:8b" />
@@ -16,7 +17,7 @@
   <onfailure action="restart" delay="15 sec" />
   <resetfailure>1 hour</resetfailure>
   <stoptimeout>15 sec</stoptimeout>
-  <logpath>%SystemDrive%\Administracao\Dashboard\logs</logpath>
+  <logpath>%BASE%\Dashboard\logs</logpath>
   <log mode="roll-by-size">
     <sizeThreshold>10240</sizeThreshold>
     <keepFiles>8</keepFiles>

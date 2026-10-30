@@ -43,13 +43,13 @@ const userId = (req) => Number(req.dashboardSession?.user?.idusuario || 1);
 const validDate = (value) =>
   /^\d{4}-\d{2}-\d{2}$/.test(value) &&
   !Number.isNaN(new Date(`${value}T12:00:00`).valueOf());
-const firebirdDate = (value) => {
-  const [year, month, day] = String(value)
-    .slice(0, 10)
-    .split("-")
-    .map(Number);
-  return new Date(year, month - 1, day, 0, 0, 0, 0);
-};
+// O driver chama getFullYear no parâmetro. Texto derruba abertura, fechamento e transferência.
+export function firebirdDate(value) {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(value ?? "").trim());
+  if (!match) return null;
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 0, 0, 0, 0);
+}
 const today = () => {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -94,13 +94,24 @@ async function ensureTransfers(tx) {
       "CREATE TABLE DASH_CAIXA_TRANSFERENCIA (IDTRANSFERENCIA BIGINT NOT NULL PRIMARY KEY,ORIGEM VARCHAR(12) NOT NULL,IDMOVIMENTO INTEGER NOT NULL,IDEMPRESA INTEGER NOT NULL,CAIXA_ANTERIOR INTEGER NOT NULL,CAIXA_DESTINO INTEGER NOT NULL,DATA_MOVIMENTO DATE,VALOR NUMERIC(18,2) NOT NULL,DESCRICAO VARCHAR(255),USUARIO_ID INTEGER,TRANSFERIDO_EM TIMESTAMP NOT NULL,SIST_ALT VARCHAR(7) NOT NULL)",
     );
 }
+// O Firebird não enxerga tabela nem sequência criadas na mesma transação do INSERT.
+async function prepareCashSchema() {
+  await withWriteTransaction(async (tx) => {
+    await ensureClosings(tx);
+    await ensureOpenings(tx);
+    await ensureTransfers(tx);
+  });
+}
 
 async function ensureCashOpen(tx, company, date, cashes) {
+  const day = firebirdDate(date);
+  if (!day)
+    throw Object.assign(new Error("Data do movimento invalida."), { status: 400 });
   if (!(await relationExists(tx, "DASH_CAIXA_FECHAMENTO"))) return;
   for (const cash of new Set(cashes.filter(Boolean))) {
     const closing = await tx.singleton(
       "SELECT FIRST 1 IDFECHAMENTO FROM DASH_CAIXA_FECHAMENTO WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?",
-      [company, cash, date],
+      [company, cash, day],
     );
     if (closing)
       throw Object.assign(
@@ -151,6 +162,128 @@ export function buildCashFilters(
     params.push(origin);
   }
   return { where, params };
+}
+export function pendingCashFilters(args) {
+  return buildCashFilters(args, {
+    date: "COALESCE(t.DTMOV,t.DTLOG)",
+    company: "t.IDEMPRESA",
+    cash: "COALESCE(t.CAIXA,t.CDCAIXAORIGEM)",
+    origin: "t.CDCAIXAORIGEM",
+  });
+}
+const flagged = (args, name) =>
+  ["1", "true", "on"].includes(String(args?.[name] ?? "").trim().toLowerCase());
+// No PDV, DIVIDA repete o total do pedido em cada parcela. O caixa usa o valor da parcela.
+export const openParcelValue =
+  "CASE WHEN COALESCE(t.VALOR,0)<>0 THEN t.VALOR ELSE COALESCE(t.DIVIDA,0) END";
+export const receivedValue =
+  "CASE WHEN COALESCE(c.TOTALPG,0)<>0 THEN c.TOTALPG ELSE COALESCE(c.VALOR,0) END";
+export function cashExclusion(args, alias = "r") {
+  const where = [];
+  const tipo = `COALESCE(${alias}.TPRECEBTO,0)`;
+  const nome = `UPPER(${legacyValue([`${alias}.RECEBTO`, 50], "")})`;
+  if (flagged(args, "nao_carteiras"))
+    where.push(
+      `${tipo} NOT IN (1,8) AND ${nome} NOT CONTAINING ${legacyLiteral("CARTEIRA")}`,
+    );
+  if (flagged(args, "nao_vales"))
+    where.push(`${tipo}<>10 AND ${nome} NOT CONTAINING ${legacyLiteral("VALE")}`);
+  if (flagged(args, "nao_devolucoes"))
+    where.push(
+      `${tipo} NOT IN (12,13) AND ${nome} NOT CONTAINING ${legacyLiteral("DEVOL")}`,
+    );
+  return where;
+}
+
+function siblingCashStep(table, cashColumn, row, company, source, destination, extra = "") {
+  const pedido = Number(row.NRPEDIDO);
+  const where = ["IDEMPRESA=?", `${cashColumn}=?`];
+  const params = [source, destination, company, source];
+  if (Number.isFinite(pedido) && pedido > 0) {
+    where.push("NRPEDIDO=?");
+    params.push(pedido);
+  } else if (String(row.NRDOC || "").trim()) {
+    where.push("NRDOC=?");
+    params.push(String(row.NRDOC).trim());
+  } else return null;
+  if (row.PARCELA != null && row.PARCELA !== "") {
+    where.push("PARCELA=?");
+    params.push(Number(row.PARCELA));
+  }
+  return {
+    sql: `UPDATE ${table} SET CDCAIXAORIGEM=?,${cashColumn}=?,DTALTER=CURRENT_TIMESTAMP WHERE ${where.join(" AND ")}${extra}`,
+    params,
+  };
+}
+
+// O Automec lê o controle de caixa em CTARECEBERCAIXA e o recebimento de contas em CTARECEBER.
+// A transferência grava o caixa de saída em CDCAIXAORIGEM e o destino em CAIXA, nas duas tabelas.
+export function planCashMove({ origin, movement, company, destination, row }) {
+  const source = Number(row.CAIXA);
+  if (origin === "RECEBIMENTO") {
+    return [
+      {
+        sql: "UPDATE CTARECEBERCAIXA SET CDCAIXAORIGEM=?,CAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND CAIXA=? AND COALESCE(CANCELADO,0)=0",
+        params: [source, destination, movement, company, source],
+      },
+      siblingCashStep("CTARECEBER", "CAIXA", row, company, source, destination),
+    ].filter(Boolean);
+  }
+  if (origin === "MOVIMENTO") {
+    return [
+      {
+        sql: "UPDATE MOV_PAGTO SET CDCAIXAORIGEM=?,CDCAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE IDMOVCAIXA=? AND IDEMPRESA=? AND CDCAIXA=?",
+        params: [source, destination, movement, company, source],
+      },
+    ];
+  }
+  return [
+    {
+      sql: "UPDATE CTARECEBER SET CDCAIXAORIGEM=?,CAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND CAIXA=? AND STATUS=1",
+      params: [source, destination, movement, company, source],
+    },
+    siblingCashStep(
+      "CTARECEBERCAIXA",
+      "CAIXA",
+      row,
+      company,
+      source,
+      destination,
+      " AND COALESCE(CANCELADO,0)=0",
+    ),
+  ].filter(Boolean);
+}
+
+export function readMoveItems(body) {
+  const raw = Array.isArray(body?.itens) && body.itens.length ? body.itens : [body];
+  if (raw.length > 200)
+    throw Object.assign(new Error("Selecione no maximo 200 registros por vez."), { status: 400 });
+  const seen = new Set();
+  const items = [];
+  for (const [index, item] of raw.entries()) {
+    const origin = String(item?.origem || "").trim().toUpperCase();
+    const movement = integer(item?.movimento);
+    const company = integer(item?.empresa ?? body?.empresa);
+    const current = integer(item?.caixa_atual);
+    const destination = integer(item?.caixa_destino ?? body?.caixa_destino);
+    if (
+      !["RECEBIMENTO", "MOVIMENTO", "PENDENTE"].includes(origin) ||
+      !movement ||
+      !company ||
+      !current ||
+      !destination ||
+      current === destination
+    )
+      throw Object.assign(
+        new Error(`Registro ${index + 1} invalido para transferencia.`),
+        { status: 400 },
+      );
+    const key = `${origin}:${company}:${movement}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    items.push({ origin, movement, company, current, destination });
+  }
+  return items;
 }
 async function daily(db, company, cash, date) {
   const day = firebirdDate(date),
@@ -291,26 +424,19 @@ function unionParts(args) {
       `UPPER(${legacyValue(["m.ASSUNTO", 100], "")}) CONTAINING ${needle}`,
     );
   }
-  if (["1", "true", "on"].includes(String(args.nao_carteiras)))
-    rec.where.push(
-      `UPPER(${legacyValue(["r.RECEBTO", 50], "")}) NOT CONTAINING ${legacyLiteral("CARTEIRA")}`,
-    );
-  if (["1", "true", "on"].includes(String(args.nao_vales)))
-    rec.where.push(
-      `UPPER(${legacyValue(["r.RECEBTO", 50], "")}) NOT CONTAINING ${legacyLiteral("VALE")}`,
-    );
+  rec.where.push(...cashExclusion(args));
   if (origin === "" || origin === "recebimento") {
     parts.push(
-      `SELECT c.DTCOB AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(c.HORALOG,c.DTCOB)) AS HORA,c.IDEMPRESA,c.CAIXA AS CDCAIXA,${legacyValue(["tc.CAIXA", 50])} AS CAIXA,c.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50])} AS CAIXA_ORIGEM,'RECEBIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50])} AS FORMA,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100])} AS DESCRICAO,${legacyValue(["c.NRDOC", 15])} AS DOCUMENTO,c.PARCELA,c.CONTROLE AS IDMOVIMENTO FROM CTARECEBERCAIXA c LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=c.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=c.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(c.TPPAGTO,c.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE ${rec.where.join(" AND ") || "1=1"}`,
+      `SELECT c.DTCOB AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(c.HORALOG,c.DTCOB)) AS HORA,c.IDEMPRESA,c.CAIXA AS CDCAIXA,${legacyValue(["tc.CAIXA", 50])} AS CAIXA,c.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50])} AS CAIXA_ORIGEM,'RECEBIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50])} AS FORMA,${receivedValue} AS VALOR,${legacyValue(["cl.CLIENTE", 100])} AS DESCRICAO,${legacyValue(["c.NRDOC", 15])} AS DOCUMENTO,c.NRPEDIDO AS PEDIDO,c.PARCELA,c.CONTROLE AS IDMOVIMENTO FROM CTARECEBERCAIXA c LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=c.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=c.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(c.TPPAGTO,c.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE ${rec.where.join(" AND ") || "1=1"}`,
     );
     params.push(...rec.params);
   }
   if (
     (origin === "" || origin === "movimento") &&
-    !["1", "true", "on"].includes(String(args.nao_saidas_entradas))
+    !flagged(args, "nao_saidas_entradas")
   ) {
     parts.push(
-      `SELECT m.DT_MOV AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(m.HORALOG,m.DT_MOV)) AS HORA,m.IDEMPRESA,m.CDCAIXA,${legacyValue(["tc.CAIXA", 50], "Sem caixa")} AS CAIXA,m.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'MOVIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "Movimento avulso")} AS FORMA,COALESCE(m.VALOR,0) AS VALOR,${legacyValue(["m.ASSUNTO", 100], "Movimento sem historico")} AS DESCRICAO,CAST(m.IDMOVCAIXA AS VARCHAR(20)) AS DOCUMENTO,NULL AS PARCELA,m.IDMOVCAIXA AS IDMOVIMENTO FROM MOV_PAGTO m LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=m.CDCAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=m.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=m.CDRECEBTO WHERE ${mov.where.join(" AND ") || "1=1"}`,
+      `SELECT m.DT_MOV AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(m.HORALOG,m.DT_MOV)) AS HORA,m.IDEMPRESA,m.CDCAIXA,${legacyValue(["tc.CAIXA", 50], "Sem caixa")} AS CAIXA,m.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'MOVIMENTO' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "Movimento avulso")} AS FORMA,COALESCE(m.VALOR,0) AS VALOR,${legacyValue(["m.ASSUNTO", 100], "Movimento sem historico")} AS DESCRICAO,CAST(m.IDMOVCAIXA AS VARCHAR(20)) AS DOCUMENTO,CAST(NULL AS INTEGER) AS PEDIDO,NULL AS PARCELA,m.IDMOVCAIXA AS IDMOVIMENTO FROM MOV_PAGTO m LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=m.CDCAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=m.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=m.CDRECEBTO WHERE ${mov.where.join(" AND ") || "1=1"}`,
     );
     params.push(...mov.params);
   }
@@ -351,29 +477,45 @@ router.get(
     }
     const includePending = !requested || requested === "pendente";
     let pendingRows = [];
+    let pendingTotal = { qtd: 0, valor: 0 };
     if (includePending) {
-      // Titulo aberto ainda nao possui necessariamente um caixa de quitacao
-      // definitivo. Para que todas as vendas do dia aparecam, o filtro de
-      // pendencias respeita empresa e periodo, mas nao elimina o titulo pelo
-      // campo CAIXA. O caixa efetivo continua informado na propria linha.
-      const pending = buildCashFilters({ ...req.query, caixa: "" }, {
-        date: "COALESCE(t.DTMOV,t.DTLOG)",
-        company: "t.IDEMPRESA",
-        cash: "t.CAIXA",
-        origin: "t.CDCAIXAORIGEM",
-      });
+      // A parcela pendente fica no caixa atual. Depois da transferencia,
+      // ela sai do filtro do caixa anterior e passa a aparecer no destino.
+      const pending = pendingCashFilters(req.query);
       pending.where.push("t.STATUS=1");
+      pending.where.push(...cashExclusion(req.query));
       const payment = integer(req.query.forma);
       if (payment) {
         pending.where.push("COALESCE(t.TPPAGTO,t.CODPAGTO)=?");
         pending.params.push(payment);
       }
+      const start = String(req.query.inicio || "").trim().slice(0, 10);
+      const end = String(req.query.fim || "").trim().slice(0, 10);
+      if (validDate(start) && validDate(end)) {
+        pending.where.push(
+          "NOT EXISTS (SELECT 1 FROM CTARECEBERCAIXA cx WHERE cx.IDEMPRESA=t.IDEMPRESA AND cx.NRPEDIDO=t.NRPEDIDO AND cx.PARCELA=t.PARCELA AND COALESCE(cx.CANCELADO,0)=0 AND COALESCE(cx.NRPEDIDO,0)<>0 AND cx.DTCOB>=? AND cx.DTCOB<DATEADD(1 DAY TO ?))",
+        );
+        pending.params.push(firebirdDate(start), firebirdDate(end));
+      }
+      const pendingFrom = `FROM CTARECEBER t LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=t.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=t.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE ${pending.where.join(" AND ") || "1=1"}`;
+      const pendingSummary =
+        (
+          await query(
+            db,
+            `SELECT COUNT(*) AS QTD,SUM(${openParcelValue}) AS TOTAL ${pendingFrom}`,
+            pending.params,
+          )
+        )[0] || {};
       pendingRows = await query(
         db,
-        `SELECT FIRST ${limit} COALESCE(t.DTMOV,t.DTLOG) AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(t.HORALOG,t.DTMOV,t.DTLOG)) AS HORA,t.IDEMPRESA,COALESCE(t.CAIXA,t.CDCAIXAORIGEM) AS CDCAIXA,${legacyValue(["tc.CAIXA", 50], ["tco.CAIXA", 50], "Sem caixa")} AS CAIXA,t.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'PENDENTE' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "A receber")} AS FORMA,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], "Cliente nao informado")} AS DESCRICAO,${legacyValue(["t.NRDOC", 15])} AS DOCUMENTO,t.PARCELA,t.CONTROLE AS IDMOVIMENTO,'Pendente' AS STATUS_MOVIMENTO FROM CTARECEBER t LEFT JOIN TPCAIXA tc ON tc.CDCAIXA=t.CAIXA LEFT JOIN TPCAIXA tco ON tco.CDCAIXA=t.CDCAIXAORIGEM LEFT JOIN RECEBTO r ON r.CDRECEBTO=COALESCE(t.TPPAGTO,t.CODPAGTO) LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE ${pending.where.join(" AND ") || "1=1"} ORDER BY COALESCE(t.DTMOV,t.DTLOG) DESC,t.CONTROLE DESC`,
+        `SELECT FIRST ${limit} COALESCE(t.DTMOV,t.DTLOG) AS DATA_MOVIMENTO,EXTRACT(HOUR FROM COALESCE(t.HORALOG,t.DTMOV,t.DTLOG)) AS HORA,t.IDEMPRESA,COALESCE(t.CAIXA,t.CDCAIXAORIGEM) AS CDCAIXA,${legacyValue(["tc.CAIXA", 50], ["tco.CAIXA", 50], "Sem caixa")} AS CAIXA,t.CDCAIXAORIGEM,${legacyValue(["tco.CAIXA", 50], "Nao informada")} AS CAIXA_ORIGEM,'PENDENTE' AS ORIGEM,${legacyValue(["r.RECEBTO", 50], "A receber")} AS FORMA,${openParcelValue} AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], "Cliente nao informado")} AS DESCRICAO,${legacyValue(["t.NRDOC", 15])} AS DOCUMENTO,t.NRPEDIDO AS PEDIDO,t.PARCELA,t.CONTROLE AS IDMOVIMENTO,'Pendente' AS STATUS_MOVIMENTO ${pendingFrom} ORDER BY COALESCE(t.DTMOV,t.DTLOG) DESC,t.CONTROLE DESC`,
         pending.params,
       );
       movimentos.push(...pendingRows);
+      pendingTotal = {
+        qtd: Number(pendingSummary.QTD || 0),
+        valor: Number(pendingSummary.TOTAL || 0),
+      };
     }
     const resumo = summaries.reduce(
         (total, row) => ({
@@ -386,15 +528,12 @@ router.get(
         { QTD_MOVIMENTOS: 0, ENTRADAS: 0, SAIDAS: 0, SALDO: 0 },
       ),
       byDay = new Map();
-    resumo.QTD_PENDENTES = pendingRows.length;
-    resumo.PENDENTES = pendingRows.reduce(
-      (total, row) => total + Number(row.VALOR || 0),
-      0,
-    );
+    resumo.QTD_PENDENTES = pendingTotal.qtd;
+    resumo.PENDENTES = pendingTotal.valor;
     // Total operacional que passou pelo caixa: valores ja recebidos e titulos
     // ainda abertos. SALDO continua estritamente financeiro (dinheiro efetivo).
     resumo.TOTAL_PROCESSADO = resumo.ENTRADAS + resumo.PENDENTES;
-    resumo.QTD_MOVIMENTOS += pendingRows.length;
+    resumo.QTD_MOVIMENTOS += pendingTotal.qtd;
     for (const row of movimentos) {
       if (!row.STATUS_MOVIMENTO)
         row.STATUS_MOVIMENTO =
@@ -498,18 +637,20 @@ router.post("/controle-caixa/fechar", async (req, res) => {
       throw Object.assign(new Error("Nao e possivel fechar uma data futura."), {
         status: 400,
       });
+    const day = firebirdDate(date);
+    await prepareCashSchema();
     const result = await withWriteTransaction(async (tx) => {
       await ensureClosings(tx);
       await ensureOpenings(tx);
       const opening = await tx.singleton(
         "SELECT FIRST 1 IDABERTURA FROM DASH_CAIXA_ABERTURA WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?",
-        [company, cash, date],
+        [company, cash, day],
       );
       if (!opening)
         throw Object.assign(new Error("Abra o caixa antes de realizar o fechamento."), { status: 409 });
       const existing = await tx.singleton(
         "SELECT FIRST 1 IDFECHAMENTO FROM DASH_CAIXA_FECHAMENTO WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?",
-        [company, cash, date],
+        [company, cash, day],
       );
       if (existing)
         throw Object.assign(new Error("Este caixa ja possui fechamento nesta data."), { status: 409 });
@@ -517,7 +658,7 @@ router.post("/controle-caixa/fechar", async (req, res) => {
           (
             await tx.query(
               `SELECT COUNT(*) AS QTD_MOVIMENTOS,SUM(CASE WHEN x.VALOR>=0 THEN x.VALOR ELSE 0 END) AS ENTRADAS,SUM(CASE WHEN x.VALOR<0 THEN ABS(x.VALOR) ELSE 0 END) AS SAIDAS,SUM(x.VALOR) AS SALDO FROM (SELECT COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR FROM CTARECEBERCAIXA c WHERE c.IDEMPRESA=? AND c.CAIXA=? AND c.DTCOB>=? AND c.DTCOB<DATEADD(1 DAY TO CAST(? AS DATE)) AND COALESCE(c.CANCELADO,0)=0 UNION ALL SELECT COALESCE(m.VALOR,0) FROM MOV_PAGTO m WHERE m.IDEMPRESA=? AND m.CDCAIXA=? AND m.DT_MOV>=? AND m.DT_MOV<DATEADD(1 DAY TO CAST(? AS DATE))) x`,
-              [company, cash, date, date, company, cash, date, date],
+              [company, cash, day, day, company, cash, day, day],
             )
           )[0] || {},
         summary = {
@@ -536,7 +677,7 @@ router.post("/controle-caixa/fechar", async (req, res) => {
           Number(next.ID),
           company,
           cash,
-          date,
+          day,
           summary.ENTRADAS,
           summary.SAIDAS,
           summary.SALDO,
@@ -573,6 +714,8 @@ router.post("/controle-caixa/abrir", async (req, res) => {
       throw Object.assign(new Error("Informe empresa, caixa, data e um valor inicial valido."), { status: 400 });
     if (date > today())
       throw Object.assign(new Error("Nao e possivel abrir uma data futura."), { status: 400 });
+    const day = firebirdDate(date);
+    await prepareCashSchema();
     const result = await withWriteTransaction(async (tx) => {
       await ensureOpenings(tx);
       await ensureClosings(tx);
@@ -580,19 +723,19 @@ router.post("/controle-caixa/abrir", async (req, res) => {
         throw Object.assign(new Error("Empresa nao encontrada."), { status: 400 });
       if (!(await tx.singleton("SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0", [cash])))
         throw Object.assign(new Error("Selecione um caixa ativo."), { status: 400 });
-      if (await tx.singleton("SELECT FIRST 1 IDFECHAMENTO FROM DASH_CAIXA_FECHAMENTO WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?", [company,cash,date]))
+      if (await tx.singleton("SELECT FIRST 1 IDFECHAMENTO FROM DASH_CAIXA_FECHAMENTO WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?", [company,cash,day]))
         throw Object.assign(new Error("Este caixa ja foi fechado nesta data."), { status: 409 });
-      if (await tx.singleton("SELECT FIRST 1 IDABERTURA FROM DASH_CAIXA_ABERTURA WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?", [company,cash,date]))
+      if (await tx.singleton("SELECT FIRST 1 IDABERTURA FROM DASH_CAIXA_ABERTURA WHERE IDEMPRESA=? AND CDCAIXA=? AND DATA_CAIXA=?", [company,cash,day]))
         throw Object.assign(new Error("Este caixa ja esta aberto nesta data."), { status: 409 });
       let movement = null;
       if (initial > 0) {
         const payment = await tx.singleton(`SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`);
         if (!payment) throw Object.assign(new Error("Nenhuma forma de pagamento ativa foi encontrada."), { status: 400 });
-        const inserted = await tx.query("INSERT INTO MOV_PAGTO (IDEMPRESA,CDCAIXA,ASSUNTO,VALOR,DT_MOV,SIST_ALT,CDRECEBTO,HORALOG,CDCAIXAORIGEM) VALUES (?,?,?,?,?,'LOCAL',?,CURRENT_TIMESTAMP,?) RETURNING IDMOVCAIXA", [company,cash,"ABERTURA DE CAIXA",initial,date,payment.CDRECEBTO,cash]);
+        const inserted = await tx.query("INSERT INTO MOV_PAGTO (IDEMPRESA,CDCAIXA,ASSUNTO,VALOR,DT_MOV,SIST_ALT,CDRECEBTO,HORALOG,CDCAIXAORIGEM) VALUES (?,?,?,?,?,'LOCAL',?,CURRENT_TIMESTAMP,?) RETURNING IDMOVCAIXA", [company,cash,"ABERTURA DE CAIXA",initial,day,payment.CDRECEBTO,cash]);
         movement = Number(inserted[0]?.IDMOVCAIXA);
       }
       const next = await tx.singleton("SELECT NEXT VALUE FOR GEN_DASH_CAIXA_ABERTURA AS ID FROM RDB$DATABASE");
-      await tx.execute("INSERT INTO DASH_CAIXA_ABERTURA (IDABERTURA,IDEMPRESA,CDCAIXA,DATA_CAIXA,VALOR_INICIAL,OBSERVACAO,USUARIO_ID,ABERTO_EM,IDMOVCAIXA,SIST_ALT) VALUES (?,?,?,?,?,?,?,CURRENT_TIMESTAMP,?,'LOCAL')", [Number(next.ID),company,cash,date,initial,note,userId(req),movement]);
+      await tx.execute("INSERT INTO DASH_CAIXA_ABERTURA (IDABERTURA,IDEMPRESA,CDCAIXA,DATA_CAIXA,VALOR_INICIAL,OBSERVACAO,USUARIO_ID,ABERTO_EM,IDMOVCAIXA,SIST_ALT) VALUES (?,?,?,?,?,?,?,CURRENT_TIMESTAMP,?,'LOCAL')", [Number(next.ID),company,cash,day,initial,note,userId(req),movement]);
       return { id: Number(next.ID), movement };
     });
     res.json({ ok:true,idabertura:result.id,movimento_caixa:result.movement,mensagem:`Caixa aberto com sucesso com saldo inicial de R$ ${initial.toFixed(2)}.` });
@@ -630,6 +773,7 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
         new Error("A data do movimento nao pode ser futura."),
         { status: 400 },
       );
+    const day = firebirdDate(date);
     const result = await withWriteTransaction(async (tx) => {
       if (
         !(await tx.singleton(
@@ -649,7 +793,7 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
         throw Object.assign(new Error("Selecione um caixa ativo."), {
           status: 400,
         });
-      await ensureCashOpen(tx, company, date, [cash]);
+      await ensureCashOpen(tx, company, day, [cash]);
       const payment = await tx.singleton(
         `SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`,
       );
@@ -670,7 +814,7 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
             cash,
             subject,
             (operation === "sangria" ? -1 : 1) * amount,
-            date,
+            day,
             payment.CDRECEBTO,
             cash,
           ],
@@ -708,7 +852,7 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
             company,
             "Sangria recebida na Tesouraria",
             note.slice(0, 255),
-            date,
+            day,
             amount,
             payment.CDRECEBTO,
             cashMovement,
@@ -729,105 +873,84 @@ router.post("/controle-caixa/movimentar", async (req, res) => {
   }
 });
 
+async function loadMoveRow(tx, item) {
+  if (item.origin === "RECEBIMENTO")
+    return tx.singleton(
+      `SELECT c.CAIXA AS CAIXA,CAST(c.DTCOB AS DATE) AS DATA_MOVIMENTO,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,c.NRPEDIDO,c.PARCELA,${legacyValue(["c.NRDOC", 15])} AS NRDOC,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["c.HISTORICO", 255], ["c.NRDOC", 15], "Recebimento")} AS DESCRICAO FROM CTARECEBERCAIXA c LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE c.CONTROLE=? AND c.IDEMPRESA=? AND COALESCE(c.CANCELADO,0)=0`,
+      [item.movement, item.company],
+    );
+  if (item.origin === "MOVIMENTO")
+    return tx.singleton(
+      `SELECT CDCAIXA AS CAIXA,CAST(DT_MOV AS DATE) AS DATA_MOVIMENTO,COALESCE(VALOR,0) AS VALOR,${legacyValue(["ASSUNTO", 100], "Movimento avulso")} AS DESCRICAO FROM MOV_PAGTO WHERE IDMOVCAIXA=? AND IDEMPRESA=?`,
+      [item.movement, item.company],
+    );
+  return tx.singleton(
+    `SELECT t.CAIXA AS CAIXA,COALESCE(CAST(t.DTMOV AS DATE),CAST(t.DTLOG AS DATE),CURRENT_DATE) AS DATA_MOVIMENTO,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,t.NRPEDIDO,t.PARCELA,${legacyValue(["t.NRDOC", 15])} AS NRDOC,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["t.HISTORICO", 255], ["t.NRDOC", 15], "Parcela pendente")} AS DESCRICAO FROM CTARECEBER t LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE t.CONTROLE=? AND t.IDEMPRESA=? AND t.STATUS=1`,
+    [item.movement, item.company],
+  );
+}
+
 router.post("/controle-caixa/mover", async (req, res) => {
   try {
-    const origin = String(req.body?.origem || "")
-        .trim()
-        .toUpperCase(),
-      movement = integer(req.body?.movimento),
-      company = integer(req.body?.empresa),
-      current = integer(req.body?.caixa_atual),
-      destination = integer(req.body?.caixa_destino);
-    if (
-      !["RECEBIMENTO", "MOVIMENTO", "PENDENTE"].includes(origin) ||
-      !movement ||
-      !company ||
-      !current ||
-      !destination ||
-      current === destination
-    )
-      throw Object.assign(
-        new Error("Movimento ou caixa de destino invalido."),
-        { status: 400 },
-      );
+    const items = readMoveItems(req.body);
+    await prepareCashSchema();
     await withWriteTransaction(async (tx) => {
       await ensureTransfers(tx);
-      if (
-        !(await tx.singleton(
-          "SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0",
-          [destination],
-        ))
-      )
-        throw Object.assign(new Error("O caixa de destino nao esta ativo."), {
-          status: 400,
-        });
-      const row =
-        origin === "RECEBIMENTO"
-          ? await tx.singleton(
-              `SELECT c.CAIXA AS CAIXA,CAST(c.DTCOB AS DATE) AS DATA_MOVIMENTO,COALESCE(c.TOTALPG,c.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["c.HISTORICO", 255], ["c.NRDOC", 15], "Recebimento")} AS DESCRICAO FROM CTARECEBERCAIXA c LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=c.CDCLIENTE WHERE c.CONTROLE=? AND c.IDEMPRESA=? AND COALESCE(c.CANCELADO,0)=0`,
-              [movement, company],
-            )
-          : origin === "MOVIMENTO"
-            ? await tx.singleton(
-              `SELECT CDCAIXA AS CAIXA,CAST(DT_MOV AS DATE) AS DATA_MOVIMENTO,COALESCE(VALOR,0) AS VALOR,${legacyValue(["ASSUNTO", 100], "Movimento avulso")} AS DESCRICAO FROM MOV_PAGTO WHERE IDMOVCAIXA=? AND IDEMPRESA=?`,
-              [movement, company],
-            )
-            : await tx.singleton(
-              `SELECT t.CAIXA AS CAIXA,CAST(COALESCE(t.DTMOV,t.DTLOG,CURRENT_DATE) AS DATE) AS DATA_MOVIMENTO,COALESCE(t.DIVIDA,t.VALOR,0) AS VALOR,${legacyValue(["cl.CLIENTE", 100], ["cl.RAZAO", 100], ["t.HISTORICO", 255], ["t.NRDOC", 15], "Parcela pendente")} AS DESCRICAO FROM CTARECEBER t LEFT JOIN CLIENTE cl ON cl.CDCLIENTE=t.CDCLIENTE WHERE t.CONTROLE=? AND t.IDEMPRESA=? AND t.STATUS=1`,
-              [movement, company],
-            );
-      if (!row)
-        throw Object.assign(
-          new Error("O registro nao foi encontrado ou foi cancelado."),
-          { status: 400 },
+      for (const destination of new Set(items.map((item) => item.destination))) {
+        if (
+          !(await tx.singleton(
+            "SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0",
+            [destination],
+          ))
+        )
+          throw Object.assign(new Error("O caixa de destino nao esta ativo."), {
+            status: 400,
+          });
+      }
+      for (const item of items) {
+        const row = await loadMoveRow(tx, item);
+        if (!row)
+          throw Object.assign(
+            new Error("O registro nao foi encontrado ou foi cancelado."),
+            { status: 400 },
+          );
+        if (Number(row.CAIXA) !== item.current)
+          throw Object.assign(
+            new Error("O registro foi alterado por outro usuario. Atualize a tela."),
+            { status: 409 },
+          );
+        const movementDate = firebirdDate(row.DATA_MOVIMENTO);
+        await ensureCashOpen(tx, item.company, movementDate, [item.current, item.destination]);
+        for (const step of planCashMove({ ...item, row }))
+          await tx.execute(step.sql, step.params);
+        const next = await tx.singleton(
+          "SELECT NEXT VALUE FOR GEN_DASH_CAIXA_TRANSF AS ID FROM RDB$DATABASE",
         );
-      if (Number(row.CAIXA) !== current)
-        throw Object.assign(
-          new Error(
-            "O registro foi alterado por outro usuario. Atualize a tela.",
-          ),
-          { status: 409 },
-        );
-      await ensureCashOpen(tx, company, row.DATA_MOVIMENTO, [current, destination]);
-      if (origin === "RECEBIMENTO")
         await tx.execute(
-          "UPDATE CTARECEBERCAIXA SET CDCAIXAORIGEM=COALESCE(CDCAIXAORIGEM,CAIXA),CAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND CAIXA=? AND COALESCE(CANCELADO,0)=0",
-          [destination, movement, company, current],
+          "INSERT INTO DASH_CAIXA_TRANSFERENCIA (IDTRANSFERENCIA,ORIGEM,IDMOVIMENTO,IDEMPRESA,CAIXA_ANTERIOR,CAIXA_DESTINO,DATA_MOVIMENTO,VALOR,DESCRICAO,USUARIO_ID,TRANSFERIDO_EM,SIST_ALT) VALUES (?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,'LOCAL')",
+          [
+            next.ID,
+            item.origin,
+            item.movement,
+            item.company,
+            item.current,
+            item.destination,
+            movementDate,
+            Number(row.VALOR || 0),
+            String(row.DESCRICAO || "").slice(0, 255),
+            userId(req),
+          ],
         );
-      else if (origin === "MOVIMENTO")
-        await tx.execute(
-          "UPDATE MOV_PAGTO SET CDCAIXAORIGEM=COALESCE(CDCAIXAORIGEM,CDCAIXA),CDCAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE IDMOVCAIXA=? AND IDEMPRESA=? AND CDCAIXA=?",
-          [destination, movement, company, current],
-        );
-      else
-        await tx.execute(
-          "UPDATE CTARECEBER SET CDCAIXAORIGEM=COALESCE(CDCAIXAORIGEM,CAIXA),CAIXA=?,DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND CAIXA=? AND STATUS=1",
-          [destination, movement, company, current],
-        );
-      const next = await tx.singleton(
-        "SELECT NEXT VALUE FOR GEN_DASH_CAIXA_TRANSF AS ID FROM RDB$DATABASE",
-      );
-      await tx.execute(
-        "INSERT INTO DASH_CAIXA_TRANSFERENCIA (IDTRANSFERENCIA,ORIGEM,IDMOVIMENTO,IDEMPRESA,CAIXA_ANTERIOR,CAIXA_DESTINO,DATA_MOVIMENTO,VALOR,DESCRICAO,USUARIO_ID,TRANSFERIDO_EM,SIST_ALT) VALUES (?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,'LOCAL')",
-        [
-          next.ID,
-          origin,
-          movement,
-          company,
-          current,
-          destination,
-          row.DATA_MOVIMENTO,
-          Number(row.VALOR || 0),
-          String(row.DESCRICAO || "").slice(0, 255),
-          userId(req),
-        ],
-      );
+      }
     });
+    const destination = items[0]?.destination;
     res.json({
       ok: true,
-      mensagem: "Registro movido para o caixa de destino com sucesso.",
-      movimento: movement,
-      caixa_origem: current,
+      mensagem:
+        items.length === 1
+          ? "Registro movido para o caixa de destino com sucesso."
+          : `${items.length} registros movidos para o caixa de destino com sucesso.`,
+      movidos: items.length,
       caixa_destino: destination,
     });
   } catch (error) {
@@ -848,12 +971,14 @@ router.post("/controle-caixa/transferir-valor", async (req, res) => {
       throw Object.assign(new Error("Informe empresa, caixas diferentes, data e valor maior que zero."), { status: 400 });
     if (date > today())
       throw Object.assign(new Error("A data da transferencia nao pode ser futura."), { status: 400 });
+    const day = firebirdDate(date);
+    await prepareCashSchema();
     const result = await withWriteTransaction(async (tx) => {
       await ensureTransfers(tx);
       for (const cash of [origin, destination])
         if (!(await tx.singleton("SELECT FIRST 1 1 AS OK FROM TPCAIXA WHERE CDCAIXA=? AND COALESCE(INATIVO,0)=0", [cash])))
           throw Object.assign(new Error(`O caixa ${cash} nao esta ativo.`), { status: 400 });
-      await ensureCashOpen(tx, company, date, [origin, destination]);
+      await ensureCashOpen(tx, company, day, [origin, destination]);
       const selectedPayment = payment
         ? await tx.singleton("SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE CDRECEBTO=? AND COALESCE(INATIVO,0)=0", [payment])
         : await tx.singleton(`SELECT FIRST 1 CDRECEBTO FROM RECEBTO WHERE COALESCE(INATIVO,0)=0 ${moneyFormOrder}`);
@@ -862,7 +987,7 @@ router.post("/controle-caixa/transferir-valor", async (req, res) => {
       const insert = async (cash, value) => {
         const rows = await tx.query(
           "INSERT INTO MOV_PAGTO (IDEMPRESA,CDCAIXA,ASSUNTO,VALOR,DT_MOV,SIST_ALT,CDRECEBTO,HORALOG,CDCAIXAORIGEM) VALUES (?,?,?,?,?,'LOCAL',?,CURRENT_TIMESTAMP,?) RETURNING IDMOVCAIXA",
-          [company, cash, description, value, date, selectedPayment.CDRECEBTO, origin],
+          [company, cash, description, value, day, selectedPayment.CDRECEBTO, origin],
         );
         return Number(rows[0]?.IDMOVCAIXA);
       };
@@ -871,7 +996,7 @@ router.post("/controle-caixa/transferir-valor", async (req, res) => {
         next = await tx.singleton("SELECT NEXT VALUE FOR GEN_DASH_CAIXA_TRANSF AS ID FROM RDB$DATABASE");
       await tx.execute(
         "INSERT INTO DASH_CAIXA_TRANSFERENCIA (IDTRANSFERENCIA,ORIGEM,IDMOVIMENTO,IDEMPRESA,CAIXA_ANTERIOR,CAIXA_DESTINO,DATA_MOVIMENTO,VALOR,DESCRICAO,USUARIO_ID,TRANSFERIDO_EM,SIST_ALT) VALUES (?,'VALOR',?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,'LOCAL')",
-        [next.ID, output, company, origin, destination, date, amount, description, userId(req)],
+        [next.ID, output, company, origin, destination, day, amount, description, userId(req)],
       );
       return { movimento_saida: output, movimento_entrada: input };
     });

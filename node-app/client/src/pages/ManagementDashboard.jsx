@@ -19,6 +19,20 @@ const displayDate = (value) => {
   return normalized.split("-").reverse().join("/");
 };
 const iso = (value) => value.toISOString().slice(0, 10);
+const moveKey = (row) => `${row.ORIGEM}:${row.IDMOVIMENTO}`;
+function movementDetail(row) {
+  const parts = [displayDate(row.DATA_MOVIMENTO)];
+  if (row.PEDIDO) parts.push(`Pedido ${row.PEDIDO}`);
+  else if (row.DOCUMENTO) parts.push(`Doc. ${row.DOCUMENTO}`);
+  if (row.PARCELA) parts.push(`Parcela ${row.PARCELA}`);
+  if (row.STATUS_MOVIMENTO) parts.push(row.STATUS_MOVIMENTO);
+  return parts.filter((part) => part && part !== "—").join(" · ");
+}
+function groupText(column, row) {
+  if (column?.key === "DATA_MOVIMENTO") return displayDate(row.DATA_MOVIMENTO);
+  const text = String(row[column?.key] ?? "").trim();
+  return text || "Não informado";
+}
 const defaultPeriod = () => {
   const end = new Date(),
     start = new Date(end.getFullYear(), end.getMonth(), 1);
@@ -55,9 +69,20 @@ function Table({
   rows,
   empty = "Nenhum registro encontrado.",
   groupableColumns = [],
+  rowKey,
+  selectedKeys,
+  onToggleKey,
+  onToggleKeys,
+  renderGroupItem,
 }) {
   const [sort, setSort] = useState({ key: null, direction: "asc" }),
-    [groupKey, setGroupKey] = useState("");
+    [groupKey, setGroupKey] = useState(""),
+    [expanded, setExpanded] = useState(() => new Set());
+  const selectable = Boolean(rowKey && onToggleKey);
+  const selected = selectedKeys || new Set();
+  useEffect(() => {
+    setExpanded(new Set());
+  }, [groupKey]);
   const sortedRows = useMemo(() => {
     if (!sort.key) return rows;
     const column = columns.find((item) => item.key === sort.key);
@@ -84,17 +109,9 @@ function Table({
     const column = columns.find((item) => item.key === groupKey),
       groups = new Map();
     for (const row of sortedRows) {
-      const value = row[groupKey],
-        key = String(value ?? "Não informado");
-      if (!groups.has(key))
-        groups.set(key, {
-          key,
-          label: column?.render
-            ? column.render(row)
-            : (value ?? "Não informado"),
-          rows: [],
-        });
-      groups.get(key).rows.push(row);
+      const label = groupText(column, row);
+      if (!groups.has(label)) groups.set(label, { key: label, label, rows: [] });
+      groups.get(label).rows.push(row);
     }
     return [...groups.values()];
   }, [columns, groupKey, sortedRows]);
@@ -105,6 +122,17 @@ function Table({
         current.key === key && current.direction === "asc" ? "desc" : "asc",
     }));
   }
+  function toggleExpand(key) {
+    setExpanded((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+  const visibleKeys = selectable ? sortedRows.map((row) => rowKey(row)) : [];
+  const allVisible = visibleKeys.length > 0 && visibleKeys.every((key) => selected.has(key));
+  const groupedTotal = sortedRows.reduce((sum, row) => sum + Number(row.VALOR || 0), 0);
   return (
     <div className="table-scroll">
       {!!groupableColumns.length && (
@@ -127,9 +155,80 @@ function Table({
           </select>
         </div>
       )}
+      {groupKey ? (
+        <div className="cash-groups">
+          <div className="cash-total-line">
+            <span>Total geral</span>
+            <strong>{money(groupedTotal)}</strong>
+          </div>
+          {groupedRows.map((group) => {
+            const open = expanded.has(group.key);
+            const keys = selectable ? group.rows.map((row) => rowKey(row)) : [];
+            const allInGroup = keys.length > 0 && keys.every((key) => selected.has(key));
+            const groupTotal = group.rows.reduce((sum, row) => sum + Number(row.VALOR || 0), 0);
+            return (
+              <article className="cash-group" key={group.key}>
+                <div className="cash-group-head">
+                  {selectable && (
+                    <input
+                      type="checkbox"
+                      checked={allInGroup}
+                      aria-label={`Selecionar ${group.label}`}
+                      onChange={() => onToggleKeys?.(keys, !allInGroup)}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    className="cash-group-toggle"
+                    aria-expanded={open}
+                    onClick={() => toggleExpand(group.key)}
+                  >
+                    <span aria-hidden="true">{open ? "▾" : "▸"}</span>
+                    <strong>{group.label}</strong>
+                    <span className="cash-group-count">
+                      {group.rows.length} {group.rows.length === 1 ? "registro" : "registros"}
+                    </span>
+                    <span className="cash-group-total">{money(groupTotal)}</span>
+                  </button>
+                </div>
+                {open &&
+                  group.rows.map((row, index) => {
+                    const key = rowKey?.(row) || `${group.key}-${index}`;
+                    return (
+                      <div className="cash-group-item" key={key}>
+                        {selectable && (
+                          <input
+                            type="checkbox"
+                            checked={selected.has(key)}
+                            aria-label={`Selecionar ${row.DESCRICAO || "registro"}`}
+                            onChange={() => onToggleKey(key)}
+                          />
+                        )}
+                        {renderGroupItem?.(row)}
+                      </div>
+                    );
+                  })}
+              </article>
+            );
+          })}
+          {!!sortedRows.length && (
+            <p className="cash-group-hint">Clique nos grupos para expandir ou recolher.</p>
+          )}
+        </div>
+      ) : (
       <table className="tabela">
         <thead>
           <tr>
+            {selectable && (
+              <th className="cash-select-cell">
+                <input
+                  type="checkbox"
+                  checked={allVisible}
+                  aria-label="Selecionar todos"
+                  onChange={() => onToggleKeys?.(visibleKeys, !allVisible)}
+                />
+              </th>
+            )}
             {columns.map((c) => (
               <th
                 key={c.key}
@@ -164,24 +263,20 @@ function Table({
         <tbody>
           {groupedRows.map((group) => (
             <React.Fragment key={group.key}>
-              {groupKey && (
-                <tr className="table-group-row">
-                  <td colSpan={columns.length}>
-                    <strong>{group.label}</strong>
-                    <span>
-                      {group.rows.length} registro(s)
-                      {group.rows.some((row) => row.VALOR != null) &&
-                        ` · ${money(group.rows.reduce((sum, row) => sum + Number(row.VALOR || 0), 0))}`}
-                    </span>
-                  </td>
-                </tr>
-              )}
-              {group.rows.map((row, i) => (
-                <tr
-                  key={
-                    row.id || row.CONTROLE || row.CODIGO || `${group.key}-${i}`
-                  }
-                >
+              {group.rows.map((row, i) => {
+                const key = rowKey?.(row) || row.id || row.CONTROLE || row.CODIGO || `${group.key}-${i}`;
+                return (
+                <tr key={key}>
+                  {selectable && (
+                    <td className="cash-select-cell">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(key)}
+                        aria-label={`Selecionar ${row.DESCRICAO || "registro"}`}
+                        onChange={() => onToggleKey(key)}
+                      />
+                    </td>
+                  )}
                   {columns.map((c) => (
                     <td
                       key={c.key}
@@ -191,17 +286,20 @@ function Table({
                     </td>
                   ))}
                 </tr>
-              ))}
+                );
+              })}
             </React.Fragment>
           ))}
         </tbody>
       </table>
+      )}
       {!sortedRows.length && <div className="overview-empty">{empty}</div>}
     </div>
   );
 }
 
-function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
+function CashActionModal({ mode, rows = [], filter, options, onClose, onDone }) {
+  const row = rows[0] || null;
   const [form, setForm] = useState({
     caixa_destino: "",
     valor: "",
@@ -220,15 +318,16 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
       .get("/financeiro/controle-caixa/apuracao", {
         empresa: filter.empresa,
         caixa: filter.caixa,
-        data: filter.data,
+        data: filter.fim,
       })
       .then((result) => setAssessment(result.apuracao))
       .catch((e) => setError(e.message));
-  }, [filter.caixa, filter.data, filter.empresa, mode]);
+  }, [filter.caixa, filter.fim, filter.empresa, mode]);
+  const blockedCashes = new Set(
+    [String(filter.caixa), ...rows.map((item) => String(item.CDCAIXA))].filter((value) => value && value !== "undefined"),
+  );
   const destinationOptions = (options.caixas || [])
-    .filter(
-      (item) => String(item.CDCAIXA) !== String(row?.CDCAIXA || filter.caixa),
-    )
+    .filter((item) => !blockedCashes.has(String(item.CDCAIXA)))
     .map((item) => ({ value: item.CDCAIXA, label: item.CAIXA }));
   const difference =
     Number(form.valor_contado || 0) - Number(assessment?.SALDO || 0);
@@ -242,7 +341,7 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         result = await api.post("/financeiro/controle-caixa/abrir", {
           empresa: filter.empresa,
           caixa: filter.caixa,
-          data: filter.data,
+          data: filter.fim,
           valor_inicial: form.valor,
           observacao: form.historico,
         });
@@ -250,7 +349,7 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         result = await api.post("/financeiro/controle-caixa/fechar", {
           empresa: filter.empresa,
           caixa: filter.caixa,
-          data: filter.data,
+          data: filter.fim,
           valor_contado: form.valor_contado,
           observacao: form.historico,
         });
@@ -259,18 +358,20 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
           empresa: filter.empresa,
           caixa_origem: filter.caixa,
           caixa_destino: form.caixa_destino,
-          data: filter.data,
+          data: filter.fim,
           valor: form.valor,
           forma: form.forma,
           historico: form.historico,
         });
       else
         result = await api.post("/financeiro/controle-caixa/mover", {
-          origem: row.ORIGEM,
-          movimento: row.IDMOVIMENTO,
-          empresa: row.IDEMPRESA,
-          caixa_atual: row.CDCAIXA,
           caixa_destino: form.caixa_destino,
+          itens: rows.map((item) => ({
+            origem: item.ORIGEM,
+            movimento: item.IDMOVIMENTO,
+            empresa: item.IDEMPRESA,
+            caixa_atual: item.CDCAIXA,
+          })),
         });
       await onDone(result);
     } catch (e) {
@@ -286,7 +387,9 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         ? "Fechamento de caixa"
       : mode === "valor"
         ? "Transferência de valor"
-        : row?.ORIGEM === "PENDENTE"
+        : rows.length > 1
+          ? "Transferir registros"
+          : row?.ORIGEM === "PENDENTE"
           ? "Transferir parcela"
           : "Transferir movimento";
   return (
@@ -300,7 +403,7 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         {mode === "abrir" && (
           <>
             <p>
-              Informe o valor disponível no início de {filter.data.split("-").reverse().join("/")}.
+              Informe o valor disponível no início de {(filter.fim || "").split("-").reverse().join("/")}.
             </p>
             <label>
               Valor inicial
@@ -318,7 +421,7 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         {mode === "fechar" && (
           <>
             <p>
-              {filter.data.split("-").reverse().join("/")} · saldo apurado{" "}
+              {(filter.fim || "").split("-").reverse().join("/")} · saldo apurado{" "}
               <strong>{money(assessment?.SALDO)}</strong>
             </p>
             <div className="finance-calc">
@@ -377,12 +480,23 @@ function CashActionModal({ mode, row, filter, options, onClose, onDone }) {
         )}
         {mode === "mover" && (
           <div className="finance-calc">
-            <span>{row.DESCRICAO}</span>
-            <span>
-              {row.DOCUMENTO}
-              {row.PARCELA ? ` · parcela ${row.PARCELA}` : ""}
-            </span>
-            <strong>{money(row.VALOR)}</strong>
+            {rows.length > 1 ? (
+              <>
+                <span>{rows.length} registros selecionados</span>
+                <strong>
+                  {money(rows.reduce((sum, item) => sum + Number(item.VALOR || 0), 0))}
+                </strong>
+              </>
+            ) : (
+              <>
+                <span>{row?.DESCRICAO}</span>
+                <span>
+                  {row?.PEDIDO ? `Pedido ${row.PEDIDO}` : row?.DOCUMENTO}
+                  {row?.PARCELA ? ` · parcela ${row.PARCELA}` : ""}
+                </span>
+                <strong>{money(row?.VALOR)}</strong>
+              </>
+            )}
           </div>
         )}
         {["valor", "mover"].includes(mode) && (
@@ -429,11 +543,17 @@ export default function ManagementDashboard({ type }) {
     [loading, setLoading] = useState(true),
     [notice, setNotice] = useState(""),
     [cashAction, setCashAction] = useState(null),
-    [cashRow, setCashRow] = useState(null);
+    [cashRows, setCashRows] = useState([]),
+    [selectedMoves, setSelectedMoves] = useState(() => new Set());
   const [cashFilter, setCashFilter] = useState({
     empresa: "",
     caixa: "",
-    data: iso(new Date()),
+    inicio: iso(new Date()),
+    fim: iso(new Date()),
+    semCarteiras: false,
+    semVales: false,
+    semDevolucoes: false,
+    semSaidas: false,
   });
   async function load() {
     setLoading(true);
@@ -468,17 +588,29 @@ export default function ManagementDashboard({ type }) {
           ...cashFilter,
           empresa: cashFilter.empresa || options.empresas?.[0]?.IDEMPRESA || "",
           caixa: cashFilter.caixa || options.caixas?.[0]?.CDCAIXA || "",
+          inicio: cashFilter.inicio || iso(new Date()),
+          fim: cashFilter.fim || cashFilter.inicio || iso(new Date()),
         };
+        if (selected.inicio > selected.fim) {
+          const swap = selected.inicio;
+          selected.inicio = selected.fim;
+          selected.fim = swap;
+        }
         setCashFilter(selected);
         setData((current) => ({ ...current, options }));
         const [result, closingData, transferData] =
           selected.empresa && selected.caixa
             ? await Promise.all([
                 api.get("/financeiro/controle-caixa", {
-                  ...selected,
-                  inicio: selected.data,
-                  fim: selected.data,
-                  limite: 200,
+                  empresa: selected.empresa,
+                  caixa: selected.caixa,
+                  inicio: selected.inicio,
+                  fim: selected.fim,
+                  limite: 1000,
+                  nao_carteiras: selected.semCarteiras ? 1 : 0,
+                  nao_vales: selected.semVales ? 1 : 0,
+                  nao_devolucoes: selected.semDevolucoes ? 1 : 0,
+                  nao_saidas_entradas: selected.semSaidas ? 1 : 0,
                 }),
                 api.get("/financeiro/controle-caixa/fechamentos", {
                   empresa: selected.empresa,
@@ -492,6 +624,7 @@ export default function ManagementDashboard({ type }) {
                 }),
               ])
             : [{}, {}, {}];
+        setSelectedMoves(new Set());
         setData({
           options,
           ...result,
@@ -537,6 +670,29 @@ export default function ManagementDashboard({ type }) {
       INTENSIDADE: (row.ATENDIMENTOS / peak) * 100,
     }));
   }, [data.movimentos]);
+  function toggleMove(key) {
+    setSelectedMoves((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
+  function toggleMoves(keys, on) {
+    setSelectedMoves((current) => {
+      const next = new Set(current);
+      for (const key of keys) {
+        if (on) next.add(key);
+        else next.delete(key);
+      }
+      return next;
+    });
+  }
+  function openMove(rows) {
+    setCashRows(rows);
+    setCashAction("mover");
+  }
+  const selectedMovementRows = (data.movimentos || []).filter((row) => selectedMoves.has(moveKey(row)));
 
   return (
     <div className="management-page">
@@ -601,12 +757,22 @@ export default function ManagementDashboard({ type }) {
                 />
               </label>
               <label>
-                Data
+                De
                 <input
                   type="date"
-                  value={cashFilter.data}
+                  value={cashFilter.inicio}
                   onChange={(e) =>
-                    setCashFilter((f) => ({ ...f, data: e.target.value }))
+                    setCashFilter((f) => ({ ...f, inicio: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                Até
+                <input
+                  type="date"
+                  value={cashFilter.fim}
+                  onChange={(e) =>
+                    setCashFilter((f) => ({ ...f, fim: e.target.value }))
                   }
                 />
               </label>
@@ -629,6 +795,31 @@ export default function ManagementDashboard({ type }) {
           </button>
         </div>
       </section>
+      {type === "cash" && (
+        <section className="panel cash-exclude">
+          <div>
+            <strong>Não exibir</strong>
+            <p>Marcado, o item sai da lista e dos totais. Desmarcado, continua incluído. Saídas e entradas são suprimento, sangria e os demais lançamentos avulsos.</p>
+          </div>
+          {[
+            ["semCarteiras", "Carteiras"],
+            ["semVales", "Vales"],
+            ["semDevolucoes", "Devoluções"],
+            ["semSaidas", "Saídas e entradas"],
+          ].map(([key, label]) => (
+            <label key={key}>
+              <input
+                type="checkbox"
+                checked={Boolean(cashFilter[key])}
+                onChange={(event) =>
+                  setCashFilter((current) => ({ ...current, [key]: event.target.checked }))
+                }
+              />
+              {label}
+            </label>
+          ))}
+        </section>
+      )}
       {error && <div className="error">{error}</div>}
       {notice && <div className="success">{notice}</div>}
       {type === "stock" && (
@@ -763,7 +954,7 @@ export default function ManagementDashboard({ type }) {
           <section className="panel cash-operation-bar">
             <div>
               <h2>Operações do caixa</h2>
-              <p>Abra, feche ou transfira valores entre caixas.</p>
+              <p>Abra, feche ou transfira valores no dia final do período.</p>
             </div>
             <div className="modal-actions">
               <button
@@ -881,9 +1072,41 @@ export default function ManagementDashboard({ type }) {
             />
           </section>
           <section className="panel">
-            <h2>Movimentação do caixa</h2>
+            <div className="cash-move-toolbar">
+              <div>
+                <h2>Movimentação do caixa</h2>
+                <p>{number((data.movimentos || []).length)} registros</p>
+              </div>
+              <button
+                type="button"
+                disabled={!selectedMovementRows.length}
+                onClick={() => openMove(selectedMovementRows)}
+              >
+                Mover selecionadas{selectedMovementRows.length ? ` (${selectedMovementRows.length})` : ""}
+              </button>
+            </div>
             <Table
               rows={data.movimentos || []}
+              rowKey={moveKey}
+              selectedKeys={selectedMoves}
+              onToggleKey={toggleMove}
+              onToggleKeys={toggleMoves}
+              renderGroupItem={(row) => (
+                <>
+                  <div className="cash-group-main">
+                    <strong>{row.DESCRICAO || "Sem descrição"}</strong>
+                    <small>{movementDetail(row)}</small>
+                  </div>
+                  <div className="cash-group-side">
+                    <strong className={Number(row.VALOR) >= 0 ? "positive" : "negative"}>
+                      {money(row.VALOR)}
+                    </strong>
+                    <button type="button" className="secondary" onClick={() => openMove([row])}>
+                      {row.ORIGEM === "PENDENTE" ? "Mover parcela" : "Transferir"}
+                    </button>
+                  </div>
+                </>
+              )}
               groupableColumns={[
                 "DATA_MOVIMENTO",
                 "CAIXA",
@@ -899,6 +1122,11 @@ export default function ManagementDashboard({ type }) {
                 },
                 { key: "CAIXA", label: "Caixa" },
                 { key: "FORMA", label: "Forma" },
+                {
+                  key: "PEDIDO",
+                  label: "Pedido",
+                  render: (x) => x.PEDIDO || x.DOCUMENTO || "—",
+                },
                 { key: "STATUS_MOVIMENTO", label: "Status" },
                 { key: "DESCRICAO", label: "Descrição" },
                 {
@@ -914,10 +1142,7 @@ export default function ManagementDashboard({ type }) {
                   render: (x) => (
                     <button
                       className="secondary"
-                      onClick={() => {
-                        setCashRow(x);
-                        setCashAction("mover");
-                      }}
+                      onClick={() => openMove([x])}
                     >
                       {x.ORIGEM === "PENDENTE" ? "Mover parcela" : "Transferir"}
                     </button>
@@ -1054,16 +1279,17 @@ export default function ManagementDashboard({ type }) {
       {type === "cash" && cashAction && (
         <CashActionModal
           mode={cashAction}
-          row={cashRow}
+          rows={cashRows}
           filter={cashFilter}
           options={data.options || {}}
           onClose={() => {
             setCashAction(null);
-            setCashRow(null);
+            setCashRows([]);
           }}
           onDone={async (result) => {
             setCashAction(null);
-            setCashRow(null);
+            setCashRows([]);
+            setSelectedMoves(new Set());
             setNotice(result.mensagem);
             await load();
           }}

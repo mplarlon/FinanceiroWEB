@@ -14,6 +14,7 @@ import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
 import CharlieTraining from "./components/CharlieTraining.jsx";
 import TrayIntegration from "./pages/TrayIntegration.jsx";
 import UpdateAvailable from "./components/UpdateAvailable.jsx";
+import StartIniSetup from "./components/StartIniSetup.jsx";
 
 const PAGES = [
   { id: "overview", label: "Visão geral", icon: "◫" },
@@ -93,6 +94,8 @@ export default function App() {
   const [charlieBrief, setCharlieBrief] = useState(null);
   const [alertLaunch, setAlertLaunch] = useState(0);
   const [ecommerceUnlocked, setEcommerceUnlocked] = useState(false);
+  const [editingIni, setEditingIni] = useState(false);
+  const [companyName, setCompanyName] = useState("Dashboard Gerencial");
 
   useEffect(() => {
     const unauthorized = (event) => {
@@ -108,6 +111,15 @@ export default function App() {
       .get("/status")
       .then(setStatus)
       .catch((e) => setError(e.message));
+    api
+      .get("/branding")
+      .then((data) => {
+        const nome = String(data?.empresa_nome || "").trim();
+        if (!nome) return;
+        setCompanyName(nome);
+        document.title = nome;
+      })
+      .catch(() => {});
     return () => window.removeEventListener("dashboard:unauthorized", unauthorized);
   }, []);
 
@@ -166,6 +178,9 @@ export default function App() {
     }
     setPage(id);
   }
+  function reloadStatus() {
+    api.get("/status").then(setStatus).catch(() => {});
+  }
   async function logout() {
     try {
       await api.post("/auth/logout");
@@ -177,34 +192,45 @@ export default function App() {
 
   if (!session?.authenticated)
     return (
+      <>
+      <UpdateAvailable />
       <main className="login">
-        <div className="login-brand" aria-hidden="true">
-          <span className="brand-dot">P</span>
-          <span>PONTUAL<small>TECNOLOGIA</small></span>
+        <div className="login-brand">
+          <span className="brand-dot" aria-hidden="true">P</span>
+          <span className="login-brand-copy">
+            <span aria-hidden="true">PONTUAL<small>TECNOLOGIA</small></span>
+            <span className="login-version">Versão {__APP_VERSION__}</span>
+          </span>
         </div>
-        <form className="card" onSubmit={login}>
-          <h1>Dashboard Gerencial</h1>
-          <p>Acesse com seu usuário do sistema.</p>
-          <input name="login" placeholder="Usuário" autoFocus required />
-          <input name="senha" type="password" placeholder="Senha" required />
-          <button>Entrar</button>
-          {status?.ok && (
-            <div className="database-state database-online">
-              Banco conectado: {status.nome_banco || status.banco}
-            </div>
+        <div className={`card${editingIni ? " card-setup" : ""}`}>
+          {!editingIni && (
+            <form className="login-form" onSubmit={login}>
+              <h1>{companyName}</h1>
+              <p>Acesse com seu usuário do sistema.</p>
+              <input name="login" placeholder="Usuário" autoFocus required />
+              <input name="senha" type="password" placeholder="Senha" required />
+              <button>Entrar</button>
+              {status?.ok && (
+                <div className="database-state database-online">
+                  Banco conectado: {status.nome_banco || status.banco}
+                </div>
+              )}
+              {status && !status.ok && (
+                <div className="database-state database-offline">
+                  <strong>Banco de dados indisponível</strong>
+                  <span>
+                    {status.servidor}:{status.porta} — {status.banco}
+                  </span>
+                  <small>{status.erro}</small>
+                </div>
+              )}
+              {error && <div className="error">{error}</div>}
+            </form>
           )}
-          {status && !status.ok && (
-            <div className="database-state database-offline">
-              <strong>Banco de dados indisponível</strong>
-              <span>
-                {status.servidor}:{status.porta} — {status.banco}
-              </span>
-              <small>{status.erro}</small>
-            </div>
-          )}
-          {error && <div className="error">{error}</div>}
-        </form>
+          <StartIniSetup onEditing={setEditingIni} onSaved={reloadStatus} />
+        </div>
       </main>
+      </>
     );
 
   const current = PAGES.find((p) => p.id === page) || PAGES[0];
@@ -215,9 +241,12 @@ export default function App() {
       <aside>
         <div className="brand">
           <span className="brand-dot">P</span>
-          <span className="brand-name">PONTUAL<small>TECNOLOGIA</small></span>
+          <span className="brand-copy">
+            <span className="brand-name">PONTUAL<small>TECNOLOGIA</small></span>
+            <small className="brand-version">Versão {__APP_VERSION__}</small>
+          </span>
         </div>
-        <div className="nav-caption">GESTÃO AUT⦁MEC</div>
+        <div className="nav-caption">AUTOMEC</div>
         <nav>
           {MAIN_PAGES.map((p) => (
             <button

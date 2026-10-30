@@ -33,6 +33,7 @@ export const SALES_MENU = [
     items: [
       { id: "loja", label: "Loja Tray", kind: "store" },
       { id: "booster", label: "Anúncios", kind: "booster" },
+      { id: "revisao-hub", label: "Revisão hub", kind: "tecnospeed" },
       { id: "precos", label: "Preços", kind: "prices" },
       { id: "radar", label: "Concorrentes", kind: "radar" },
       { id: "match", label: "Produtos iguais", kind: "match" },
@@ -228,6 +229,8 @@ export function salesStatusLabel(status) {
     rejected: "Rejeitada",
     executed: "Executada",
     applied: "Aplicada",
+    uploaded: "Enviada à Tray",
+    blocked: "Bloqueada",
     failed: "Falhou",
     reverted: "Revertida",
     draft: "Rascunho",

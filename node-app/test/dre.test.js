@@ -10,10 +10,10 @@ const account = (description, extra = {}) => ({
   ...extra,
 });
 
-test("DRE segue a classificacao do Automec e acumula contas pai", () => {
+test("DRE mostra so a conta mais especifica e ignora parcela sem conta", () => {
   const plan = {
     contas: new Map([
-      ["1", account("Receita")],
+      ["1", account("Receita", { DRERECEBTO: 1 })],
       ["3", account("Despesas")],
     ]),
     subcontas: new Map([
@@ -43,6 +43,24 @@ test("DRE segue a classificacao do Automec e acumula contas pai", () => {
         VL: -40,
         ORIGEM: "pagar",
       },
+      {
+        CD: "1",
+        SCD: "X",
+        SSCD: "X",
+        SSSCD: "X",
+        MES: 10,
+        VL: 15,
+        ORIGEM: "receber",
+      },
+      {
+        CD: "X",
+        SCD: "X",
+        SSCD: "X",
+        SSSCD: "X",
+        MES: 10,
+        VL: 999,
+        ORIGEM: "receber",
+      },
     ],
     plan,
     [
@@ -52,19 +70,25 @@ test("DRE segue a classificacao do Automec e acumula contas pai", () => {
   );
   assert.deepEqual(
     result.resumo.map((item) => item.total),
-    [100, -40],
+    [115, -40],
+  );
+  assert.equal(result.dados.find((item) => item.descricao === "PIX").meses[10], 100);
+  assert.equal(result.dados.find((item) => item.descricao === "Receita").meses[10], 15);
+  assert.equal(
+    result.dados.find((item) => item.descricao === "Despesas"),
+    undefined,
   );
   assert.equal(
-    result.dados.find((item) => item.descricao === "Receita").meses[10],
-    100,
-  );
-  assert.equal(
-    result.dados.find((item) => item.descricao === "Despesas").meses[10],
+    result.dados.find((item) => item.descricao === "Internet").meses[10],
     -40,
   );
   assert.equal(
     result.dados.filter((item) => item.grupo && !item.resultado).length,
     2,
   );
-  assert.equal(result.resultado, 60);
+  assert.equal(
+    result.dados.some((item) => String(item.descricao).includes("999") || String(item.descricao).includes("sem conta")),
+    false,
+  );
+  assert.equal(result.resultado, 75);
 });

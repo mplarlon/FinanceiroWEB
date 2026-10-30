@@ -308,6 +308,7 @@ export function buildDreHierarchy(rows, plan, types) {
         plan.subsubcontas,
         plan.subsubsubcontas,
       ];
+    if (!codes.some((code) => code && code !== "X")) continue;
     let deepest = -1,
       dreType = null;
     for (let level = 0; level < maps.length; level++) {
@@ -348,27 +349,26 @@ export function buildDreHierarchy(rows, plan, types) {
       add(group.nodes.get(missing), month, value);
       continue;
     }
-    for (let level = 0; level <= deepest; level++) {
-      const key = codes.slice(0, level + 1).join("|"),
-        account = maps[level].get(key);
-      if (!account) continue;
-      const nodeKey = `${level}:${key}`;
-      if (!group.nodes.has(nodeKey))
-        group.nodes.set(nodeKey, {
-          descricao: account.DESCRICAO,
-          nivel: level + 1,
-          ordem: account.ORDEM,
-          caminho: key,
-          ordemCaminho: Array.from({ length: level + 1 }, (_, index) =>
-            Number(
-              maps[index].get(codes.slice(0, index + 1).join("|"))?.ORDEM ||
-                999999,
-            ),
+    const level = deepest,
+      key = codes.slice(0, level + 1).join("|"),
+      account = maps[level].get(key);
+    if (!account) continue;
+    const nodeKey = `${level}:${key}`;
+    if (!group.nodes.has(nodeKey))
+      group.nodes.set(nodeKey, {
+        descricao: account.DESCRICAO,
+        nivel: level + 1,
+        ordem: account.ORDEM,
+        caminho: key,
+        ordemCaminho: Array.from({ length: level + 1 }, (_, index) =>
+          Number(
+            maps[index].get(codes.slice(0, index + 1).join("|"))?.ORDEM ||
+              999999,
           ),
-          meses: {},
-        });
-      add(group.nodes.get(nodeKey), month, value);
-    }
+        ),
+        meses: {},
+      });
+    add(group.nodes.get(nodeKey), month, value);
   }
   const dados = [],
     resumo = [];
@@ -429,7 +429,11 @@ async function dreData(
   { dataIni = "", dataFim = "", tipo = "competencia" },
 ) {
   const dateField = tipo === "vencimento" ? "DTVENC" : "COMPETENCIA",
-    filters = [`t.${dateField} IS NOT NULL`, `t.STATUS IN (1,2)`],
+    filters = [
+      `t.${dateField} IS NOT NULL`,
+      `t.STATUS IN (1,2)`,
+      "(t.STATUS<>1 OR t.CDCONTA IS NOT NULL)",
+    ],
     params = [];
   if (dataIni) {
     filters.push(`CAST(t.${dateField} AS DATE)>=?`);

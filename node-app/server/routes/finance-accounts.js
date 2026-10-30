@@ -11,6 +11,18 @@ const router = express.Router();
 const asInt = (value) =>
   /^\d+$/.test(String(value ?? "")) ? Number(value) : null;
 const text = (value) => String(value ?? "").trim();
+// A conexão é UTF8 e estas colunas são NONE. Literal '' ou texto direto
+// no mesmo comando gera "Malformed string". O parâmetro vai em octetos.
+export function legacyOctets(value, size) {
+  return Buffer.from(text(value).slice(0, size), "latin1");
+}
+const octets = (size) => `CAST(? AS VARCHAR(${size}) CHARACTER SET OCTETS)`;
+export const receivableSettlementSql =
+  `UPDATE CTARECEBER SET STATUS=2,DTCOB=?,TPPAGTO=?,CDBANCO=?,CAIXA=?,NUMCONTA=${octets(20)},AGENCIA=${octets(20)},CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,TOTALPG=?,VLPGLIQ=?,HISTORICO=COALESCE(${octets(255)},HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`;
+export const payableSettlementSql =
+  `UPDATE CTAPAGAR SET STATUS=2,DTPAGTO=?,CODPAGTO=?,TPPAGTO=?,CDBANCO=?,CDCAIXA=?,CONTA=${octets(15)},AGENCIA=${octets(20)},CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,VLPAGTO=?,HISTORICO=COALESCE(${octets(255)},HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1`;
+export const bankMovementInsertSql =
+  `INSERT INTO MOV_BANCARIO (CONTROLE,CDBANCO,AGENCIA,NUMCONTA,NUMDOC,IDUSUARIO,IDEMPRESA,DESCRICAO,HISTORICO,DTLANCAMENTO,VALOR,TPLANCAMENTO,CDRECEBTO,STATUS,EXTRATO_ITEM,CONTROLE_CTA,SIST_ALT) VALUES (?,?,${octets(7)},${octets(15)},${octets(30)},?,?,${octets(255)},${octets(255)},?,?,?,?,0,NULL,?,${octets(7)})`;
 export function firebirdDate(value) {
   const normalized = text(value).slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return null;
@@ -1891,8 +1903,8 @@ router.post("/operacoes/baixar", async (req, res) => {
             : "COALESCE(VALOR,TOTAL,0)",
         document =
           type === "receber"
-            ? "COALESCE(NRDOC,'')"
-            : "COALESCE(NRDOC,NOTAFISCAL,'')",
+            ? "COALESCE(CAST(CAST(NRDOC AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE), CAST('' AS VARCHAR(1) CHARACTER SET NONE))"
+            : "COALESCE(CAST(CAST(NRDOC AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE), CAST(CAST(NOTAFISCAL AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE), CAST('' AS VARCHAR(1) CHARACTER SET NONE))",
         personName =
           type === "receber"
             ? "(SELECT COALESCE(CAST(CAST(p.CLIENTE AS VARCHAR(80) CHARACTER SET OCTETS) AS VARCHAR(80) CHARACTER SET NONE),CAST(CAST(p.RAZAO AS VARCHAR(80) CHARACTER SET OCTETS) AS VARCHAR(80) CHARACTER SET NONE)) FROM CLIENTE p WHERE p.CDCLIENTE=CTARECEBER.CDCLIENTE)"
@@ -2039,21 +2051,21 @@ router.post("/operacoes/baixar", async (req, res) => {
           ];
         if (type === "receber") {
           await tx.execute(
-            "UPDATE CTARECEBER SET STATUS=2,DTCOB=?,TPPAGTO=?,CDBANCO=?,CAIXA=?,NUMCONTA=?,AGENCIA=?,CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,TOTALPG=?,VLPGLIQ=?,HISTORICO=COALESCE(NULLIF(?,''),HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1",
+            receivableSettlementSql,
             [
               paymentDate,
               payment,
               bankId,
               cashBox,
-              account,
-              agency,
+              legacyOctets(account, 20),
+              legacyOctets(agency, 20),
               ...plan,
               interest[i],
               discounts[i],
               retentions[i],
               paid,
               paidNet,
-              history,
+              history ? legacyOctets(history, 255) : null,
               ...refs[i],
             ],
           );
@@ -2088,21 +2100,21 @@ router.post("/operacoes/baixar", async (req, res) => {
           });
         } else
           await tx.execute(
-            "UPDATE CTAPAGAR SET STATUS=2,DTPAGTO=?,CODPAGTO=?,TPPAGTO=?,CDBANCO=?,CDCAIXA=?,CONTA=?,AGENCIA=?,CDRECGRUPO=COALESCE(?,CDRECGRUPO),CCUSTO=COALESCE(?,CCUSTO),CDCONTA=COALESCE(?,CDCONTA),CDSUBCONTA=COALESCE(?,CDSUBCONTA),CDSUBSUBCONTA=COALESCE(?,CDSUBSUBCONTA),CDSUBSUBSUBCONTA=COALESCE(?,CDSUBSUBSUBCONTA),JUROS=?,DESCONTO=?,RETENCAO=?,VLPAGTO=?,HISTORICO=COALESCE(NULLIF(?,''),HISTORICO),DTALTER=CURRENT_TIMESTAMP WHERE CONTROLE=? AND IDEMPRESA=? AND STATUS=1",
+            payableSettlementSql,
             [
               paymentDate,
               payment,
               payment,
               bankId,
               cashBox,
-              account,
-              agency,
+              legacyOctets(account, 15),
+              legacyOctets(agency, 20),
               ...plan,
               interest[i],
               discounts[i],
               retentions[i],
               paidNet,
-              history,
+              history ? legacyOctets(history, 255) : null,
               ...refs[i],
             ],
           );
@@ -2135,24 +2147,28 @@ router.post("/operacoes/baixar", async (req, res) => {
           ).ID,
         );
         await tx.execute(
-          "INSERT INTO MOV_BANCARIO (CONTROLE,CDBANCO,AGENCIA,NUMCONTA,NUMDOC,IDUSUARIO,IDEMPRESA,DESCRICAO,HISTORICO,DTLANCAMENTO,VALOR,TPLANCAMENTO,CDRECEBTO,STATUS,EXTRATO_ITEM,CONTROLE_CTA,SIST_ALT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,NULL,?,'LOCAL')",
+          bankMovementInsertSql,
           [
             movement,
             bankId,
-            agency,
-            account,
-            String(body.numero_pagamento || `BAIXA-${movement}`).slice(0, 30),
+            legacyOctets(agency, 7),
+            legacyOctets(account, 15),
+            legacyOctets(body.numero_pagamento || `BAIXA-${movement}`, 30),
             Number(req.dashboardSession?.user?.idusuario || 1),
             rows[0].IDEMPRESA,
-            type === "receber"
-              ? "Baixa contas a receber"
-              : "Baixa contas a pagar",
-            history,
+            legacyOctets(
+              type === "receber"
+                ? "Baixa contas a receber"
+                : "Baixa contas a pagar",
+              255,
+            ),
+            history ? legacyOctets(history, 255) : null,
             paymentDate,
             type === "receber" ? net : -net,
             type === "receber" ? 0 : 1,
             payment,
             refs[0][0],
+            legacyOctets("LOCAL", 7),
           ],
         );
         for (const ref of refs)

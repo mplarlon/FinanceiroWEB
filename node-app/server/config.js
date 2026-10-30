@@ -59,6 +59,23 @@ export function normalizeDatabaseConfig(input = {}, current = loadDatabaseConfig
   return next;
 }
 
+const SETUP_FIELDS = ["name", "host", "port", "database", "user", "password", "charset", "role"];
+
+export function databaseSetupInput(body = {}) {
+  const fields = {};
+  for (const key of SETUP_FIELDS) {
+    if (body[key] === undefined || body[key] === null) continue;
+    fields[key] = typeof body[key] === "string" ? body[key].trim() : body[key];
+  }
+  if (!fields.password) delete fields.password;
+  if (!fields.charset) fields.charset = "WIN1252";
+  if (!String(fields.host || "").trim() || !String(fields.database || "").trim()) {
+    throw new Error("Informe o servidor e o caminho do banco.");
+  }
+  if (!String(fields.user || "").trim()) throw new Error("Informe o usuário do banco.");
+  return fields;
+}
+
 export function saveDatabaseConfig(input) {
   const config = normalizeDatabaseConfig(input);
   fs.writeFileSync(configFile, `${JSON.stringify(config, null, 2)}\n`, "utf8");
