@@ -77,7 +77,11 @@ export function atomicWriteJson(filename, value) {
 
 export function readJson(filename, fallback) {
   if (!fs.existsSync(filename)) return structuredClone(fallback);
-  return JSON.parse(fs.readFileSync(filename, "utf8"));
+  try {
+    return JSON.parse(fs.readFileSync(filename, "utf8").replace(/^\uFEFF/, ""));
+  } catch {
+    return structuredClone(fallback);
+  }
 }
 
 export function safeChild(root, relative) {

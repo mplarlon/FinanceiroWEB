@@ -84,7 +84,34 @@ test("a sugestão usa o cadastro e recusa número ou unidade estranhos", () => {
   assert.match(suggestion.name, /SKF/);
   assert.match(suggestion.description, /comprimento 10/);
   assert.equal(suggestion.source, "cadastro");
-  assert.equal(acceptListingSuggestion({ ...suggestion, description: "Peça de 99 mm com garantia vitalícia", source: "ollama" }, facts).ok, false);
+  const rejected = acceptListingSuggestion({ ...suggestion, description: "Peça de 99 mm com garantia vitalícia", source: "ollama" }, facts);
+  assert.equal(rejected.ok, false);
+  assert.match(rejected.reason, /99/);
+  const sameValue = acceptListingSuggestion({
+    name: "Rolamento 6205 SKF",
+    description: "Rolamento 6205 com comprimento 10,0.",
+    description_small: "Rolamento 6205",
+    keywords: "rolamento, skf",
+    source: "ollama",
+  }, facts);
+  assert.equal(sameValue.ok, true);
+  const namedUnit = acceptListingSuggestion({
+    name: "Parafuso 10mm",
+    description: "Parafuso de 10 mm.",
+    description_small: "Parafuso 10 mm",
+    keywords: "parafuso",
+    source: "ollama",
+  }, { nome: "PARAFUSO 10MM", medidas: "" });
+  assert.equal(namedUnit.ok, true);
+  const inventedUnit = acceptListingSuggestion({
+    name: "Rolamento 6205",
+    description: "Rolamento com comprimento 10 mm.",
+    description_small: "10 mm",
+    keywords: "rolamento",
+    source: "ollama",
+  }, facts);
+  assert.equal(inventedUnit.ok, false);
+  assert.match(inventedUnit.reason, /mm/);
   const accepted = acceptListingSuggestion({ name: "Rolamento 6205 SKF", description: "Rolamento 6205 da marca SKF.", description_small: "Rolamento 6205", keywords: "rolamento, skf", source: "ollama" }, facts);
   assert.equal(accepted.ok, true);
   assert.equal(accepted.suggestion.source, "ollama");
@@ -112,4 +139,6 @@ test("aprovação, aplicação manual e histórico preservam a decisão", () => 
   assert.equal(applied.findings[title.id].previous.name, "Abc");
   assert.deepEqual(contentPayload(previous).description, "");
   assert.equal("metatag" in contentPayload({ description: null }), false);
+  assert.deepEqual(contentPayload({ name: "Rolamento", keywords: "skf, 6205" }).metatag, [{ type: "keywords", content: "skf, 6205", local: 1 }]);
+  assert.equal("keywords" in contentPayload({ name: "Rolamento", keywords: "skf, 6205" }), false);
 });

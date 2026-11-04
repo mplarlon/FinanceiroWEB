@@ -43,7 +43,7 @@ router.get("/notas", async (req, res) => {
     if (busca) {
       filtros.push(
         "(TRIM(COALESCE(n.NRDOC, '')) CONTAINING ? OR " +
-        "TRIM(COALESCE(c.CLIENTE, '')) CONTAINING ? OR " +
+        "TRIM(c.CLIENTE) CONTAINING ? OR " +
         "TRIM(COALESCE(n.CHAVE, '')) CONTAINING ?)"
       );
       params.push(busca, busca, busca);
@@ -52,12 +52,15 @@ router.get("/notas", async (req, res) => {
     else if (status === "autorizada") filtros.push("COALESCE(n.NFE_EMITIDA, 0) <> 0 AND COALESCE(n.NFE_CANCELADA, 0) = 0");
     else if (status === "cancelada") filtros.push("COALESCE(n.NFE_CANCELADA, 0) <> 0");
     const where = filtros.length ? " WHERE " + filtros.join(" AND ") : "";
+    // COALESCE(c.CLIENTE, '') converte o nome para o charset da conexao.
+    // Cedilha gravada em WIN1252 (0xC7) vira "Malformed string" e a leitura
+    // para no meio, devolvendo so as notas anteriores.
     const notas = await withDatabase(db => query(db,
       `SELECT FIRST ${limite} n.IDNF, n.IDEMPRESA, TRIM(n.NRDOC) AS NRDOC,` +
-      " n.DTEMISS, n.CDCLIENTE, TRIM(COALESCE(c.CLIENTE, '')) AS CLIENTE," +
+      " n.DTEMISS, n.CDCLIENTE, TRIM(c.CLIENTE) AS CLIENTE," +
       " n.VLTOTAL, n.STATUS, COALESCE(n.NFE_EMITIDA, 0) AS NFE_EMITIDA," +
       " COALESCE(n.NFE_CANCELADA, 0) AS NFE_CANCELADA," +
-      " COALESCE(n.NFCE, 0) AS NFCE," +
+      " COALESCE(n.NFCE, 0) AS NFCE, COALESCE(n.SERIE_NFE, 1) AS SERIE_NFE," +
       " TRIM(COALESCE(n.CHAVE, '')) AS CHAVE" +
       " FROM NOTAFISCAL n LEFT JOIN CLIENTE c ON c.CDCLIENTE = n.CDCLIENTE" +
       `${where} ORDER BY n.DTEMISS DESC, n.IDNF DESC`, params));
@@ -121,11 +124,11 @@ router.get("/:idnf/pdf", async (req, res) => {
         "SELECT FIRST 1 * FROM CONFIGURACAO WHERE IDEMPRESA = ?", [Number(nota.IDEMPRESA)]
       ))[0] || {};
       const xmlPath = resolverXmlAutorizado(nota);
-      const arquivos = arquivarPdf(nota, configuracao, xmlPath, gerado);
+      const arquivos = arquivarPdf(nota, configuracao, xmlPath, gerado, { ambiente: cfg.ambiente, chave: nota.CHAVE });
       await updateExisting(tx, "NOTAFISCAL", "IDNF = ? AND IDEMPRESA = ?", [Number(nota.IDNF), Number(nota.IDEMPRESA)], {
         CAMINHO: arquivos.pdf,
       });
-      return arquivos.pdf;
+      return arquivos.pdf_local;
     });
     const nrdoc = String(req.query.nrdoc || req.params.idnf).trim();
     res.setHeader("Content-Disposition", `inline; filename="DANFE-${nrdoc}.pdf"`);
@@ -159,7 +162,7 @@ router.delete("/:idnf", async (req, res) => {
     const result = await withWriteTransaction(async tx => {
       const idnf = Number(req.params.idnf);
       const { nota } = await carregarNota(tx, idnf, req.body?.idempresa);
-      if (Number(nota.NFE_EMITIDA || 0) !== 0 || nota.CHAVE) {
+      if (Number(nota.NFE_EMITIDA || 0) !== 0) {
         throw new HttpError("NF-e autorizada nao pode ser excluida; use o cancelamento na SEFAZ.", 409);
       }
       if (Number(nota.NFE_CANCELADA || 0) !== 0) {

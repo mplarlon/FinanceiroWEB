@@ -292,6 +292,20 @@ router.get("/fiscal-impostos", async (req, res) => {
   }
 });
 
+function dreCode(value) {
+  const text = String(value ?? "").trim();
+  return text && text !== "X" ? text : "";
+}
+
+function dreClassification(account, origin) {
+  const raw = Number(account?.[origin === "receber" ? "DRERECEBTO" : "DREPAGTO"]);
+  return Number.isInteger(raw) && raw > 0 ? raw : 0;
+}
+
+export function drePaidExpression(origin) {
+  return origin === "pagar" ? "COALESCE(t.VLPAGTO,0)" : "COALESCE(t.TOTALPG,0)";
+}
+
 export function buildDreHierarchy(rows, plan, types) {
   const typeMap = new Map(types.map((item) => [Number(item.CDTPDRE), item])),
     groups = new Map();
@@ -299,31 +313,22 @@ export function buildDreHierarchy(rows, plan, types) {
     target.meses[month] = (target.meses[month] || 0) + value;
   };
   for (const row of rows) {
-    const codes = [row.CD, row.SCD, row.SSCD, row.SSSCD].map((value) =>
-        String(value ?? "X"),
-      ),
+    const codes = [row.CD, row.SCD, row.SSCD, row.SSSCD].map(dreCode),
       maps = [
         plan.contas,
         plan.subcontas,
         plan.subsubcontas,
         plan.subsubsubcontas,
       ];
-    if (!codes.some((code) => code && code !== "X")) continue;
-    let deepest = -1,
-      dreType = null;
-    for (let level = 0; level < maps.length; level++) {
-      const account = maps[level].get(codes.slice(0, level + 1).join("|"));
-      if (!account) continue;
-      deepest = level;
-      const classification =
-        account[row.ORIGEM === "receber" ? "DRERECEBTO" : "DREPAGTO"];
-      if (classification) dreType = Number(classification);
-    }
-    const groupId = dreType || 0,
-      info = typeMap.get(groupId) || {
-        TITULO: "Não classificado no DRE",
-        CDDRE: 999,
-      };
+    let filled = -1;
+    for (let level = 0; level < maps.length; level++) if (codes[level]) filled = level;
+    if (filled < 0) continue;
+    const key = codes.slice(0, filled + 1).join("|"),
+      account = maps[filled].get(key),
+      dreType = dreClassification(account, row.ORIGEM),
+      info = typeMap.get(dreType);
+    if (!account || !dreType || !info) continue;
+    const groupId = dreType;
     if (!groups.has(groupId))
       groups.set(groupId, {
         id: groupId,
@@ -336,23 +341,7 @@ export function buildDreHierarchy(rows, plan, types) {
       month = Number(row.MES || 1),
       value = Number(row.VL || 0);
     add(group, month, value);
-    if (deepest < 0) {
-      const missing = `missing:${codes.join("|")}`;
-      if (!group.nodes.has(missing))
-        group.nodes.set(missing, {
-          descricao: `[${codes.find((code) => code !== "X") || "sem conta"}]`,
-          nivel: 1,
-          ordem: 999999,
-          caminho: missing,
-          meses: {},
-        });
-      add(group.nodes.get(missing), month, value);
-      continue;
-    }
-    const level = deepest,
-      key = codes.slice(0, level + 1).join("|"),
-      account = maps[level].get(key);
-    if (!account) continue;
+    const level = filled;
     const nodeKey = `${level}:${key}`;
     if (!group.nodes.has(nodeKey))
       group.nodes.set(nodeKey, {
@@ -429,11 +418,7 @@ async function dreData(
   { dataIni = "", dataFim = "", tipo = "competencia" },
 ) {
   const dateField = tipo === "vencimento" ? "DTVENC" : "COMPETENCIA",
-    filters = [
-      `t.${dateField} IS NOT NULL`,
-      `t.STATUS IN (1,2)`,
-      "(t.STATUS<>1 OR t.CDCONTA IS NOT NULL)",
-    ],
+    filters = [`t.${dateField} IS NOT NULL`, `t.STATUS IN (1,2)`],
     params = [];
   if (dataIni) {
     filters.push(`CAST(t.${dateField} AS DATE)>=?`);
@@ -443,8 +428,17 @@ async function dreData(
     filters.push(`CAST(t.${dateField} AS DATE)<=?`);
     params.push(dbDate(dataFim));
   }
-  const base = (table, origin) =>
-    `SELECT COALESCE(t.CDCONTA,'X') AS CD,COALESCE(t.CDSUBCONTA,'X') AS SCD,COALESCE(t.CDSUBSUBCONTA,'X') AS SSCD,COALESCE(t.CDSUBSUBSUBCONTA,'X') AS SSSCD,EXTRACT(MONTH FROM CAST(t.${dateField} AS DATE)) AS MES,SUM(COALESCE(t.VALOR,0))${origin === "pagar" ? "*-1" : ""} AS VL,'${origin}' AS ORIGEM FROM ${table} t WHERE ${filters.join(" AND ")} GROUP BY t.CDCONTA,t.CDSUBCONTA,t.CDSUBSUBCONTA,t.CDSUBSUBSUBCONTA,EXTRACT(MONTH FROM CAST(t.${dateField} AS DATE))`;
+  const code = (column) => `COALESCE(NULLIF(TRIM(t.${column}),''),'X')`;
+  const base = (table, origin) => {
+    const paid = drePaidExpression(origin),
+      sign = origin === "pagar" ? "*-1" : "",
+      cd = code("CDCONTA"),
+      scd = code("CDSUBCONTA"),
+      sscd = code("CDSUBSUBCONTA"),
+      ssscd = code("CDSUBSUBSUBCONTA"),
+      mes = `EXTRACT(MONTH FROM CAST(t.${dateField} AS DATE))`;
+    return `SELECT ${cd} AS CD,${scd} AS SCD,${sscd} AS SSCD,${ssscd} AS SSSCD,${mes} AS MES,SUM(${paid})${sign} AS VL,'${origin}' AS ORIGEM FROM ${table} t WHERE ${filters.join(" AND ")} AND ${paid}<>0 GROUP BY ${cd},${scd},${sscd},${ssscd},${mes}`;
+  };
   const rows = [
     ...(await query(db, base("CTARECEBER", "receber"), params)),
     ...(await query(db, base("CTAPAGAR", "pagar"), params)),
@@ -452,7 +446,7 @@ async function dreData(
   const map = (items, keys, description) =>
     new Map(
       items.map((item) => [
-        keys.map((key) => String(item[key])).join("|"),
+        keys.map((key) => String(item[key] ?? "").trim()).join("|"),
         {
           ...item,
           DESCRICAO: String(item[description] || "").trim(),

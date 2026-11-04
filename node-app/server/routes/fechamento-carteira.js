@@ -4,7 +4,9 @@
 // A transmissao para a SEFAZ NAO acontece aqui — "gerar" so cria as notas.
 // O frontend mostra uma tela de revisao com o valor de cada nota e so
 // transmite (nota a nota, via POST /api/fiscal/nfe/<idnf>/emitir) quando o
-// usuario clica em "Transmitir todas".
+// usuario clica em "Transmitir todas". "Retransmitir pendentes" reenvia
+// somente as que continuam sem autorizacao, inclusive as de um fechamento
+// anterior listadas em GET /fechamento-carteira/pendentes.
 
 import express from "express";
 import { query, withDatabase, withWriteTransaction } from "../db.js";
@@ -194,6 +196,7 @@ async function titulosSql(tx, excluidos, clienteBusca, idempresa) {
     ` ${parcela} AS PARCELA,` +
     " cr.NRDOC AS NRDOC," +
     " cr.NRDOC2 AS NRDOC2," +
+    " cr.STATUS," +
     " cr.CODPAGTO, cr.CDRECGRUPO," +
     ` ${cdvendedor} AS CDVENDEDOR,` +
     ` ${ccusto} AS CCUSTO,` +
@@ -295,6 +298,69 @@ router.get("/fechamento-carteira/preview", async (req, res) => {
     res.json({ ok: true, periodo: { data_inicio: dataIni, data_fim: dataFim }, idempresa, clientes, totais });
   } catch (error) {
     sendError(res, error, error instanceof HttpError ? error.status : 400);
+  }
+});
+
+// Notas do fechamento que ainda nao foram autorizadas. O vinculo e o titulo
+// de carteira marcado com ACORDO_NF no mesmo NRDOC da nota.
+export function montarConsultaPendentes({ dataIni, dataFim, idempresa = null, cliente = "" } = {}) {
+  const inicio = toTimestamp(dataIni);
+  const fim = toTimestamp(dataFim);
+  if (!inicio || !fim) throw new HttpError("Data invalida.", 400);
+  if (String(dataIni).slice(0, 10) > String(dataFim).slice(0, 10)) {
+    throw new HttpError("Data inicial nao pode ser maior que a data final.", 400);
+  }
+  const params = [inicio, fim];
+  let filtroEmpresa = "";
+  if (idempresa) {
+    filtroEmpresa = " AND n.IDEMPRESA = ?";
+    params.push(Number(idempresa));
+  }
+  let filtroCliente = "";
+  const busca = String(cliente || "").trim();
+  if (busca) {
+    filtroCliente = " AND (CAST(n.CDCLIENTE AS VARCHAR(20)) CONTAINING ?" +
+      " OR cli.CLIENTE CONTAINING ? OR cli.RAZAO CONTAINING ?)";
+    params.push(busca, busca, busca);
+  }
+  const sql =
+    "SELECT FIRST 300 n.IDNF, n.IDEMPRESA, TRIM(n.NRDOC) AS NRDOC," +
+    " TRIM(COALESCE(cli.CLIENTE, '')) AS CLIENTE," +
+    " COALESCE(n.VLTOTAL, 0) AS TOTAL" +
+    " FROM NOTAFISCAL n" +
+    " LEFT JOIN CLIENTE cli ON cli.CDCLIENTE = n.CDCLIENTE" +
+    " WHERE COALESCE(n.NFE_EMITIDA, 0) = 0" +
+    "   AND COALESCE(n.NFE_CANCELADA, 0) = 0" +
+    "   AND COALESCE(n.STATUS, 0) NOT IN (2, 9)" +
+    "   AND n.DTEMISS >= ?" +
+    "   AND n.DTEMISS < DATEADD(1 DAY TO CAST(? AS DATE))" +
+    filtroEmpresa + filtroCliente +
+    "   AND EXISTS (" +
+    "     SELECT 1 FROM CTARECEBER cr" +
+    "     WHERE cr.IDEMPRESA = n.IDEMPRESA" +
+    "       AND COALESCE(cr.ACORDO_NF, 0) = 1" +
+    "       AND CAST(CAST(TRIM(cr.NRDOC) AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE)" +
+    "         = CAST(CAST(TRIM(n.NRDOC) AS VARCHAR(20) CHARACTER SET OCTETS) AS VARCHAR(20) CHARACTER SET NONE)" +
+    "   )" +
+    " ORDER BY 4, n.NRDOC";
+  return { sql, params };
+}
+
+router.get("/fechamento-carteira/pendentes", async (req, res) => {
+  try {
+    const { dataIni, dataFim } = periodo(req);
+    const idempresa = empresaInformada(req);
+    const cliente = String(req.query.cliente || "").trim();
+    const notas = await withWriteTransaction(async tx => {
+      if (!(await testarColuna(tx, "ACORDO_NF"))) {
+        throw new HttpError("A base nao tem CTARECEBER.ACORDO_NF para localizar as notas do fechamento.", 400);
+      }
+      const { sql, params } = montarConsultaPendentes({ dataIni, dataFim, idempresa, cliente });
+      return tx.query(sql, params);
+    });
+    res.json({ ok: true, notas });
+  } catch (error) {
+    sendError(res, error, error instanceof HttpError ? error.status : 500);
   }
 });
 

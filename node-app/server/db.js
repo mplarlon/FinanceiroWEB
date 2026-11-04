@@ -6,7 +6,22 @@ import { appRoot, loadDatabaseConfig } from "./config.js";
 const bundledClient = path.resolve(appRoot, "..", "Firebird-5.0.4", "fbclient.dll");
 const library = process.env.DASHBOARD_FBCLIENT ||
   (fs.existsSync(bundledClient) ? bundledClient : getDefaultLibraryFilename());
-const client = createNativeClient(library);
+
+function createClient(libraryName) {
+  try {
+    return createNativeClient(libraryName);
+  } catch (error) {
+    const motivo = error?.message || String(error);
+    console.error(`[dashboard] Nao foi possivel carregar o cliente Firebird (${libraryName}): ${motivo}`);
+    return {
+      connect() {
+        return Promise.reject(new Error(`Cliente Firebird indisponivel (${libraryName}): ${motivo}`));
+      },
+    };
+  }
+}
+
+const client = createClient(library);
 
 function uri(config) {
   return `${config.host || "localhost"}/${Number(config.port || 3051)}:${config.database}`;

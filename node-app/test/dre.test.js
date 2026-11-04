@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildDreHierarchy } from "../server/routes/reports-extra.js";
+import { buildDreHierarchy, drePaidExpression } from "../server/routes/reports-extra.js";
 
 const account = (description, extra = {}) => ({
   DESCRICAO: description,
@@ -91,4 +91,38 @@ test("DRE mostra so a conta mais especifica e ignora parcela sem conta", () => {
     false,
   );
   assert.equal(result.resultado, 75);
+});
+
+test("DRE omite conta de nivel sem classificacao", () => {
+  const plan = {
+    contas: new Map([
+      ["1", account("Receita")],
+      ["3", account("Despesas", { DREPAGTO: 4 })],
+    ]),
+    subcontas: new Map([
+      ["1|120", account("Carteira")],
+      ["3|22", account("Internet")],
+    ]),
+    subsubcontas: new Map(),
+    subsubsubcontas: new Map(),
+  };
+  const result = buildDreHierarchy(
+    [
+      { CD: "1", SCD: "X", SSCD: "X", SSSCD: "X", MES: 10, VL: 15, ORIGEM: "receber" },
+      { CD: "1", SCD: "120", SSCD: "X", SSSCD: "X", MES: 10, VL: 40, ORIGEM: "receber" },
+      { CD: "3", SCD: "22", SSCD: "X", SSSCD: "X", MES: 10, VL: -40, ORIGEM: "pagar" },
+    ],
+    plan,
+    [{ CDTPDRE: 4, TITULO: "Custos Fixos", CDDRE: 4 }],
+  );
+  assert.equal(result.dados.find((item) => item.descricao === "Receita"), undefined);
+  assert.equal(result.dados.find((item) => item.descricao === "Carteira"), undefined);
+  assert.equal(result.dados.find((item) => item.descricao === "Despesas"), undefined);
+  assert.equal(result.dados.find((item) => item.descricao === "Internet"), undefined);
+  assert.equal(result.resultado, 0);
+});
+
+test("DRE usa o valor pago da parcela", () => {
+  assert.equal(drePaidExpression("receber"), "COALESCE(t.TOTALPG,0)");
+  assert.equal(drePaidExpression("pagar"), "COALESCE(t.VLPAGTO,0)");
 });

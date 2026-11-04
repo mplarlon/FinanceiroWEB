@@ -79,6 +79,16 @@ if ((Get-FileHash $winSwCache -Algorithm SHA256).Hash -ne $winSwSha256) {
 }
 Copy-Item $winSwCache (Join-Path $runtime "DashboardService.exe") -Force
 Copy-Item (Join-Path $root "installer\DashboardService.xml") (Join-Path $runtime "DashboardService.xml") -Force
+$vcRedist = Join-Path $root "build\tools\vc_redist.x64.exe"
+if (!(Test-Path -LiteralPath $vcRedist)) {
+    New-Item -ItemType Directory -Force (Split-Path $vcRedist) | Out-Null
+    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile $vcRedist
+}
+$vcCabecalho = [System.IO.File]::ReadAllBytes($vcRedist)
+if ($vcCabecalho.Length -lt 1000000 -or $vcCabecalho[0] -ne 0x4D -or $vcCabecalho[1] -ne 0x5A) {
+    throw "Visual C++ Redistributable invalido: $vcRedist"
+}
+Copy-Item $vcRedist (Join-Path $runtime "vc_redist.x64.exe") -Force
 
 $updaterDir = Join-Path $runtime "Updater"
 New-Item -ItemType Directory -Force $updaterDir | Out-Null
@@ -129,10 +139,57 @@ $monitorIni = $monitorIni.Replace("C:\Dashboard\acbr\", "C:\ACBrMonitorPLUS\Logs
 Set-Content (Join-Path $acbrStage "ACBrMonitor.ini") $monitorIni -Encoding Default
 # O instalador troca C:\ACBrMonitorPLUS pela pasta ACBrMonitorPLUS dentro do diretório escolhido.
 
-if (Test-Path (Join-Path $root "Firebird-5.0.4\fbclient.dll")) {
-    New-Item -ItemType Directory -Force (Join-Path $runtime "Firebird-5.0.4") | Out-Null
-    Copy-Item (Join-Path $root "Firebird-5.0.4\fbclient.dll") (Join-Path $runtime "Firebird-5.0.4\fbclient.dll") -Force
+$firebirdSource = Join-Path $root "Firebird-5.0.4"
+$firebirdDest = Join-Path $runtime "Firebird-5.0.4"
+$firebirdRaiz = @(
+    "fbclient.dll", "ib_util.dll", "zlib1.dll", "firebird.msg",
+    "icudt63.dll", "icudt63l.dat", "icuin63.dll", "icuuc63.dll",
+    "msvcp140.dll", "msvcp140_1.dll", "vcruntime140.dll", "vcruntime140_1.dll"
+)
+foreach ($arquivo in $firebirdRaiz) {
+    $origem = Join-Path $firebirdSource $arquivo
+    if (!(Test-Path -LiteralPath $origem)) { throw "Biblioteca do Firebird ausente: $origem" }
 }
+foreach ($arquivo in @("intl\fbintl.dll", "intl\fbintl.conf", "plugins\srp.dll", "plugins\legacy_auth.dll", "plugins\chacha.dll")) {
+    $origem = Join-Path $firebirdSource $arquivo
+    if (!(Test-Path -LiteralPath $origem)) { throw "Biblioteca do Firebird ausente: $origem" }
+}
+New-Item -ItemType Directory -Force $firebirdDest, (Join-Path $firebirdDest "intl"), (Join-Path $firebirdDest "plugins") | Out-Null
+foreach ($arquivo in $firebirdRaiz) {
+    Copy-Item (Join-Path $firebirdSource $arquivo) (Join-Path $firebirdDest $arquivo) -Force
+}
+foreach ($arquivo in @("fbintl.dll", "fbintl.conf")) {
+    Copy-Item (Join-Path $firebirdSource "intl\$arquivo") (Join-Path $firebirdDest "intl\$arquivo") -Force
+}
+foreach ($arquivo in @("srp.dll", "legacy_auth.dll", "chacha.dll")) {
+    Copy-Item (Join-Path $firebirdSource "plugins\$arquivo") (Join-Path $firebirdDest "plugins\$arquivo") -Force
+}
+@(
+    "Plugin = ChaCha64 {",
+    "	Module = `$(dir_plugins)/ChaCha",
+    "}"
+) | Set-Content (Join-Path $firebirdDest "plugins.conf") -Encoding ASCII
+foreach ($arquivo in @("msvcp140.dll", "msvcp140_1.dll", "vcruntime140.dll", "vcruntime140_1.dll", "zlib1.dll")) {
+    Copy-Item (Join-Path $firebirdDest $arquivo) (Join-Path $runtime $arquivo) -Force
+    Copy-Item (Join-Path $firebirdDest $arquivo) (Join-Path $updaterDir $arquivo) -Force
+}
+if ($includeOllama) {
+    $ollamaOrigem = Join-Path $env:LOCALAPPDATA "Programs\Ollama"
+    $ollamaExe = Join-Path $ollamaOrigem "ollama.exe"
+    $ollamaLib = Join-Path $ollamaOrigem "lib\ollama"
+    if (!(Test-Path -LiteralPath $ollamaExe)) { throw "ollama.exe nao encontrado para o pacote: $ollamaExe" }
+    if (!(Test-Path -LiteralPath (Join-Path $ollamaLib "ggml-cpu-x64.dll"))) { throw "Bibliotecas de CPU do Ollama ausentes em $ollamaLib" }
+    $ollamaDest = Join-Path $stage "ollama"
+    $ollamaLibDest = Join-Path $ollamaDest "lib\ollama"
+    New-Item -ItemType Directory -Force $ollamaLibDest | Out-Null
+    Copy-Item $ollamaExe (Join-Path $ollamaDest "ollama.exe") -Force
+    Get-ChildItem -LiteralPath $ollamaLib -File | Copy-Item -Destination $ollamaLibDest -Force
+    foreach ($arquivo in @("msvcp140.dll", "vcruntime140.dll", "vcruntime140_1.dll")) {
+        $biblioteca = Join-Path $ollamaLibDest $arquivo
+        if (Test-Path -LiteralPath $biblioteca) { Copy-Item $biblioteca (Join-Path $ollamaDest $arquivo) -Force }
+    }
+}
+Copy-Item (Join-Path $nodeApp "server\dashboard-boot.mjs") (Join-Path $serverDir "dashboard-boot.mjs") -Force
 
 & node (Join-Path $nodeApp "scripts\bundle-query-company.js") (Join-Path $root "installer\QueryCompany.cjs")
 if ($LASTEXITCODE -ne 0) { throw "Falha ao consolidar a consulta da empresa." }

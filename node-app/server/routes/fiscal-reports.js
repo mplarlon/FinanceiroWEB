@@ -109,6 +109,16 @@ async function ensureFiscalSchema(tx) {
   }
   return changes;
 }
+let fiscalSchemaPending = null;
+export function ensureFiscalReady() {
+  if (!fiscalSchemaPending) {
+    fiscalSchemaPending = withWriteTransaction(ensureFiscalSchema).catch((error) => {
+      fiscalSchemaPending = null;
+      throw error;
+    });
+  }
+  return fiscalSchemaPending;
+}
 const run = (fn) => async (req, res) => {
   try {
     res.json(await withDatabase((db) => fn(db, req)));

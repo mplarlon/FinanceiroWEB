@@ -4,7 +4,11 @@ import {
   acceptListingSuggestion,
   composeListingSuggestion,
   contentPayload,
+  modulo_removidoMetatag,
 } from "./marketplace-booster.js";
+import { resetOllamaAvailability } from "./ollama.js";
+import { matchWebCategory } from "./product-web-specs.js";
+import { sanitizeDurations } from "./review-estimate.js";
 
 const FILE = "charlie_tecnospeed_review.json";
 const CHANNEL = "Fila hub Tecnospeed";
@@ -31,6 +35,16 @@ export const TECNOSPEED_VIEW_SQL = `
     VOLTAGE, SIZE, LISTINGTYPE, SALEPRICE, MODEL, COLOR, POTENCY,
     PRODUTOCADASTRADO, ITS_INTEGRACAO_ERRO, DH_SUBIU_ITS
   FROM PRODUTOS_TECNOSPEED
+`;
+
+export function availableFrommodulo_removidoFlag(value) {
+  return Number(value) === -1 ? 0 : 1;
+}
+
+export const TECNOSPEED_AVAILABLE_SQL = `
+  SELECT COALESCE(INATIVA_modulo_removido, 0) AS INATIVA_modulo_removido
+  FROM PRODUTO
+  WHERE CDPRODUTO = ?
 `;
 
 export const TECNOSPEED_modulo_removido_ID_SQL = `
@@ -63,7 +77,8 @@ export function mapTecnospeedRow(row = {}) {
     weight: positive(row.WEIGHT),
     price: positive(row.PRICE),
     stock: Math.max(0, num(row.STOCK) || 0),
-    active: Number(row.ACTIVE) !== 0,
+    // A view chama de ACTIVE a coluna INATIVA_modulo_removido. -1 tira o produto da loja.
+    active: Number(row.ACTIVE) !== -1,
     ean: text(row.EAN, 20).replace(/\D/g, "").slice(0, 14),
     unit: text(row.MEANSUREMENTUNIT || row.MEASUREMENTUNIT, 20) || "un",
     ncm: text(row.NCM, 20),
@@ -113,13 +128,28 @@ export function aggregateTecnospeedRows(rows = []) {
   return [...byId.values()].sort((a, b) => b.stock - a.stock || a.name.localeCompare(b.name, "pt-BR"));
 }
 
+function trimNumber(value) {
+  return String(Number(Number(value).toFixed(4)));
+}
+
 function measureText(product = {}) {
   const parts = [];
-  if (product.length) parts.push(`comprimento ${product.length}`);
-  if (product.width) parts.push(`largura ${product.width}`);
-  if (product.height) parts.push(`altura ${product.height}`);
-  if (product.weight) parts.push(`peso ${product.weight}`);
+  if (product.length) parts.push(`comprimento ${trimNumber(product.length)} cm`);
+  if (product.width) parts.push(`largura ${trimNumber(product.width)} cm`);
+  if (product.height) parts.push(`altura ${trimNumber(product.height)} cm`);
+  if (product.weight) parts.push(`peso ${trimNumber(product.weight)} g, ${trimNumber(product.weight / 1000)} kg`);
   return parts.join(", ");
+}
+
+export function categoryLabel(product = {}) {
+  if (text(product.grupoWeb) && text(product.tipoWeb)) return `${text(product.grupoWeb, 80)} > ${text(product.tipoWeb, 80)}`;
+  return text(product.categoryId, 80);
+}
+
+export function hasWebCategory(product = {}) {
+  const names = Boolean(text(product.grupoWeb) && text(product.tipoWeb));
+  if (product.grupoWebId > 0 && product.tipoWebId > 0 && names) return true;
+  return Boolean(product.categoryFromProduct && names);
 }
 
 export function listingFactsFromTecnospeed(product = {}) {
@@ -127,7 +157,8 @@ export function listingFactsFromTecnospeed(product = {}) {
     nome: text(product.name || product.productName, 180),
     marca: text(product.brand, 80),
     referencia: text(product.sku || product.productId, 80),
-    categoria: text(product.categoryId, 80),
+    categoria: categoryLabel(product),
+    fontePesquisa: text(product.specSource, 300),
     modelo: text(product.model, 80),
     codigoFabricante: "",
     medidas: measureText(product),
@@ -142,7 +173,7 @@ export function uploadGaps(product = {}) {
   if (!text(product.name || product.productName)) missing.push("nome");
   if (!(product.price > 0)) missing.push("preço");
   if (product.stock == null || !(product.stock >= 0) || !Number.isFinite(product.stock)) missing.push("estoque");
-  if (!text(product.categoryId) || !(Number(product.categoryId) > 0)) missing.push("categoria");
+  if (!hasWebCategory(product) && !(Number(product.categoryId) > 0) && !(Number(product.modulo_removidoCategoryId) > 0)) missing.push("categoria");
   if (!(product.weight > 0)) missing.push("peso");
   for (const field of ["length", "width", "height"]) {
     if (!(product[field] > 0)) missing.push(field === "length" ? "comprimento" : field === "width" ? "largura" : "altura");
@@ -150,12 +181,259 @@ export function uploadGaps(product = {}) {
   return missing;
 }
 
+export function reviewMessages(modulo_removido, gaps = []) {
+  const canUpload = Boolean(modulo_removido) || gaps.length === 0;
+  if (canUpload) {
+    return {
+      canUpload: true,
+      recommendation: "Pedir a revisão do Charlie a partir do cadastro da view e, após aprovação, subir à modulo_removido.",
+      limitation: null,
+    };
+  }
+  return {
+    canUpload: false,
+    recommendation: "A revisão pesquisa o produto na internet e preenche grupo web, subgrupo web, peso e medidas que ainda faltam.",
+    limitation: "A categoria é o grupo e o subgrupo web. Peso e medidas confirmados na pesquisa são gravados no produto. Sem esses dados a criação na modulo_removido continua bloqueada.",
+  };
+}
+
+export function applyWebCategory(product = {}, row = {}) {
+  const grupoWebId = positive(row.CDGRUPOWEB);
+  const tipoWebId = positive(row.CDTIPOWEB);
+  const grupoWebName = text(row.GRUPOWEB, 80);
+  const tipoWebName = text(row.TIPOWEB, 80);
+  const hasWeb = grupoWebId > 0 && tipoWebId > 0 && Boolean(grupoWebName && tipoWebName);
+  const modulo_removidoCategoryId = positive(row.ID_modulo_removido) || product.modulo_removidoCategoryId || null;
+  if (hasWeb) {
+    return {
+      ...product,
+      grupoWebId,
+      tipoWebId,
+      grupoWeb: grupoWebName,
+      tipoWeb: tipoWebName,
+      categoryFromProduct: false,
+      modulo_removidoCategoryId,
+      specSource: product.specSource || null,
+    };
+  }
+  const grupoProduto = text(row.GRUPO_PRODUTO, 80);
+  const subgrupoProduto = text(row.SUBGRUPO, 80);
+  if (grupoProduto && subgrupoProduto) {
+    return {
+      ...product,
+      grupoWebId: null,
+      tipoWebId: null,
+      grupoWeb: grupoProduto,
+      tipoWeb: subgrupoProduto,
+      categoryFromProduct: true,
+      modulo_removidoCategoryId,
+      specSource: product.specSource || null,
+    };
+  }
+  return {
+    ...product,
+    grupoWebId: grupoWebId || product.grupoWebId || null,
+    tipoWebId: tipoWebId || product.tipoWebId || null,
+    grupoWeb: grupoWebName || product.grupoWeb || "",
+    tipoWeb: tipoWebName || product.tipoWeb || "",
+    modulo_removidoCategoryId,
+    specSource: product.specSource || null,
+  };
+}
+
+export function prepareProductForResearch(product = {}, catalog = []) {
+  if (!(product.grupoWebId > 0) || !(product.tipoWebId > 0) || !catalog.length) return product;
+  const known = catalog.some((item) => Number(item.grupoWebId) === Number(product.grupoWebId)
+    && Number(item.tipoWebId) === Number(product.tipoWebId));
+  if (known) return product;
+  return {
+    ...product,
+    grupoWebId: null,
+    tipoWebId: null,
+    grupoWeb: "",
+    tipoWeb: "",
+    categoryFromProduct: false,
+    modulo_removidoCategoryId: null,
+  };
+}
+
+export function categoryFromProductGroup(product = {}, catalog = []) {
+  if (!product.categoryFromProduct) return { product, matched: false };
+  const match = matchWebCategory(catalog, product.grupoWeb, product.tipoWeb);
+  if (!match) return { product, matched: false };
+  return {
+    product: {
+      ...product,
+      grupoWebId: match.grupoWebId,
+      tipoWebId: match.tipoWebId,
+      grupoWeb: match.grupoWeb,
+      tipoWeb: match.tipoWeb,
+      categoryFromProduct: false,
+    },
+    matched: true,
+  };
+}
+
+export function webCategorySql(count) {
+  const marks = Array.from({ length: count }, () => "?").join(", ");
+  return `
+    SELECT p.CDPRODUTO, p.CDGRUPOWEB, g.GRUPOWEB, p.CDTIPOWEB, t.TIPOWEB, ci.ID_modulo_removido,
+      gr.GRUPOS AS GRUPO_PRODUTO, tp.TIPO AS SUBGRUPO
+    FROM PRODUTO p
+    LEFT JOIN GRUPO_WEB g ON g.CDGRUPOWEB = p.CDGRUPOWEB
+    LEFT JOIN TIPO_WEB t ON t.CDTIPOWEB = p.CDTIPOWEB AND t.CDGRUPOWEB = p.CDGRUPOWEB
+    LEFT JOIN CATEGORIAS_INTEGRACAO ci ON ci.CDGRUPOWEB = p.CDGRUPOWEB
+      AND ci.CDTIPOWEB = p.CDTIPOWEB AND COALESCE(ci.PAI, '') <> ''
+    LEFT JOIN GRUPOS gr ON gr.CDGRUPO = p.CDGRUPO
+    LEFT JOIN TIPO tp ON tp.CDTIPO = p.CDTIPO
+    WHERE p.CDPRODUTO IN (${marks})
+  `;
+}
+
+export const WEB_CATALOG_SQL = `
+  SELECT g.CDGRUPOWEB, g.GRUPOWEB, t.CDTIPOWEB, t.TIPOWEB
+  FROM TIPO_WEB t
+  JOIN GRUPO_WEB g ON g.CDGRUPOWEB = t.CDGRUPOWEB
+  WHERE COALESCE(g.INATIVO, 0) = 0 AND COALESCE(t.INATIVO, 0) = 0
+`;
+
+function refreshGapProblem(item, gaps) {
+  const problems = (item.problems || []).map((problem) => {
+    if (/falta no ERP para criar/i.test(problem)) {
+      return gaps.length ? `Preparar texto; falta no ERP para criar: ${gaps.join(", ")}` : "Pronto para revisar e subir à modulo_removido";
+    }
+    return problem;
+  });
+  const unique = [...new Set(problems)];
+  return { problems: unique, problem: unique.join("; ") };
+}
+
+export function applyResearchedSpecs(item = {}, specs = {}) {
+  const product = { ...(item.product || {}) };
+  const filled = [];
+  if (!hasWebCategory(product) && specs.grupoWebId > 0 && specs.tipoWebId > 0) {
+    product.grupoWebId = specs.grupoWebId;
+    product.tipoWebId = specs.tipoWebId;
+    product.grupoWeb = text(specs.grupoWeb, 80);
+    product.tipoWeb = text(specs.tipoWeb, 80);
+    filled.push("categoria");
+  }
+  if (!(product.weight > 0) && specs.weightGrams > 0) {
+    product.weight = specs.weightGrams;
+    filled.push("peso");
+  }
+  if (!(product.length > 0) && specs.lengthCm > 0) {
+    product.length = specs.lengthCm;
+    filled.push("comprimento");
+  }
+  if (!(product.width > 0) && specs.widthCm > 0) {
+    product.width = specs.widthCm;
+    filled.push("largura");
+  }
+  if (!(product.height > 0) && specs.heightCm > 0) {
+    product.height = specs.heightCm;
+    filled.push("altura");
+  }
+  if (specs.source) product.specSource = specs.source;
+  const gaps = uploadGaps({ ...product, name: product.name || item.productName });
+  const messages = reviewMessages(item.modulo_removidoId, gaps);
+  const problem = refreshGapProblem(item, gaps);
+  const lead = specs.origin === "cadastro" ? "Cadastro já tinha" : "Pesquisa preencheu";
+  const note = filled.length
+    ? `${lead} ${filled.join(", ")}.${specs.detail ? ` ${specs.detail}` : ""}`
+    : (specs.origin === "cadastro"
+      ? (item.specNote || "")
+      : "A pesquisa não trouxe dado novo além do que já estava no cadastro.");
+  return {
+    ...item,
+    ...problem,
+    product,
+    gaps,
+    ...messages,
+    specSource: specs.source || item.specSource || null,
+    specNote: note,
+    researchedAt: new Date().toISOString(),
+    filled,
+    evidence: { ...(item.evidence || {}), gaps, category: categoryLabel(product) },
+  };
+}
+
+export function productSpecUpdate(sku, item = {}) {
+  const product = item.product || {};
+  const filled = new Set(item.filled || []);
+  const sets = [];
+  const params = [];
+  if (filled.has("peso") && product.weight > 0) {
+    sets.push("PESOBRUTO = IIF(COALESCE(PESOBRUTO, 0) > 0, PESOBRUTO, ?)");
+    params.push(Number((product.weight / 1000).toFixed(4)));
+  }
+  if (filled.has("largura") && product.width > 0) {
+    sets.push("LARGURAWEB = IIF(COALESCE(LARGURAWEB, 0) > 0, LARGURAWEB, ?)");
+    params.push(product.width);
+  }
+  if (filled.has("altura") && product.height > 0) {
+    sets.push("ALTURAWEB = IIF(COALESCE(ALTURAWEB, 0) > 0, ALTURAWEB, ?)");
+    params.push(product.height);
+  }
+  if (filled.has("comprimento") && product.length > 0) {
+    sets.push("PROFUNDIDADEWEB = IIF(COALESCE(PROFUNDIDADEWEB, 0) > 0, PROFUNDIDADEWEB, ?)");
+    params.push(product.length);
+  }
+  if (filled.has("categoria") && product.grupoWebId > 0 && product.tipoWebId > 0) {
+    sets.push("CDGRUPOWEB = IIF(COALESCE(CDGRUPOWEB, 0) > 0, CDGRUPOWEB, ?)");
+    params.push(product.grupoWebId);
+    sets.push("CDTIPOWEB = IIF(COALESCE(CDTIPOWEB, 0) > 0, CDTIPOWEB, ?)");
+    params.push(product.tipoWebId);
+  }
+  const codeValue = text(sku, 40);
+  if (!sets.length || !codeValue) return null;
+  params.push(codeValue);
+  return { sql: `UPDATE PRODUTO SET ${sets.join(", ")} WHERE CDPRODUTO = ?`, params };
+}
+
+export const PRODUCT_MEASURE_SQL = `
+  SELECT FIRST 1 PESOBRUTO, LARGURAWEB, ALTURAWEB, PROFUNDIDADEWEB, CODIGOBARRA, CODBARRA_FULL
+  FROM PRODUTO
+  WHERE CDPRODUTO = ?
+`;
+
+export function barcodeList(row = {}, product = {}) {
+  const found = [];
+  for (const value of [row.CODIGOBARRA, product.ean, ...(product.eans || []), row.CODBARRA_FULL]) {
+    for (const code of String(value || "").split(/[^0-9]+/)) {
+      if (code.length >= 8 && code.length <= 14 && !found.includes(code)) found.push(code);
+    }
+  }
+  return found;
+}
+
+export function applyStoredMeasures(item = {}, row = {}) {
+  const product = { ...(item.product || {}) };
+  const eans = barcodeList(row, product);
+  const grams = !(product.weight > 0) && Number(row.PESOBRUTO) > 0
+    ? Math.round(Number(row.PESOBRUTO) * 100000) / 100
+    : null;
+  const specs = {
+    origin: "cadastro",
+    weightGrams: grams,
+    lengthCm: !(product.length > 0) ? positive(row.PROFUNDIDADEWEB) : null,
+    widthCm: !(product.width > 0) ? positive(row.LARGURAWEB) : null,
+    heightCm: !(product.height > 0) ? positive(row.ALTURAWEB) : null,
+  };
+  const hasSpec = [specs.weightGrams, specs.lengthCm, specs.widthCm, specs.heightCm].some((value) => value > 0);
+  const next = hasSpec ? applyResearchedSpecs({ ...item, product }, specs) : { ...item, product };
+  next.product = { ...(next.product || product), eans };
+  return next;
+}
+
 export function analyzeTecnospeedProducts(products = [], { modulo_removidoProducts = [] } = {}) {
   const limitations = [
     "A leitura usa só a view PRODUTOS_TECNOSPEED, a mesma fila do integrador que sobe ao hub.",
-    "A revisão do texto é feita pelo Ollama. Sem Ollama ativo o item não avança para aprovação.",
-    "O Ollama só pode usar fatos do cadastro. Categoria, peso e medidas continuam no ERP.",
-    "Produto novo na modulo_removido exige categoria, peso e medidas positivos. Sem isso a subida fica bloqueada.",
+    "A categoria do anúncio é o grupo web e o subgrupo web do produto. Sem os dois, a revisão usa o grupo e o subgrupo do cadastro.",
+    "A revisão pesquisa peso e medidas na internet e grava no produto só o que a página do mesmo item confirmar.",
+    "A revisão do texto é feita pelo Charlie. Sem o modelo local ativo o item não avança para aprovação.",
+    "Se o produto não tiver foto, a revisão copia a foto do anúncio do mesmo item. Ela não inventa imagem.",
+    "Produto novo na modulo_removido exige grupo web, subgrupo web, peso e medidas. Sem isso a criação fica bloqueada.",
   ];
   const modulo_removidoIndex = new Map();
   for (const product of modulo_removidoProducts) {
@@ -198,23 +476,28 @@ export function analyzeTecnospeedProducts(products = [], { modulo_removidoProduc
       });
     }
 
-    for (const entry of problems) {
-      const id = itemId(`${product.productId}:${entry.type}:${entry.problem}`);
-      const canUpload = Boolean(modulo_removido) || gaps.length === 0;
-      findings.push({
+    const priority = problems.some((entry) => entry.priority === "high")
+      ? "high"
+      : problems.some((entry) => entry.priority === "medium") ? "medium" : "low";
+    const lead = problems.find((entry) => entry.priority === priority) || problems[0];
+    const problemText = [...new Set(problems.map((entry) => entry.problem))].join("; ");
+    const id = itemId(String(product.productId || product.sku || name));
+    const messages = reviewMessages(modulo_removido, gaps);
+    findings.push({
         id,
         productId: product.productId,
         sku: product.sku,
         productName: name || product.productId,
         marketplace: CHANNEL,
-        type: entry.type,
-        problem: entry.problem,
-        priority: entry.priority,
+        type: lead.type,
+        problem: problemText,
+        problems: problems.map((entry) => entry.problem),
+        priority,
         execution: "modulo_removido_upload",
         product,
         modulo_removidoId: modulo_removido?.externalId || null,
         gaps,
-        canUpload,
+        canUpload: messages.canUpload,
         evidence: {
           price: product.price,
           stock: product.stock,
@@ -224,14 +507,9 @@ export function analyzeTecnospeedProducts(products = [], { modulo_removidoProduc
           registered: product.registered,
           gaps,
         },
-        recommendation: canUpload
-          ? "Pedir a revisão do Ollama a partir do cadastro da view e, após aprovação, subir à modulo_removido."
-          : "O Ollama revisa o texto agora. Complete categoria, peso e medidas no Automec antes da criação na modulo_removido.",
-        limitation: canUpload
-          ? null
-          : "Sem categoria/peso/medidas a criação na modulo_removido fica bloqueada. Atualização de anúncio existente continua liberada quando houver ID na loja.",
-      });
-    }
+        recommendation: messages.recommendation,
+        limitation: messages.limitation,
+    });
   }
 
   const ordered = findings.sort((a, b) => PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority]
@@ -244,16 +522,99 @@ export function analyzeTecnospeedProducts(products = [], { modulo_removidoProduc
   return { findings: visible, limitations, products };
 }
 
+export async function persistProposedCategory(specs = {}, catalog = [], tx) {
+  if (Number(specs.grupoWebId) > 0 && Number(specs.tipoWebId) > 0) return specs;
+  const grupoName = text(specs.grupoWeb, 80);
+  const tipoName = text(specs.tipoWeb, 80);
+  if (!grupoName || !tipoName || !tx?.singleton || !tx?.execute) return specs;
+  const known = matchWebCategory(catalog, grupoName, tipoName);
+  if (known) {
+    return {
+      ...specs,
+      grupoWebId: known.grupoWebId,
+      tipoWebId: known.tipoWebId,
+      grupoWeb: known.grupoWeb,
+      tipoWeb: known.tipoWeb,
+    };
+  }
+  let grupo = await tx.singleton(
+    "SELECT FIRST 1 CDGRUPOWEB, GRUPOWEB FROM GRUPO_WEB WHERE COALESCE(INATIVO, 0) = 0 AND UPPER(GRUPOWEB) = UPPER(?)",
+    [grupoName],
+  );
+  let grupoId = Number(grupo?.CDGRUPOWEB);
+  if (!(grupoId > 0)) {
+    const next = await tx.singleton("SELECT COALESCE(MAX(CDGRUPOWEB), 0) + 1 AS ID FROM GRUPO_WEB");
+    grupoId = Number(next?.ID);
+    if (!(grupoId > 0)) return specs;
+    await tx.execute(
+      "INSERT INTO GRUPO_WEB (CDGRUPOWEB, GRUPOWEB, DTALTER, INATIVO) VALUES (?, ?, CURRENT_TIMESTAMP, 0)",
+      [grupoId, grupoName],
+    );
+  }
+  let tipo = await tx.singleton(
+    "SELECT FIRST 1 CDTIPOWEB, TIPOWEB FROM TIPO_WEB WHERE CDGRUPOWEB = ? AND COALESCE(INATIVO, 0) = 0 AND UPPER(TIPOWEB) = UPPER(?)",
+    [grupoId, tipoName],
+  );
+  let tipoId = Number(tipo?.CDTIPOWEB);
+  if (!(tipoId > 0)) {
+    const next = await tx.singleton("SELECT COALESCE(MAX(CDTIPOWEB), 0) + 1 AS ID FROM TIPO_WEB");
+    tipoId = Number(next?.ID);
+    if (!(tipoId > 0)) return specs;
+    await tx.execute(
+      "INSERT INTO TIPO_WEB (CDTIPOWEB, TIPOWEB, DTALTER, INATIVO, CDGRUPOWEB) VALUES (?, ?, CURRENT_TIMESTAMP, 0, ?)",
+      [tipoId, tipoName, grupoId],
+    );
+  }
+  return {
+    ...specs,
+    grupoWebId: grupoId,
+    tipoWebId: tipoId,
+    grupoWeb: text(grupo?.GRUPOWEB, 80) || grupoName,
+    tipoWeb: text(tipo?.TIPOWEB, 80) || tipoName,
+  };
+}
+
+function keepResearchedProduct(incoming = {}, prior = {}) {
+  const product = { ...(incoming || {}) };
+  const old = prior?.product || {};
+  for (const field of ["weight", "length", "width", "height"]) {
+    if (!(product[field] > 0) && old[field] > 0) product[field] = old[field];
+  }
+  if (!(product.grupoWebId > 0) && old.grupoWebId > 0) {
+    product.grupoWebId = old.grupoWebId;
+    product.tipoWebId = old.tipoWebId;
+    product.grupoWeb = old.grupoWeb;
+    product.tipoWeb = old.tipoWeb;
+    product.categoryFromProduct = false;
+  } else if (!text(product.grupoWeb) && text(old.grupoWeb) && text(old.tipoWeb)) {
+    product.grupoWeb = old.grupoWeb;
+    product.tipoWeb = old.tipoWeb;
+    product.categoryFromProduct = Boolean(old.categoryFromProduct);
+  }
+  if (!product.specSource && (old.specSource || prior?.specSource)) product.specSource = old.specSource || prior.specSource;
+  return product;
+}
+
 export function mergeTecnospeedState(previous = emptyState(), analysis, at = new Date().toISOString()) {
   const state = { ...emptyState(), ...previous, items: { ...(previous.items || {}) } };
   const seen = new Set();
   for (const finding of analysis.findings || []) {
     seen.add(finding.id);
     const prior = state.items[finding.id];
+    const product = keepResearchedProduct(finding.product, prior);
+    const gaps = uploadGaps({ ...product, name: product.name || finding.productName });
+    const messages = reviewMessages(finding.modulo_removidoId, gaps);
     state.items[finding.id] = {
       ...finding,
       status: prior?.status && prior.status !== "open" ? prior.status : "open",
+      product,
+      gaps,
+      canUpload: messages.canUpload,
+      recommendation: messages.recommendation,
+      limitation: messages.limitation,
       suggestion: prior?.suggestion || null,
+      specSource: prior?.specSource || finding.specSource || null,
+      specNote: prior?.specNote || "",
       previous: prior?.previous || null,
       result: prior?.result || null,
       history: prior?.history || [{ at, event: "identified", actor: "Charlie" }],
@@ -316,10 +677,16 @@ export function recordTecnospeedSuggestion(state, id, suggestion, actor, at = ne
 
 export function decideTecnospeedItem(state, id, decision, actor, at = new Date().toISOString()) {
   const item = requireItem(state, id);
+  if (!actorId(actor)) throw Object.assign(new Error("Usuário autenticado é obrigatório."), { status: 403 });
+  if (decision === "unapprove") {
+    if (item.status !== "approved") {
+      throw Object.assign(new Error("Só um item aprovado pode ser desaprovado."), { status: 409 });
+    }
+    return withHistory(state, item, { at, event: "unapproved", actor: actorId(actor) }, { status: "suggested" });
+  }
   if (!["open", "suggested"].includes(item.status)) {
     throw Object.assign(new Error("O item já foi decidido."), { status: 409 });
   }
-  if (!actorId(actor)) throw Object.assign(new Error("Usuário autenticado é obrigatório."), { status: 403 });
   if (decision === "approve" && !item.suggestion) {
     throw Object.assign(new Error("Gere a sugestão da IA antes de aprovar."), { status: 409 });
   }
@@ -346,7 +713,7 @@ export function buildmodulo_removidoPayloadFromTecnospeed(item = {}) {
     ean: text(product.ean, 14),
     brand: text(product.brand, 100),
     model: text(product.model, 100),
-    category_id: Number(product.categoryId) || 0,
+    category_id: Number(product.modulo_removidoCategoryId) || Number(product.categoryId) || 0,
     price: Number(product.price) || 0,
     promotional_price: Number(product.salePrice) || 0,
     stock: Number(product.stock) || 0,
@@ -355,9 +722,9 @@ export function buildmodulo_removidoPayloadFromTecnospeed(item = {}) {
     width: Number(product.width) || 0,
     height: Number(product.height) || 0,
     available: product.active === false ? 0 : 1,
-    metatag: content.name ? content.name.slice(0, 70) : text(product.name, 70),
-    keywords: content.keywords || "",
   };
+  const metatag = content.metatag || modulo_removidoMetatag(payload.name);
+  if (metatag) payload.metatag = metatag;
   return { payload, gaps, content };
 }
 
@@ -401,7 +768,7 @@ export function acceptTecnospeedSuggestion(suggestion = {}, facts = {}) {
 
 export function parseOllamaReview(content, facts = {}) {
   if (!content) {
-    return { ok: false, reason: "O Ollama não respondeu. Verifique se o serviço e o modelo estão ativos." };
+    return { ok: false, reason: "O Ollama não respondeu nesta revisão. Tente o item de novo." };
   }
   let parsed;
   try {
@@ -412,8 +779,10 @@ export function parseOllamaReview(content, facts = {}) {
   const guarded = acceptTecnospeedSuggestion({ ...parsed, source: "ollama" }, facts);
   if (!guarded.ok) {
     return {
-      ok: false,
-      reason: `${guarded.reason} A revisão do Ollama foi recusada; sem texto inventado o item não avança.`,
+      ok: true,
+      fallback: true,
+      reason: guarded.reason,
+      suggestion: composeTecnospeedSuggestion(facts),
     };
   }
   return { ok: true, suggestion: { ...guarded.suggestion, source: "ollama" } };
@@ -423,29 +792,36 @@ export async function reviewTecnospeedWithOllama(facts, chat = null) {
   if (typeof chat !== "function") {
     throw Object.assign(new Error("A revisão exige o Ollama."), { status: 503 });
   }
+  const payload = {
+    maxTokens: 400,
+    temperature: 0.1,
+    timeoutMs: 360000,
+    format: {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        description_small: { type: "string" },
+        description: { type: "string" },
+        keywords: { type: "string" },
+      },
+      required: ["name", "description_small", "description", "keywords"],
+    },
+    messages: [
+      {
+        role: "system",
+        content: "Você revisa anúncios de modulo_removido em português do Brasil e responde só JSON. Use exclusivamente os fatos recebidos. Peso e medidas que já estiverem nos fatos podem entrar no texto. Não invente outro número, material, compatibilidade, certificação, garantia ou benefício. Não use HTML.",
+      },
+      { role: "user", content: JSON.stringify(facts) },
+    ],
+  };
   let content;
   try {
-    content = await chat({
-      maxTokens: 700,
-      temperature: 0.1,
-      format: {
-        type: "object",
-        properties: {
-          name: { type: "string" },
-          description_small: { type: "string" },
-          description: { type: "string" },
-          keywords: { type: "string" },
-        },
-        required: ["name", "description_small", "description", "keywords"],
-      },
-      messages: [
-        {
-          role: "system",
-          content: "Você revisa anúncios de modulo_removido em português do Brasil e responde só JSON. Use exclusivamente os fatos recebidos. Melhore título e descrição para marketplace sem inventar número, medida, material, compatibilidade, certificação, garantia ou benefício. Não use HTML.",
-        },
-        { role: "user", content: JSON.stringify(facts) },
-      ],
-    });
+    const started = Date.now();
+    content = await chat(payload);
+    if (!content && Date.now() - started < 8000) {
+      resetOllamaAvailability();
+      content = await chat(payload);
+    }
   } catch (error) {
     throw Object.assign(
       new Error(`O Ollama não revisou o produto. ${error.message || "Serviço indisponível."}`),
@@ -456,16 +832,130 @@ export async function reviewTecnospeedWithOllama(facts, chat = null) {
   if (!reviewed.ok) {
     throw Object.assign(new Error(reviewed.reason), { status: 422 });
   }
-  return reviewed.suggestion;
+  return {
+    suggestion: reviewed.suggestion,
+    notice: reviewed.fallback ? `${reviewed.reason} O texto do cadastro foi mantido.` : "",
+  };
+}
+
+export function collapseTecnospeedItems(items = []) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = code(item.productId || item.sku || item.productName || item.id);
+    const listed = Array.isArray(item.problems) && item.problems.length
+      ? item.problems
+      : String(item.problem || "").split(";");
+    const problems = listed.map((entry) => text(entry, 180)).filter(Boolean);
+    const current = groups.get(key);
+    if (!current) {
+      groups.set(key, { ...item, problems: [...new Set(problems)] });
+      continue;
+    }
+    const merged = [...new Set([...current.problems, ...problems])];
+    const primary = (PRIORITY_RANK[item.priority] ?? 9) < (PRIORITY_RANK[current.priority] ?? 9) ? item : current;
+    groups.set(key, { ...primary, problems: merged, problem: merged.join("; ") });
+  }
+  return [...groups.values()].map((item) => ({ ...item, problem: item.problems.join("; ") }));
+}
+
+export const TECNOSPEED_CHARACTERISTIC = "tecnospeed";
+
+export function tecnospeedRemovalTarget(item = {}) {
+  const sku = text(item.sku || item.product?.sku || "", 40);
+  const productId = text(item.productId || "", 40);
+  const family = /^F(\d+)$/i.exec(productId);
+  const codeValue = family ? "" : (sku || productId);
+  if (!family && !codeValue) {
+    throw Object.assign(new Error("O item não tem código de produto para remover a característica."), { status: 422 });
+  }
+  return {
+    sku: codeValue,
+    familyId: family ? Number(family[1]) : null,
+    name: text(item.productName, 180),
+  };
+}
+
+export function matchingmodulo_removidoProductId(products = [], reference = "") {
+  const wanted = text(reference, 100).toUpperCase();
+  if (!wanted) return null;
+  const match = products.find((product) => text(product?.reference, 100).toUpperCase() === wanted);
+  const id = text(match?.id || match?.product_id, 40);
+  return id || null;
+}
+
+export function tecnospeedRemovalMessage(name, { characteristicsRemoved = 0, flagCleared = 0, modulo_removidoDeleted = false } = {}) {
+  const label = text(name, 180) || "O produto";
+  const modulo_removido = modulo_removidoDeleted ? " O anúncio foi excluído da modulo_removido." : "";
+  if (!characteristicsRemoved && !flagCleared && !modulo_removidoDeleted) return "";
+  if (characteristicsRemoved && flagCleared) {
+    return `${label} saiu da fila. A característica tecnospeed foi retirada do cadastro e a marcação que também o mantinha na view foi desligada.${modulo_removido}`;
+  }
+  if (characteristicsRemoved) {
+    return `Característica tecnospeed retirada de ${label}. O produto saiu da fila do hub.${modulo_removido}`;
+  }
+  if (flagCleared) {
+    return `${label} não tinha a característica tecnospeed. A marcação que o mantinha na fila foi desligada.${modulo_removido}`;
+  }
+  return `${label} saiu da fila.${modulo_removido}`;
+}
+
+export async function removeTecnospeedCharacteristic(tx, target) {
+  const caracter = await tx.singleton(
+    "SELECT FIRST 1 CDCARACTER FROM CARACTERISTICAS WHERE CARACTERISTICAS = ?",
+    [TECNOSPEED_CHARACTERISTIC],
+  );
+  if (!caracter?.CDCARACTER) {
+    throw Object.assign(new Error("A característica tecnospeed não está cadastrada."), { status: 422 });
+  }
+  const id = caracter.CDCARACTER;
+  const param = target.familyId || target.sku;
+  const productWhere = target.familyId
+    ? "CDPRODUTO IN (SELECT CDPRODUTO FROM PRODUTO WHERE CDFAMILIA = ?)"
+    : "CDPRODUTO = ?";
+  const productTableWhere = target.familyId ? "CDFAMILIA = ?" : "CDPRODUTO = ?";
+  const links = await tx.singleton(
+    `SELECT COUNT(*) AS QTD FROM PRODUTOCARACTER WHERE ${productWhere} AND CDCARACTER = ?`,
+    [param, id],
+  );
+  const characteristicsRemoved = Number(links?.QTD || 0);
+  if (characteristicsRemoved) {
+    await tx.execute(
+      `DELETE FROM PRODUTOCARACTER WHERE ${productWhere} AND CDCARACTER = ?`,
+      [param, id],
+    );
+  }
+  const flags = await tx.singleton(
+    `SELECT COUNT(*) AS QTD FROM PRODUTO WHERE ${productTableWhere} AND COALESCE(INATIVA_modulo_removido, 0) = -1`,
+    [param],
+  );
+  const flagCleared = Number(flags?.QTD || 0);
+  if (flagCleared) {
+    await tx.execute(
+      `UPDATE PRODUTO SET INATIVA_modulo_removido = 0 WHERE ${productTableWhere} AND COALESCE(INATIVA_modulo_removido, 0) = -1`,
+      [param],
+    );
+  }
+  return { characteristicsRemoved, flagCleared };
+}
+
+export function forgetTecnospeedProduct(state, item) {
+  requireItem(state, item.id);
+  const keys = new Set([code(item.productId), code(item.sku), code(item.id)].filter(Boolean));
+  const items = {};
+  for (const [id, current] of Object.entries(state.items || {})) {
+    if ([code(current.productId), code(current.sku), code(id)].some((key) => key && keys.has(key))) continue;
+    items[id] = current;
+  }
+  return { ...state, items };
 }
 
 export function publicTecnospeedReview(state = readTecnospeedReview()) {
+  const items = collapseTecnospeedItems(Object.values(state.items || {}).filter((item) => item.status !== "resolved"));
   return {
     analyzedAt: state.analyzedAt,
     limitations: state.limitations || [],
-    items: Object.values(state.items || {})
-      .filter((item) => !["resolved"].includes(item.status))
-      .sort((a, b) => (PRIORITY_RANK[a.priority] ?? 9) - (PRIORITY_RANK[b.priority] ?? 9)
-        || String(a.productName).localeCompare(String(b.productName), "pt-BR")),
+    reviewDurations: sanitizeDurations(state.reviewDurations),
+    items: items.sort((a, b) => (PRIORITY_RANK[a.priority] ?? 9) - (PRIORITY_RANK[b.priority] ?? 9)
+      || String(a.productName).localeCompare(String(b.productName), "pt-BR")),
   };
 }

@@ -35,46 +35,73 @@ export function getOllamaConfig() {
   };
 }
 
-export async function ollamaChat({
-  messages,
-  format,
-  signal,
-  maxTokens = 100,
-  temperature = 0,
-} = {}) {
-  const config = getOllamaConfig();
-  if (!config.enabled || Date.now() < unavailableUntil) return null;
+export function ollamaReplyText(body) {
+  const content = String(body?.message?.content || "").trim();
+  if (content) return content;
+  const thinking = String(body?.message?.thinking || "").trim();
+  const match = thinking.match(/\{[\s\S]*\}/);
+  return match ? match[0].trim() : "";
+}
+
+function failureKind(error) {
+  if (error?.name === "AbortError" || error?.name === "TimeoutError" || error?.ollamaUp) return "aborted";
+  const code = error?.cause?.code || error?.code || "";
+  if (["ECONNREFUSED", "ENOTFOUND", "EHOSTUNREACH", "EAI_AGAIN"].includes(code)) return "down";
+  return "error";
+}
+
+async function requestOllamaChat(config, options, fetchImpl) {
+  const limit = Math.max(500, Number(options.timeoutMs) || config.timeoutMs);
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), config.timeoutMs);
+  const timer = setTimeout(() => controller.abort(), limit);
   const abort = () => controller.abort();
-  signal?.addEventListener?.("abort", abort, { once: true });
+  options.signal?.addEventListener?.("abort", abort, { once: true });
   try {
-    const response = await fetch(`${config.url.replace(/\/$/, "")}/api/chat`, {
+    const response = await fetchImpl(`${config.url.replace(/\/$/, "")}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: config.model,
         stream: false,
         think: false,
-        messages,
-        format,
-        options: { temperature, num_predict: maxTokens },
+        messages: options.messages,
+        format: options.format,
+        options: { temperature: options.temperature ?? 0, num_predict: options.maxTokens ?? 100 },
         keep_alive: config.keepAlive,
       }),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`Ollama HTTP ${response.status}`);
-    const body = await response.json();
-    return String(body?.message?.content || "").trim() || null;
+    if (!response.ok) return { kind: "error" };
+    const text = ollamaReplyText(await response.json());
+    return text ? { kind: "text", text } : { kind: "empty" };
   } catch (error) {
-    unavailableUntil = Date.now() + 30000;
     if (String(process.env.CHARLIE_AI_LOG_ERRORS || "0") === "1")
       console.warn(`[charlie-ai] fallback por regras: ${error.message}`);
-    return null;
+    return { kind: failureKind(error) };
   } finally {
     clearTimeout(timer);
-    signal?.removeEventListener?.("abort", abort);
+    options.signal?.removeEventListener?.("abort", abort);
   }
+}
+
+export async function ollamaChat({
+  messages,
+  format,
+  signal,
+  maxTokens = 100,
+  temperature = 0,
+  timeoutMs,
+  fetchImpl = fetch,
+} = {}) {
+  const config = getOllamaConfig();
+  if (!config.enabled || Date.now() < unavailableUntil) return null;
+  const options = { messages, format, signal, maxTokens, temperature, timeoutMs };
+  let result = await requestOllamaChat(config, options, fetchImpl);
+  if (result.kind === "empty" || result.kind === "error") {
+    result = await requestOllamaChat(config, options, fetchImpl);
+  }
+  if (result.kind === "down") unavailableUntil = Date.now() + 30000;
+  return result.kind === "text" ? result.text : null;
 }
 
 export function ollamaProbeUrls(configured = getOllamaConfig().url) {
@@ -96,7 +123,7 @@ async function probeUrl(url, timeoutMs) {
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(`${url}/api/tags`, { signal: controller.signal });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) throw Object.assign(new Error(`HTTP ${response.status}`), { ollamaUp: true });
     const body = await response.json();
     return (body.models || []).map((item) => item.name || item.model).filter(Boolean);
   } finally {
@@ -120,7 +147,10 @@ export async function readOllamaStatus() {
         models,
       };
     } catch (error) {
-      reason = error.name || "unavailable";
+      const next = failureKind(error);
+      if (next === "aborted") reason = "busy";
+      else if (next === "down") reason = reason === "busy" ? "busy" : "offline";
+      else if (reason !== "busy") reason = "unavailable";
     }
   }
   return { ...config, online: false, reason };
@@ -203,7 +233,7 @@ function startOllamaProcess() {
 
 export async function ensureOllamaServer() {
   const current = await readOllamaStatus();
-  if (current.online || !autostartAllowed()) return current;
+  if (current.online || current.reason === "busy" || !autostartAllowed()) return current;
   if (!starting) {
     starting = (async () => {
       if (!startOllamaProcess()) return { ...current, reason: "not-installed" };
@@ -227,4 +257,53 @@ export async function getOllamaStatus() {
 
 export function resetOllamaAvailability() {
   unavailableUntil = 0;
+}
+
+export function getOllamaImageModel() {
+  return process.env.CHARLIE_OLLAMA_IMAGE_MODEL || "x/flux2-klein:4b";
+}
+
+export function parseOllamaImage(raw) {
+  let encoded = "";
+  for (const line of String(raw || "").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed?.image) encoded = String(parsed.image);
+    } catch {
+      /* linha de progresso incompleta */
+    }
+  }
+  if (!encoded) return null;
+  const buffer = Buffer.from(encoded, "base64");
+  return buffer.length >= 32 ? buffer : null;
+}
+
+export async function ollamaGenerateImage(prompt, { timeoutMs = 180000, model } = {}) {
+  const config = getOllamaConfig();
+  if (!config.enabled || !String(prompt || "").trim()) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), Math.max(500, Number(timeoutMs) || 180000));
+  try {
+    const response = await fetch(`${config.url.replace(/\/$/, "")}/api/generate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: model || getOllamaImageModel(),
+        prompt,
+        stream: false,
+        width: 512,
+        height: 512,
+        keep_alive: "1m",
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) return null;
+    return parseOllamaImage(await response.text());
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
 }

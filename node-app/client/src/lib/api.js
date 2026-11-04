@@ -20,7 +20,7 @@ async function request(path, options = {}) {
   };
   const fetchOnce = async () => {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 60_000);
+    const timer = setTimeout(() => controller.abort(), options.timeoutMs || 60_000);
     try { return await fetch(`${BASE}${path}`, { ...requestOptions, signal: controller.signal }); }
     finally { clearTimeout(timer); }
   };
@@ -30,7 +30,11 @@ async function request(path, options = {}) {
   } catch (error) {
     // Uma atualização do serviço local pode interromper brevemente uma
     // consulta. Refaça apenas leituras, sem repetir operações de gravação.
-    if (options.method) throw new Error("Não foi possível conectar ao servidor. Tente novamente.");
+    if (options.method) {
+      throw new Error(error?.name === "AbortError"
+        ? "A revisão demorou mais do que o navegador esperou. Atualize a página para ver o que já foi gravado."
+        : "Não foi possível conectar ao servidor. Tente novamente.");
+    }
     await new Promise(resolve => setTimeout(resolve, 700));
     try { response = await fetchOnce(); }
     catch { throw new Error(error?.name === "AbortError" ? "A consulta demorou mais de 60 segundos. Reduza o período e tente novamente." : "Não foi possível conectar ao servidor. Atualize a página e tente novamente."); }
@@ -44,7 +48,7 @@ async function request(path, options = {}) {
 
 export const api = {
   get: (path, params) => request(`${path}${toQuery(params)}`),
-  post: (path, body) => request(path, { method: "POST", body: JSON.stringify(body ?? {}) }),
+  post: (path, body, extra = {}) => request(path, { method: "POST", body: JSON.stringify(body ?? {}), timeoutMs: extra.timeoutMs }),
   put: (path, body) => request(path, { method: "PUT", body: JSON.stringify(body ?? {}) }),
   patch: (path, body) => request(path, { method: "PATCH", body: JSON.stringify(body ?? {}) }),
   del: (path, body) => request(path, { method: "DELETE", body: body ? JSON.stringify(body) : undefined }),

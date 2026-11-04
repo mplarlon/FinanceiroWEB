@@ -278,7 +278,26 @@ test("aviso pendente ilegivel nao derruba a consulta", () => {
 test("o servico reconhece o agente mesmo com caixa ou caminho curto diferente", () => {
   assert.equal(isAgentEntrypoint("C:\\Administracao\\Updater\\agent.mjs", "c:\\administracao\\updater\\agent.mjs", (value) => value), true);
   assert.equal(isAgentEntrypoint("C:\\ADMINI~1\\Updater\\agent.mjs", "C:\\Administracao\\Updater\\agent.mjs", (value) => value.includes("~1") ? "C:\\Administracao\\Updater\\agent.mjs" : value), true);
+  assert.equal(isAgentEntrypoint("\"C:\\Administracao\\Updater\\agent.mjs\"", "C:\\Administracao\\Updater\\agent.mjs", (value) => value), true);
+  assert.equal(isAgentEntrypoint("\\\\?\\C:\\Administracao\\Updater\\agent.mjs", "C:\\Administracao\\Updater\\agent.mjs", (value) => value), true);
   assert.equal(isAgentEntrypoint("C:\\teste\\node.exe", "C:\\Administracao\\Updater\\agent.mjs", (value) => value), false);
+});
+
+test("token rejeitado deixa o agente instalado sem encerrar o processo", async () => {
+  const root = temporary();
+  const agent = new UpdateAgent({
+    centerUrl: "http://127.0.0.1",
+    enrollmentToken: "token-gasto",
+    companyName: "Loja",
+    installRoot: path.join(root, "install"),
+    dataDir: path.join(root, "data"),
+    currentVersion: "1.0.2",
+    engine: { recoverInterrupted: async () => {} },
+  });
+  agent.request = async () => { throw new Error("Token de registro invalido ou expirado."); };
+  assert.equal(await agent.initialize(), false);
+  assert.equal(agent.identity, null);
+  assert.match(agent.state.lastError, /inválido ou expirado/);
 });
 
 test("sessao do Windows so conta usuario ativo", () => {

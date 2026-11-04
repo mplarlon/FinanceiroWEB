@@ -33,7 +33,7 @@ export function loadDatabaseConfig() {
   if (!fs.existsSync(source)) return { ...defaults };
   let loaded;
   try {
-    loaded = JSON.parse(fs.readFileSync(source, "utf8"));
+    loaded = JSON.parse(fs.readFileSync(source, "utf8").replace(/^\uFEFF/, ""));
   } catch (error) {
     throw new Error(
       `A configuração do banco em ${source} contém JSON inválido. ` +

@@ -246,9 +246,9 @@ function Receive-ComProgresso([string]$url, [string]$destino, [string]$titulo) {
 
 function Find-OllamaExe {
     $candidates = @(
+        $serviceExe,
         (Join-Path $env:LOCALAPPDATA "Programs\Ollama\ollama.exe"),
-        (Join-Path $env:ProgramFiles "Ollama\ollama.exe"),
-        $serviceExe
+        (Join-Path $env:ProgramFiles "Ollama\ollama.exe")
     )
     foreach ($candidate in $candidates) {
         if ($candidate -and (Test-Path -LiteralPath $candidate)) { return $candidate }
@@ -665,8 +665,8 @@ try { $host.UI.RawUI.WindowTitle = "Ollama e qwen3:8b - nao feche esta janela" }
 Write-Log "Inicio da instalacao do Ollama. Etapa $Step."
 Start-Progresso
 Write-Host ""
-Write-Host "Ordem: 1) programa Ollama  2) copia para $ollamaHome  3) modelo qwen3:8b." -ForegroundColor Cyan
-Write-Host "A janela da frente lista o que esta sendo baixado ou instalado." -ForegroundColor Cyan
+Write-Host "Ordem: 1) programa Ollama que veio no pacote  2) modelo qwen3:8b." -ForegroundColor Cyan
+Write-Host "A janela da frente lista o que esta sendo preparado ou baixado." -ForegroundColor Cyan
 Write-Host "Nao feche esta janela. O modelo tem cerca de 5,2 GB." -ForegroundColor Cyan
 Write-Host ""
 

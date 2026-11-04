@@ -53,9 +53,11 @@ Source: "..\nfe_sefaz_config.example.json"; DestDir: "{app}\Dashboard"; DestName
 Source: "..\boletos_caixa_config.example.json"; DestDir: "{app}\Dashboard"; DestName: "boletos_caixa_config.json"; Flags: onlyifdoesntexist
 Source: "..\cartao_depara.json"; DestDir: "{app}\Dashboard"; Flags: onlyifdoesntexist
 #ifdef WithOllama
+Source: "..\build\cliente-sem-fontes\ollama\*"; DestDir: "{app}\Ollama"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "InstallOllama.ps1"; DestDir: "{app}\Ollama"; Flags: ignoreversion
 Source: "InstalarModelo.cmd"; DestDir: "{app}\Ollama"; Flags: ignoreversion
 #endif
+Source: "InstallDashboard.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "QueryCompany.cjs"; Flags: dontcopy
 Source: "QueryCompany.ps1"; Flags: dontcopy
 
@@ -69,15 +71,14 @@ Name: "{group}\Configuração boleto CAIXA"; Filename: "notepad.exe"; Parameters
 Name: "{group}\Logs do serviço"; Filename: "{app}\Dashboard\logs"
 
 [Run]
-Filename: "{app}\DashboardService.exe"; Parameters: "install"; WorkingDir: "{app}"; StatusMsg: "Instalando serviço..."; Flags: runhidden waituntilterminated
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\InstallDashboard.ps1"" -InstallRoot ""{app}"""; WorkingDir: "{app}"; StatusMsg: "Instalando o serviço do Dashboard..."; Flags: runhidden waituntilterminated; AfterInstall: ConfirmarServicoDashboard
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""Dashboard Gerencial 805"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""Dashboard Gerencial 805"" dir=in action=allow protocol=TCP localport=805"; Flags: runhidden waituntilterminated
-Filename: "{app}\DashboardService.exe"; Parameters: "start"; WorkingDir: "{app}"; StatusMsg: "Iniciando serviço..."; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""ACBrMonitor NF-e 3434"""; Flags: runhidden waituntilterminated
 Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall add rule name=""ACBrMonitor NF-e 3434"" dir=in action=allow protocol=TCP localport=3434 remoteip=127.0.0.1"; Flags: runhidden waituntilterminated
 Filename: "{app}\ACBrMonitorPLUS\ACBrMonitor64.exe"; WorkingDir: "{app}\ACBrMonitorPLUS"; StatusMsg: "Iniciando o ACBr para emissão de nota..."; Flags: nowait
 #ifdef WithOllama
-Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -File ""{app}\Ollama\InstallOllama.ps1"" -Step Completo"; StatusMsg: "Baixando o Ollama e o modelo qwen3:8b. A janela da frente mostra cada etapa."; Flags: waituntilterminated; AfterInstall: AvisarModeloOllama
+Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -STA -ExecutionPolicy Bypass -File ""{app}\Ollama\InstallOllama.ps1"" -Step Completo"; StatusMsg: "Preparando o Ollama e o modelo qwen3:8b. A janela da frente mostra cada etapa."; Flags: waituntilterminated; AfterInstall: AvisarModeloOllama
 #endif
 Filename: "{sys}\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\Updater\InstallUpdater.ps1"" -CenterUrl ""https://financeiroweb.nuvempontual.com"" -InstallRoot ""{app}"" -DataDir ""{app}\Dashboard"" -CurrentVersion ""{#AppVersion}"" -ParamsFile ""{app}\Updater\enrollment.json"" -PreviousXml ""{tmp}\UpdaterService.anterior.xml"""; StatusMsg: "Instalando atualização automática..."; Flags: runhidden waituntilterminated; AfterInstall: ConfirmarServicoAtualizacao
 
@@ -464,6 +465,33 @@ begin
   end;
 end;
 
+procedure ConfirmarServicoDashboard;
+var
+  Motivo: String;
+  Linhas: TArrayOfString;
+  I: Integer;
+begin
+  if FileExists(ExpandConstant('{app}\Dashboard\logs\dashboard-install.ok')) and
+     RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\SrvDashboard') then Exit;
+  Motivo := 'O serviço não chegou a ficar em execução.';
+  if LoadStringsFromFile(ExpandConstant('{app}\Dashboard\logs\dashboard-install.log'), Linhas) then
+  begin
+    for I := GetArrayLength(Linhas) - 1 downto 0 do
+      if Trim(Linhas[I]) <> '' then
+      begin
+        Motivo := Trim(Linhas[I]);
+        Break;
+      end;
+  end
+  else
+    Motivo := 'O instalador do serviço encerrou antes de gravar o log.';
+  if Length(Motivo) > 500 then
+    Motivo := Copy(Motivo, 1, 500);
+  MsgBox('Os arquivos do Dashboard foram copiados, mas o serviço Dashboard Gerencial não ficou em execução.' + #13#10 + #13#10 +
+    Motivo + #13#10 + #13#10 +
+    'Consulte ' + ExpandConstant('{app}\Dashboard\logs\dashboard-install.log') + '.', mbError, MB_OK);
+end;
+
 procedure ConfirmarServicoAtualizacao;
 var
   Motivo: String;
@@ -631,18 +659,15 @@ begin
     Exec(ExpandConstant('{sys}\sc.exe'), 'stop {#OldServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec(ExpandConstant('{sys}\sc.exe'), 'delete {#OldServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM DashboardNode.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\{#ServiceName}') then
-  begin
     Exec(ExpandConstant('{sys}\sc.exe'), 'stop {#ServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec(ExpandConstant('{sys}\sc.exe'), 'delete {#ServiceName}', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  end;
   if FileExists(ExpandConstant('{app}\Updater\UpdaterService.xml')) then
     FileCopy(ExpandConstant('{app}\Updater\UpdaterService.xml'), ExpandConstant('{tmp}\UpdaterService.anterior.xml'), False);
   if RegKeyExists(HKLM, 'SYSTEM\CurrentControlSet\Services\ErpAutoUpdater') then
   begin
-    Exec(ExpandConstant('{sys}\sc.exe'), 'stop ErpAutoUpdater', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM UpdaterNode.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
-    Exec(ExpandConstant('{sys}\sc.exe'), 'delete ErpAutoUpdater', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+    Exec(ExpandConstant('{sys}\sc.exe'), 'stop ErpAutoUpdater', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
   end;
   Result := '';
 end;

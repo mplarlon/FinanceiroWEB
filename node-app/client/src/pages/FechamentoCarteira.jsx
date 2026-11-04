@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../lib/api.js";
+import { abrirPdfsAutorizados } from "../lib/fechamento-carteira-pdf.js";
+import { htmlContasReceber } from "../lib/fechamento-carteira-print.js";
+import { linhasRevisao, notasParaRetransmitir } from "../lib/fechamento-carteira-transmissao.js";
 
 function hoje() { return new Date().toISOString().slice(0, 10); }
 function inicioMes() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`; }
@@ -29,6 +32,9 @@ export default function FechamentoCarteira() {
 
   const [revisao, setRevisao] = useState(null);
   const [transmitindo, setTransmitindo] = useState(false);
+  const [abrindoPdf, setAbrindoPdf] = useState(false);
+  const [carregandoPendentes, setCarregandoPendentes] = useState(false);
+  const envioRef = useRef(false);
 
   async function buscarPreview() {
     setLoading(true); setError("");
@@ -96,29 +102,104 @@ export default function FechamentoCarteira() {
     return { ...prev, linhas: prev.linhas.map(l => (l.idnf === idnf ? { ...l, ...patch } : l)) };
   }
 
-  async function transmitirTodas() {
-    if (!revisao) return;
+  async function transmitirSelecionadas(linhas) {
+    if (!linhas.length || envioRef.current) return;
+    envioRef.current = true;
     setTransmitindo(true);
-    for (const linha of revisao.linhas) {
-      if (linha.status === "autorizada") continue;
-      setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "transmitindo" }));
-      try {
-        await api.post(`/fiscal/nfe/${linha.idnf}/emitir`, { idempresa: linha.idempresa });
-        setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "autorizada", motivo: "" }));
-      } catch (e) {
-        setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "erro", motivo: e.message }));
+    setError("");
+    try {
+      for (const linha of linhas) {
+        setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "transmitindo", motivo: "" }));
+        try {
+          await api.post(`/fiscal/nfe/${linha.idnf}/emitir`, { idempresa: linha.idempresa });
+          setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "autorizada", motivo: "" }));
+        } catch (e) {
+          setRevisao(prev => atualizarLinha(prev, linha.idnf, { status: "erro", motivo: e.message }));
+        }
       }
+    } finally {
+      envioRef.current = false;
+      setTransmitindo(false);
     }
-    setTransmitindo(false);
   }
 
-  function abrirPdfs() {
+  function transmitirTodas() {
     if (!revisao) return;
-    for (const linha of revisao.linhas) {
-      if (linha.status === "autorizada") {
-        window.open(`/api/fiscal/nfe/${linha.idnf}/pdf?idempresa=${linha.idempresa}&nrdoc=${encodeURIComponent(linha.nrdoc)}`, "_blank");
+    return transmitirSelecionadas(revisao.linhas.filter(linha => linha.status !== "autorizada"));
+  }
+
+  function retransmitirPendentes() {
+    if (!revisao) return;
+    return transmitirSelecionadas(notasParaRetransmitir(revisao.linhas));
+  }
+
+  async function abrirPendentes() {
+    if (carregandoPendentes || transmitindo) return;
+    setCarregandoPendentes(true);
+    setError("");
+    try {
+      const data = await api.get("/financeiro/fechamento-carteira/pendentes", {
+        data_inicio: dataInicio,
+        data_fim: dataFim,
+        cliente: clienteBusca,
+        idempresa: idempresa || undefined,
+      });
+      const linhas = linhasRevisao(data.notas);
+      if (!linhas.length) {
+        setError("Não há notas de fechamento pendentes de transmissão neste período.");
+        return;
       }
+      setRevisao({ linhas, origem: "pendentes" });
+    } catch (e) { setError(e.message); }
+    finally { setCarregandoPendentes(false); }
+  }
+
+  async function abrirPdfs() {
+    if (!revisao || abrindoPdf) return;
+    setError("");
+    setRevisao(prev => prev ? {
+      ...prev,
+      linhas: prev.linhas.map(linha => linha.status === "autorizada" ? { ...linha, motivo: "" } : linha),
+    } : prev);
+    setAbrindoPdf(true);
+    try {
+      const resultado = await abrirPdfsAutorizados(revisao.linhas, {
+        abrir: () => window.open("", "_blank"),
+        buscar: (url) => fetch(url),
+        criarUrl: (blob) => URL.createObjectURL(blob),
+      });
+      if (resultado.bloqueado) {
+        setError("O navegador bloqueou a janela do PDF. Permita pop-ups deste site e clique de novo.");
+        return;
+      }
+      for (const erro of resultado.erros) {
+        setRevisao(prev => prev ? atualizarLinha(prev, erro.idnf, { motivo: erro.mensagem }) : prev);
+      }
+      if (resultado.erros.length === 1) setError(resultado.erros[0].mensagem);
+      else if (resultado.erros.length > 1) setError("Não foi possível abrir alguns PDFs. O motivo está em cada nota.");
+    } catch (e) {
+      setError(e.message || "Não foi possível abrir o PDF.");
+    } finally {
+      setAbrindoPdf(false);
     }
+  }
+
+  function imprimirRelatorios() {
+    const html = htmlContasReceber({
+      clientes: preview?.clientes || [],
+      cliente: clienteBusca,
+      dataInicio,
+      dataFim,
+      emitidoEm: new Date(),
+    });
+    const janela = window.open("", "_blank");
+    if (!janela) {
+      setError("O navegador bloqueou a janela de impressão.");
+      return;
+    }
+    janela.document.open();
+    janela.document.write(html);
+    janela.document.close();
   }
 
   const podeGerar = preview && preview.clientes?.length > 0;
@@ -140,6 +221,9 @@ export default function FechamentoCarteira() {
           <label>Até <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} /></label>
           <label>Cliente <input type="text" placeholder="Nome ou código" value={clienteBusca} onChange={e => setClienteBusca(e.target.value)} /></label>
           <button onClick={buscarPreview} disabled={loading}>{loading ? "Buscando..." : "Buscar"}</button>
+          <button type="button" className="secondary" onClick={abrirPendentes} disabled={carregandoPendentes || transmitindo}>
+            {carregandoPendentes ? "Buscando..." : "Retransmitir pendentes"}
+          </button>
         </div>
         {error && <div className="error">{error}</div>}
         {excluidos.length > 0 && (
@@ -172,7 +256,10 @@ export default function FechamentoCarteira() {
               <span>{preview.totais.CLIENTES} clientes · {preview.totais.PEDIDOS} pedidos · {preview.totais.TITULOS} títulos</span>
               <strong>{moeda(preview.totais.TOTAL)}</strong>
             </div>
-            <button className="primary" disabled={!podeGerar} onClick={abrirModalGerar}>Gerar notas fiscais</button>
+            <div className="fechamento-acoes">
+              <button type="button" className="secondary" disabled={!podeGerar} onClick={imprimirRelatorios}>Imprimir</button>
+              <button type="button" className="primary" disabled={!podeGerar} onClick={abrirModalGerar}>Gerar notas fiscais</button>
+            </div>
           </>
         )}
       </section>
@@ -205,7 +292,7 @@ export default function FechamentoCarteira() {
       {revisao && (
         <div className="modal-overlay">
           <div className="modal modal-wide">
-            <h2>Revisão das notas geradas</h2>
+            <h2>{revisao.origem === "pendentes" ? "Notas pendentes de transmissão" : "Revisão das notas geradas"}</h2>
             <table className="tabela">
               <thead><tr><th>NF</th><th>Cliente</th><th>Valor</th><th>Status</th></tr></thead>
               <tbody>
@@ -214,14 +301,28 @@ export default function FechamentoCarteira() {
                     <td>{l.nrdoc}</td>
                     <td>{l.cliente}</td>
                     <td>{moeda(l.total)}</td>
-                    <td><StatusBadge status={l.status} motivo={l.motivo} /></td>
+                    <td>
+                      <StatusBadge status={l.status} motivo={l.motivo} />
+                      {l.motivo && <div className="error">{l.motivo}</div>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {error && <div className="error">{error}</div>}
             <div className="modal-actions">
-              <button onClick={() => setRevisao(null)}>Fechar</button>
-              <button onClick={abrirPdfs} disabled={!revisao.linhas.some(l => l.status === "autorizada")}>Abrir PDFs</button>
+              <button type="button" onClick={() => setRevisao(null)}>Fechar</button>
+              <button type="button" onClick={abrirPdfs} disabled={abrindoPdf || !revisao.linhas.some(l => l.status === "autorizada")}>
+                {abrindoPdf ? "Abrindo..." : "Abrir PDFs"}
+              </button>
+              <button
+                type="button"
+                onClick={retransmitirPendentes}
+                disabled={transmitindo || notasParaRetransmitir(revisao.linhas).length === 0}
+                title="Envia de novo as notas que ainda não foram autorizadas"
+              >
+                {transmitindo ? "Transmitindo..." : `Retransmitir pendentes (${notasParaRetransmitir(revisao.linhas).length})`}
+              </button>
               <button className="primary" onClick={transmitirTodas} disabled={transmitindo}>
                 {transmitindo ? "Transmitindo..." : "Transmitir todas"}
               </button>

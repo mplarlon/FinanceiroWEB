@@ -6,6 +6,8 @@ test("o aviso instala a versao pendente e so recarrega quando o arquivo ja e nov
   assert.equal(updateAction({ appVersion: "1.0.2", serverVersion: "1.0.2", pending: "1.0.9" }), "install");
   assert.equal(updateAction({ appVersion: "1.0.2", serverVersion: "1.0.9", pending: "" }), "reload");
   assert.equal(updateAction({ appVersion: "1.0.9", serverVersion: "1.0.9", pending: "" }), "none");
+  assert.equal(updateAction({ appVersion: "1.0.11", serverVersion: "1.0.11", pending: "1.0.10" }), "none");
+  assert.equal(updateAction({ appVersion: "1.0.11", serverVersion: "1.0.10", pending: "1.0.10" }), "none");
 });
 
 test("o clique mostra o erro quando a instalacao nao acontece", async () => {

@@ -15,6 +15,7 @@ export const PUBLIC_API_PATHS = new Set([
   "/api/setup/start-ini",
   "/api/whatsapp/webhook",
   "/api/modulo_removido/webhook",
+  "/api/modulo_removido/oauth/retorno",
   "/api/integracoes/casa-dos-dados/webhook",
   "/api/open-finance/webhook",
 ]);

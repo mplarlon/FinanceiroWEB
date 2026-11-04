@@ -89,7 +89,12 @@ export default function App() {
   const [status, setStatus] = useState();
   const [error, setError] = useState("");
   const cafeToken = new URLSearchParams(window.location.search).get("cafe") || "";
-  const [page, setPage] = useState(() => cafeToken ? "charlie" : "overview");
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("cafe")) return "charlie";
+    if (params.get("page") === "modulo_removido") return "modulo_removido";
+    return "overview";
+  });
   const [charlieAlerts, setCharlieAlerts] = useState(0);
   const [charlieBrief, setCharlieBrief] = useState(null);
   const [alertLaunch, setAlertLaunch] = useState(0);

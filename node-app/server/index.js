@@ -410,9 +410,17 @@ app.get("*splat", (_req, res) => {
   });
   res.sendFile(path.join(clientDist, "index.html"));
 });
-app.listen(port, "0.0.0.0", () =>
-  console.log(`Dashboard Node iniciado em http://localhost:${port}`),
-);
+function listenDashboard(attempt = 0) {
+  const server = app.listen(port, "0.0.0.0", () =>
+    console.log(`Dashboard Node iniciado em http://localhost:${port}`),
+  );
+  server.on("error", (error) => {
+    const espera = error.code === "EADDRINUSE" ? 3000 : 10000;
+    console.error(`[dashboard] ${error.message}. Nova tentativa em ${espera / 1000}s.`);
+    setTimeout(() => listenDashboard(attempt + 1), espera);
+  });
+}
+listenDashboard();
 startManagementScheduler();
 startCharlieMonitor();
 startCharlieAutomations();

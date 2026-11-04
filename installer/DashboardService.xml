@@ -3,14 +3,17 @@
   <name>Dashboard Gerencial</name>
   <description>Servidor local do Dashboard Gerencial</description>
   <executable>%BASE%\DashboardNode.exe</executable>
-  <arguments>&quot;%BASE%\node-app\server\dashboard.mjs&quot;</arguments>
+  <arguments>&quot;%BASE%\node-app\server\dashboard-boot.mjs&quot;</arguments>
   <workingdirectory>%BASE%</workingdirectory>
   <env name="DASHBOARD_DATA_DIR" value="%BASE%\Dashboard" />
+  <env name="FIREBIRD" value="%BASE%\Firebird-5.0.4" />
   <env name="OLLAMA_HOME" value="%BASE%\Ollama" />
   <env name="DASHBOARD_PORT" value="805" />
   <env name="CHARLIE_OLLAMA_URL" value="http://127.0.0.1:11434" />
   <env name="CHARLIE_OLLAMA_MODEL" value="qwen3:8b" />
   <env name="NO_PROXY" value="127.0.0.1,localhost,[::1]" />
+  <env name="NODE_OPTIONS" value="" />
+  <env name="NODE_SKIP_PLATFORM_CHECK" value="1" />
   <startmode>Automatic</startmode>
   <delayedAutoStart>true</delayedAutoStart>
   <onfailure action="restart" delay="5 sec" />

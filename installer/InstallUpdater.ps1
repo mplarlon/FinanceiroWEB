@@ -50,7 +50,13 @@ if (-not $CompanyName) {
     if ((Test-Path -LiteralPath $consulta) -and (Test-Path -LiteralPath $node) -and (Test-Path -LiteralPath $ini) -and (Test-Path -LiteralPath $modulos)) {
         $saida = Join-Path $env:TEMP ("empresa-nome-" + [guid]::NewGuid().ToString("n") + ".txt")
         $env:NODE_PATH = $modulos
-        if (Test-Path -LiteralPath $fbclient) { $env:DASHBOARD_FBCLIENT = $fbclient }
+        $env:NODE_SKIP_PLATFORM_CHECK = "1"
+        if (Test-Path -LiteralPath $fbclient) {
+            $env:DASHBOARD_FBCLIENT = $fbclient
+            $cliente = Split-Path -Parent $fbclient
+            $env:FIREBIRD = $cliente
+            $env:PATH = "$cliente;$env:PATH"
+        }
         & $node $consulta $ini $saida
         if (Test-Path -LiteralPath $saida) {
             $lido = (Get-Content -LiteralPath $saida -Raw -Encoding Default).Trim()
@@ -120,11 +126,19 @@ Set-ServiceEnv "ERP_UPDATE_CENTER_URL" $CenterUrl
 Set-ServiceEnv "ERP_CURRENT_VERSION" $CurrentVersion
 Set-ServiceEnv "ERP_UPDATE_WINDOW" "imediata"
 Set-ServiceEnv "ERP_UPDATE_INTERVAL_MS" "300000"
+Set-ServiceEnv "NODE_OPTIONS" ""
+Set-ServiceEnv "NODE_SKIP_PLATFORM_CHECK" "1"
 if ($CompanyName) { Set-ServiceEnv "ERP_UPDATE_COMPANY_NAME" $CompanyName }
 $packagedToken = @($xml.service.env) | Where-Object { $_.name -eq "ERP_UPDATE_ENROLLMENT_TOKEN" } | Select-Object -First 1 -ExpandProperty value
 $EnrollmentToken = if ($enrollmentOverride) { $enrollmentOverride } elseif ($packagedToken) { [string]$packagedToken } else { $previousToken }
 if ($EnrollmentToken) { Set-ServiceEnv "ERP_UPDATE_ENROLLMENT_TOKEN" $EnrollmentToken }
-$xml.service.logpath = $logDir
+$logNode = $xml.SelectSingleNode("/service/logpath")
+if (-not $logNode) {
+    $logNode = $xml.CreateElement("logpath")
+    [void]$xml.DocumentElement.AppendChild($logNode)
+}
+while ($logNode.FirstChild) { [void]$logNode.RemoveChild($logNode.FirstChild) }
+[void]$logNode.AppendChild($xml.CreateTextNode([string]$logDir))
 $xmlPath = Join-Path $target "UpdaterService.xml"
 $writerSettings = New-Object System.Xml.XmlWriterSettings
 $writerSettings.Encoding = New-Object System.Text.UTF8Encoding($false)

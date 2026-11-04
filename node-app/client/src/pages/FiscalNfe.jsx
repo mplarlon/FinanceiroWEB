@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api.js";
+import { abrirPdfsAutorizados } from "../lib/fechamento-carteira-pdf.js";
 
 function moeda(v) { return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
 function dataBr(v) {
@@ -32,6 +33,7 @@ function NotasFiscais() {
   const [correcao, setCorrecao] = useState(null);
   const [textoCorrecao, setTextoCorrecao] = useState("");
   const [inutilizar, setInutilizar] = useState(false);
+  const [inutNota, setInutNota] = useState(null);
   const [inutForm, setInutForm] = useState({
     idempresa: 1, ano: new Date().getFullYear(), serie: 1, modelo: 55,
     numero_inicial: "", numero_final: "", justificativa: ""
@@ -64,17 +66,55 @@ function NotasFiscais() {
     } catch (e) { setAcaoErro(e.message); }
     finally { setOcupado(null); }
   }
-  async function excluir(nota) {
-    if (!window.confirm(`Excluir a nota ${nota.NRDOC}?`)) return;
+  function abrirInutilizarAvulsa() {
+    setInutNota(null);
+    setAcaoErro("");
+    setInutForm({
+      idempresa: 1, ano: new Date().getFullYear(), serie: 1, modelo: 55,
+      numero_inicial: "", numero_final: "", justificativa: ""
+    });
+    setInutilizar(true);
+  }
+  function pedirExclusao(nota) {
+    setAcaoErro("");
+    if (statusNota(nota) === "autorizada") {
+      setCancelar(nota);
+      setJustificativa("");
+      return;
+    }
+    if (statusNota(nota) !== "pendente") return;
+    const emissao = nota.DTEMISS ? new Date(nota.DTEMISS) : new Date();
+    const ano = Number.isNaN(emissao.getTime()) ? new Date().getFullYear() : emissao.getFullYear();
+    const numero = String(nota.NRDOC || "").replace(/\D/g, "");
+    setInutNota(nota);
+    setInutForm({
+      idempresa: nota.IDEMPRESA,
+      ano,
+      serie: nota.SERIE_NFE || 1,
+      modelo: Number(nota.NFCE) ? 65 : 55,
+      numero_inicial: numero,
+      numero_final: numero,
+      justificativa: "",
+    });
+    setInutilizar(true);
+  }
+  async function abrirPdf(nota) {
     setOcupado(nota.IDNF); setAcaoErro("");
     try {
-      await api.del(`/fiscal/nfe/${nota.IDNF}`, { idempresa: nota.IDEMPRESA });
-      await buscar();
+      const resultado = await abrirPdfsAutorizados([{
+        status: "autorizada",
+        idnf: nota.IDNF,
+        idempresa: nota.IDEMPRESA,
+        nrdoc: nota.NRDOC,
+      }], {
+        abrir: () => window.open("", "_blank"),
+        buscar: (url) => fetch(url),
+        criarUrl: (blob) => URL.createObjectURL(blob),
+      });
+      if (resultado.bloqueado) setAcaoErro("O navegador bloqueou a janela do PDF. Permita pop-ups deste site e clique de novo.");
+      else if (resultado.erros[0]) setAcaoErro(resultado.erros[0].mensagem);
     } catch (e) { setAcaoErro(e.message); }
     finally { setOcupado(null); }
-  }
-  function abrirPdf(nota) {
-    window.open(`/api/fiscal/nfe/${nota.IDNF}/pdf?idempresa=${nota.IDEMPRESA}&nrdoc=${encodeURIComponent(nota.NRDOC)}`, "_blank");
   }
   async function consultarSefaz(nota) {
     setOcupado(nota.IDNF); setAcaoErro("");
@@ -108,10 +148,15 @@ function NotasFiscais() {
   async function confirmarInutilizar(event) {
     event.preventDefault();
     setAcaoErro("");
+    setOcupado(inutNota?.IDNF || "inutilizar");
     try {
       await api.post("/fiscal/nfe/inutilizar", inutForm);
+      if (inutNota) await api.del(`/fiscal/nfe/${inutNota.IDNF}`, { idempresa: inutNota.IDEMPRESA });
       setInutilizar(false);
+      setInutNota(null);
+      await buscar();
     } catch (e) { setAcaoErro(e.message); }
+    finally { setOcupado(null); }
   }
 
   return (
@@ -154,7 +199,7 @@ function NotasFiscais() {
           <input type="date" value={filtros.data_inicio} onChange={e => setFiltros(f => ({ ...f, data_inicio: e.target.value }))} />
           <input type="date" value={filtros.data_fim} onChange={e => setFiltros(f => ({ ...f, data_fim: e.target.value }))} />
           <button onClick={buscar} disabled={loading}>{loading ? "Buscando..." : "Buscar"}</button>
-          <button className="link-btn" onClick={() => setInutilizar(true)}>Inutilizar numeração</button>
+          <button className="link-btn" onClick={abrirInutilizarAvulsa}>Inutilizar numeração</button>
         </div>
         {error && <div className="error">{error}</div>}
         {acaoErro && <div className="error">{acaoErro}</div>}
@@ -173,8 +218,9 @@ function NotasFiscais() {
                   <td><span className={`badge badge-nf-${status}`}>{STATUS_LABEL[status]}</span></td>
                   <td className="acoes">
                     {status === "pendente" && <button disabled={disabled} onClick={() => emitir(n)}>Transmitir</button>}
-                    {status === "pendente" && <button disabled={disabled} className="link-btn" onClick={() => excluir(n)}>Excluir</button>}
+                    {status === "pendente" && <button disabled={disabled} className="link-btn" onClick={() => pedirExclusao(n)}>Excluir</button>}
                     {status === "autorizada" && <button disabled={disabled} onClick={() => abrirPdf(n)}>PDF</button>}
+                    {status === "autorizada" && <button disabled={disabled} onClick={() => pedirExclusao(n)}>Excluir</button>}
                     {status === "autorizada" && <button disabled={disabled} onClick={() => setCancelar(n)}>Cancelar</button>}
                     {status === "autorizada" && <button disabled={disabled} onClick={() => setCorrecao(n)}>Carta CC-e</button>}
                     {n.CHAVE && <button disabled={disabled} className="link-btn" onClick={() => consultarSefaz(n)}>Consultar SEFAZ</button>}
@@ -191,6 +237,7 @@ function NotasFiscais() {
         <div className="modal-overlay" onClick={() => setCancelar(null)}>
           <form className="modal" onClick={e => e.stopPropagation()} onSubmit={confirmarCancelar}>
             <h2>Cancelar nota {cancelar.NRDOC}</h2>
+            {acaoErro && <div className="error">{acaoErro}</div>}
             <label>Justificativa (15 a 255 caracteres)
               <textarea value={justificativa} onChange={e => setJustificativa(e.target.value)} minLength={15} maxLength={255} required rows={4} />
             </label>
@@ -220,7 +267,8 @@ function NotasFiscais() {
       {inutilizar && (
         <div className="modal-overlay" onClick={() => setInutilizar(false)}>
           <form className="modal" onClick={e => e.stopPropagation()} onSubmit={confirmarInutilizar}>
-            <h2>Inutilizar numeração</h2>
+            <h2>{inutNota ? `Inutilizar a nota ${inutNota.NRDOC}` : "Inutilizar numeração"}</h2>
+            {acaoErro && <div className="error">{acaoErro}</div>}
             <label>Empresa <input type="number" value={inutForm.idempresa} onChange={e => setInutForm(f => ({ ...f, idempresa: e.target.value }))} /></label>
             <label>Ano <input type="number" value={inutForm.ano} onChange={e => setInutForm(f => ({ ...f, ano: e.target.value }))} /></label>
             <label>Série <input type="number" value={inutForm.serie} onChange={e => setInutForm(f => ({ ...f, serie: e.target.value }))} /></label>

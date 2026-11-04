@@ -12,6 +12,8 @@
   <env name="ERP_CURRENT_VERSION" value="1.0.2" />
   <env name="ERP_UPDATE_WINDOW" value="imediata" />
   <env name="ERP_UPDATE_INTERVAL_MS" value="300000" />
+  <env name="NODE_OPTIONS" value="" />
+  <env name="NODE_SKIP_PLATFORM_CHECK" value="1" />
   <startmode>Automatic</startmode><delayedAutoStart>true</delayedAutoStart>
   <onfailure action="restart" delay="30 sec"/><onfailure action="restart" delay="2 min"/>
   <resetfailure>1 hour</resetfailure><stoptimeout>30 sec</stoptimeout>

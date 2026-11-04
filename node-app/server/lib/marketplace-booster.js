@@ -175,14 +175,30 @@ function numberTokens(value) {
   return [...String(value || "").matchAll(/\d+(?:[.,]\d+)?/g)].map((match) => match[0].replace(",", "."));
 }
 
+function sameNumber(token, allowed) {
+  if (allowed.has(token)) return true;
+  const value = Number(token);
+  if (!Number.isFinite(value)) return false;
+  for (const candidate of allowed) {
+    if (Number(candidate) === value) return true;
+  }
+  return false;
+}
+
+function factsMentionUnit(facts, unit) {
+  const escaped = String(unit).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\d\\s*${escaped}\\b`, "i").test(JSON.stringify(facts));
+}
+
 export function acceptListingSuggestion(suggestion = {}, facts = {}) {
   const allowed = new Set(numberTokens(JSON.stringify(facts)));
   const produced = `${suggestion.name || ""} ${suggestion.description || ""} ${suggestion.description_small || ""} ${suggestion.keywords || ""}`;
-  const extra = numberTokens(produced).filter((token) => !allowed.has(token));
-  const unit = produced.match(/\d+(?:[.,]\d+)?\s*(mm|cm|kg|g|pol|polegadas)\b/i);
-  const measures = text(facts.medidas, 200).toLowerCase();
-  if (extra.length || (unit && !measures.includes(unit[1].toLowerCase()))) {
-    return { ok: false, reason: "A sugestão trouxe número ou unidade que não está no cadastro." };
+  const extra = numberTokens(produced).filter((token) => !sameNumber(token, allowed));
+  const units = [...produced.matchAll(/\d+(?:[.,]\d+)?\s*(mm|cm|kg|g|pol|polegadas)\b/gi)];
+  const unknownUnits = [...new Set(units.map((match) => match[1].toLowerCase()).filter((unit) => !factsMentionUnit(facts, unit)))];
+  if (extra.length || unknownUnits.length) {
+    const detail = [...extra.slice(0, 6), ...unknownUnits].join(", ");
+    return { ok: false, reason: `A sugestão trouxe número ou unidade que não está no cadastro (${detail}).` };
   }
   const safe = composeListingSuggestion(facts);
   return {
@@ -367,13 +383,20 @@ export function decideBoosterFinding(state, id, decision, actor, at = new Date()
   return withHistory(state, finding, { at, event: decision === "approve" ? "approved" : "rejected", actor: actorId(actor) }, actor, { status: decision === "approve" ? "approved" : "rejected" });
 }
 
+export function modulo_removidoMetatag(content) {
+  const value = text(content, 255);
+  if (!value) return undefined;
+  return [{ type: "keywords", content: value, local: 1 }];
+}
+
 export function contentPayload(suggestion = {}) {
   const payload = {};
   if (typeof suggestion.name === "string" && suggestion.name) payload.name = text(suggestion.name, 120);
   if (typeof suggestion.description === "string") payload.description = text(suggestion.description, 5000);
   if (typeof suggestion.description_small === "string") payload.description_small = text(suggestion.description_small, 500);
-  if (typeof suggestion.keywords === "string" && suggestion.keywords) payload.keywords = text(suggestion.keywords, 255);
-  if (payload.name) payload.metatag = payload.name.slice(0, 70);
+  const keywords = typeof suggestion.keywords === "string" ? suggestion.keywords : "";
+  const metatag = modulo_removidoMetatag(keywords || payload.name);
+  if (metatag) payload.metatag = metatag;
   return payload;
 }
 

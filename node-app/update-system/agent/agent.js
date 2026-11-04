@@ -69,7 +69,12 @@ export class UpdateAgent {
           if (!/invalido ou expirado|HTTP 401/.test(String(error.message || ""))) throw error;
         }
       }
-      if (lastError) throw lastError;
+      if (lastError) {
+        if (!isRejectedToken(lastError)) throw lastError;
+        this.state.lastError = String(explainUpdateFailure(lastError).message).slice(0, 1000);
+        atomicWriteJson(this.stateFile, this.state);
+        return false;
+      }
       this.identity = identity;
       atomicWriteJson(this.identityFile, this.identity);
     }
@@ -496,14 +501,20 @@ export function activeBlockers(dataDir, now = Date.now()) {
 
 export function isAgentEntrypoint(argvPath, moduleFilename, realpath = fs.realpathSync.native) {
   if (!argvPath || !moduleFilename) return false;
+  const strip = (value) => String(value).trim().replace(/^\\\\\?\\/, "").replace(/^"+|"+$/g, "");
   const normalize = (value) => {
-    const resolved = path.resolve(String(value));
+    const resolved = path.resolve(strip(value));
     try { return realpath(resolved); } catch { return resolved; }
   };
-  return normalize(argvPath).toLowerCase() === normalize(moduleFilename).toLowerCase();
+  if (normalize(argvPath).toLowerCase() === normalize(moduleFilename).toLowerCase()) return true;
+  const base = (value) => path.basename(strip(value)).toLowerCase();
+  return base(argvPath) === "agent.mjs" && base(moduleFilename) === "agent.mjs";
 }
 
 if (isAgentEntrypoint(process.argv[1], import.meta.filename)) {
+  const report = (error) => console.error(`[updater] ${error?.message || error}`);
+  process.on("uncaughtException", report);
+  process.on("unhandledRejection", report);
   let config;
   let agent;
   while (!agent) {
@@ -511,10 +522,11 @@ if (isAgentEntrypoint(process.argv[1], import.meta.filename)) {
       config = loadAgentConfig(process.env, path.dirname(import.meta.filename));
       agent = new UpdateAgent(config);
     } catch (error) {
-      console.error(`[updater] ${error.message}`);
+      report(error);
       await new Promise((resolve) => setTimeout(resolve, 10_000));
     }
   }
+  console.error("[updater] servico em execucao");
   startManualCheckServer(agent).then(
     (server) => console.error(`[updater] consulta manual em 127.0.0.1:${server.address().port}`),
     (error) => console.error(`[updater] consulta manual indisponivel: ${error.message}`),
@@ -522,22 +534,13 @@ if (isAgentEntrypoint(process.argv[1], import.meta.filename)) {
   let ready = false;
   let failures = 0;
   let announcedWait = false;
-  let companyAttempts = 0;
   const loop = async () => {
     try {
-      if (!config.companyFromDatabase && !String(process.env.ERP_UPDATE_COMPANY_NAME || "").trim() && companyAttempts < 3) {
-        companyAttempts += 1;
-        const name = await readCompanyFromDatabase(config);
-        if (name) {
-          config.companyName = name;
-          config.companyFromDatabase = true;
-        }
-      }
       if (!config.companyName) config.companyName = os.hostname();
       if (!ready || !agent.identity) {
         ready = await agent.initialize();
         if (!ready && !announcedWait) {
-          console.error("[updater] servico instalado. Aguardando token de registro.");
+          console.error(`[updater] servico instalado. Aguardando token de registro.${agent.state.lastError ? ` ${agent.state.lastError}` : ""}`);
           announcedWait = true;
         }
       }
@@ -547,9 +550,11 @@ if (isAgentEntrypoint(process.argv[1], import.meta.filename)) {
       }
     } catch (error) {
       failures += 1;
-      console.error(`[updater] ${error.message}`);
+      report(error);
     } finally {
-      const delay = Math.min(config.intervalMs * (2 ** failures), 6 * 60 * 60_000);
+      const interval = Number(config?.intervalMs);
+      const base = Number.isFinite(interval) && interval > 0 ? interval : 300_000;
+      const delay = Math.min(base * (2 ** failures), 6 * 60 * 60_000);
       setTimeout(loop, delay);
     }
   };

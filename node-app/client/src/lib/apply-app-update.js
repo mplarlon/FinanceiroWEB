@@ -1,6 +1,20 @@
+export function isNewerVersion(candidate, current) {
+  const pattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
+  if (!pattern.test(String(candidate || "")) || !pattern.test(String(current || ""))) {
+    return Boolean(candidate) && candidate !== current;
+  }
+  const left = String(candidate).split(".").map(Number);
+  const right = String(current).split(".").map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    if (left[index] !== right[index]) return left[index] > right[index];
+  }
+  return false;
+}
+
 export function updateAction({ appVersion, serverVersion, pending }) {
-  if (pending && pending !== appVersion && pending !== serverVersion) return "install";
-  if ((serverVersion && serverVersion !== appVersion) || (pending && pending !== appVersion)) return "reload";
+  const pendingIsNew = pending && isNewerVersion(pending, appVersion);
+  if (pendingIsNew && pending !== serverVersion) return "install";
+  if (isNewerVersion(serverVersion, appVersion) || pendingIsNew) return "reload";
   return "none";
 }
 

@@ -2,6 +2,7 @@
 // nfe_sefaz.py. O gateway monta/assina o XML e conversa com a SEFAZ; este
 // modulo cuida da logica de negocio (tributacao, persistencia, arquivamento).
 
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { appRoot, dataDir } from "../config.js";
@@ -295,9 +296,14 @@ export async function carregarNota(tx, idnf, idempresa) {
     where += " AND IDEMPRESA = ?";
     params.push(Number(idempresa));
   }
-  const notas = await tx.query(`SELECT FIRST 1 * FROM NOTAFISCAL WHERE ${where}`, params);
+  const notas = await tx.query(
+    `SELECT FIRST 1 n.*, CAST(n.OBSERVACAO AS VARCHAR(5000)) AS OBSERVACAO_TEXTO FROM NOTAFISCAL n WHERE ${where.replace(/\bIDNF\b/g, "n.IDNF").replace(/\bIDEMPRESA\b/g, "n.IDEMPRESA")}`,
+    params
+  );
   const nota = notas[0];
   if (!nota) throw new HttpError("Nota fiscal nao encontrada.", 404);
+  if (typeof nota.OBSERVACAO_TEXTO === "string") nota.OBSERVACAO = nota.OBSERVACAO_TEXTO.trim();
+  else if (typeof nota.OBSERVACAO !== "string") nota.OBSERVACAO = "";
   const itens = await tx.query(
     "SELECT * FROM NOTAFIS_PRODUTO WHERE IDNF = ? AND IDEMPRESA = ? ORDER BY POSIC",
     [Number(nota.IDNF), Number(nota.IDEMPRESA)]
@@ -327,55 +333,127 @@ async function updateExisting(tx, table, whereSql, whereValues, values) {
   await tx.execute(`UPDATE ${table} SET ${setSql} WHERE ${whereSql}`, params);
 }
 
+// O AutoMec (uNovaNFe.BuscaCaminho / ConfiguraDMFiscal) grava em
+// {CAMINHONFE}\PRODUCAO\PROCNFE\{mes}_{ano}\{chave}-nfe.xml
+// {CAMINHONFE}\PRODUCAO\RETNFE\{mes}_{ano}\{chave}-nfe.xml
+// {CAMINHONFE}\PRODUCAO\RETNFE\{mes}_{ano}\{chave}-nfe.pdf
+// e NOTAFISCAL.CAMINHO aponta para o PDF. O mes nao tem zero a esquerda.
+export function locaisDoCaminho(value) {
+  const normalized = String(value || "").trim().replace(/\//g, "\\");
+  const candidatos = [];
+  if (normalized) candidatos.push(normalized);
+  if (normalized.startsWith("\\\\")) {
+    const parts = normalized.split("\\").filter(Boolean);
+    if (parts.length >= 2) {
+      const resto = parts.slice(1);
+      candidatos.push(path.join("C:\\", ...resto));
+      candidatos.push(path.join("D:\\", ...resto));
+    }
+  }
+  return candidatos;
+}
+
+function compartilhamentoRaiz(value) {
+  const normalized = String(value || "").trim().replace(/\//g, "\\");
+  if (!normalized.startsWith("\\\\")) return "";
+  const parts = normalized.split("\\").filter(Boolean);
+  if (parts.length < 2) return "";
+  return `\\\\${parts[0]}\\${parts[1]}`;
+}
+
+// O serviço entra como Sistema Local. O servidor fiscal aceita o convidado
+// nesse compartilhamento; sem essa conexão a gravação cai fora da pasta do banco.
+function conectarCompartilhamento(uncPath) {
+  const share = compartilhamentoRaiz(uncPath);
+  if (!share || isDir(share)) return;
+  let detalhe = "";
+  try {
+    execFileSync("cmd.exe", ["/d", "/c", `net use ${share} "" /user:guest`], {
+      windowsHide: true,
+      timeout: 20000,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  } catch (error) {
+    detalhe = `${error.stdout || ""} ${error.stderr || ""} ${error.message || ""}`.replace(/\s+/g, " ").trim();
+  }
+  if (!isDir(share)) {
+    throw new HttpError("Nao foi possivel acessar a pasta fiscal " + share + (detalhe ? `: ${detalhe}` : "."), 503);
+  }
+}
+
 function resolverCaminhoFiscal(value) {
   const raw = String(value || "").trim();
+  conectarCompartilhamento(raw);
   if (raw && isDir(raw)) return raw;
-  const normalized = raw.replace(/\//g, "\\");
-  const parts = normalized.split("\\").filter(Boolean);
-  if (normalized.startsWith("\\\\") && parts.length >= 3) {
-    const local = path.join("C:\\", ...parts.slice(1));
-    if (isDir(local)) return local;
-  }
   throw new HttpError("Caminho fiscal configurado nao encontrado: " + raw, 404);
 }
 
-function arquivarDocumentosFiscais(nota, configuracao, xmlPath, pdfPath) {
-  const isCfe = Number(nota.NFCE || 0) !== 0;
-  const base = resolverCaminhoFiscal(isCfe ? configuracao.CAMINHOCFE : configuracao.CAMINHONFE);
-  let dt = nota.DTEMISS instanceof Date ? nota.DTEMISS : new Date(nota.DTEMISS);
-  if (Number.isNaN(dt.getTime())) dt = new Date();
-  const periodo = `${dt.getMonth() + 1}_${dt.getFullYear()}`;
-  const producao = path.join(base, "Producao");
-  const procDir = path.join(producao, isCfe ? "procCFe" : "procNFe", periodo);
-  const retornoDir = path.join(producao, isCfe ? "RETCFE" : "RETNFE", periodo);
-  fs.mkdirSync(procDir, { recursive: true });
-  fs.mkdirSync(retornoDir, { recursive: true });
-  const xmlName = path.basename(xmlPath);
-  const xmlExt = path.extname(xmlPath);
-  const xmlProc = path.join(procDir, xmlName);
-  const xmlRetorno = path.join(retornoDir, xmlName);
-  const pdfRetorno = path.join(retornoDir, path.basename(xmlPath, xmlExt) + ".pdf");
-  if (path.resolve(xmlPath) !== path.resolve(xmlProc)) fs.copyFileSync(xmlPath, xmlProc);
-  if (path.resolve(xmlPath) !== path.resolve(xmlRetorno)) fs.copyFileSync(xmlPath, xmlRetorno);
-  if (path.resolve(pdfPath) !== path.resolve(pdfRetorno)) fs.copyFileSync(pdfPath, pdfRetorno);
-  return { xml: xmlProc, xml_retorno: xmlRetorno, pdf: pdfRetorno };
+function periodoFiscal(nota, chave) {
+  const digits = String(chave || "").replace(/\D/g, "");
+  if (digits.length >= 6) {
+    const year = 2000 + Number(digits.slice(2, 4));
+    const month = Number(digits.slice(4, 6));
+    if (month >= 1 && month <= 12 && year >= 2006) return `${month}_${year}`;
+  }
+  let dt = nota?.DTEMISS instanceof Date ? nota.DTEMISS : new Date(nota?.DTEMISS);
+  if (Number.isNaN(dt?.getTime?.())) dt = new Date();
+  return `${dt.getMonth() + 1}_${dt.getFullYear()}`;
 }
 
-// O AutoMec grava NOTAFISCAL.CAMINHO apontando para o PDF em retNFe.
-// As operacoes do gateway, porem, precisam do XML autorizado. Aceita os dois
-// formatos para manter compatibilidade com registros antigos e novos.
+function copiarArquivo(origem, destino) {
+  if (path.resolve(origem) === path.resolve(destino)) return;
+  fs.copyFileSync(origem, destino);
+}
+
+function arquivarDocumentosFiscais(nota, configuracao, xmlPath, pdfPath, options = {}) {
+  const isCfe = Number(nota.NFCE || 0) !== 0;
+  const configurado = String((isCfe ? configuracao.CAMINHOCFE : configuracao.CAMINHONFE) || "").trim();
+  const base = resolverCaminhoFiscal(configurado);
+  const chave = String(options.chave || nota.CHAVE || "").replace(/\D/g, "");
+  if (chave.length !== 44) throw new HttpError("Chave da NF-e ausente para arquivar o XML e o PDF.", 500);
+  const periodo = periodoFiscal(nota, chave);
+  const ambiente = String(options.ambiente || "producao").toLowerCase() === "homologacao" ? "HOMOLOGACAO" : "PRODUCAO";
+  const pastaProc = isCfe ? "PROCCFE" : "PROCNFE";
+  const pastaRet = isCfe ? "RETCFE" : "RETNFE";
+  const procDir = path.join(base, ambiente, pastaProc, periodo);
+  const retornoDir = path.join(base, ambiente, pastaRet, periodo);
+  fs.mkdirSync(procDir, { recursive: true });
+  fs.mkdirSync(retornoDir, { recursive: true });
+  const xmlProc = path.join(procDir, `${chave}-nfe.xml`);
+  const xmlRetorno = path.join(retornoDir, `${chave}${isCfe ? "-cfe.xml" : "-nfe.xml"}`);
+  const pdfRetorno = path.join(retornoDir, `${chave}-nfe.pdf`);
+  copiarArquivo(xmlPath, xmlProc);
+  copiarArquivo(xmlPath, xmlRetorno);
+  copiarArquivo(pdfPath, pdfRetorno);
+  const pdf = [String(configurado).replace(/[\\/]+$/, ""), ambiente, pastaRet, periodo, `${chave}-nfe.pdf`].join("\\");
+  return { xml: xmlProc, xml_retorno: xmlRetorno, pdf, pdf_local: pdfRetorno };
+}
+
+function trocarPastaRetorno(caminho) {
+  return String(caminho || "")
+    .replace(/([\\/])retnfe(?=[\\/])/ig, "$1PROCNFE")
+    .replace(/([\\/])retcfe(?=[\\/])/ig, "$1PROCCFE");
+}
+
+function adicionarCandidato(lista, caminho) {
+  for (const local of locaisDoCaminho(caminho)) {
+    if (local && !lista.includes(local)) lista.push(local);
+  }
+}
+
+// O AutoMec grava NOTAFISCAL.CAMINHO apontando para o PDF em RETNFE.
+// As operacoes do gateway precisam do XML autorizado em PROCNFE.
 export function resolverXmlAutorizado(nota) {
   const armazenado = String(nota?.CAMINHO || "").trim();
+  conectarCompartilhamento(armazenado);
   const candidatos = [];
-  if (armazenado) candidatos.push(armazenado);
   if (/\.pdf$/i.test(armazenado)) {
-    candidatos.unshift(
-      armazenado.replace(/retNFe/ig, "procNFe").replace(/\.pdf$/i, ".xml"),
-      armazenado.replace(/\.pdf$/i, ".xml")
-    );
-  } else if (/\.xml$/i.test(armazenado) && /retNFe/i.test(armazenado)) {
-    candidatos.unshift(armazenado.replace(/retNFe/ig, "procNFe"));
+    adicionarCandidato(candidatos, trocarPastaRetorno(armazenado).replace(/\.pdf$/i, ".xml"));
+    adicionarCandidato(candidatos, armazenado.replace(/\.pdf$/i, ".xml"));
+  } else if (/\.xml$/i.test(armazenado) && /([\\/])retnfe([\\/])|([\\/])retcfe([\\/])/i.test(armazenado)) {
+    adicionarCandidato(candidatos, trocarPastaRetorno(armazenado));
   }
+  adicionarCandidato(candidatos, armazenado);
   const encontrado = candidatos.find(caminho => caminho && isFile(caminho));
   if (!encontrado) throw new HttpError("XML autorizado da NF-e nao encontrado.", 404);
   return encontrado;
@@ -390,8 +468,8 @@ export async function gerarPdfNfe(nota, cfg) {
   return pdfPath;
 }
 
-export function arquivarPdf(nota, configuracao, xmlPath, pdfPath) {
-  return arquivarDocumentosFiscais(nota, configuracao, xmlPath, pdfPath);
+export function arquivarPdf(nota, configuracao, xmlPath, pdfPath, options) {
+  return arquivarDocumentosFiscais(nota, configuracao, xmlPath, pdfPath, options);
 }
 
 // Emite uma NF-e ja gravada em NOTAFISCAL: resolve tributacao, chama o
@@ -410,17 +488,20 @@ export async function emitirNfePorId(idnf, idempresa) {
 
     // A tributacao do ERP nasce em PRODUTO.IDIMPOSTO_VENDA -> IMPOSTO.
     // CLASSFISCAL e o NCM; o CFOP depende de operacao interna/interestadual.
+    const contribuinte = Boolean(onlyDigits(destinatario.INSCEST));
     const pendentesReforma = [];
     for (const item of itens) {
       const taxRows = await tx.query(
         "SELECT FIRST 1 p.CLASSFISCAL, p.ORIGEM, p.SITTRIBUT," +
         " i.CST, i.CSOSN, i.CFOP_EST, i.CFOP_INT," +
-        " i.MODBC, i.MODBCST, i.REDUZ_BASE," +
+        " i.MODBC, i.MODBCST, i.REDUZ_BASE, i.TP_REDUC_BASE, i.CBENEF, i.ALQ_BENEF, i.MOTIV_DESON," +
+        " uf.PERC_REDBC_CONT, uf.PERC_REDBC_NCONT," +
         " i.TIPOPIS, i.ALIQPIS, i.TIPOCOFI, i.ALIQCOFI," +
         " i.CST_REFORMA, i.CCLASSTRIB, i.ALIQCBS" +
         " FROM PRODUTO p LEFT JOIN IMPOSTO i ON i.IDIMPOSTO = p.IDIMPOSTO_VENDA" +
+        " LEFT JOIN IMPOSTO_UF uf ON uf.IDIMPOSTO = i.IDIMPOSTO AND uf.UF = ?" +
         " WHERE p.CDPRODUTO = ?",
-        [item.CDPRODUTO]
+        [ufDest, item.CDPRODUTO]
       );
       const rule = taxRows[0];
       if (rule) {
@@ -433,6 +514,15 @@ export async function emitirNfePorId(idnf, idempresa) {
         item.PICMS = item.PICMS || emitente.PERCICMS || emitente.ICMS;
         item.PPIS = rule.ALIQPIS || 0;
         item.PCOFINS = rule.ALIQCOFI || 0;
+        item.CBENEF = String(item.CBENEF || rule.CBENEF || "").trim();
+        item.MOTIV_DESON = Number(item.MOTIV_DESON || rule.MOTIV_DESON || 0);
+        if (Number(rule.REDUZ_BASE || 0) !== 0) {
+          const reducaoUf = contribuinte ? rule.PERC_REDBC_CONT : rule.PERC_REDBC_NCONT;
+          item.PREDBC = Number(reducaoUf || rule.ALQ_BENEF || 0);
+          item.TP_REDUC_BASE = Number(rule.TP_REDUC_BASE || 0);
+        } else {
+          item.PREDBC = 0;
+        }
         if (rule.CST_REFORMA && rule.CCLASSTRIB) {
           const base = Number(item.TOTAL || 0);
           item.CST_IBSCBS = rule.CST_REFORMA;
@@ -492,15 +582,15 @@ export async function emitirNfePorId(idnf, idempresa) {
     await updateExisting(tx, "NOTAFISCAL", "IDNF = ? AND IDEMPRESA = ?", [Number(nota.IDNF), Number(nota.IDEMPRESA)], {
       NFE_EMITIDA: -1, STATUS: 0, CHAVE: chave || null,
       NPROT: protocolo, CSTAT: status, XML_NFE: pick(result, "xml", "xmlNFe"),
-      CAMINHO: pick(result, "arquivo", "nomearquivo", "path"),
+      CAMINHO: pick(result, "arquivo", "nomearquivo", "nomearq", "path"),
       DTALTER: new Date(), SIST_ALT: "DASHBRD",
     });
 
     let pdfErro = null;
     try {
-      const notaPdf = { ...nota, CAMINHO: pick(result, "arquivo", "nomearquivo", "path"), NPROT: protocolo };
+      const notaPdf = { ...nota, CHAVE: chave, CAMINHO: pick(result, "arquivo", "nomearquivo", "nomearq", "path"), NPROT: protocolo };
       const pdfPath = await gerarPdfNfe(notaPdf, cfg);
-      const arquivos = arquivarDocumentosFiscais(notaPdf, emitente, notaPdf.CAMINHO, pdfPath);
+      const arquivos = arquivarDocumentosFiscais(notaPdf, emitente, notaPdf.CAMINHO, pdfPath, { ambiente: cfg.ambiente, chave });
       await updateExisting(tx, "NOTAFISCAL", "IDNF = ? AND IDEMPRESA = ?", [Number(nota.IDNF), Number(nota.IDEMPRESA)], {
         CAMINHO: arquivos.pdf,
       });

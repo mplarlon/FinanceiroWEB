@@ -236,6 +236,7 @@ export function salesStatusLabel(status) {
     draft: "Rascunho",
     open: "Em aberto",
     suggested: "Sugestão pronta",
+    unapproved: "Desaprovado",
     manual: "Execução manual",
     resolved: "Resolvida",
   }[status] || status || "Sem status";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { applyAppUpdate, updateAction } from "../lib/apply-app-update.js";
+import { applyAppUpdate, isNewerVersion, updateAction } from "../lib/apply-app-update.js";
 
 export default function UpdateAvailable() {
   const [serverVersion, setServerVersion] = useState("");
@@ -24,7 +24,7 @@ export default function UpdateAvailable() {
     const timer = setInterval(check, 15_000);
     return () => { active = false; clearInterval(timer); };
   }, []);
-  const newer = [serverVersion, pending].find((version) => version && version !== __APP_VERSION__);
+  const newer = [pending, serverVersion].find((version) => isNewerVersion(version, __APP_VERSION__));
   if (!newer) return null;
   const updateNow = async () => {
     setError("");

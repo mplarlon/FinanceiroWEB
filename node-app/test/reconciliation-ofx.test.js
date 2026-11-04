@@ -36,6 +36,18 @@ test("recusa lançamento fora do período mesmo com cabeçalho igual", () => {
   assert.match(messages.join(" "), /fora do período informado/);
 });
 
+test("aceita OFX com prefixo quando agência e conta são as mesmas", () => {
+  const messages = divergenciasDoExtrato({
+    bankid: "237", agencia: "0001", conta: "TESTE-12345-6",
+    dt_inicial: "2026-10-29", dt_final: "2026-10-29",
+    itens: [{ data: "2026-10-29" }],
+  }, {
+    cdbanco: "237", agencia: "0001", numconta: "12345-6",
+    data_ini: "2026-10-29", data_fim: "2026-10-29",
+  });
+  assert.deepEqual(messages, []);
+});
+
 test("aceita OFX do Bradesco sem agência quando a conta é a mesma", () => {
   const parsed = parseOfx("<OFX><BANKACCTFROM><BANKID>0237<ACCTID>9<ACCTTYPE>CHECKING</BANKACCTFROM><BANKTRANLIST><DTSTART>20261027120000<DTEND>20261027120000<STMTTRN><TRNTYPE>CREDIT<DTPOSTED>20260901120000<TRNAMT>10,00<FITID>1<MEMO>PIX</STMTTRN><STMTTRN><TRNTYPE>CREDIT<DTPOSTED>20261027120000<TRNAMT>5,00<FITID>2<MEMO>PIX</STMTTRN></BANKTRANLIST></OFX>");
   assert.equal(parsed.agencia, null);

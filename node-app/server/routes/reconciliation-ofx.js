@@ -94,12 +94,20 @@ function decode(buffer) {
 const digits = (value) => String(value || "").replace(/\D/g, "");
 const brDate = (value) =>
   value ? String(value).slice(0, 10).split("-").reverse().join("/") : "";
+function normCheck(value) {
+  const raw = digits(value);
+  if (!raw) return "";
+  return raw.replace(/^0+/, "") || "0";
+}
 function piece(value) {
-  const [base, check] = String(value || "").trim().split("-");
-  return {
-    key: digits(base).replace(/^0+/, ""),
-    check: check ? digits(check) : "",
-  };
+  const text = String(value || "").trim();
+  const labeled = text.match(/(\d+)\s*-\s*(\d+)\s*$/);
+  if (labeled)
+    return {
+      key: labeled[1].replace(/^0+/, "") || "0",
+      check: normCheck(labeled[2]),
+    };
+  return { key: digits(text).replace(/^0+/, ""), check: "" };
 }
 function samePiece(left, right) {
   const a = piece(left),
