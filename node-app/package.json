@@ -1,6 +1,6 @@
 {
   "name": "dashboard-gerencial",
-  "version": "1.0.17",
+  "version": "1.0.19",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "migration:inventory": "node scripts/route-inventory.js",
     "migration:audit": "npm run migration:inventory && node scripts/express-route-audit.js",
     "start": "node server/index.js",
-    "test": "node --test"
+    "test": "node --test --test-force-exit test/*.test.js"
   },
   "dependencies": {
     "@xmldom/xmldom": "^0.9.12",
@@ -29,7 +29,8 @@
     "node-firebird-driver-native": "^3.6.0",
     "nodemailer": "^10.0.3",
     "pdf-parse": "^1.1.1",
-    "pdfkit": "^0.20.2"
+    "pdfkit": "^0.20.2",
+    "tar": "^7.5.22"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.7.0",

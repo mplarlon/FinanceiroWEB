@@ -203,7 +203,9 @@ function NewAccountModal({ type, options, onClose, onDone }) {
   const paymentOptions = paymentChoices(type, options);
   const selectedPayment = paymentOptions.find((item) => String(item.value) === String(form.forma_pagamento));
   const creditLocksPayment = form.gerar_credito && type === "pagar";
-  const willSettle = Boolean(selectedPayment?.settled) && !creditLocksPayment;
+  // Novas contas a receber são previsões; a movimentação de caixa só nasce
+  // quando o usuário executa a baixa. Contas a pagar preservam a regra atual.
+  const willSettle = type === "pagar" && Boolean(selectedPayment?.settled) && !creditLocksPayment;
   async function submit(event) {
     event.preventDefault();
     setBusy(true);
@@ -269,11 +271,11 @@ function NewAccountModal({ type, options, onClose, onDone }) {
             <small>
               {type === "pagar"
                 ? "Gerar crédito do fornecedor. O valor fica negativo, sem quitação e sem lançar no caixa."
-                : "Gerar crédito para o cliente. O valor fica negativo e o status segue a forma de pagamento."}
+                : "Gerar crédito para o cliente. O valor fica negativo, sem lançamento no caixa."}
             </small>
           </span>
         </label>
-        <p>{form.gerar_credito ? (type === "pagar" ? "Será gerado um crédito do fornecedor, com valor negativo, sem quitação e sem lançar no caixa." : "Será gerado um crédito para o cliente com valor negativo. O status seguirá a forma de pagamento escolhida.") : willSettle ? "A forma escolhida é quitada. A parcela será gravada como paga, com valor pago e lançamento no caixa." : type === "receber" ? "A parcela fica em aberto. A forma escolhida é só a previsão; a quitação permanece vazia." : "O título fica em aberto e o nº pagamento permanece vazio até a quitação."}</p>
+        <p>{form.gerar_credito ? (type === "pagar" ? "Será gerado um crédito do fornecedor, com valor negativo, sem quitação e sem lançar no caixa." : "Será gerado um crédito para o cliente com valor negativo, sem lançamento no caixa.") : willSettle ? "A forma escolhida é quitada. A parcela será gravada como paga, com valor pago e lançamento no caixa." : type === "receber" ? "A parcela fica em aberto. A forma escolhida é só a previsão; a quitação permanece vazia e não há lançamento no caixa." : "O título fica em aberto e o nº pagamento permanece vazio até a quitação."}</p>
         <div className="form-grid">
           <label>Empresa<SearchableSelect value={form.idempresa} onChange={(value) => set("idempresa", value)} placeholder="Digite para buscar" required options={(options.empresas || []).map((item) => ({ value: item.IDEMPRESA, label: item.NOMEEMPRESA }))} /></label>
           <label>{type === "receber" ? "Cliente" : "Fornecedor"}<PersonField type={type} value={form.pessoa_id} onChange={(value) => set("pessoa_id", value)} hint="A lista inicial mostra 40 nomes. Digite o nome ou o código para localizar outro." /></label>

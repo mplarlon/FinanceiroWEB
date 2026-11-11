@@ -309,6 +309,9 @@ export function drePaidExpression(origin) {
 export function buildDreHierarchy(rows, plan, types) {
   const typeMap = new Map(types.map((item) => [Number(item.CDTPDRE), item])),
     groups = new Map();
+  const unidentifiedType = (origin) => origin === "receber" ? -1 : -2;
+  const unidentifiedLabel = (origin) =>
+    origin === "receber" ? "Receitas a identificar" : "Despesas a identificar";
   const add = (target, month, value) => {
     target.meses[month] = (target.meses[month] || 0) + value;
   };
@@ -322,18 +325,21 @@ export function buildDreHierarchy(rows, plan, types) {
       ];
     let filled = -1;
     for (let level = 0; level < maps.length; level++) if (codes[level]) filled = level;
-    if (filled < 0) continue;
-    const key = codes.slice(0, filled + 1).join("|"),
-      account = maps[filled].get(key),
+    const key = filled >= 0 ? codes.slice(0, filled + 1).join("|") : "",
+      account = filled >= 0 ? maps[filled].get(key) : null,
       dreType = dreClassification(account, row.ORIGEM),
-      info = typeMap.get(dreType);
-    if (!account || !dreType || !info) continue;
-    const groupId = dreType;
+      info = typeMap.get(dreType),
+      identified = Boolean(account && dreType && info),
+      groupId = identified ? dreType : unidentifiedType(row.ORIGEM),
+      groupInfo = identified ? info : {
+        TITULO: unidentifiedLabel(row.ORIGEM),
+        CDDRE: row.ORIGEM === "receber" ? 998 : 999,
+      };
     if (!groups.has(groupId))
       groups.set(groupId, {
         id: groupId,
-        descricao: info.TITULO || info.TIPODRE,
-        ordem: Number(info.CDDRE || 999),
+        descricao: groupInfo.TITULO || groupInfo.TIPODRE,
+        ordem: Number(groupInfo.CDDRE || 999),
         meses: {},
         nodes: new Map(),
       });
@@ -341,13 +347,13 @@ export function buildDreHierarchy(rows, plan, types) {
       month = Number(row.MES || 1),
       value = Number(row.VL || 0);
     add(group, month, value);
-    const level = filled;
+    const level = Math.max(0, filled);
     const nodeKey = `${level}:${key}`;
     if (!group.nodes.has(nodeKey))
       group.nodes.set(nodeKey, {
-        descricao: account.DESCRICAO,
-        nivel: level + 1,
-        ordem: account.ORDEM,
+        descricao: account?.DESCRICAO || unidentifiedLabel(row.ORIGEM),
+        nivel: identified ? level + 1 : 1,
+        ordem: account?.ORDEM || 999999,
         caminho: key,
         ordemCaminho: Array.from({ length: level + 1 }, (_, index) =>
           Number(

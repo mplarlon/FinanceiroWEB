@@ -10,7 +10,7 @@ const account = (description, extra = {}) => ({
   ...extra,
 });
 
-test("DRE mostra so a conta mais especifica e ignora parcela sem conta", () => {
+test("DRE mostra a conta mais especifica e separa parcela sem conta para identificar", () => {
   const plan = {
     contas: new Map([
       ["1", account("Receita", { DRERECEBTO: 1 })],
@@ -70,7 +70,7 @@ test("DRE mostra so a conta mais especifica e ignora parcela sem conta", () => {
   );
   assert.deepEqual(
     result.resumo.map((item) => item.total),
-    [115, -40],
+    [115, -40, 999],
   );
   assert.equal(result.dados.find((item) => item.descricao === "PIX").meses[10], 100);
   assert.equal(result.dados.find((item) => item.descricao === "Receita").meses[10], 15);
@@ -84,16 +84,16 @@ test("DRE mostra so a conta mais especifica e ignora parcela sem conta", () => {
   );
   assert.equal(
     result.dados.filter((item) => item.grupo && !item.resultado).length,
-    2,
+    3,
   );
   assert.equal(
-    result.dados.some((item) => String(item.descricao).includes("999") || String(item.descricao).includes("sem conta")),
-    false,
+    result.dados.some((item) => item.descricao === "Receitas a identificar"),
+    true,
   );
-  assert.equal(result.resultado, 75);
+  assert.equal(result.resultado, 1074);
 });
 
-test("DRE omite conta de nivel sem classificacao", () => {
+test("DRE envia conta de nivel sem classificacao para identificar", () => {
   const plan = {
     contas: new Map([
       ["1", account("Receita")],
@@ -115,11 +115,13 @@ test("DRE omite conta de nivel sem classificacao", () => {
     plan,
     [{ CDTPDRE: 4, TITULO: "Custos Fixos", CDDRE: 4 }],
   );
-  assert.equal(result.dados.find((item) => item.descricao === "Receita"), undefined);
-  assert.equal(result.dados.find((item) => item.descricao === "Carteira"), undefined);
+  assert.equal(result.dados.find((item) => item.descricao === "Receita").meses[10], 15);
+  assert.equal(result.dados.find((item) => item.descricao === "Carteira").meses[10], 40);
   assert.equal(result.dados.find((item) => item.descricao === "Despesas"), undefined);
-  assert.equal(result.dados.find((item) => item.descricao === "Internet"), undefined);
-  assert.equal(result.resultado, 0);
+  assert.equal(result.dados.find((item) => item.descricao === "Internet").meses[10], -40);
+  assert.equal(result.dados.find((item) => item.descricao === "Receitas a identificar" && item.grupo).meses[10], 55);
+  assert.equal(result.dados.find((item) => item.descricao === "Despesas a identificar" && item.grupo).meses[10], -40);
+  assert.equal(result.resultado, 15);
 });
 
 test("DRE usa o valor pago da parcela", () => {

@@ -8,6 +8,8 @@ const router = express.Router(),
     storage: multer.memoryStorage(),
     limits: { fileSize: 20 * 1024 * 1024 },
   });
+export const ofxItemInsertSql =
+  "INSERT INTO EXTRATO_ITEM (CONTROLE,EXTRATO,DTLANCAMENTO,VALOR,DESCRICAO,TPLANCAMENTO,NUMDOC,STATUS,STATUS_EXT,IDUSUARIO,IDEMPRESA,SIST_ALT) VALUES (?,?,?,?,?,?,?,0,1,?,?,'LOCAL')";
 const tag = (text, name) =>
   text.match(new RegExp(`<${name}>\\s*([^<\\r\\n]+)`, "i"))?.[1]?.trim() ||
   null;
@@ -455,7 +457,7 @@ router.post("/ofx/importar", upload.single("arquivo"), async (req, res) => {
         );
         for (const item of separados.novos) {
           await tx.execute(
-            "INSERT INTO EXTRATO_ITEM (CONTROLE,EXTRATO,DTLANCAMENTO,VALOR,DESCRICAO,TPLANCAMENTO,NUMDOC,STATUS,STATUS_EXT,SIST_ALT) VALUES (?,?,?,?,?,?,?,0,1,'LOCAL')",
+            ofxItemInsertSql,
             [
               nextItem++,
               ext,
@@ -464,6 +466,8 @@ router.post("/ofx/importar", upload.single("arquivo"), async (req, res) => {
               item.descricao,
               item.tp_lancamento,
               item.numdoc || item.fitid,
+              uid,
+              company,
             ],
           );
           inserted++;

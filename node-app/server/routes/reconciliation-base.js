@@ -512,6 +512,7 @@ router.post("/deletar-periodo", async (req, res) => {
         await tx.execute(
           "INSERT INTO BOCADO_LOG_EXCLUSAO (ID,DTHORA,TABELA,CONTROLE,DESCRICAO,USUARIO,IP_ORIGEM) VALUES (NEXT VALUE FOR SEQ_BOCADO_LOG_EXCLUSAO,CURRENT_TIMESTAMP,'CONCILIACAO',?,?,?,?)",
           [
+            control,
             `Exclusao periodo CONCILIACAO #${control} banco ${period.CDBANCO} de ${period.DTINICIAL} a ${period.DTFINAL}`.slice(
               0,
               500,

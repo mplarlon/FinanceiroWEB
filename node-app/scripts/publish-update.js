@@ -7,8 +7,6 @@ import { assertSemver, sha256, signManifest } from "../update-system/shared.js";
 
 const args = Object.fromEntries(process.argv.slice(2).map((item) => { const index = item.indexOf("="); return [item.slice(2, index), item.slice(index + 1)]; }));
 const version = assertSemver(args.version);
-const centerUrl = required(process.env.UPDATE_CENTER_URL);
-const adminToken = required(process.env.UPDATE_CENTER_ADMIN_TOKEN);
 const privateKey = fs.readFileSync(required(process.env.UPDATE_SIGNING_PRIVATE_KEY_FILE), "utf8");
 const root = path.resolve(import.meta.dirname, "..");
 const source = path.resolve(args.source || path.join(root, "..", "build", "cliente-sem-fontes", "runtime", "node-app"));
@@ -30,12 +28,18 @@ const manifest = {
   releaseNotes: args.notes ? args.notes.split("|").map((item) => item.trim()).filter(Boolean) : [],
 };
 const signature = signManifest(manifest, privateKey);
+fs.writeFileSync(`${archive}.manifest.json`, `${JSON.stringify({ manifest, signature }, null, 2)}\n`);
+if (args.prepareOnly === "true") {
+  console.log(`Pacote ${version} preparado e assinado em ${archive}.`);
+  process.exit(0);
+}
+const centerUrl = required(process.env.UPDATE_CENTER_URL);
+const adminToken = required(process.env.UPDATE_CENTER_ADMIN_TOKEN);
 const response = await fetch(new URL(`/api/admin/releases/${version}/package`, centerUrl), {
   method: "POST", headers: { authorization: `Bearer ${adminToken}`, "content-type": "application/octet-stream", "x-update-manifest": Buffer.from(JSON.stringify(manifest)).toString("base64url"), "x-update-signature": signature, "x-admin-actor": process.env.UPDATE_PUBLISHER || os.userInfo().username }, body: bytes,
 });
 const result = await response.json().catch(() => ({}));
 if (!response.ok) throw new Error(result.error || `Publicacao recusada: HTTP ${response.status}`);
-fs.writeFileSync(`${archive}.manifest.json`, `${JSON.stringify({ manifest, signature }, null, 2)}\n`);
 console.log(`Versao ${version} publicada como rascunho. Autorize-a no painel antes da distribuicao.`);
 
 function required(value) { if (!value) throw new Error("Variavel de ambiente obrigatoria ausente."); return value; }

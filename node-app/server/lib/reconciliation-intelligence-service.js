@@ -669,8 +669,8 @@ export async function importarExtratoConfirmado(tx, pedido) {
   ]);
   let nextItem = Number((await tx.singleton("SELECT COALESCE(MAX(CONTROLE),0)+1 AS ID FROM EXTRATO_ITEM")).ID);
   for (const item of preparado.novos) {
-    await tx.execute("INSERT INTO EXTRATO_ITEM (CONTROLE,EXTRATO,DTLANCAMENTO,VALOR,DESCRICAO,TPLANCAMENTO,NUMDOC,STATUS,STATUS_EXT,SIST_ALT) VALUES (?,?,?,?,?,?,?,0,1,'LOCAL')", [
-      nextItem++, ext, item.data, item.valor, String(item.historico || "Lancamento").slice(0, 255), item.valor < 0 ? 1 : 0, String(item.numdoc || item.fitid || "").slice(0, 40),
+    await tx.execute("INSERT INTO EXTRATO_ITEM (CONTROLE,EXTRATO,DTLANCAMENTO,VALOR,DESCRICAO,TPLANCAMENTO,NUMDOC,STATUS,STATUS_EXT,IDUSUARIO,IDEMPRESA,SIST_ALT) VALUES (?,?,?,?,?,?,?,0,1,?,?,'LOCAL')", [
+      nextItem++, ext, item.data, item.valor, String(item.historico || "Lancamento").slice(0, 255), item.valor < 0 ? 1 : 0, String(item.numdoc || item.fitid || "").slice(0, 40), usuario, empresa,
     ]);
   }
   return { inseridos: preparado.novos.length, duplicados: preparado.duplicados.length, erros: preparado.erros || [] };

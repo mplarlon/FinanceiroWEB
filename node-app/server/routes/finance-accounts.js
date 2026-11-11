@@ -960,7 +960,9 @@ export function buildAccountFilters(type, input = {}) {
     where.push("t.STATUS=1", "t.DTVENC>=CURRENT_DATE");
   const search = text(input.busca);
   if (search) {
-    const like = `%${search.toUpperCase()}%`,
+    // Os textos financeiros legados usam CHARACTER SET NONE. Compare os
+    // octetos diretamente para não transliterar acentos e gerar Malformed string.
+    const needle = legacyOctets(search.toUpperCase(), 120),
       person = receive
         ? "p.CLIENTE"
         : "p.FORNECEDOR",
@@ -968,9 +970,9 @@ export function buildAccountFilters(type, input = {}) {
         ? "CAST(COALESCE(CAST(t.NRPEDIDO AS VARCHAR(20)),t.NRDOC,t.NRDOC2) AS VARCHAR(40))"
         : "CAST(COALESCE(t.NRDOC,t.NOTAFISCAL,t.NRDOC2) AS VARCHAR(40))";
     where.push(
-      `(UPPER(${person}) LIKE ? OR UPPER(COALESCE(t.HISTORICO,'')) LIKE ? OR UPPER(${doc}) LIKE ?)`,
+      `(UPPER(${person}) CONTAINING ${octets(120)} OR UPPER(t.HISTORICO) CONTAINING ${octets(120)} OR UPPER(${doc}) CONTAINING ${octets(120)})`,
     );
-    params.push(like, like, like);
+    params.push(needle, needle, needle);
   }
   return { where, params };
 }
@@ -1370,11 +1372,14 @@ router.post("/operacoes/criar", async (req, res) => {
       const defaults = await accountPaymentDefaults(tx, input);
       input = completeAccountInput(input, defaults);
       const receivePlan = manualReceivablePlan(defaults, input.credit);
-      const settled = input.credit && input.type === "pagar"
+      // A inclusão manual cria parcelas/previsões. A baixa de contas a receber
+      // deve ocorrer somente pela operação de quitar; caso contrário a simples
+      // criação duplicava o lançamento em Movimentação do caixa.
+      const settled = input.type === "receber"
         ? false
-        : input.type === "pagar"
-          ? paymentFormSettlesPayable(defaults)
-          : receivePlan.settled;
+        : input.credit && input.type === "pagar"
+        ? false
+        : paymentFormSettlesPayable(defaults);
       if (settled && !input.cash)
         throw Object.assign(new Error("Forma de pagamento quitada exige um caixa."), { status: 400 });
       const paidOn = new Date();
@@ -1388,7 +1393,7 @@ router.post("/operacoes/criar", async (req, res) => {
         let control = await nextAccountControl(tx, table);
         const due = firebirdDate(parcel.vencimento);
         if (input.type === "receber") {
-          const status = receivePlan.status;
+          const status = input.credit ? receivePlan.status : 1;
           const paid = settled ? parcel.valor : 0;
           const paidAt = settled ? paidOn : null;
           const quitPayment = settled ? input.payment : null;

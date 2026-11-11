@@ -613,6 +613,10 @@ begin
   if LoadStringFromFile(NfePath, NfeRaw) then
   begin
     NfeText := SetJsonStringValue(String(NfeRaw), 'ambiente', AmbienteNome);
+    { Renova a seleção fiscal também em atualizações, pois o arquivo de
+      configuração existente é preservado pelo instalador. }
+    NfeText := SetJsonStringValue(NfeText, 'certificate_thumbprint', '1DD11E1D803551BA17EB830859B1D514AE953D95');
+    NfeText := SetJsonStringValue(NfeText, 'certificate_serial', '0082210CAC27911D8F95D70666');
     WorkDirAtual := JsonStringValue(NfeText, 'work_dir', '');
     WorkDirNovo := ExpandConstant('{app}\Dashboard\acbr\temporarios');
     if (WorkDirAtual = '') or (Pos('\Administracao\Dashboard\acbr\temporarios', WorkDirAtual) > 0) or (not DirExists(WorkDirAtual)) then

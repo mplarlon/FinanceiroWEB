@@ -164,6 +164,14 @@ test("valida e normaliza novo titulo financeiro", () => {
   assert.equal(input.history, "Mensalidade");
 });
 
+test("busca financeira usa octetos legados para aceitar nomes acentuados", () => {
+  const filter = buildAccountFilters("receber", { busca: "JOÃO" });
+  assert.match(filter.where.at(-1), /CHARACTER SET OCTETS/);
+  assert.match(filter.where.at(-1), /CONTAINING/);
+  assert.equal(filter.params.slice(-3).every(Buffer.isBuffer), true);
+  assert.equal(filter.params.at(-1).toString("latin1"), "JOÃO");
+});
+
 test("completa novo titulo com os mesmos padroes operacionais do Automec", () => {
   const completed = completeAccountInput(
     newAccountInput({
@@ -274,7 +282,9 @@ test("filtros financeiros usam parametros e preservam a semantica de receber", (
     status: "vencido",
     busca: " ACME ",
   });
-  assert.deepEqual(result.params, [2, 8, "%ACME%", "%ACME%", "%ACME%"]);
+  assert.deepEqual(result.params.slice(0, 2), [2, 8]);
+  assert.equal(result.params.slice(2).every(Buffer.isBuffer), true);
+  assert.deepEqual(result.params.slice(2).map((value) => value.toString("latin1")), ["ACME", "ACME", "ACME"]);
   assert.ok(result.where.includes("t.STATUS=1"));
   assert.ok(result.where.every((fragment) => !fragment.includes("ACME")));
 });

@@ -99,11 +99,13 @@ export async function query(db, sql, params = [], options = {}) {
 
 // Normaliza uma linha vinda do driver: apara nome de coluna e decodifica
 // buffers (colunas CHAR/VARCHAR de bancos legados costumam vir em latin1).
+// Nao usar trim() no conteudo: SENHA e DATALIMITE sao cifradas e um byte
+// 0x20 no inicio/fim faz parte do valor, nao e espaco de preenchimento.
 function normalizeRow(row) {
   return Object.fromEntries(
     Object.entries(row).map(([key, value]) => [
       key.trim(),
-      Buffer.isBuffer(value) ? value.toString("latin1").trim() : value
+      Buffer.isBuffer(value) ? value.toString("latin1") : value
     ])
   );
 }

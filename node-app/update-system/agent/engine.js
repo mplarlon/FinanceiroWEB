@@ -5,6 +5,7 @@ import http from "node:http";
 import https from "node:https";
 import path from "node:path";
 import { promisify } from "node:util";
+import * as tar from "tar";
 import { atomicWriteJson, compareSemver, readJson, safeChild, sha256, verifyManifest } from "../shared.js";
 
 const execFile = promisify(execFileCallback);
@@ -125,17 +126,18 @@ export async function downloadPackage(url, destination, options = {}) {
   return destination;
 }
 
-async function extractTarGz(archive, destination) {
-  const { stdout } = await execFile("tar.exe", ["-tzf", archive], { windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-  const verbose = await execFile("tar.exe", ["-tvzf", archive], { windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
-  const entries = stdout.split(/\r?\n/).filter(Boolean);
-  if (!entries.length || entries.length > 50_000) throw new Error("Pacote vazio ou com arquivos demais.");
-  for (const entry of entries) {
-    const normalized = entry.replaceAll("\\", "/");
-    if (normalized.startsWith("/") || /^[A-Za-z]:/.test(normalized) || normalized.split("/").includes("..")) throw new Error("Pacote contem caminho inseguro.");
-  }
-  if (verbose.stdout.split(/\r?\n/).some((line) => /^[lh]/.test(line))) throw new Error("Pacote contem link nao permitido.");
-  await execFile("tar.exe", ["-xzf", archive, "-C", destination], { windowsHide: true, maxBuffer: 10 * 1024 * 1024 });
+export async function extractTarGz(archive, destination) {
+  let entries = 0;
+  const validate = (entry) => {
+    entries += 1;
+    if (entries > 50_000) throw new Error("Pacote vazio ou com arquivos demais.");
+    const normalized = String(entry.path || "").replaceAll("\\", "/");
+    if (!normalized || normalized.startsWith("/") || /^[A-Za-z]:/.test(normalized) || normalized.split("/").includes("..")) throw new Error("Pacote contem caminho inseguro.");
+    if (!["File", "Directory"].includes(entry.type)) throw new Error("Pacote contem link ou tipo de arquivo nao permitido.");
+  };
+  await tar.t({ file: archive, strict: true, onentry: validate });
+  if (!entries) throw new Error("Pacote vazio ou com arquivos demais.");
+  await tar.x({ file: archive, cwd: destination, strict: true, preservePaths: false });
 }
 
 export function movePath(source, destination, fsImpl = fs) {

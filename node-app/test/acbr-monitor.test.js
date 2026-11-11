@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { acbrConnectionError, montarIniNfe } from "../server/lib/acbr-monitor.js";
+import { acbrConnectionError, certificateSelector, montarIniNfe } from "../server/lib/acbr-monitor.js";
+
+test("seletor de certificado prioriza numero de serie configurado", () => {
+  assert.equal(certificateSelector({ certificate_serial: " 740A 5BB0 " }), "740A5BB0");
+});
 
 function itemFiscal(overrides) {
   return {

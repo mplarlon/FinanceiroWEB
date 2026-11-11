@@ -2,15 +2,24 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { passwordMatches, userCanEnterDashboard } from "../server/auth.js";
+import { codeBytes } from "../server/lib/prazo-acesso.js";
 
-test("aceita a codificacao atual do ERP", () => {
+test("aceita a codificacao Code/Decode do Automec desktop", () => {
+  assert.equal(passwordMatches("2907", codeBytes("2907")), true);
+  assert.equal(passwordMatches("1234", codeBytes("1234")), true);
+  assert.equal(passwordMatches("123", codeBytes("123")), true);
+  assert.equal(passwordMatches("1", codeBytes("1")), true);
+  assert.equal(passwordMatches("CAROL", codeBytes("CAROL")), true);
+});
+
+test("aceita senha numerica tipica de usuario so com digitos", () => {
   assert.equal(
-    passwordMatches("2907", Buffer.from([0xf6, 0x03, 0x2b, 0xf3])),
+    passwordMatches("1234", Buffer.from([0xef, 0x06, 0x28, 0xf2])),
     true,
   );
 });
 
-test("aceita a codificacao legada de oito bytes", () => {
+test("aceita a codificacao XOR legada quando Code nao confere", () => {
   assert.equal(
     passwordMatches(
       "!@Pontua",
@@ -20,13 +29,13 @@ test("aceita a codificacao legada de oito bytes", () => {
   );
 });
 
-test("permissao do Automec libera o Dashboard", () => {
-  assert.equal(userCanEnterDashboard({ inactive: 0, hasAutomecPermission: true }), true);
-  assert.equal(userCanEnterDashboard({ inactive: 0, hasAutomecPermission: false }), false);
-  assert.equal(userCanEnterDashboard({ inactive: 1, hasAutomecPermission: true }), false);
+test("usuario ativo entra no Dashboard sem permissao de menu", () => {
+  assert.equal(userCanEnterDashboard({ inactive: 0 }), true);
+  assert.equal(userCanEnterDashboard({ inactive: 1 }), false);
 });
 
 test("nao aceita senha incorreta com o mesmo tamanho", () => {
+  assert.equal(passwordMatches("1235", codeBytes("1234")), false);
   assert.equal(
     passwordMatches(
       "!@Pontub",

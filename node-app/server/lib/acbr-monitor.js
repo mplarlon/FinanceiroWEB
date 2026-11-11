@@ -6,6 +6,7 @@ import fs from "node:fs";
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 export function digits(value) {
   return String(value ?? "").replace(/\D/g, "");
@@ -164,6 +165,44 @@ function isFile(p) {
   } catch {
     return false;
   }
+}
+
+const configuredCertificates = new Set();
+
+export function certificateSelector(cfg = {}) {
+  const pfx = String(cfg.certificate_pfx || cfg.cert_path || "").trim();
+  if (pfx && isFile(pfx)) return pfx;
+  const serial = String(cfg.certificate_serial || "").replace(/\s/g, "").trim();
+  if (serial) return serial;
+  const thumbprint = String(cfg.certificate_thumbprint || "").replace(/\s/g, "").toUpperCase();
+  if (!thumbprint || process.platform !== "win32") return thumbprint;
+  try {
+    const script = [
+      "$wanted=$env:FINANCE_CERT_THUMBPRINT",
+      String.raw`$cert=Get-ChildItem -Path 'Cert:\CurrentUser\My','Cert:\LocalMachine\My' -ErrorAction SilentlyContinue | Where-Object { $_.Thumbprint -eq $wanted } | Select-Object -First 1`,
+      "if($cert){$cert.SerialNumber}",
+    ].join(";");
+    const encoded = Buffer.from(script, "utf16le").toString("base64");
+    return execFileSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-EncodedCommand", encoded], {
+      encoding: "utf8",
+      windowsHide: true,
+      timeout: 10000,
+      env: { ...process.env, FINANCE_CERT_THUMBPRINT: thumbprint },
+    }).trim() || thumbprint;
+  } catch {
+    return thumbprint;
+  }
+}
+
+async function configureCertificate(cfg) {
+  const selector = certificateSelector(cfg);
+  if (!selector) return;
+  const password = String(cfg.certificate_password || cfg.cert_password || "");
+  const key = `${cfg.host || "127.0.0.1"}:${cfg.port || 3434}:${selector}`;
+  if (configuredCertificates.has(key)) return;
+  const response = await sendCommand(cfg, `NFE.SetCertificado("${safe(selector)}","${safe(password)}")`);
+  if (/ERRO:/i.test(response)) throw new Error(response.trim());
+  configuredCertificates.add(key);
 }
 
 function section(lines, name, values) {
@@ -493,6 +532,10 @@ function statusFromXml(cfg) {
 export async function executar(acao, payload, cfg) {
   const workDir = cfg.work_dir || path.join(os.tmpdir(), "dashboard-acbr");
   fs.mkdirSync(workDir, { recursive: true });
+
+  // O instalador pode carregar um NumeroSerie antigo no ACBrMonitor.ini.
+  // Reaplica o certificado configurado antes de qualquer operação fiscal.
+  await configureCertificate(cfg);
 
   let command;
   if (acao === "emitir") {
