@@ -119,7 +119,7 @@ export function classificarMovimento(movimento) {
   else if (/tarifa|taxa banc|cesta de/.test(historico)) natureza = "tarifa";
   else if (/darf|gps|\bdas\b|tribut|imposto|fgts/.test(historico)) natureza = "tributo";
   else if (/folha|salario|adiantamento salarial/.test(historico)) natureza = "folha";
-  else if (/mercado livre|mercadolivre|shopee|amazon|modulo_removido/.test(historico)) natureza = "marketplace";
+  else if (/mercado livre|mercadolivre|shopee|amazon/.test(historico)) natureza = "marketplace";
   else if (/cartao|cielo|rede|stone|pagbank|getnet|visa|master/.test(historico)) natureza = "cartao";
   else if (/transf|ted|entre contas/.test(historico)) natureza = "transferencia";
   const devolucao = /estorn|devolu/.test(historico);

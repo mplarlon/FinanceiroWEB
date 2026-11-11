@@ -12,7 +12,6 @@ import ManagementDashboard from "./pages/ManagementDashboard.jsx";
 import ExecutiveReports from "./pages/ExecutiveReports.jsx";
 import GlobalTableSorting from "./components/GlobalTableSorting.jsx";
 import CharlieTraining from "./components/CharlieTraining.jsx";
-import modulo_removidoIntegration from "./pages/modulo_removidoIntegration.jsx";
 import UpdateAvailable from "./components/UpdateAvailable.jsx";
 import StartIniSetup from "./components/StartIniSetup.jsx";
 
@@ -22,11 +21,9 @@ const PAGES = [
   { id: "financeiro", label: "Contas pagar/receber", icon: "$" },
   { id: "caixa", label: "Controle de caixa", icon: "▤" },
   { id: "conciliacao", label: "Conciliação", icon: "⇄" },
-  { id: "open-finance", label: "Open Finance", icon: "⬡" },
   { id: "dre", label: "DRE completo", icon: "▥" },
   { id: "fechamento", label: "Fechamento carteira", icon: "✓" },
   { id: "fiscal", label: "Fiscal", icon: "≡" },
-  { id: "modulo_removido", label: "modulo_removido", icon: "↗" },
   { id: "compras", label: "Compras", icon: "▣", group: "reports" },
   { id: "clientes", label: "Clientes", icon: "◎", group: "reports" },
   { id: "estoque", label: "Estoque", icon: "▦", group: "reports" },
@@ -92,13 +89,11 @@ export default function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("cafe")) return "charlie";
-    if (params.get("page") === "modulo_removido") return "modulo_removido";
     return "overview";
   });
   const [charlieAlerts, setCharlieAlerts] = useState(0);
   const [charlieBrief, setCharlieBrief] = useState(null);
   const [alertLaunch, setAlertLaunch] = useState(0);
-  const [modulo_removidoUnlocked, setmodulo_removidoUnlocked] = useState(false);
   const [editingIni, setEditingIni] = useState(false);
   const [companyName, setCompanyName] = useState("Dashboard Gerencial");
 
@@ -172,15 +167,6 @@ export default function App() {
     setAlertLaunch((value) => value + 1);
   }
   function goToPage(id) {
-    if (id === "modulo_removido" && !modulo_removidoUnlocked) {
-      const senha = window.prompt("Senha para abrir o modulo_removido");
-      if (senha === null) return;
-      if (senha.trim() !== "2907") {
-        window.alert("Senha incorreta.");
-        return;
-      }
-      setmodulo_removidoUnlocked(true);
-    }
     setPage(id);
   }
   function reloadStatus() {
@@ -306,7 +292,6 @@ export default function App() {
         {page === "compras" && <BusinessDashboard type="purchases" />}
         {page === "clientes" && <ManagementDashboard type="customers" />}
         {page === "fiscal" && <FiscalNfe />}
-        {page === "modulo_removido" && <modulo_removidoIntegration />}
         {current.executive && <ExecutiveReports type={current.executive} />}
         <CharlieTraining page={page} pageLabel={current.label} onNavigate={goToPage} />
       </main>
