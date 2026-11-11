@@ -38,6 +38,8 @@ logs/
 certificados/
 certificados_ct/
 database_config.json
+schema.json
+node-app/-o
 email_config.json
 nfe_sefaz_config.json
 boletos_caixa_config.json
